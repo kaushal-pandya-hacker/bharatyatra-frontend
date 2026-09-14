@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: chalo_farva_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: chalo_farva_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d chalo_farva_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: chalo_farva_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./18_DEVELOPMENT/Backend
+      dockerfile: ../../19_DEVOPS_DEPLOYMENT/Docker/Backend.Dockerfile
+    container_name: chalo_farva_backend
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgrespassword@postgres:5432/chalo_farva_db?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      PORT: 4000
+      NODE_ENV: "development"
+      AI_SERVICE_URL: "http://ai_service:8000"
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ai_service:
+    build:
+      context: ./18_DEVELOPMENT/AI_Service
+      dockerfile: ../../19_DEVOPS_DEPLOYMENT/Docker/AiService.Dockerfile
+    container_name: chalo_farva_ai
+    environment:
+      PORT: 8000
+      ENVIRONMENT: "development"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./18_DEVELOPMENT/Frontend
+      dockerfile: ../../19_DEVOPS_DEPLOYMENT/Docker/Frontend.Dockerfile
+    container_name: chalo_farva_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:4000/api/v1"
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:

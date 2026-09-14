@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "openingHoursCatalog": [
+    {
+      "entityId": "attr-sou-viewing-gallery",
+      "monday": "CLOSED",
+      "tuesday": "08:00 AM - 06:00 PM",
+      "wednesday": "08:00 AM - 06:00 PM",
+      "thursday": "08:00 AM - 06:00 PM",
+      "friday": "08:00 AM - 06:00 PM",
+      "saturday": "08:00 AM - 06:00 PM",
+      "sunday": "08:00 AM - 06:00 PM",
+      "specialClosedDays": ["Diwali Clean-up Day"],
+      "sourceId": "src-sou-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "entityId": "wld-gir-safari",
+      "monsoonClosure": "16th June to 15th October annually",
+      "dailySlots": ["06:00 AM - 09:00 AM", "09:00 AM - 12:00 PM", "03:00 PM - 06:00 PM"],
+      "sourceId": "src-forest-dept-gujarat",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

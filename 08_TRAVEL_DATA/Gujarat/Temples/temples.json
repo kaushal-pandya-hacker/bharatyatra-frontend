@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "temples": [
+    {
+      "id": "tmpl-somnath",
+      "name": "Somnath Temple",
+      "destinationSlug": "somnath-temple",
+      "category": "Religious",
+      "latitude": 20.888,
+      "longitude": 70.4012,
+      "openingHours": "06:00 AM - 09:30 PM",
+      "darshanTimings": ["07:00 AM Aarti", "12:00 PM Aarti", "07:00 PM Sandhya Aarti"],
+      "dressCode": "Traditional / Modest clothing required. Mobile phones & electronics restricted inside sanctuary.",
+      "festivalRelevance": ["Mahashivratri", "Kartik Purnima Fair"],
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "tmpl-dwarkadhish",
+      "name": "Dwarkadhish Temple (Jagat Mandir)",
+      "destinationSlug": "dwarka",
+      "category": "Religious",
+      "latitude": 22.2376,
+      "longitude": 68.9674,
+      "openingHours": "06:30 AM - 01:00 PM, 05:00 PM - 09:30 PM",
+      "darshanTimings": ["07:00 AM Mangla Aarti", "07:30 PM Sandhya Aarti"],
+      "dressCode": "Modest clothing. Leather items and mobile phones restricted inside.",
+      "festivalRelevance": ["Janmashtami", "Holi"],
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "tmpl-sun-temple-modhera",
+      "name": "Sun Temple Modhera & Surya Kund",
+      "destinationSlug": "modhera",
+      "category": "Heritage_Religious",
+      "latitude": 23.5836,
+      "longitude": 72.1333,
+      "openingHours": "07:00 AM - 06:00 PM",
+      "dressCode": "Casual / Heritage visitor attire.",
+      "festivalRelevance": ["Uttarardh Mahotsav (Modhera Dance Festival - January)"],
+      "sourceId": "src-asi-official",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

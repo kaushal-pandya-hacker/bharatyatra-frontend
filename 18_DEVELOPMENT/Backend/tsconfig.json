@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "src",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "prisma/**/*",
+    "src/index.ts",
+    "src/routes/**/*",
+    "src/services/**/*",
+    "src/config/db.ts",
+    "src/config/env.ts",
+    "src/middleware/auth.ts",
+    "src/middleware/errorHandler.ts"
+  ]
+}

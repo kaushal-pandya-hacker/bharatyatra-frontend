@@ -1,0 +1,176 @@
+openapi: 3.0.3
+info:
+  title: Chalo Farva Master API Engine
+  description: Complete production OpenAPI specification for Chalo Farva - Gujarat-first AI-powered travel platform.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local Development Server
+  - url: https://api.chalofarva.com/v1
+    description: Production API Server
+
+paths:
+  /auth/login:
+    post:
+      summary: User Authentication Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successfully authenticated
+        '401':
+          description: Invalid credentials
+
+  /destinations:
+    get:
+      summary: Discover & Filter Gujarat Destinations
+      parameters:
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of active Gujarat destinations
+
+  /destinations/{slug}:
+    get:
+      summary: Get Destination Details by Slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Destination detailed record
+
+  /ai/generate-itinerary:
+    post:
+      summary: Generate Complete Multi-Day AI Travel Plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [origin, destinations, startDate, durationDays]
+              properties:
+                origin:
+                  type: string
+                destinations:
+                  type: array
+                  items:
+                    type: string
+                startDate:
+                  type: string
+                durationDays:
+                  type: integer
+                travelerType:
+                  type: string
+                  enum: [SOLO, COUPLE, FAMILY, FRIENDS]
+                budgetTier:
+                  type: string
+                  enum: [BUDGET, BALANCED, LUXURY]
+      responses:
+        '200':
+          description: Multi-day itinerary generated
+
+  /ai/evaluate-reroute:
+    post:
+      summary: Deterministic Adaptive Re-Routing Engine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tripId, triggerType, affectedDate, description]
+              properties:
+                tripId:
+                  type: string
+                triggerType:
+                  type: string
+                  enum: [WEATHER_ALERT, TRAFFIC_DELAY, CLOSURE, USER_REQUEST]
+                affectedDate:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Validated alternative itinerary proposal
+
+  /bookings:
+    post:
+      summary: Create Travel Booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingType, providerId, itemDetails, amountInr]
+              properties:
+                bookingType:
+                  type: string
+                  enum: [BUS, HOTEL, ACTIVITY, PACKAGE]
+                providerId:
+                  type: string
+                amountInr:
+                  type: number
+      responses:
+        '201':
+          description: Booking created successfully
+
+  /payments/checkout:
+    post:
+      summary: Initiate Payment Checkout Session
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingId, amountInr, paymentMethod]
+              properties:
+                bookingId:
+                  type: string
+                amountInr:
+                  type: number
+                paymentMethod:
+                  type: string
+                  enum: [UPI, NET_BANKING, CREDIT_CARD, DEBIT_CARD]
+      responses:
+        '200':
+          description: Checkout session created
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

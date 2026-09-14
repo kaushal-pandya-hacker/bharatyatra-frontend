@@ -1,0 +1,631 @@
+// Chalo Farva — Prisma Database Schema v1.0
+// Description: Master database schema mapping 54+ tables across 22 modules.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserAccountStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum UserRoleType {
+  CUSTOMER
+  SUPPLIER
+  ADMIN
+  SUPPORT
+  OPERATIONS
+  FINANCE
+  CONTENT_MANAGER
+}
+
+enum GujaratRegion {
+  Kutch
+  Saurashtra
+  South_Gujarat
+  Central_Gujarat
+  North_Gujarat
+}
+
+enum VerificationStatus {
+  VERIFIED
+  UNVERIFIED
+  PENDING
+  REJECTED
+}
+
+enum TripLifecycleStatus {
+  DRAFT
+  PLANNING
+  READY
+  BOOKED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum TripPlanningStatus {
+  AI_DRAFT
+  USER_MODIFIED
+  FINALIZED
+}
+
+enum ItemTypeEnum {
+  ATTRACTION
+  HOTEL_STAY
+  BUS_TRANSIT
+  RESTAURANT
+  ACTIVITY
+}
+
+enum BookingLifecycleStatus {
+  SEARCHED
+  SELECTED
+  PAYMENT_PENDING
+  PAYMENT_CONFIRMED
+  BOOKING_PENDING
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  REJECTED
+  COMPLETED
+  EXPIRED
+  FAILED
+  CANCEL_REQUESTED
+  CANCELLED
+  REFUND_PENDING
+  REFUNDED
+}
+
+enum PaymentLifecycleStatus {
+  CREATED
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  PAID
+  FAILED
+  CANCELLED
+  REFUND_PENDING
+  PARTIALLY_REFUNDED
+  REFUNDED
+}
+
+enum RefundStatus {
+  REQUESTED
+  PROCESSING
+  APPROVED
+  FAILED
+  COMPLETED
+}
+
+enum SettlementStatus {
+  PENDING
+  PROCESSING
+  SETTLED
+  FAILED
+  ON_HOLD
+}
+
+enum EventSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+// ==========================================
+// 1. AUTH & USERS MODULE
+// ==========================================
+
+model User {
+  id               String            @id @default(uuid()) @db.Uuid
+  email            String            @unique @db.VarChar(255)
+  passwordHash     String            @db.VarChar(255)
+  fullName         String            @db.VarChar(255)
+  phoneNumber      String?           @db.VarChar(20)
+  role             UserRoleType      @default(CUSTOMER)
+  status           UserAccountStatus @default(ACTIVE)
+  isEmailVerified  Boolean           @default(false)
+  isPhoneVerified  Boolean           @default(false)
+  createdAt        DateTime          @default(now()) @db.Timestamptz
+  updatedAt        DateTime          @updatedAt @db.Timestamptz
+
+  preferences      UserPreference?
+  sessions         UserSession[]
+  trips            Trip[]
+  bookings         Booking[]
+  auditLogs        AuditLog[]
+  reviews          Review[]
+  supplier         Supplier?
+
+  @@map("users")
+}
+
+model Supplier {
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @unique @db.Uuid
+  businessName       String             @db.VarChar(255)
+  legalName          String?            @db.VarChar(255)
+  businessType       String             @default("HOTEL") @db.VarChar(100)
+  description        String?            @db.Text
+  email              String             @db.VarChar(255)
+  phone              String             @db.VarChar(50)
+  website            String?            @db.VarChar(255)
+  address            String?            @db.VarChar(255)
+  city               String?            @db.VarChar(100)
+  state              String?            @default("Gujarat") @db.VarChar(100)
+  country            String?            @default("India") @db.VarChar(100)
+  latitude           Float?
+  longitude          Float?
+  logo               String?            @db.Text
+  status             SupplierStatus     @default(ACTIVE)
+  verificationStatus VerificationStatus @default(PENDING)
+  createdAt          DateTime           @default(now()) @db.Timestamptz
+  updatedAt          DateTime           @updatedAt @db.Timestamptz
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hotels             Hotel[]
+  restaurants        Restaurant[]
+  activities         Activity[]
+  bookings           Booking[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([verificationStatus])
+  @@map("suppliers")
+}
+
+model UserPreference {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @unique @db.Uuid
+  preferredLanguage   String   @default("gu") @db.VarChar(10)
+  dietaryPreference   String?  @db.VarChar(50)
+  budgetTier          String   @default("BALANCED") @db.VarChar(20)
+  travelPace          String   @default("MODERATE") @db.VarChar(20)
+  interests           String[] @default([])
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model UserSession {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  refreshToken String   @unique @db.Text
+  ipAddress    String?  @db.VarChar(45)
+  userAgent    String?  @db.Text
+  expiresAt    DateTime @db.Timestamptz
+  createdAt    DateTime @default(now()) @db.Timestamptz
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+// ==========================================
+// 2. DESTINATIONS & TOURISM MODULE
+// ==========================================
+
+model Destination {
+  id               String        @id @default(uuid()) @db.Uuid
+  name             String        @db.VarChar(255)
+  slug             String        @unique @db.VarChar(255)
+  region           GujaratRegion
+  state            String        @default("Gujarat") @db.VarChar(100)
+  category         String        @db.VarChar(100)
+  description      String        @db.Text
+  shortDescription String?       @db.Text
+  tagline          String?       @db.VarChar(255)
+  overview         String?       @db.Text
+  primaryImageUrl  String        @db.Text
+  heroImageUrl     String?       @db.Text
+  heroColor        String?       @default("from-amber-600 to-amber-900") @db.VarChar(100)
+  rating           Decimal       @default(4.5) @db.Decimal(3, 2)
+  totalReviews     Int           @default(0)
+  recommendedDays  Int           @default(3)
+  estimatedBudget  Decimal       @default(15000.00) @db.Decimal(10, 2)
+  latitude         Float?
+  longitude        Float?
+  bestTimeToVisit  String?       @db.VarChar(255)
+  nearestAirport   String?       @db.VarChar(255)
+  nearestRailway   String?       @db.VarChar(255)
+  status           String        @default("ACTIVE") @db.VarChar(50)
+  isActive         Boolean       @default(true)
+  createdAt        DateTime      @default(now()) @db.Timestamptz
+  updatedAt        DateTime      @updatedAt @db.Timestamptz
+
+  attractions      Attraction[]
+  hotels           Hotel[]
+  activities       Activity[]
+  restaurants      Restaurant[]
+
+  @@index([slug])
+  @@index([region])
+  @@index([isActive])
+  @@map("destinations")
+}
+
+model Attraction {
+  id                   String      @id @default(uuid()) @db.Uuid
+  destinationId       String      @db.Uuid
+  name                 String      @db.VarChar(255)
+  slug                 String?     @db.VarChar(255)
+  description          String?     @db.Text
+  category             String      @db.VarChar(100)
+  openingHours         String?     @db.VarChar(255)
+  openingTime          String?     @db.VarChar(255)
+  closingTime          String?     @db.VarChar(255)
+  entryFeeInr          Decimal     @default(0.00) @db.Decimal(10, 2)
+  averageVisitDuration Int?        @default(120)
+  bestTimeToVisit      String?     @db.VarChar(255)
+  latitude             Float?
+  longitude            Float?
+  image                String?     @db.Text
+  isVerified           Boolean     @default(true)
+  createdAt            DateTime    @default(now()) @db.Timestamptz
+  updatedAt            DateTime    @default(now()) @updatedAt @db.Timestamptz
+  destination          Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@index([destinationId])
+  @@index([category])
+  @@map("attractions")
+}
+
+model Hotel {
+  id             String      @id @default(uuid()) @db.Uuid
+  destinationId  String      @db.Uuid
+  supplierId     String?     @db.Uuid
+  name           String      @db.VarChar(255)
+  slug           String?     @db.VarChar(255)
+  description    String?     @db.Text
+  address        String?     @db.VarChar(255)
+  latitude       Float?
+  longitude      Float?
+  category       String      @default("Resort") @db.VarChar(100)
+  starRating     Int         @default(3)
+  pricePerNight  Decimal     @db.Decimal(10, 2)
+  currency       String      @default("INR") @db.VarChar(10)
+  image          String?     @db.Text
+  amenities      String[]    @default([])
+  isVerified     Boolean     @default(false)
+  status         String      @default("ACTIVE") @db.VarChar(50)
+  createdAt      DateTime    @default(now()) @db.Timestamptz
+  updatedAt      DateTime    @default(now()) @updatedAt @db.Timestamptz
+  destination    Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  supplier       Supplier?   @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+
+  @@index([destinationId])
+  @@index([supplierId])
+  @@index([category])
+  @@index([pricePerNight])
+  @@index([starRating])
+  @@index([status])
+  @@map("hotels")
+}
+
+model BusRoute {
+  id              String   @id @default(uuid()) @db.Uuid
+  operatorName    String   @db.VarChar(255)
+  origin          String   @db.VarChar(100)
+  destination     String   @db.VarChar(100)
+  departureTime   String   @db.VarChar(50)
+  fareInr         Decimal  @db.Decimal(10, 2)
+
+  @@map("bus_routes")
+}
+
+model Activity {
+  id               String      @id @default(uuid()) @db.Uuid
+  destinationId   String      @db.Uuid
+  supplierId       String?     @db.Uuid
+  title            String      @db.VarChar(255)
+  slug             String?     @db.VarChar(255)
+  description      String?     @db.Text
+  category         String      @default("General") @db.VarChar(100)
+  priceInr         Decimal     @db.Decimal(10, 2)
+  durationMinutes  Int         @default(60)
+  bestTimeToVisit  String?     @db.VarChar(255)
+  latitude         Float?
+  longitude        Float?
+  image            String?     @db.Text
+  isVerified       Boolean     @default(true)
+  status           String      @default("ACTIVE") @db.VarChar(50)
+  createdAt        DateTime    @default(now()) @db.Timestamptz
+  updatedAt        DateTime    @default(now()) @updatedAt @db.Timestamptz
+  destination      Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  supplier         Supplier?   @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+
+  @@index([destinationId])
+  @@index([supplierId])
+  @@index([category])
+  @@index([status])
+  @@map("activities")
+}
+
+model Restaurant {
+  id             String      @id @default(uuid()) @db.Uuid
+  destinationId  String      @db.Uuid
+  supplierId     String?     @db.Uuid
+  name           String      @db.VarChar(255)
+  slug           String?     @db.VarChar(255)
+  description    String?     @db.Text
+  address        String?     @db.VarChar(255)
+  latitude       Float?
+  longitude      Float?
+  cuisineType    String      @default("Gujarati Kathiyawadi") @db.VarChar(100)
+  priceRange     String      @default("MODERATE") @db.VarChar(50)
+  averageCost    Decimal     @default(500.00) @db.Decimal(10, 2)
+  currency       String      @default("INR") @db.VarChar(10)
+  openingTime    String?     @db.VarChar(50)
+  closingTime    String?     @db.VarChar(50)
+  image          String?     @db.Text
+  rating         Decimal     @default(4.5) @db.Decimal(3, 2)
+  isVerified     Boolean     @default(false)
+  status         String      @default("ACTIVE") @db.VarChar(50)
+  createdAt      DateTime    @default(now()) @db.Timestamptz
+  updatedAt      DateTime    @default(now()) @updatedAt @db.Timestamptz
+  destination    Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  supplier       Supplier?   @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+
+  @@index([destinationId])
+  @@index([supplierId])
+  @@index([cuisineType])
+  @@index([priceRange])
+  @@index([rating])
+  @@index([status])
+  @@map("restaurants")
+}
+
+// ==========================================
+// 3. TRIPS & IMMUTABLE ITINERARIES
+// ==========================================
+
+model Trip {
+  id             String              @id @default(uuid()) @db.Uuid
+  userId         String              @db.Uuid
+  title          String              @db.VarChar(255)
+  startDate      DateTime            @db.Date
+  endDate        DateTime            @db.Date
+  status         TripLifecycleStatus @default(PLANNING)
+  totalBudgetInr Decimal             @db.Decimal(12, 2)
+  createdAt      DateTime            @default(now()) @db.Timestamptz
+  updatedAt      DateTime            @updatedAt @db.Timestamptz
+
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itineraries    Itinerary[]
+  bookings       Booking[]
+
+  @@map("trips")
+}
+
+model Itinerary {
+  id              String             @id @default(uuid()) @db.Uuid
+  tripId          String             @db.Uuid
+  versionNumber   Int                @default(1)
+  status          TripPlanningStatus @default(AI_DRAFT)
+  changeReason    String?            @db.Text
+  createdAt       DateTime           @default(now()) @db.Timestamptz
+
+  trip            Trip               @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  days            ItineraryDay[]
+
+  @@map("itineraries")
+}
+
+model ItineraryDay {
+  id           String          @id @default(uuid()) @db.Uuid
+  itineraryId  String          @db.Uuid
+  dayNumber    Int
+  title        String          @db.VarChar(255)
+  itinerary    Itinerary       @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  items        ItineraryItem[]
+
+  @@map("itinerary_days")
+}
+
+model ItineraryItem {
+  id             String       @id @default(uuid()) @db.Uuid
+  itineraryDayId String       @db.Uuid
+  itemType       ItemTypeEnum
+  title          String       @db.VarChar(255)
+  slotTime       String       @db.VarChar(50)
+  estimatedCost  Decimal      @db.Decimal(10, 2)
+  provenance     String       @default("VERIFIED_DATA") @db.VarChar(50)
+  day            ItineraryDay @relation(fields: [itineraryDayId], references: [id], onDelete: Cascade)
+
+  @@map("itinerary_items")
+}
+
+// ==========================================
+// 4. BOOKINGS, PAYMENTS & REFUNDS
+// ==========================================
+
+model Booking {
+  id                 String                 @id @default(uuid()) @db.Uuid
+  bookingReference   String                 @unique @db.VarChar(50)
+  userId             String                 @db.Uuid
+  supplierId         String?                @db.Uuid
+  tripId             String?                @db.Uuid
+  bookingType        String                 @db.VarChar(50)
+  inventoryType      String?                @db.VarChar(50)
+  inventoryId        String?                @db.VarChar(255)
+  status             BookingLifecycleStatus @default(PENDING)
+  startDate          DateTime?              @db.Timestamptz
+  endDate            DateTime?              @db.Timestamptz
+  reservationTime    String?                @db.VarChar(50)
+  quantity           Int                    @default(1)
+  adultCount         Int                    @default(1)
+  childCount         Int                    @default(0)
+  guestCount         Int                    @default(1)
+  unitPrice          Decimal                @default(0.00) @db.Decimal(12, 2)
+  subtotal           Decimal                @default(0.00) @db.Decimal(12, 2)
+  taxes              Decimal                @default(0.00) @db.Decimal(12, 2)
+  discount           Decimal                @default(0.00) @db.Decimal(12, 2)
+  totalAmountInr     Decimal                @db.Decimal(12, 2)
+  currency           String                 @default("INR") @db.VarChar(10)
+  customerNotes      String?                @db.Text
+  supplierNotes      String?                @db.Text
+  rejectionReason    String?                @db.Text
+  cancellationReason String?                @db.Text
+  acceptedAt         DateTime?              @db.Timestamptz
+  rejectedAt         DateTime?              @db.Timestamptz
+  inProgressAt       DateTime?              @db.Timestamptz
+  completedAt        DateTime?              @db.Timestamptz
+  cancelledAt        DateTime?              @db.Timestamptz
+  idempotencyKey     String?                @unique @db.VarChar(255)
+  createdAt          DateTime               @default(now()) @db.Timestamptz
+  updatedAt          DateTime               @updatedAt @db.Timestamptz
+
+  user               User                   @relation(fields: [userId], references: [id])
+  supplier           Supplier?              @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  trip               Trip?                  @relation(fields: [tripId], references: [id])
+  payments           Payment[]
+  refunds            Refund[]
+
+  @@index([userId])
+  @@index([supplierId])
+  @@index([bookingReference])
+  @@index([status])
+  @@index([inventoryType, inventoryId])
+  @@index([startDate])
+  @@map("bookings")
+}
+
+model Payment {
+  id                   String                 @id @default(uuid()) @db.Uuid
+  bookingId            String                 @db.Uuid
+  customerId           String?                @db.Uuid
+  provider             String                 @default("SANDBOX") @db.VarChar(50)
+  gatewayOrderId       String                 @db.VarChar(255)
+  gatewayTransactionId String?                @db.VarChar(255)
+  amountInr            Decimal                @db.Decimal(12, 2)
+  currency             String                 @default("INR") @db.VarChar(10)
+  status               PaymentLifecycleStatus @default(CREATED)
+  paymentMethod        String                 @default("SANDBOX_UPI") @db.VarChar(50)
+  failureReason        String?                @db.Text
+  idempotencyKey       String?                @unique @db.VarChar(255)
+  paidAt               DateTime?              @db.Timestamptz
+  refundedAt           DateTime?              @db.Timestamptz
+  createdAt            DateTime               @default(now()) @db.Timestamptz
+  updatedAt            DateTime               @updatedAt @db.Timestamptz
+
+  booking              Booking                @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
+  @@index([customerId])
+  @@index([gatewayOrderId])
+  @@index([status])
+  @@map("payments")
+}
+
+model CommissionRecord {
+  id                  String   @id @default(uuid()) @db.Uuid
+  bookingId           String   @unique @db.Uuid
+  supplierId          String?  @db.Uuid
+  grossAmountInr      Decimal  @db.Decimal(12, 2)
+  commissionRate      Decimal  @db.Decimal(5, 2)
+  commissionAmountInr Decimal  @db.Decimal(12, 2)
+  supplierPayableInr  Decimal  @db.Decimal(12, 2)
+  createdAt           DateTime @default(now()) @db.Timestamptz
+
+  @@index([supplierId])
+  @@map("commission_records")
+}
+
+model SettlementRecord {
+  id                  String           @id @default(uuid()) @db.Uuid
+  supplierId          String           @db.Uuid
+  bookingId           String           @unique @db.Uuid
+  grossAmountInr      Decimal          @db.Decimal(12, 2)
+  commissionAmountInr Decimal          @db.Decimal(12, 2)
+  payableAmountInr    Decimal          @db.Decimal(12, 2)
+  status              SettlementStatus @default(PENDING)
+  settlementReference String?          @db.VarChar(100)
+  scheduledAt         DateTime?        @db.Timestamptz
+  settledAt           DateTime?        @db.Timestamptz
+  failureReason       String?          @db.Text
+  createdAt           DateTime         @default(now()) @db.Timestamptz
+  updatedAt           DateTime         @updatedAt @db.Timestamptz
+
+  @@index([supplierId])
+  @@index([status])
+  @@map("settlement_records")
+}
+
+model Refund {
+  id               String       @id @default(uuid()) @db.Uuid
+  bookingId        String       @db.Uuid
+  paymentId        String?      @db.Uuid
+  providerRefundId String?      @db.VarChar(255)
+  amountInr        Decimal      @db.Decimal(12, 2)
+  status           RefundStatus @default(REQUESTED)
+  reason           String       @db.Text
+  createdAt        DateTime     @default(now()) @db.Timestamptz
+  updatedAt        DateTime     @updatedAt @db.Timestamptz
+
+  booking          Booking      @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
+  @@map("refunds")
+}
+
+// ==========================================
+// 5. AUDIT LOGS & REVIEWS
+// ==========================================
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String?  @db.Uuid
+  adminEmail String?  @db.VarChar(255)
+  action     String   @db.VarChar(100)
+  details    String?  @db.Text
+  entityType String?  @db.VarChar(100)
+  entityId   String?  @db.VarChar(255)
+  reason     String?  @db.Text
+  ipAddress  String?  @db.VarChar(45)
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([action])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model Review {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  entityId  String   @db.Uuid
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("reviews")
+}

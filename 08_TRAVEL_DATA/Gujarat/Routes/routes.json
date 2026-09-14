@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "routes": [
+    {
+      "id": "route-amd-vadodara",
+      "origin": "Ahmedabad",
+      "destination": "Vadodara",
+      "distanceKm": 112,
+      "typicalTravelDurationMinutes": 90,
+      "primaryTransportMode": "National Expressway 1 (NE1) / GSRTC Express / Indian Railways",
+      "roadSensitivity": "LOW",
+      "sourceId": "src-tcgl-official"
+    },
+    {
+      "id": "route-vadodara-sou",
+      "origin": "Vadodara",
+      "destination": "Statue of Unity (Kevadia)",
+      "distanceKm": 90,
+      "typicalTravelDurationMinutes": 105,
+      "primaryTransportMode": "State Highway 63 / Jan Shatabdi Express to Ekta Nagar",
+      "roadSensitivity": "LOW",
+      "sourceId": "src-sou-official"
+    },
+    {
+      "id": "route-amd-dwarka",
+      "origin": "Ahmedabad",
+      "destination": "Dwarka",
+      "distanceKm": 440,
+      "typicalTravelDurationMinutes": 450,
+      "primaryTransportMode": "NH47 & NH947 / GSRTC Sleeper Bus / Okha Express",
+      "roadSensitivity": "MEDIUM",
+      "sourceId": "src-tcgl-official"
+    },
+    {
+      "id": "route-dwarka-somnath",
+      "origin": "Dwarka",
+      "destination": "Somnath",
+      "distanceKm": 230,
+      "typicalTravelDurationMinutes": 270,
+      "primaryTransportMode": "Coastal Highway NH51 / Porbandar Coastal Route",
+      "roadSensitivity": "MEDIUM",
+      "sourceId": "src-tcgl-official"
+    },
+    {
+      "id": "route-somnath-diu",
+      "origin": "Somnath",
+      "destination": "Diu",
+      "distanceKm": 85,
+      "typicalTravelDurationMinutes": 105,
+      "primaryTransportMode": "NH51 Coastal Route",
+      "roadSensitivity": "LOW",
+      "sourceId": "src-tcgl-official"
+    },
+    {
+      "id": "route-amd-kutch",
+      "origin": "Ahmedabad",
+      "destination": "Bhuj (Rann of Kutch)",
+      "distanceKm": 335,
+      "typicalTravelDurationMinutes": 360,
+      "primaryTransportMode": "NH947 / Vande Bharat Express to Bhuj",
+      "roadSensitivity": "LOW",
+      "sourceId": "src-tcgl-official"
+    }
+  ]
+}

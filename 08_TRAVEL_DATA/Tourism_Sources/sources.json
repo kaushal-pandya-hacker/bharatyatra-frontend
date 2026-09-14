@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "sources": [
+    {
+      "sourceId": "src-tcgl-official",
+      "name": "Tourism Corporation of Gujarat Limited (TCGL)",
+      "type": "Official Tourism Board",
+      "url": "https://gujarattourism.com",
+      "authorityLevel": "HIGH_AUTHORITY",
+      "lastChecked": "2026-09-13",
+      "notes": "Official state tourism authority for Gujarat attractions, festivals, and circuit info."
+    },
+    {
+      "sourceId": "src-asi-official",
+      "name": "Archaeological Survey of India (ASI) - Vadodara & Rajkot Circles",
+      "type": "Government Heritage Body",
+      "url": "https://asi.nic.in",
+      "authorityLevel": "HIGH_AUTHORITY",
+      "lastChecked": "2026-09-13",
+      "notes": "Official custodian for UNESCO sites Champaner-Pavagadh, Rani ki Vav Patan, and Sun Temple Modhera."
+    },
+    {
+      "sourceId": "src-forest-dept-gujarat",
+      "name": "Gujarat Forest Department & Wildlife Warden",
+      "type": "Government Wildlife Authority",
+      "url": "https://forests.gujarat.gov.in",
+      "authorityLevel": "HIGH_AUTHORITY",
+      "lastChecked": "2026-09-13",
+      "notes": "Official authority for Gir Lion Sanctuary, Little Rann Wild Ass Sanctuary, and Marine National Park."
+    },
+    {
+      "sourceId": "src-sou-official",
+      "name": "Statue of Unity Tourism Authority (SOUDA)",
+      "type": "Official Destination Board",
+      "url": "https://statueofunity.in",
+      "authorityLevel": "HIGH_AUTHORITY",
+      "lastChecked": "2026-09-13",
+      "notes": "Official ticketing and visiting hours authority for Statue of Unity and Kevadia attractions."
+    }
+  ]
+}

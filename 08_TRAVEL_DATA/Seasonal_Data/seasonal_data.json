@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "seasonalRules": [
+    {
+      "destinationSlug": "rann-of-kutch",
+      "season": "SUMMER",
+      "months": ["April", "May", "June"],
+      "recommendationStatus": "NOT_RECOMMENDED",
+      "reason": "Extreme heat reaching 45°C+; salt desert unnavigable without shelter."
+    },
+    {
+      "destinationSlug": "rann-of-kutch",
+      "season": "WINTER",
+      "months": ["November", "December", "January", "February"],
+      "recommendationStatus": "HIGHLY_RECOMMENDED",
+      "reason": "Pleasant weather (12°C - 25°C), crisp white salt desert under moonlight, Rann Utsav active."
+    },
+    {
+      "destinationSlug": "gir-national-park",
+      "season": "MONSOON",
+      "months": ["June", "July", "August", "September", "October"],
+      "recommendationStatus": "NOT_RECOMMENDED",
+      "reason": "Park closed by Forest Department for lion breeding season and unpaved trail mudding."
+    },
+    {
+      "destinationSlug": "saputara",
+      "season": "MONSOON",
+      "months": ["July", "August", "September"],
+      "recommendationStatus": "HIGHLY_RECOMMENDED",
+      "reason": "Lush green hill station waterfalls and fog; Monsoon Festival celebrated by TCGL."
+    }
+  ]
+}

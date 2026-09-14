@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DATABASE_URL=postgresql://chalo_user:chalo_password@postgres:5432/chalo_farva_db?schema=public
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: chalo_farva_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: chalo_user
+      POSTGRES_PASSWORD: chalo_password
+      POSTGRES_DB: chalo_farva_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: chalo_farva_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "festivals": [
+    {
+      "id": "fst-rann-utsav",
+      "name": "Rann Utsav (White Desert Festival)",
+      "destinationSlug": "rann-of-kutch",
+      "typicalPeriod": "November to February",
+      "confirmed2026Dates": "1st November 2026 to 28th February 2027",
+      "category": "Cultural_Tourism",
+      "description": "4-month cultural carnival in Dhordo tent city featuring folk dance, music, crafts, and full-moon desert nights.",
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "fst-navratri",
+      "name": "Gujarat Navratri Garba Mahotsav",
+      "destinationSlug": "ahmedabad",
+      "typicalPeriod": "September / October (9 Nights)",
+      "category": "Cultural_Religious",
+      "description": "The world's longest dance festival with night-long Garba dance celebrations across Gujarat cities.",
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "fst-kite-festival",
+      "name": "International Kite Festival (Uttarayan)",
+      "destinationSlug": "ahmedabad",
+      "typicalPeriod": "14th - 15th January annually",
+      "category": "Cultural",
+      "description": "Sky filled with thousands of vibrant kites, rooftop music celebrations, and undhiyu/jalebi traditional feast.",
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

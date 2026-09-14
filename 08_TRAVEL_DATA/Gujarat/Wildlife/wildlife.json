@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "wildlifeDestinations": [
+    {
+      "id": "wld-gir-safari",
+      "name": "Gir Lion National Park & Devalia Safari Park",
+      "destinationSlug": "gir-national-park",
+      "latitude": 21.1243,
+      "longitude": 70.8242,
+      "seasonality": "Open 16th October to 15th June. Closed during Monsoon (16th June to 15th October).",
+      "weatherSensitivity": { "rainSensitive": true, "closureOnMonsoon": true },
+      "entryRequirements": "Mandatory online safari permit via official Gujarat Forest E-Permit portal prior to visit.",
+      "wildlifeSpecies": ["Asiatic Lion", "Leopard", "Chital (Spotted Deer)", "Sambar", "Chinkara"],
+      "sourceId": "src-forest-dept-gujarat",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "wld-little-rann-wild-ass",
+      "name": "Wild Ass Sanctuary (Little Rann of Kutch)",
+      "destinationSlug": "little-rann-of-kutch",
+      "latitude": 23.36,
+      "longitude": 71.55,
+      "seasonality": "Best visit October to March.",
+      "weatherSensitivity": { "rainSensitive": true },
+      "entryRequirements": "Jeep safari permit required at Dhrangadhra or Dasada entry checkposts.",
+      "wildlifeSpecies": ["Indian Wild Ass (Khur)", "Desert Fox", "Flamingos"],
+      "sourceId": "src-forest-dept-gujarat",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

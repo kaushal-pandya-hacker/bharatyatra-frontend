@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "beaches": [
+    {
+      "id": "bch-shivrajpur",
+      "name": "Shivrajpur Blue Flag Beach",
+      "destinationSlug": "dwarka",
+      "latitude": 22.3328,
+      "longitude": 68.9442,
+      "blueFlagCertified": true,
+      "bestSeason": "October to March",
+      "weatherSensitivity": { "rainSensitive": true, "windSensitive": true },
+      "activities": ["Scuba Diving", "Boating", "Beach Volleyball", "Sunset Watching"],
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "bch-mandvi",
+      "name": "Mandvi Windmills Beach & Vijay Vilas Palace Coast",
+      "destinationSlug": "mandvi",
+      "latitude": 22.8258,
+      "longitude": 69.3491,
+      "blueFlagCertified": false,
+      "bestSeason": "October to March",
+      "weatherSensitivity": { "rainSensitive": true, "windSensitive": false },
+      "activities": ["Camel Rides", "Parasailing", "Water Sports", "Shipbuilding Yard Tour"],
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

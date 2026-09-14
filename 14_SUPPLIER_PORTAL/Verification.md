@@ -1,0 +1,9 @@
+# Supplier Verification Lifecycle v1.0
+
+## Verification States
+- `APPLICATION_SUBMITTED`
+- `UNDER_REVIEW`
+- `ADDITIONAL_INFORMATION_REQUIRED`
+- `APPROVED`
+- `REJECTED`
+- `SUSPENDED`

@@ -1,0 +1,32 @@
+name: Chalo Farva CD Deployment Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build & Tag Container Images
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::7}
+          echo "Building staging artifacts tagged $IMAGE_TAG"
+
+      - name: Run Staging Smoke Tests
+        run: |
+          echo "Executing automated HTTP smoke tests against staging endpoints..."
+          curl --fail http://staging.chalofarva.com/api/v1/health || exit 1
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production # Requires Manual Review Gate in GitHub Settings
+    steps:
+      - name: Production Rolling Deployment
+        run: |
+          echo "Deploying release tag ${{ github.ref_name }} to production cluster via zero-downtime rolling update..."

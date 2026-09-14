@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-09-13T18:45:00Z",
+  "normalizedFacts": [
+    {
+      "entityId": "dest-statue-of-unity",
+      "entityType": "DESTINATION",
+      "factCategory": "VISITING_HOURS",
+      "factContent": "Statue of Unity Viewing Gallery is open Tuesday to Sunday, 08:00 AM to 06:00 PM. Closed on Mondays for maintenance.",
+      "provenanceBadge": "VERIFIED_DATA",
+      "sourceId": "src-sou-official",
+      "sourceUrl": "https://statueofunity.in"
+    },
+    {
+      "entityId": "dest-somnath",
+      "entityType": "DESTINATION",
+      "factCategory": "AARTI_TIMINGS",
+      "factContent": "Somnath Temple conducts daily Mahapuja and Aarti at 07:00 AM, 12:00 PM, and 07:00 PM. Sound and Light show occurs at 08:00 PM daily.",
+      "provenanceBadge": "VERIFIED_DATA",
+      "sourceId": "src-tcgl-official",
+      "sourceUrl": "https://gujarattourism.com/destination/somnath"
+    },
+    {
+      "entityId": "dest-gir-national-park",
+      "entityType": "DESTINATION",
+      "factCategory": "SEASONAL_CLOSURE",
+      "factContent": "Gir National Park is closed to visitors during monsoon from 16th June to 15th October annually.",
+      "provenanceBadge": "VERIFIED_DATA",
+      "sourceId": "src-forest-dept-gujarat",
+      "sourceUrl": "https://forests.gujarat.gov.in"
+    }
+  ]
+}

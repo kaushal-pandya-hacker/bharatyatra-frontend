@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "attractions": [
+    {
+      "id": "attr-sabarmati-ashram",
+      "name": "Sabarmati Ashram",
+      "destinationSlug": "ahmedabad",
+      "category": "Heritage",
+      "latitude": 23.0602,
+      "longitude": 72.5807,
+      "description": "Headquarters of Mahatma Gandhi during the Indian independence movement, located on Sabarmati banks.",
+      "openingHours": "08:30 AM - 06:30 PM",
+      "closedDays": [],
+      "ticketRequired": false,
+      "estimatedVisitDurationMinutes": 90,
+      "indoorOutdoor": "MIXED",
+      "weatherSensitivity": { "heatSensitive": true, "rainSensitive": false },
+      "sourceId": "src-tcgl-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "attr-adalaj-stepwell",
+      "name": "Adalaj Stepwell (Adalaj ni Vav)",
+      "destinationSlug": "ahmedabad",
+      "category": "Architecture",
+      "latitude": 23.1667,
+      "longitude": 72.5801,
+      "description": "Subterranean 5-story Solanki architectural masterpiece built in 1498 with intricate stone carvings.",
+      "openingHours": "08:00 AM - 06:00 PM",
+      "closedDays": [],
+      "ticketRequired": true,
+      "estimatedCostInr": 25,
+      "estimatedVisitDurationMinutes": 60,
+      "indoorOutdoor": "INDOOR",
+      "weatherSensitivity": { "heatSensitive": false, "rainSensitive": false },
+      "sourceId": "src-asi-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "attr-sou-viewing-gallery",
+      "name": "Statue of Unity Viewing Gallery",
+      "destinationSlug": "statue-of-unity",
+      "category": "Monuments",
+      "latitude": 21.838,
+      "longitude": 73.7191,
+      "description": "High-speed elevator ride to 153m height inside Patel statue's chest, offering 360-degree views of Narmada dam.",
+      "openingHours": "08:00 AM - 06:00 PM",
+      "closedDays": ["Monday"],
+      "ticketRequired": true,
+      "estimatedCostInr": 380,
+      "estimatedVisitDurationMinutes": 120,
+      "indoorOutdoor": "INDOOR",
+      "weatherSensitivity": { "heatSensitive": false, "rainSensitive": false },
+      "sourceId": "src-sou-official",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

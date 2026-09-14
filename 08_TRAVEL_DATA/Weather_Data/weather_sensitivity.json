@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "weatherSensitivityRules": [
+    {
+      "entityId": "wld-gir-safari",
+      "entityType": "WILDLIFE_SAFARI",
+      "weatherSensitive": true,
+      "rainSensitive": true,
+      "heatSensitive": false,
+      "windSensitive": false,
+      "visibilitySensitive": true,
+      "actionOnDisruption": "CANCEL_AND_RE_ROUTE",
+      "disruptionMessage": "Heavy monsoon rainfall has caused forest trail closure at Gir."
+    },
+    {
+      "entityId": "bch-shivrajpur",
+      "entityType": "BEACH_ACTIVITY",
+      "weatherSensitive": true,
+      "rainSensitive": true,
+      "heatSensitive": false,
+      "windSensitive": true,
+      "visibilitySensitive": false,
+      "actionOnDisruption": "PROPOSE_INDOOR_ALTERNATIVE",
+      "disruptionMessage": "High wind/wave advisories active along Shivrajpur coastline."
+    },
+    {
+      "entityId": "attr-sou-viewing-gallery",
+      "entityType": "MONUMENT_INDOOR",
+      "weatherSensitive": false,
+      "rainSensitive": false,
+      "heatSensitive": false,
+      "windSensitive": true,
+      "visibilitySensitive": true,
+      "actionOnDisruption": "LIMIT_HIGH_LEVEL_ACCESS",
+      "disruptionMessage": "Extreme gale winds above 60km/h at 153m height gallery level."
+    }
+  ]
+}

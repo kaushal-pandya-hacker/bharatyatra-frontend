@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "heritageSites": [
+    {
+      "id": "hrg-champaner",
+      "name": "Champaner-Pavagadh Archaeological Park",
+      "destinationSlug": "champaner-pavagadh",
+      "unescoSite": true,
+      "historicalPeriod": "16th Century Gujarat Sultanate & Hindu Fortress",
+      "latitude": 22.4833,
+      "longitude": 73.5333,
+      "openingHours": "08:30 AM - 05:30 PM",
+      "sourceId": "src-asi-official",
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "hrg-rani-ki-vav",
+      "name": "Rani ki Vav (The Queen's Stepwell)",
+      "destinationSlug": "patan",
+      "unescoSite": true,
+      "historicalPeriod": "11th Century Solanki Dynasty (Built by Queen Udayamati)",
+      "latitude": 23.8589,
+      "longitude": 72.1018,
+      "openingHours": "08:00 AM - 06:00 PM",
+      "sourceId": "src-asi-official",
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

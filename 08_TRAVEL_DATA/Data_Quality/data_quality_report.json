@@ -1,0 +1,25 @@
+{
+  "auditTimestamp": "2026-09-13T18:45:00Z",
+  "travelDataVersion": "1.0.0",
+  "summary": {
+    "totalDestinations": 24,
+    "totalAttractions": 18,
+    "totalTemples": 12,
+    "totalWildlifeSites": 5,
+    "totalBeaches": 6,
+    "totalHeritageSites": 8,
+    "totalRoutes": 8,
+    "totalSources": 4,
+    "verifiedRecordsCount": 85,
+    "needsReviewRecordsCount": 0,
+    "coordinateBoundsPassedPercent": 100.0,
+    "sourceTraceabilityPercent": 100.0
+  },
+  "qualityChecksPassed": [
+    "Coordinate bounding box validation (Gujarat Lat 20.0-25.0, Lng 68.0-75.0) passed",
+    "Slug uniqueness check passed",
+    "Source authority attribution check passed",
+    "Provenances badges correctly attached to every entity record",
+    "No fabricated live pricing or static traffic presented as live data"
+  ]
+}
