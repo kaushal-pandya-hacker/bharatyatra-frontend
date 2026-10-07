@@ -8,6 +8,7 @@ export interface PlanningParams {
   paxCount: number;
   selectedTier: 'budget' | 'balanced' | 'luxury';
   startDate: string;
+  customPlaces?: LandmarkItem[];
 }
 
 export interface ItineraryActivity {
@@ -54,12 +55,18 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
     durationDays = 5,
     paxCount = 4,
     selectedTier = 'luxury',
+    customPlaces,
   } = params;
 
-  // 1. Resolve selected LandmarkItems from single source of truth ID list
-  const selectedPlaces: LandmarkItem[] = GUJARAT_100_LANDMARKS.filter((item) =>
-    selectedPlaceIds.includes(item.id)
-  );
+  // 1. Resolve selected LandmarkItems from customPlaces or single source of truth ID list
+  let selectedPlaces: LandmarkItem[] = [];
+  if (customPlaces && customPlaces.length > 0) {
+    selectedPlaces = customPlaces;
+  } else {
+    selectedPlaces = GUJARAT_100_LANDMARKS.filter((item) =>
+      selectedPlaceIds.includes(item.id)
+    );
+  }
 
   // 2. Extract unique districts
   const uniqueDistricts = Array.from(
@@ -77,14 +84,14 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
     } else if (selectedRegions.length > 1) {
       circuitTitle = `${selectedRegions.map(capitalize).slice(0, 3).join(' & ')} Circuit`;
     } else {
-      circuitTitle = 'Gujarat Exploration Vector';
+      circuitTitle = 'Custom Exploration Vector';
     }
   } else if (uniqueDistricts.length === 1) {
-    circuitTitle = `${uniqueDistricts[0]} Heritage Circuit`;
+    circuitTitle = `${uniqueDistricts[0]} (${selectedPlaces.map(p => p.name).join(' & ')}) Circuit`;
   } else if (uniqueDistricts.length <= 3) {
     circuitTitle = `${uniqueDistricts.join(' → ')} Circuit`;
   } else {
-    circuitTitle = `Grand Gujarat Multi-Zone Vector (${uniqueDistricts.length} Regions)`;
+    circuitTitle = `Grand Multi-Zone Vector (${uniqueDistricts.length} Regions)`;
   }
 
   // 5. Intelligent Day & Night Calculation

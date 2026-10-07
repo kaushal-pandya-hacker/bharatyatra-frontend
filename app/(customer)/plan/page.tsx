@@ -8,6 +8,7 @@ import { saveTrip, TripItem } from '@/lib/trips/trip-storage';
 import Gujarat100LandmarksDirectory from '@/components/travel/Gujarat100LandmarksDirectory';
 import { GUJARAT_100_LANDMARKS, LandmarkItem } from '@/lib/data/destinations';
 import { generateItineraryBlueprint, PlanningResult } from '@/lib/trips/itinerary-generator';
+import { useDestinationSelection } from '@/lib/tourism/destination-selection-context';
 
 interface TargetRegion {
   id: string;
@@ -139,18 +140,23 @@ const ALL_VECTORS = [
 function PlanPageContent() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { selectedDestinations, removeDestination: removeCartDestination } = useDestinationSelection();
   const searchParams = useSearchParams();
   const urlDestination = searchParams ? searchParams.get('destination') : null;
   const urlDistrict = searchParams ? searchParams.get('district') : null;
+  const urlDuration = searchParams ? searchParams.get('duration') : null;
+  const urlTier = searchParams ? searchParams.get('tier') : null;
 
   // Single Source of Truth Planning State
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<number[]>([]);
   const [selectedRegions, setSelectedRegions] = useState<string[]>(['kutch', 'gir']);
-  const [durationDays, setDurationDays] = useState<number>(5);
+  const [durationDays, setDurationDays] = useState<number>(urlDuration ? parseInt(urlDuration) || 5 : 5);
   const [startDate, setStartDate] = useState<string>('2026-12-24');
   const [crewType, setCrewType] = useState<string>('Family Crew (4 Pax)');
   const [paxCount, setPaxCount] = useState<number>(4);
-  const [selectedTier, setSelectedTier] = useState<'budget' | 'balanced' | 'luxury'>('luxury');
+  const [selectedTier, setSelectedTier] = useState<'budget' | 'balanced' | 'luxury'>(
+    urlTier === 'budget' || urlTier === 'balanced' || urlTier === 'luxury' ? urlTier : 'balanced'
+  );
   const [activeVectors, setActiveVectors] = useState<string[]>([
     'Wildlife & Gir Safari',
     'Sacred Temples & Aarti',
@@ -163,6 +169,46 @@ function PlanPageContent() {
   const [isReplanning, setIsReplanning] = useState<boolean>(false);
   const [generationSuccess, setGenerationSuccess] = useState<boolean>(false);
   const requestIdRef = useRef<number>(0);
+
+  // Custom places resolution from cart, URL, or local landmark selection
+  const customPlaces: LandmarkItem[] = useMemo(() => {
+    if (selectedDestinations && selectedDestinations.length > 0) {
+      return selectedDestinations.map((d, idx) => ({
+        id: 9000 + idx,
+        name: d.displayName || d.name,
+        district: d.location || d.stateName || 'India',
+        category: 'Modern & Cultural' as LandmarkItem['category'],
+        description: d.location ? `Iconic destination in ${d.location}, ${d.stateName}` : `Top landmark in ${d.stateName}`,
+        image: d.imageUrl || '/sasan-gir-bg.jpg',
+        idealHours: 2.5,
+        bestTime: 'Morning / Sunset',
+        isMustVisit: true,
+      }));
+    }
+
+    if (urlDestination) {
+      const names = urlDestination.split(',').map((s) => s.trim()).filter(Boolean);
+      if (names.length > 0) {
+        return names.map((name, idx) => ({
+          id: 8000 + idx,
+          name,
+          district: urlDistrict || 'Destination',
+          category: 'Modern & Cultural' as LandmarkItem['category'],
+          description: `Featured destination in ${urlDistrict || 'India'}`,
+          image: '/sasan-gir-bg.jpg',
+          idealHours: 2.5,
+          bestTime: 'Morning / Sunset',
+          isMustVisit: true,
+        }));
+      }
+    }
+
+    if (selectedPlaceIds.length > 0) {
+      return GUJARAT_100_LANDMARKS.filter((item) => selectedPlaceIds.includes(item.id));
+    }
+
+    return [];
+  }, [selectedDestinations, urlDestination, urlDistrict, selectedPlaceIds]);
 
   // Initialize selected place IDs from URL parameters if present
   useEffect(() => {
@@ -179,40 +225,8 @@ function PlanPageContent() {
       if (matchedPlaces.length > 0) {
         setSelectedPlaceIds(matchedPlaces.map((p) => p.id));
       }
-
-      // Sync selected regions
-      const matchedRegion = REGIONS.find((r) => {
-        if (distQuery && (r.id === distQuery || r.title.toLowerCase().includes(distQuery))) return true;
-        if (destQuery && (r.title.toLowerCase().split(' ').some((w) => w.length > 3 && destQuery.includes(w)))) return true;
-        return false;
-      });
-
-      if (matchedRegion) {
-        setSelectedRegions([matchedRegion.id]);
-      }
     }
   }, [urlDestination, urlDistrict]);
-
-  // Synchronize URL query parameters with active state
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const selectedItems = GUJARAT_100_LANDMARKS.filter((item) => selectedPlaceIds.includes(item.id));
-    const placeNames = selectedItems.map((item) => item.name).join(', ');
-    const uniqueDistricts = Array.from(new Set(selectedItems.map((item) => item.district))).join(', ');
-
-    const params = new URLSearchParams(window.location.search);
-    if (placeNames) {
-      params.set('destination', placeNames);
-      params.set('district', uniqueDistricts);
-    } else {
-      params.delete('destination');
-      params.delete('district');
-    }
-
-    const newQuery = params.toString();
-    const newUrl = newQuery ? `${window.location.pathname}?${newQuery}` : window.location.pathname;
-    window.history.replaceState(null, '', newUrl);
-  }, [selectedPlaceIds]);
 
   // Pure Deterministic Itinerary Synthesis derived from Single Source of Truth
   const blueprint: PlanningResult = useMemo(() => {
@@ -224,8 +238,9 @@ function PlanPageContent() {
       paxCount,
       selectedTier,
       startDate,
+      customPlaces,
     });
-  }, [selectedPlaceIds, selectedRegions, durationDays, crewType, paxCount, selectedTier, startDate]);
+  }, [selectedPlaceIds, selectedRegions, durationDays, crewType, paxCount, selectedTier, startDate, customPlaces]);
 
   // Debounced Loading & Race Condition Protection
   useEffect(() => {
@@ -413,139 +428,94 @@ function PlanPageContent() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
               {/* LEFT COLUMN: Interactive Configurator */}
               <div className="lg:col-span-7 flex flex-col gap-space-xl min-w-0">
-                {/* SECTION 1: Target Regions & City/Places Selector */}
+                {/* SECTION 1: Target Destinations & Selected Trip Focus */}
                 <div className="flex flex-col gap-space-md">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-space-xs">
-                      <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
-                      <h2 className="font-headline-sm text-headline-sm text-on-secondary-fixed tracking-tight">
-                        1. Select Target Regions &amp; Cities (Click to Toggle)
-                      </h2>
-                    </div>
-                    <span className="font-label-caps text-label-caps uppercase text-primary font-bold bg-primary-fixed/30 px-2 py-1 rounded">
-                      {selectedRegions.length} Regions Active
-                    </span>
-                  </div>
-
-                  {/* Target Macro Region Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
-                    {REGIONS.map((region) => {
-                      const isSelected = selectedRegions.includes(region.id);
-                      return (
-                        <div
-                          key={region.id}
-                          onClick={() => toggleRegion(region.id)}
-                          className={`group relative rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col cursor-pointer border-2 ${
-                            isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-transparent opacity-80 hover:opacity-100'
-                          }`}
-                        >
-                          <div className="relative h-32 w-full overflow-hidden">
-                            <img
-                              src={region.image}
-                              alt={region.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-transparent to-transparent"></div>
-                            {isSelected && (
-                              <span className="absolute top-2 right-2 bg-primary-container text-on-secondary-fixed rounded-full p-1 shadow-sm flex items-center justify-center">
-                                <span className="material-symbols-outlined text-sm font-bold">check</span>
-                              </span>
-                            )}
-                            <span className="absolute bottom-2 left-2 text-on-secondary font-label-caps text-label-caps uppercase bg-on-secondary-fixed/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px]">
-                              {region.badge}
-                            </span>
-                          </div>
-                          <div className="p-3 bg-surface-container-lowest flex flex-col">
-                            <span className="font-title-md text-title-md text-on-surface font-semibold text-sm">
-                              {region.title}
-                            </span>
-                            <span className="font-body-sm text-xs text-outline">
-                              {region.subtitle}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Clean Selected Places & Quick Multi-Place Selection Control */}
-                  <div className="pt-4 border-t border-slate-200">
-                    <div className="flex flex-col gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-black text-slate-900 uppercase tracking-wider">
-                            Selected Destinations &amp; Places ({selectedPlaceIds.length})
-                          </span>
-                        </div>
-                        <Link
-                          href="/destinations"
-                          className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 transition flex items-center gap-1"
-                        >
-                          <span>+ Add More Places from Catalog</span>
-                        </Link>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-amber-400"></span>
+                        <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">
+                          Selected Trip Destinations ({blueprint.selectedPlaces.length})
+                        </h2>
                       </div>
+                      <Link
+                        href="/destinations"
+                        className="text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200/60 transition flex items-center gap-1 shadow-2xs"
+                      >
+                        <span>+ Add / Change Places</span>
+                      </Link>
+                    </div>
 
-                      {/* Display Active Selected Place Badges */}
-                      {selectedPlaceIds.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {GUJARAT_100_LANDMARKS.filter((item) => selectedPlaceIds.includes(item.id)).map((place) => (
-                            <span
-                              key={place.id}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-extrabold shadow-2xs"
-                            >
-                              <span>📍 {place.name} ({place.district})</span>
-                              <button
-                                onClick={() => removePlace(place.id)}
-                                className="w-4 h-4 rounded-full bg-blue-200 hover:bg-blue-300 text-blue-900 flex items-center justify-center text-[10px] font-bold"
-                                title="Remove place"
-                              >
-                                ✕
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-slate-500 font-medium">
-                          No specific landmarks selected yet. Select target regions above or click quick tags below to include iconic attractions in your AI itinerary.
-                        </p>
-                      )}
-
-                      {/* Quick Add Featured Landmarks */}
-                      <div className="flex items-center gap-1.5 flex-wrap pt-2 border-t border-slate-100">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase">Quick Add:</span>
-                        {[
-                          { id: 1, name: 'Gir National Park' },
-                          { id: 2, name: 'Somnath Temple' },
-                          { id: 3, name: 'Rann of Kutch' },
-                          { id: 4, name: 'Statue of Unity' },
-                          { id: 5, name: 'Dwarkadhish Temple' },
-                          { id: 6, name: 'Rani Ki Vav' },
-                        ].map((landmark) => {
-                          const isSelected = selectedPlaceIds.includes(landmark.id);
-                          return (
+                    {/* Display Active Selected Place Badges */}
+                    {blueprint.selectedPlaces.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {blueprint.selectedPlaces.map((place) => (
+                          <span
+                            key={place.id}
+                            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-bold shadow-xs"
+                          >
+                            <span>📍 {place.name} ({place.district})</span>
                             <button
-                              key={landmark.id}
                               onClick={() => {
-                                if (isSelected) {
-                                  removePlace(landmark.id);
-                                } else {
-                                  setSelectedPlaceIds((prev) => [...prev, landmark.id]);
-                                }
+                                removeCartDestination(String(place.id));
+                                removePlace(place.id);
                               }}
-                              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${
-                                isSelected
-                                  ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
-                                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                              className="w-4 h-4 rounded-full bg-slate-700 hover:bg-red-500 hover:text-white text-slate-300 flex items-center justify-center text-[10px] font-bold transition-colors ml-1"
+                              title="Remove place"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-center">
+                        <p className="text-xs text-slate-600 font-medium">
+                          No specific destinations selected yet. Choose starter regions below or browse our destinations catalog to add places to your itinerary.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Target Macro Region Cards — Shown only when no custom places are selected */}
+                  {blueprint.selectedPlaces.length === 0 && (
+                    <div className="space-y-3 pt-2">
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Or Select Popular Starter Regions:</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+                        {REGIONS.map((region) => {
+                          const isSelected = selectedRegions.includes(region.id);
+                          return (
+                            <div
+                              key={region.id}
+                              onClick={() => toggleRegion(region.id)}
+                              className={`group relative rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col cursor-pointer border-2 ${
+                                isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-transparent opacity-80 hover:opacity-100'
                               }`}
                             >
-                              {isSelected ? '✓ ' : '+ '}
-                              {landmark.name}
-                            </button>
+                              <div className="relative h-28 w-full overflow-hidden">
+                                <img
+                                  src={region.image}
+                                  alt={region.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-on-secondary-fixed/90 via-transparent to-transparent"></div>
+                                {isSelected && (
+                                  <span className="absolute top-2 right-2 bg-primary-container text-on-secondary-fixed rounded-full p-1 shadow-sm flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-sm font-bold">check</span>
+                                  </span>
+                                )}
+                              </div>
+                              <div className="p-2.5 bg-surface-container-lowest flex flex-col">
+                                <span className="font-title-md text-on-surface font-semibold text-xs">
+                                  {region.title}
+                                </span>
+                              </div>
+                            </div>
                           );
                         })}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* SECTION 2: Dates & Travelers Bento */}
@@ -642,38 +612,40 @@ function PlanPageContent() {
                   </div>
                 </div>
 
-                {/* SECTION 3: Curated Expedition Vectors */}
-                <div className="flex flex-col gap-space-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="font-title-md text-title-md text-on-secondary-fixed font-semibold">
-                      Active Expedition Focus Vectors
-                    </span>
-                    <span className="font-label-caps text-label-caps uppercase text-outline">Click to Toggle</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {ALL_VECTORS.map((vector) => {
-                      const isVectorActive = activeVectors.includes(vector);
-                      return (
-                        <button
-                          key={vector}
-                          onClick={() => toggleVector(vector)}
-                          className={`px-3.5 py-1.5 rounded-full font-label-md text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
-                            isVectorActive
-                              ? 'bg-on-secondary-fixed text-primary-container shadow-sm font-bold'
-                              : 'bg-surface-container-lowest text-secondary hover:bg-surface-container-low'
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isVectorActive ? 'bg-primary-container' : 'bg-outline'
+                {/* SECTION 3: Curated Expedition Vectors (Shown only when no specific places selected) */}
+                {blueprint.selectedPlaces.length === 0 && (
+                  <div className="flex flex-col gap-space-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-title-md text-title-md text-on-secondary-fixed font-semibold">
+                        Active Expedition Focus Vectors
+                      </span>
+                      <span className="font-label-caps text-label-caps uppercase text-outline">Click to Toggle</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {ALL_VECTORS.map((vector) => {
+                        const isVectorActive = activeVectors.includes(vector);
+                        return (
+                          <button
+                            key={vector}
+                            onClick={() => toggleVector(vector)}
+                            className={`px-3.5 py-1.5 rounded-full font-label-md text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
+                              isVectorActive
+                                ? 'bg-on-secondary-fixed text-primary-container shadow-sm font-bold'
+                                : 'bg-surface-container-lowest text-secondary hover:bg-surface-container-low'
                             }`}
-                          ></span>
-                          {vector}
-                        </button>
-                      );
-                    })}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isVectorActive ? 'bg-primary-container' : 'bg-outline'
+                              }`}
+                            ></span>
+                            {vector}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* SECTION 4: Sanctuary Comfort Tier Selection */}
                 <div className="flex flex-col gap-space-md">
