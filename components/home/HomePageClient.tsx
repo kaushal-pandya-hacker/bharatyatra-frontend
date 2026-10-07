@@ -157,21 +157,7 @@ export default function HomePageClient() {
               <div className="absolute inset-0 bg-gradient-to-r from-on-secondary-fixed/85 via-on-secondary-fixed/50 to-transparent"></div>
               <div className="absolute inset-0 bg-gradient-to-b from-on-secondary-fixed/60 via-transparent to-on-secondary-fixed/80"></div>
 
-              {/* Top Telemetry Ribbon */}
-              <div className="relative z-10 w-full flex items-center justify-between">
-                <div className="flex items-center gap-space-md">
-                  <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-on-secondary-fixed/80 backdrop-blur-md rounded-full border border-surface-container-high/20 shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
-                    <span className="font-coordinate-meta text-coordinate-meta text-surface uppercase tracking-wider">
-                      Subcontinental Grid Active // Ep. 2025
-                    </span>
-                  </span>
-                  <span className="hidden md:inline-block font-coordinate-meta text-coordinate-meta text-surface/90 drop-shadow">
-                    LAT 20.5937° N • LON 78.9629° E
-                  </span>
-                </div>
 
-              </div>
 
               {/* Centerpiece Editorial Typography */}
               <div className="relative z-10 my-auto max-w-5xl">
