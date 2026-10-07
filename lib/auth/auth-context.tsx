@@ -58,13 +58,26 @@ export function normalizeIndianPhoneNumber(phone: string): { isValid: boolean; n
 
 export function getSiteUrl(): string {
   let url = process.env.NEXT_PUBLIC_SITE_URL;
+
+  // In browser, dynamically resolve from current origin if NEXT_PUBLIC_SITE_URL is not set
   if (!url || url.trim() === '') {
-    if (typeof window !== 'undefined' && window.location.origin) {
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
       url = window.location.origin;
-    } else {
-      url = 'http://localhost:3000';
     }
   }
+
+  // Node/SSR fallback logic strictly based on environment
+  if (!url || url.trim() === '') {
+    if (process.env.NODE_ENV === 'development') {
+      url = 'http://localhost:3000';
+    } else {
+      throw new Error(
+        'CRITICAL CONFIGURATION ERROR: NEXT_PUBLIC_SITE_URL environment variable is missing in production environment. ' +
+        'Please set NEXT_PUBLIC_SITE_URL=https://bharatyatra-frontend-llsu.vercel.app in Vercel Settings.'
+      );
+    }
+  }
+
   return url.replace(/\/+$/, '');
 }
 
@@ -217,6 +230,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithGoogle = async (redirectTo?: string) => {
     const siteUrl = getSiteUrl();
     const callbackUrl = `${siteUrl}/auth/callback${redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : ''}`;
+
+    if (typeof window !== 'undefined') {
+      console.log('[OAuth Diagnostic]', {
+        windowOrigin: window.location.origin,
+        siteUrl: siteUrl,
+        redirectTo: callbackUrl,
+        hasNextPublicSiteUrl: Boolean(process.env.NEXT_PUBLIC_SITE_URL),
+        environment: process.env.NODE_ENV,
+      });
+    }
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
