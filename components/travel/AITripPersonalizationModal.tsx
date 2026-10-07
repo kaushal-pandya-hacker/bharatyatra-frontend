@@ -51,7 +51,7 @@ export default function AITripPersonalizationModal({ isOpen, onClose }: Props) {
             return prev;
           }
         });
-      }, 700);
+      }, 120);
 
       return () => clearInterval(interval);
     }
