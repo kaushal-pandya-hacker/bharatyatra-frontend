@@ -310,7 +310,7 @@ export default function HomePageClient() {
                   location: 'VARANASI, UTTAR PRADESH',
                   badge: 'SPIRITUAL CAPITAL',
                   description: 'India’s oldest living city on the Ganges riverbank, famous for historic ghats, Ganga Aarti, and Kashi Vishwanath.',
-                  image: '/state-images/Uttar_Pradesh/Varanasi_1.png',
+                  image: 'https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=800&q=80',
                   rating: '4.8 ★',
                   idealDays: '3 DAYS',
                 },
