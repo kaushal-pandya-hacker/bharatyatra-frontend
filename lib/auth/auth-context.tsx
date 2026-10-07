@@ -56,6 +56,18 @@ export function normalizeIndianPhoneNumber(phone: string): { isValid: boolean; n
   };
 }
 
+export function getSiteUrl(): string {
+  let url = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!url || url.trim() === '') {
+    if (typeof window !== 'undefined' && window.location.origin) {
+      url = window.location.origin;
+    } else {
+      url = 'http://localhost:3000';
+    }
+  }
+  return url.replace(/\/+$/, '');
+}
+
 function clearUserLocalCache() {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('auth_token');
@@ -203,8 +215,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithGoogle = async (redirectTo?: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const callbackUrl = `${origin}/auth/callback${redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : ''}`;
+    const siteUrl = getSiteUrl();
+    const callbackUrl = `${siteUrl}/auth/callback${redirectTo ? `?next=${encodeURIComponent(redirectTo)}` : ''}`;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
