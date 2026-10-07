@@ -88,11 +88,16 @@ export default function DestinationsClient() {
     loadFolderData();
   }, []);
 
+  function normalizeState(str: string): string {
+    return str.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
+  }
+
   // Compute available locations for selected state
   const availableLocations = useMemo(() => {
     if (selectedState === 'All States') return ['All Locations'];
     const placesInState = allPlaces.filter(
-      (p) => p.state.toLowerCase() === selectedState.toLowerCase()
+      (p) => p.state.toLowerCase().trim() === selectedState.toLowerCase().trim() ||
+             normalizeState(p.state) === normalizeState(selectedState)
     );
     const locs = Array.from(new Set(placesInState.map((p) => p.location))).sort();
     return ['All Locations', ...locs];
@@ -109,7 +114,8 @@ export default function DestinationsClient() {
     return allPlaces.filter((dest) => {
       if (
         selectedState !== 'All States' &&
-        dest.state.toLowerCase().trim() !== selectedState.toLowerCase().trim()
+        dest.state.toLowerCase().trim() !== selectedState.toLowerCase().trim() &&
+        normalizeState(dest.state) !== normalizeState(selectedState)
       ) {
         return false;
       }
