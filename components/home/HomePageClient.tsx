@@ -170,17 +170,7 @@ export default function HomePageClient() {
                     LAT 20.5937° N • LON 78.9629° E
                   </span>
                 </div>
-                <div className="flex items-center gap-space-sm bg-on-secondary-fixed/80 backdrop-blur-md px-3 py-1.5 rounded border border-surface-container-high/20 text-surface shadow-sm">
-                  <span
-                    className="material-symbols-outlined text-sm text-primary-container"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    sensors
-                  </span>
-                  <span className="font-coordinate-meta text-coordinate-meta tracking-widest uppercase text-surface">
-                    7,420 Ground Nodes Polled Live
-                  </span>
-                </div>
+
               </div>
 
               {/* Centerpiece Editorial Typography */}
