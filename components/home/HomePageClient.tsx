@@ -264,28 +264,29 @@ export default function HomePageClient() {
           </section>
 
           {/* SECTION: ICONIC INDIA-LEVEL DESTINATIONS */}
-          <section className="w-full py-20 px-gutter-desktop max-w-7xl mx-auto">
+          <section className="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
-                  <span className="font-coordinate-meta text-coordinate-meta uppercase text-tertiary font-bold tracking-wider">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                  <span className="font-mono text-xs uppercase text-slate-500 font-bold tracking-widest">
                     NATIONAL HIGHLIGHTS // INDIA LEVEL
                   </span>
                 </div>
-                <h2 className="font-headline-lg text-headline-lg text-on-secondary-fixed">
+                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-950 tracking-tight">
                   Top Destinations of India
                 </h2>
               </div>
-              <div className="flex items-center gap-4">
-                <p className="font-body-md text-body-md text-on-surface-variant max-w-md hidden sm:block">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <p className="text-xs sm:text-sm text-slate-600 max-w-md hidden sm:block font-normal leading-relaxed">
                   Explore India’s most celebrated iconic destinations — from timeless heritage to Himalayan valleys and emerald backwaters.
                 </p>
                 <Link
                   href="/destinations"
-                  className="px-4 py-2 bg-on-secondary-fixed text-surface rounded font-body-sm text-body-sm font-semibold hover:bg-on-secondary-fixed-variant transition-colors shrink-0"
+                  className="px-5 py-2.5 bg-[#0B132B] hover:bg-[#1C2541] text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-2 shrink-0 group"
                 >
-                  Explore All Destinations →
+                  <span>Explore All Destinations</span>
+                  <span className="text-sm group-hover:translate-x-1 transition-transform">→</span>
                 </Link>
               </div>
             </div>
@@ -296,88 +297,86 @@ export default function HomePageClient() {
                 {
                   slug: 'taj-mahal-agra-fort',
                   title: 'Taj Mahal & Agra Fort',
-                  location: 'Agra, Uttar Pradesh',
+                  location: 'AGRA, UTTAR PRADESH',
                   badge: 'UNESCO HERITAGE',
-                  tag: 'MUGHAL MASTERWORK',
                   description: 'The eternal ivory-white marble mausoleum — the world’s most celebrated symbol of love on Yamuna’s banks.',
                   image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
-                  rating: '4.9 ⭐',
-                  idealDays: '2 Days',
+                  rating: '4.9 ★',
+                  idealDays: '2 DAYS',
                 },
                 {
                   slug: 'varanasi-ghats-kashi-vishwanath',
                   title: 'Varanasi Ancient Ghats',
-                  location: 'Varanasi, Uttar Pradesh',
+                  location: 'VARANASI, UTTAR PRADESH',
                   badge: 'SPIRITUAL CAPITAL',
-                  tag: 'SACRED GANGES',
                   description: 'India’s oldest living city on the Ganges riverbank, famous for historic ghats, Ganga Aarti, and Kashi Vishwanath.',
                   image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=800&q=80',
-                  rating: '4.8 ⭐',
-                  idealDays: '3 Days',
+                  rating: '4.8 ★',
+                  idealDays: '3 DAYS',
                 },
                 {
                   slug: 'alleppey-backwaters-houseboat',
                   title: 'Alleppey Backwaters',
-                  location: 'Alappuzha, Kerala',
+                  location: 'ALAPPUZHA, KERALA',
                   badge: "GOD'S OWN COUNTRY",
-                  tag: 'TROPICAL LAGOONS',
                   description: 'Serene palm-fringed emerald backwaters and luxury traditional Kettuvallam houseboat cruises across Kerala.',
                   image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
-                  rating: '4.9 ⭐',
-                  idealDays: '2-3 Days',
+                  rating: '4.9 ★',
+                  idealDays: '2-3 DAYS',
                 },
                 {
                   slug: 'dal-lake-srinagar',
                   title: 'Srinagar & Dal Lake',
-                  location: 'Srinagar, Jammu & Kashmir',
+                  location: 'SRINAGAR, JAMMU & KASHMIR',
                   badge: 'PARADISE ON EARTH',
-                  tag: 'HIMALAYAN SHIKARA',
                   description: 'Jewel of Kashmir featuring iconic wooden Shikaras on mirror-like Dal Lake and Mughal terraced gardens.',
                   image: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=800&q=80',
-                  rating: '4.9 ⭐',
-                  idealDays: '4 Days',
+                  rating: '4.9 ★',
+                  idealDays: '4 DAYS',
                 },
               ].map((place) => (
                 <Link
                   key={place.slug}
                   href={`/destinations/${place.slug}`}
-                  className="group relative bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-surface-container-high/40 hover:-translate-y-1"
+                  className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between border border-slate-200/80 hover:border-emerald-500/50 hover:-translate-y-1.5"
                 >
-                  <div className="relative h-56 w-full overflow-hidden">
+                  <div className="relative h-60 w-full overflow-hidden bg-slate-900">
                     <img
                       src={place.image}
                       alt={place.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent" />
                     <div className="absolute top-3 left-3 flex items-center gap-2">
-                      <span className="px-2.5 py-1 bg-surface/95 backdrop-blur-md text-on-secondary-fixed text-[10px] font-bold tracking-wider uppercase rounded shadow">
+                      <span className="px-2.5 py-1 bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-black tracking-wider uppercase rounded-md shadow-sm">
                         {place.badge}
                       </span>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <span className="px-2 py-0.5 bg-black/60 backdrop-blur-md text-amber-300 text-xs font-semibold rounded">
+                      <span className="px-2.5 py-1 bg-slate-950/80 backdrop-blur-md text-amber-400 text-xs font-extrabold rounded-md shadow-sm flex items-center gap-1">
                         {place.rating}
                       </span>
                     </div>
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <span className="text-[11px] font-medium text-amber-300 block mb-0.5 uppercase tracking-wider">
+                    <div className="absolute bottom-3.5 left-4 right-4 text-white">
+                      <span className="text-[10px] font-bold text-amber-300 block mb-0.5 uppercase tracking-widest font-mono">
                         {place.location}
                       </span>
-                      <h3 className="text-lg font-bold font-headline-md leading-snug group-hover:text-amber-300 transition-colors">
+                      <h3 className="text-lg font-bold font-serif leading-snug group-hover:text-amber-300 transition-colors drop-shadow-sm">
                         {place.title}
                       </h3>
                     </div>
                   </div>
-                  <div className="p-4 flex-1 flex flex-col justify-between bg-surface-container-lowest">
-                    <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed mb-3">
+                  <div className="p-4 flex-1 flex flex-col justify-between bg-white">
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-4 font-normal">
                       {place.description}
                     </p>
-                    <div className="flex items-center justify-between pt-2.5 border-t border-surface-container-high/40 text-xs font-semibold text-tertiary">
-                      <span className="font-coordinate-meta uppercase text-[10px] tracking-wider text-outline">{place.idealDays}</span>
-                      <div className="flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        <span>Explore</span>
-                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-slate-500">
+                      <span className="font-mono text-[10px] font-extrabold tracking-wider uppercase text-slate-400">
+                        {place.idealDays}
+                      </span>
+                      <div className="flex items-center gap-1 text-emerald-700 group-hover:text-emerald-800 group-hover:translate-x-1 transition-all">
+                        <span className="font-bold text-xs">Explore</span>
+                        <span className="text-sm">→</span>
                       </div>
                     </div>
                   </div>
