@@ -263,6 +263,129 @@ export default function HomePageClient() {
             </div>
           </section>
 
+          {/* SECTION: ICONIC INDIA-LEVEL DESTINATIONS */}
+          <section className="w-full py-20 px-gutter-desktop max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+                  <span className="font-coordinate-meta text-coordinate-meta uppercase text-tertiary font-bold tracking-wider">
+                    NATIONAL HIGHLIGHTS // INDIA LEVEL
+                  </span>
+                </div>
+                <h2 className="font-headline-lg text-headline-lg text-on-secondary-fixed">
+                  Top Destinations of India
+                </h2>
+              </div>
+              <div className="flex items-center gap-4">
+                <p className="font-body-md text-body-md text-on-surface-variant max-w-md hidden sm:block">
+                  Explore India’s most celebrated iconic destinations — from timeless heritage to Himalayan valleys and emerald backwaters.
+                </p>
+                <Link
+                  href="/destinations"
+                  className="px-4 py-2 bg-on-secondary-fixed text-surface rounded font-body-sm text-body-sm font-semibold hover:bg-on-secondary-fixed-variant transition-colors shrink-0"
+                >
+                  Explore All Destinations →
+                </Link>
+              </div>
+            </div>
+
+            {/* 4 Featured India-Level Destination Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  slug: 'taj-mahal-agra-fort',
+                  title: 'Taj Mahal & Agra Fort',
+                  location: 'Agra, Uttar Pradesh',
+                  badge: 'UNESCO HERITAGE',
+                  tag: 'MUGHAL MASTERWORK',
+                  description: 'The eternal ivory-white marble mausoleum — the world’s most celebrated symbol of love on Yamuna’s banks.',
+                  image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
+                  rating: '4.9 ⭐',
+                  idealDays: '2 Days',
+                },
+                {
+                  slug: 'varanasi-ghats-kashi-vishwanath',
+                  title: 'Varanasi Ancient Ghats',
+                  location: 'Varanasi, Uttar Pradesh',
+                  badge: 'SPIRITUAL CAPITAL',
+                  tag: 'SACRED GANGES',
+                  description: 'India’s oldest living city on the Ganges riverbank, famous for historic ghats, Ganga Aarti, and Kashi Vishwanath.',
+                  image: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=800&q=80',
+                  rating: '4.8 ⭐',
+                  idealDays: '3 Days',
+                },
+                {
+                  slug: 'alleppey-backwaters-houseboat',
+                  title: 'Alleppey Backwaters',
+                  location: 'Alappuzha, Kerala',
+                  badge: "GOD'S OWN COUNTRY",
+                  tag: 'TROPICAL LAGOONS',
+                  description: 'Serene palm-fringed emerald backwaters and luxury traditional Kettuvallam houseboat cruises across Kerala.',
+                  image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
+                  rating: '4.9 ⭐',
+                  idealDays: '2-3 Days',
+                },
+                {
+                  slug: 'dal-lake-srinagar',
+                  title: 'Srinagar & Dal Lake',
+                  location: 'Srinagar, Jammu & Kashmir',
+                  badge: 'PARADISE ON EARTH',
+                  tag: 'HIMALAYAN SHIKARA',
+                  description: 'Jewel of Kashmir featuring iconic wooden Shikaras on mirror-like Dal Lake and Mughal terraced gardens.',
+                  image: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&w=800&q=80',
+                  rating: '4.9 ⭐',
+                  idealDays: '4 Days',
+                },
+              ].map((place) => (
+                <Link
+                  key={place.slug}
+                  href={`/destinations/${place.slug}`}
+                  className="group relative bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between border border-surface-container-high/40 hover:-translate-y-1"
+                >
+                  <div className="relative h-56 w-full overflow-hidden">
+                    <img
+                      src={place.image}
+                      alt={place.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute top-3 left-3 flex items-center gap-2">
+                      <span className="px-2.5 py-1 bg-surface/95 backdrop-blur-md text-on-secondary-fixed text-[10px] font-bold tracking-wider uppercase rounded shadow">
+                        {place.badge}
+                      </span>
+                    </div>
+                    <div className="absolute top-3 right-3">
+                      <span className="px-2 py-0.5 bg-black/60 backdrop-blur-md text-amber-300 text-xs font-semibold rounded">
+                        {place.rating}
+                      </span>
+                    </div>
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <span className="text-[11px] font-medium text-amber-300 block mb-0.5 uppercase tracking-wider">
+                        {place.location}
+                      </span>
+                      <h3 className="text-lg font-bold font-headline-md leading-snug group-hover:text-amber-300 transition-colors">
+                        {place.title}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col justify-between bg-surface-container-lowest">
+                    <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed mb-3">
+                      {place.description}
+                    </p>
+                    <div className="flex items-center justify-between pt-2.5 border-t border-surface-container-high/40 text-xs font-semibold text-tertiary">
+                      <span className="font-coordinate-meta uppercase text-[10px] tracking-wider text-outline">{place.idealDays}</span>
+                      <div className="flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        <span>Explore</span>
+                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+
 
           {/* SECTION 3: ASYMMETRIC EDITORIAL DESTINATION GALLERY */}
           <section className="w-full bg-surface-container py-24 px-gutter-desktop">
