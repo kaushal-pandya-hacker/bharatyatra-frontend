@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierHotelsPage() {
   const [hotels, setHotels] = useState<any[]>([]);
@@ -42,7 +43,7 @@ export default function SupplierHotelsPage() {
   const fetchHotels = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:4000/api/v1/supplier/hotels', { headers: getHeaders() });
+      const res = await fetch(`${getBaseUrl()}/supplier/hotels`, { headers: getHeaders() });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setHotels(json.data);
@@ -54,7 +55,7 @@ export default function SupplierHotelsPage() {
 
   const fetchDestinations = async () => {
     try {
-      const res = await fetch('http://localhost:4000/api/v1/destinations');
+      const res = await fetch(`${getBaseUrl()}/destinations`);
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setDestinations(json.data);
@@ -114,8 +115,8 @@ export default function SupplierHotelsPage() {
     try {
       const isEdit = !!editingHotel;
       const url = isEdit
-        ? `http://localhost:4000/api/v1/supplier/hotels/${editingHotel.id}`
-        : 'http://localhost:4000/api/v1/supplier/hotels';
+        ? `${getBaseUrl()}/supplier/hotels/${editingHotel.id}`
+        : `${getBaseUrl()}/supplier/hotels`;
       const method = isEdit ? 'PATCH' : 'POST';
 
       const res = await fetch(url, {
@@ -143,7 +144,7 @@ export default function SupplierHotelsPage() {
   const toggleStatus = async (hotel: any) => {
     const newStatus = hotel.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/supplier/hotels/${hotel.id}`, {
+      const res = await fetch(`${getBaseUrl()}/supplier/hotels/${hotel.id}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify({ status: newStatus }),

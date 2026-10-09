@@ -19,8 +19,17 @@ interface HotelDetailPageProps {
   };
 }
 
+export function generateStaticParams() {
+  return [
+    { id: 'the-ummed-ahmedabad' },
+    { id: 'hyatt-regency-ahmedabad' },
+    { id: 'fern-residency-dwarka' },
+    { id: 'demo' },
+  ];
+}
+
 async function fetchHotelDetail(id: string) {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
   try {
     const res = await fetch(`${apiBase}/destinations/inventory/hotels/${id}`, { cache: 'no-store' });
     if (res.ok) {
@@ -121,7 +130,7 @@ export default async function HotelDetailPage({ params }: HotelDetailPageProps) 
               <div>
                 <h4 className="text-sm font-bold font-heading">Include in AI Itinerary?</h4>
                 <p className="text-xs text-slate-300 mt-0.5">
-                  Let Chalo Farva AI optimize your stay duration and travel routes matching {hotel.name}.
+                  Let BharatYatra AI optimize your stay duration and travel routes matching {hotel.name}.
                 </p>
               </div>
               <Link

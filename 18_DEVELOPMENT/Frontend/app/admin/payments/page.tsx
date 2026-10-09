@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 interface FinanceSummary {
   totalPaidBookings: number;
@@ -55,19 +56,16 @@ export default function AdminPaymentsPage() {
 
       const headers = { Authorization: `Bearer ${token}` };
 
-      const [sumRes, payRes] = await Promise.all([
-        fetch('http://localhost:5000/api/v1/admin/finance/summary', { headers }),
-        fetch(`http://localhost:5000/api/v1/admin/payments?status=${statusFilter}&bookingReference=${encodeURIComponent(searchRef)}`, { headers }),
+      const [sumJson, payJson] = await Promise.all([
+        apiFetch<any>('/admin/finance/summary', { headers }),
+        apiFetch<any>(`/admin/payments?status=${statusFilter}&bookingReference=${encodeURIComponent(searchRef)}`, { headers }),
       ]);
 
-      const sumJson = await sumRes.json();
-      const payJson = await payRes.json();
+      if (sumJson?.success) setSummary(sumJson.data);
+      if (payJson?.success) setPayments(payJson.data.items || []);
 
-      if (sumRes.ok && sumJson.success) setSummary(sumJson.data);
-      if (payRes.ok && payJson.success) setPayments(payJson.data.items || []);
-
-      if (!sumRes.ok || !payRes.ok) {
-        setError(sumJson.message || payJson.message || 'Error fetching financial data.');
+      if (!sumJson?.success || !payJson?.success) {
+        setError(sumJson?.message || payJson?.message || 'Error fetching financial data.');
       }
     } catch (err: any) {
       setError(err.message || 'Network error.');
@@ -123,7 +121,7 @@ export default function AdminPaymentsPage() {
             <div className="text-2xl font-bold text-amber-600 mt-2">
               ₹{summary.platformCommissionInr.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">Chalo Farva marketplace fee</div>
+            <div className="text-[11px] text-slate-400 mt-1">BharatYatra marketplace fee</div>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">

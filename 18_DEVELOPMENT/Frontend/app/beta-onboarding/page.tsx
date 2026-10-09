@@ -10,13 +10,13 @@ export default function BetaOnboardingPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <span style={{ fontSize: '2rem' }}>🚀</span>
           <div>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>Welcome to Chalo Farva Beta</h1>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>Welcome to BharatYatra Beta</h1>
             <span style={{ fontSize: '0.85rem', color: '#38BDF8', fontWeight: 600 }}>Controlled Beta Release v1.0</span>
           </div>
         </div>
 
         <p style={{ color: '#CBD5E1', fontSize: '1.05rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-          Thank you for joining our closed beta group! Chalo Farva is Gujarat&apos;s AI-powered travel platform designed to take you seamlessly from <strong>Discover → Plan → Book → Adapt → Enjoy</strong>.
+          Thank you for joining our closed beta group! BharatYatra is Gujarat&apos;s AI-powered travel platform designed to take you seamlessly from <strong>Discover → Plan → Book → Adapt → Enjoy</strong>.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>

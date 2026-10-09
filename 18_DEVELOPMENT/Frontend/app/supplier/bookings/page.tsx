@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -39,7 +40,7 @@ export default function SupplierBookingsPage() {
       if (inventoryType !== 'ALL') queryParams.set('inventoryType', inventoryType);
       if (search.trim()) queryParams.set('search', search.trim());
 
-      const res = await fetch(`http://localhost:4000/api/v1/suppliers/bookings?${queryParams.toString()}`, { headers });
+      const res = await fetch(`${getBaseUrl()}/suppliers/bookings?${queryParams.toString()}`, { headers });
       const json = await res.json();
 
       if (json.success && Array.isArray(json.data)) {
@@ -74,7 +75,7 @@ export default function SupplierBookingsPage() {
       if (token) headers['Authorization'] = `Bearer ${token}`;
       else headers['x-supplier-id'] = 'supp_001';
 
-      const res = await fetch(`http://localhost:4000/api/v1/suppliers/bookings/${bookingId}/accept`, {
+      const res = await fetch(`${getBaseUrl()}/suppliers/bookings/${bookingId}/accept`, {
         method: 'POST',
         headers,
       });
@@ -101,7 +102,7 @@ export default function SupplierBookingsPage() {
       if (token) headers['Authorization'] = `Bearer ${token}`;
       else headers['x-supplier-id'] = 'supp_001';
 
-      const res = await fetch(`http://localhost:4000/api/v1/suppliers/bookings/${rejectModalBooking.id}/reject`, {
+      const res = await fetch(`${getBaseUrl()}/suppliers/bookings/${rejectModalBooking.id}/reject`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ rejectionReason: rejectReason.trim() }),
@@ -129,7 +130,7 @@ export default function SupplierBookingsPage() {
       if (token) headers['Authorization'] = `Bearer ${token}`;
       else headers['x-supplier-id'] = 'supp_001';
 
-      const res = await fetch(`http://localhost:4000/api/v1/suppliers/bookings/${bookingId}/start`, {
+      const res = await fetch(`${getBaseUrl()}/suppliers/bookings/${bookingId}/start`, {
         method: 'POST',
         headers,
       });
@@ -154,7 +155,7 @@ export default function SupplierBookingsPage() {
       if (token) headers['Authorization'] = `Bearer ${token}`;
       else headers['x-supplier-id'] = 'supp_001';
 
-      const res = await fetch(`http://localhost:4000/api/v1/suppliers/bookings/${bookingId}/complete`, {
+      const res = await fetch(`${getBaseUrl()}/suppliers/bookings/${bookingId}/complete`, {
         method: 'POST',
         headers,
       });

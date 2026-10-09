@@ -39,7 +39,7 @@ export default function RegisterPage() {
             <Sparkles className="h-6 w-6" />
           </div>
           <h1 className="text-2xl font-extrabold font-heading text-slate-900">Create Account</h1>
-          <p className="text-xs text-slate-500">Join Chalo Farva to build and persist AI Gujarat itineraries</p>
+          <p className="text-xs text-slate-500">Join BharatYatra to build and persist AI Gujarat itineraries</p>
         </div>
 
         {error && (

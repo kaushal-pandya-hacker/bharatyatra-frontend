@@ -71,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               CF
             </div>
             <div>
-              <div className="font-bold text-white tracking-wide text-sm font-heading">CHALO FARVA</div>
+              <div className="font-bold text-white tracking-wide text-sm font-heading">BHARAT YATRA</div>
               <div className="text-[10px] text-amber-400 font-semibold tracking-wider uppercase">OPERATIONS ADMIN</div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-4 border-t border-slate-800 bg-slate-950/50 flex items-center justify-between">
           <div className="truncate">
             <div className="text-xs font-bold text-slate-200 truncate">{adminUser?.fullName || 'Super Admin'}</div>
-            <div className="text-[11px] text-slate-500 truncate">{adminUser?.email || 'admin@chalofarva.com'}</div>
+            <div className="text-[11px] text-slate-500 truncate">{adminUser?.email || 'admin@bharatyatra.com'}</div>
           </div>
           <button
             onClick={handleLogout}
@@ -128,7 +128,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0">
         <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between md:justify-end">
-          <div className="md:hidden font-bold text-slate-900 font-heading">CHALO FARVA ADMIN</div>
+          <div className="md:hidden font-bold text-slate-900 font-heading">BHARAT YATRA ADMIN</div>
           <div className="flex items-center gap-4">
             <span className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
               🟢 Platform Operational

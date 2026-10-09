@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api/client';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@chalofarva.com');
+  const [email, setEmail] = useState('admin@bharatyatra.com');
   const [password, setPassword] = useState('AdminPassword123!');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,14 +18,12 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:4000/api/v1/admin/login', {
+      const json = await apiFetch<any>('/admin/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const json = await res.json();
-      if (!res.ok || !json.success) {
+      if (!json.success) {
         throw new Error(json.message || 'Invalid admin credentials');
       }
 
@@ -46,7 +45,7 @@ export default function AdminLoginPage() {
           <span className="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-semibold rounded-full border border-amber-500/20">
             INTERNAL OPERATIONS PORTAL
           </span>
-          <h1 className="text-2xl font-bold font-heading text-white">Chalo Farva Admin Login</h1>
+          <h1 className="text-2xl font-bold font-heading text-white">BharatYatra Admin Login</h1>
           <p className="text-sm text-slate-400">Authorized administrative access only</p>
         </div>
 
@@ -65,7 +64,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-primary"
-              placeholder="admin@chalofarva.com"
+              placeholder="admin@bharatyatra.com"
             />
           </div>
 

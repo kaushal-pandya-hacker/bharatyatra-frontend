@@ -19,8 +19,17 @@ interface RestaurantDetailPageProps {
   };
 }
 
+export function generateStaticParams() {
+  return [
+    { id: 'agashiye-ahmedabad' },
+    { id: 'vishalla-ahmedabad' },
+    { id: 'gordhan-thal' },
+    { id: 'demo' },
+  ];
+}
+
 async function fetchRestaurantDetail(id: string) {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
   try {
     const res = await fetch(`${apiBase}/destinations/inventory/restaurants/${id}`, { cache: 'no-store' });
     if (res.ok) {

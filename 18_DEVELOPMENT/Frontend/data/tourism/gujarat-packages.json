@@ -1,0 +1,4806 @@
+[
+  {
+    "packageId": "BY-GJ-001",
+    "packageName": "Ahmedabad Heritage & Cultural City Break",
+    "title": "Ahmedabad Heritage & Cultural City Break",
+    "subtitle": "Discover UNESCO World Heritage Walled City, Sabarmati Ashram & Iconic Street Food",
+    "slug": "ahmedabad-heritage-cultural-city-break",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "City Break & Heritage",
+    "category": "City Break",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 2,
+    "durationNights": 1,
+    "startingPriceInr": 6500,
+    "totalPriceINR": 6500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person based on twin sharing. Final price depends on travel dates, hotel choice & transport.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Solo Travellers",
+      "Senior Citizens"
+    ],
+    "highlights": [
+      "Guided Morning Heritage Walk through 600-year-old Pols of Old Ahmedabad",
+      "Peaceful visit to Mahatma Gandhi’s Sabarmati Ashram on riverbanks",
+      "Iconic stone-carved Tree of Life lattice window at Sidi Saiyyed Mosque",
+      "Evening leisure at Kankaria Lake & Night Street Food experience at Manek Chowk"
+    ],
+    "bestSeason": "October to March",
+    "description": "Immerse yourself in India’s first UNESCO World Heritage City. This 2-day Ahmedabad city break combines peaceful reflections at Gandhi Ashram, architectural marvels of Sidi Saiyyed Mosque and Hutheesing Temple, and the vibrant culinary energy of Manek Chowk night market.",
+    "destinations": [
+      "Ahmedabad",
+      "Hutheesing Jain Temple",
+      "Kankaria Lake",
+      "Sabarmati Ashram",
+      "Sidi Saiyyed Mosque",
+      "Sarkhej Roza"
+    ],
+    "includedDestinationIds": [
+      "DEST-0305",
+      "DEST-0306",
+      "DEST-0307",
+      "DEST-0311"
+    ],
+    "attractions": [
+      "Sabarmati Ashram",
+      "Sidi Saiyyed Mosque",
+      "Hutheesing Jain Temple",
+      "Kankaria Lake",
+      "Sarkhej Roza"
+    ],
+    "accommodationCategory": "Deluxe 3-Star City Hotel in Central Ahmedabad",
+    "transportRequirement": "Private AC Dzire / Etios Sedan for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast Included",
+    "inclusions": [
+      "1 Night Accommodation in Deluxe 3-Star Hotel",
+      "Daily Buffet Breakfast",
+      "Private AC Car for all transfers & sightseeing as per itinerary",
+      "Guided Heritage Walk fee",
+      "All toll, parking, driver allowances & taxes"
+    ],
+    "exclusions": [
+      "Monument entry tickets & camera fees",
+      "Lunches, Dinners & personal street food expenses",
+      "GST / TCS as applicable"
+    ],
+    "importantNotes": [
+      "Manek Chowk street food market operates from 9:30 PM until late midnight.",
+      "Modest clothing recommended during mosque and Jain temple visits."
+    ],
+    "faq": [
+      {
+        "question": "Is airport pick up included in this city package?",
+        "answer": "Yes, pick-up from Ahmedabad Airport (AMD) or Kalupur Railway Station is included."
+      },
+      {
+        "question": "Can we customize the hotel to 4-Star or 5-Star?",
+        "answer": "Yes, hotel upgrades to Hyatt Regency or Courtyard by Marriott are available during booking."
+      }
+    ],
+    "seoTitle": "Ahmedabad 2 Days Heritage City Break Package | BharatYatra",
+    "seoDescription": "Book 2 Days Ahmedabad Heritage City Break. Explore Sabarmati Ashram, Sidi Saiyyed Mosque, Pols & Manek Chowk with private AC transport & hotel stay.",
+    "searchTags": [
+      "ahmedabad",
+      "city-break",
+      "heritage",
+      "weekend",
+      "family",
+      "budget",
+      "gandhi-ashram",
+      "culture"
+    ],
+    "coverImage": "/images/packages/gujarat/ahmedabad-heritage-cultural-city-break/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/ahmedabad-heritage-cultural-city-break/01.webp",
+      "/images/packages/gujarat/ahmedabad-heritage-cultural-city-break/02.webp",
+      "/images/packages/gujarat/ahmedabad-heritage-cultural-city-break/03.webp",
+      "/images/packages/gujarat/ahmedabad-heritage-cultural-city-break/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Ahmedabad, Gandhi Ashram & Sabarmati Riverfront",
+        "description": "Arrive in Ahmedabad. Check in to your hotel. Afternoon visit to Mahatma Gandhi’s historic Sabarmati Ashram & Hriday Kunj. Evening stroll along Sabarmati Riverfront Promenade and visit Kankaria Lake for light show.",
+        "places": [
+          "Sabarmati Ashram",
+          "Kankaria Lake",
+          "Sabarmati Riverfront"
+        ],
+        "meals": [
+          "Dinner"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "30 km | Local City Travel"
+      },
+      {
+        "day": 2,
+        "title": "Heritage Walk, Sidi Saiyyed Mosque & Departure",
+        "description": "Early morning guided Heritage Walk through the narrow Pols and secret passages of Old Ahmedabad. Visit Sidi Saiyyed Mosque, Hutheesing Jain Temple & Sarkhej Roza complex. Evening transfer to Airport / Station.",
+        "places": [
+          "Sidi Saiyyed Mosque",
+          "Hutheesing Jain Temple",
+          "Sarkhej Roza"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "25 km | Local City Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-002",
+    "packageName": "Ahmedabad & Lothal Harappan Archaeology Weekend",
+    "title": "Ahmedabad & Lothal Harappan Archaeology Weekend",
+    "subtitle": "Ancient World's Oldest Tidal Dockyard at Lothal, Sarkhej Roza & Science City",
+    "slug": "ahmedabad-lothal-harappan-archaeology-weekend",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Archaeology & Heritage",
+    "category": "Heritage Circuits",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 3,
+    "durationNights": 2,
+    "startingPriceInr": 9200,
+    "totalPriceINR": 9200,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person. Includes 3-star hotel & private AC sedan.",
+    "recommendedTravellerTypes": [
+      "History Buffs",
+      "Families",
+      "Students",
+      "Solo Travellers"
+    ],
+    "highlights": [
+      "Excursion to 4,500-year-old Lothal Harappan Dockyard & Archaeological Museum",
+      "Explore Islamic acropolis at Sarkhej Roza & Adalaj Stepwell",
+      "Visit Science City Robotics & Aquatic Galleries",
+      "Authentic Gujarati Thali Dinner at Vishalla / Gordhan Thal"
+    ],
+    "bestSeason": "October to March",
+    "description": "Uncover ancient civilisational history and modern achievements. Visit Lothal, the 4,500-year-old Indus Valley port city featuring the world's oldest artificial dockyard, combined with Ahmedabad's medieval Islamic architecture and futuristic Science City.",
+    "destinations": [
+      "Ahmedabad",
+      "Lothal",
+      "Sarkhej Roza",
+      "Adalaj Stepwell",
+      "Science City"
+    ],
+    "includedDestinationIds": [
+      "DEST-0305",
+      "DEST-0308",
+      "DEST-0312"
+    ],
+    "attractions": [
+      "Lothal Ancient Harappan Dockyard",
+      "Sarkhej Roza",
+      "Adalaj Stepwell",
+      "Science City Ahmedabad"
+    ],
+    "accommodationCategory": "3-Star Hotel in Central Ahmedabad",
+    "transportRequirement": "Private AC Dzire / Etios",
+    "mealsIncluded": "Breakfast & 1 Traditional Dinner",
+    "inclusions": [
+      "2 Nights Hotel Stay",
+      "2 Breakfasts & 1 Gujarati Thali Dinner",
+      "Private AC Cab for 3 Days",
+      "Tolls & parking"
+    ],
+    "exclusions": [
+      "Lothal Museum entry fees",
+      "Lunches",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Lothal ASI Museum is closed on Fridays."
+    ],
+    "faq": [
+      {
+        "question": "How far is Lothal from Ahmedabad?",
+        "answer": "Lothal is located 80 km south of Ahmedabad (approx 1.5 to 2 hours drive)."
+      }
+    ],
+    "seoTitle": "3 Days Lothal Harappan Archaeology & Ahmedabad Tour | BharatYatra",
+    "seoDescription": "Book 3 Days Lothal & Ahmedabad Heritage Tour. Visit 4,500-year-old Lothal Dockyard, Sarkhej Roza, Adalaj Stepwell & Science City.",
+    "searchTags": [
+      "lothal",
+      "harappan",
+      "archaeology",
+      "ahmedabad",
+      "heritage",
+      "history",
+      "weekend"
+    ],
+    "coverImage": "/images/packages/gujarat/ahmedabad-lothal-harappan-archaeology-weekend/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/ahmedabad-lothal-harappan-archaeology-weekend/01.webp",
+      "/images/packages/gujarat/ahmedabad-lothal-harappan-archaeology-weekend/02.webp",
+      "/images/packages/gujarat/ahmedabad-lothal-harappan-archaeology-weekend/03.webp",
+      "/images/packages/gujarat/ahmedabad-lothal-harappan-archaeology-weekend/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Arrival in Ahmedabad & Science City",
+        "description": "Arrive in Ahmedabad. Afternoon visit Science City Aquatic & Robotics Galleries. Evening dinner at Vishalla Village Restaurant.",
+        "places": [
+          "Science City",
+          "Vishalla"
+        ],
+        "meals": [
+          "Dinner"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "30 km | City Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day Excursion to Ancient Lothal Dockyard",
+        "description": "Morning drive to Lothal (80 km / 2 hrs). Explore ancient Indus Valley dockyard, bead factory, acropolis, and ASI Museum. Return to Ahmedabad and visit Sarkhej Roza.",
+        "places": [
+          "Lothal Ancient Harappan Dockyard",
+          "Sarkhej Roza"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "160 km | 4 hours roundtrip"
+      },
+      {
+        "day": 3,
+        "title": "Adalaj Stepwell, Gandhi Ashram & Departure",
+        "description": "Morning visit Adalaj Stepwell and Sabarmati Ashram. Transfer to Airport / Railway Station for departure.",
+        "places": [
+          "Adalaj Stepwell",
+          "Sabarmati Ashram"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "35 km | City Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-003",
+    "packageName": "Statue of Unity & Narmada Valley Express",
+    "title": "Statue of Unity & Narmada Valley Express",
+    "subtitle": "Modern Wonder: Covering Statue of Unity • Ekta Nagar • Zarwani Waterfalls",
+    "slug": "statue-of-unity-narmada-express",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Modern Wonder",
+    "category": "Weekend Escapes",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 2,
+    "durationNights": 1,
+    "startingPriceInr": 8900,
+    "totalPriceINR": 8900,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "182m Statue of Unity Viewing Gallery",
+      "3D Laser Projection Light Show",
+      "Sardar Sarovar Dam & Valley of Flowers"
+    ],
+    "bestSeason": "October to March",
+    "description": "Express 2-day tour to the world's tallest statue in Ekta Nagar with Viewing Gallery tickets and laser show.",
+    "destinations": [
+      "Statue of Unity",
+      "Ekta Nagar",
+      "Zarwani Waterfalls"
+    ],
+    "includedDestinationIds": [
+      "DEST-0370",
+      "DEST-0368",
+      "DEST-0371"
+    ],
+    "attractions": [
+      "182m Statue of Unity Viewing Gallery",
+      "3D Laser Projection Light Show",
+      "Sardar Sarovar Dam & Valley of Flowers"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "1 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "2 Days Statue of Unity & Narmada Valley Express | BharatYatra",
+    "seoDescription": "Book 2 Days Statue of Unity & Narmada Valley Express. Explore Statue of Unity, Ekta Nagar, Zarwani Waterfalls with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "statue-of-unity-narmada-express",
+      "modern-wonder",
+      "weekend-escapes",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/statue-of-unity-narmada-express/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/statue-of-unity-narmada-express/01.webp",
+      "/images/packages/gujarat/statue-of-unity-narmada-express/02.webp",
+      "/images/packages/gujarat/statue-of-unity-narmada-express/03.webp",
+      "/images/packages/gujarat/statue-of-unity-narmada-express/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Statue of Unity",
+        "description": "Detailed day 1 itinerary covering sightseeing across Statue of Unity. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Statue of Unity"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Statue of Unity",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 2 itinerary covering sightseeing across Ekta Nagar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ekta Nagar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-004",
+    "packageName": "Statue of Unity, Vadodara & Champaner UNESCO Escape",
+    "title": "Statue of Unity, Vadodara & Champaner UNESCO Escape",
+    "subtitle": "Heritage & Modern Wonder: Covering Vadodara • Champaner-Pavagadh • Statue of Unity",
+    "slug": "statue-of-unity-vadodara-champaner-escape",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Heritage & Modern Wonder",
+    "category": "Heritage Circuits",
+    "travelStyle": "Deluxe",
+    "startingPoint": "Vadodara",
+    "startingCity": "Vadodara",
+    "endingPoint": "Vadodara",
+    "endingCity": "Vadodara",
+    "durationDays": 3,
+    "durationNights": 2,
+    "startingPriceInr": 13500,
+    "totalPriceINR": 13500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Laxmi Vilas Palace Vadodara Audio Tour",
+      "Champaner-Pavagadh UNESCO World Heritage Site",
+      "Statue of Unity Viewing Gallery"
+    ],
+    "bestSeason": "October to March",
+    "description": "Explore Gaekwad royal palaces, 16th-century Champaner Islamic architecture, and Statue of Unity.",
+    "destinations": [
+      "Vadodara",
+      "Champaner-Pavagadh",
+      "Statue of Unity"
+    ],
+    "includedDestinationIds": [
+      "DEST-0395",
+      "DEST-0372",
+      "DEST-0370"
+    ],
+    "attractions": [
+      "Laxmi Vilas Palace Vadodara Audio Tour",
+      "Champaner-Pavagadh UNESCO World Heritage Site",
+      "Statue of Unity Viewing Gallery"
+    ],
+    "accommodationCategory": "Deluxe Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "2 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "3 Days Statue of Unity, Vadodara & Champaner UNESCO Escape | BharatYatra",
+    "seoDescription": "Book 3 Days Statue of Unity, Vadodara & Champaner UNESCO Escape. Explore Vadodara, Champaner-Pavagadh, Statue of Unity with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "statue-of-unity-vadodara-champaner-escape",
+      "heritage-and-modern-wonder",
+      "heritage-circuits",
+      "deluxe",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/statue-of-unity-vadodara-champaner-escape/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/statue-of-unity-vadodara-champaner-escape/01.webp",
+      "/images/packages/gujarat/statue-of-unity-vadodara-champaner-escape/02.webp",
+      "/images/packages/gujarat/statue-of-unity-vadodara-champaner-escape/03.webp",
+      "/images/packages/gujarat/statue-of-unity-vadodara-champaner-escape/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Vadodara",
+        "description": "Detailed day 1 itinerary covering sightseeing across Vadodara. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Vadodara"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Vadodara",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Champaner-Pavagadh",
+        "description": "Detailed day 2 itinerary covering sightseeing across Champaner-Pavagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Champaner-Pavagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Champaner-Pavagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Final Sightseeing & Departure from Vadodara",
+        "description": "Detailed day 3 itinerary covering sightseeing across Statue of Unity. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Statue of Unity"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-005",
+    "packageName": "Patan, Modhera & Siddhpur Architecture Trail",
+    "title": "Patan, Modhera & Siddhpur Architecture Trail",
+    "subtitle": "Heritage & Architecture: Covering Patan • Rani ki Vav • Modhera Sun Temple • Siddhpur",
+    "slug": "patan-modhera-siddhpur-architecture-trail",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Heritage & Architecture",
+    "category": "Heritage Circuits",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 2,
+    "durationNights": 1,
+    "startingPriceInr": 7200,
+    "totalPriceINR": 7200,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "UNESCO Rani ki Vav Stepwell in Patan",
+      "11th-century Modhera Sun Temple",
+      "Siddhpur European Mansions"
+    ],
+    "bestSeason": "October to March",
+    "description": "Uncover North Gujarat's finest medieval Solanki stone architecture and stepwells.",
+    "destinations": [
+      "Patan",
+      "Rani ki Vav",
+      "Modhera Sun Temple",
+      "Siddhpur"
+    ],
+    "includedDestinationIds": [
+      "DEST-0377",
+      "DEST-0378",
+      "DEST-0361",
+      "DEST-0380"
+    ],
+    "attractions": [
+      "UNESCO Rani ki Vav Stepwell in Patan",
+      "11th-century Modhera Sun Temple",
+      "Siddhpur European Mansions"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "1 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "2 Days Patan, Modhera & Siddhpur Architecture Trail | BharatYatra",
+    "seoDescription": "Book 2 Days Patan, Modhera & Siddhpur Architecture Trail. Explore Patan, Rani ki Vav, Modhera Sun Temple, Siddhpur with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "patan-modhera-siddhpur-architecture-trail",
+      "heritage-and-architecture",
+      "heritage-circuits",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/patan-modhera-siddhpur-architecture-trail/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/patan-modhera-siddhpur-architecture-trail/01.webp",
+      "/images/packages/gujarat/patan-modhera-siddhpur-architecture-trail/02.webp",
+      "/images/packages/gujarat/patan-modhera-siddhpur-architecture-trail/03.webp",
+      "/images/packages/gujarat/patan-modhera-siddhpur-architecture-trail/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Patan",
+        "description": "Detailed day 1 itinerary covering sightseeing across Patan. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Patan"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Patan",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 2 itinerary covering sightseeing across Rani ki Vav. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Rani ki Vav"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-006",
+    "packageName": "Dwarka & Nageshwar Divine Yatra (Budget Edition)",
+    "title": "Dwarka & Nageshwar Divine Yatra (Budget Edition)",
+    "subtitle": "Spiritual Yatra: Covering Dwarka • Nageshwar Jyotirlinga • Bet Dwarka",
+    "slug": "dwarka-nageshwar-divine-yatra-budget",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Spiritual Yatra",
+    "category": "Spiritual Circuits",
+    "travelStyle": "Budget",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 3,
+    "durationNights": 2,
+    "startingPriceInr": 6800,
+    "totalPriceINR": 6800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Dwarkadhish Temple Char Dham Aarti",
+      "Nageshwar Jyotirlinga 80ft Shiva Statue",
+      "Bet Dwarka Island Boat Ride"
+    ],
+    "bestSeason": "October to March",
+    "description": "Affordable spiritual pilgrimage to Lord Krishna's kingdom Dwarka & Nageshwar Jyotirlinga.",
+    "destinations": [
+      "Dwarka",
+      "Nageshwar Jyotirlinga",
+      "Bet Dwarka"
+    ],
+    "includedDestinationIds": [
+      "DEST-0326",
+      "DEST-GJ-GENERIC",
+      "DEST-0326"
+    ],
+    "attractions": [
+      "Dwarkadhish Temple Char Dham Aarti",
+      "Nageshwar Jyotirlinga 80ft Shiva Statue",
+      "Bet Dwarka Island Boat Ride"
+    ],
+    "accommodationCategory": "Budget Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "2 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "3 Days Dwarka & Nageshwar Divine Yatra (Budget Edition) | BharatYatra",
+    "seoDescription": "Book 3 Days Dwarka & Nageshwar Divine Yatra (Budget Edition). Explore Dwarka, Nageshwar Jyotirlinga, Bet Dwarka with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "dwarka-nageshwar-divine-yatra-budget",
+      "spiritual-yatra",
+      "spiritual-circuits",
+      "budget",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/dwarka-nageshwar-divine-yatra-budget/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/dwarka-nageshwar-divine-yatra-budget/01.webp",
+      "/images/packages/gujarat/dwarka-nageshwar-divine-yatra-budget/02.webp",
+      "/images/packages/gujarat/dwarka-nageshwar-divine-yatra-budget/03.webp",
+      "/images/packages/gujarat/dwarka-nageshwar-divine-yatra-budget/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dwarka",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Nageshwar Jyotirlinga",
+        "description": "Detailed day 2 itinerary covering sightseeing across Nageshwar Jyotirlinga. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Nageshwar Jyotirlinga"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Nageshwar Jyotirlinga",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 3 itinerary covering sightseeing across Bet Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bet Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-007",
+    "packageName": "Dwarka & Somnath Holy Yatra (Standard Family Edition)",
+    "title": "Dwarka & Somnath Holy Yatra (Standard Family Edition)",
+    "subtitle": "Spiritual Yatra: Covering Dwarka • Porbandar • Somnath",
+    "slug": "dwarka-somnath-holy-yatra-standard",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Spiritual Yatra",
+    "category": "Spiritual Circuits",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 4,
+    "durationNights": 3,
+    "startingPriceInr": 11800,
+    "totalPriceINR": 11800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Dwarkadhish Char Dham & Nageshwar Jyotirlinga",
+      "Mahatma Gandhi Birthplace Kirti Mandir",
+      "Somnath Jyotirlinga Shore Temple & Light Show"
+    ],
+    "bestSeason": "October to March",
+    "description": "The complete 4-day pilgrimage connecting Dwarka, Porbandar, and Somnath Jyotirlinga.",
+    "destinations": [
+      "Dwarka",
+      "Porbandar",
+      "Somnath"
+    ],
+    "includedDestinationIds": [
+      "DEST-0326",
+      "DEST-0385",
+      "DEST-0332"
+    ],
+    "attractions": [
+      "Dwarkadhish Char Dham & Nageshwar Jyotirlinga",
+      "Mahatma Gandhi Birthplace Kirti Mandir",
+      "Somnath Jyotirlinga Shore Temple & Light Show"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "3 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "4 Days Dwarka & Somnath Holy Yatra (Standard Family Edition) | BharatYatra",
+    "seoDescription": "Book 4 Days Dwarka & Somnath Holy Yatra (Standard Family Edition). Explore Dwarka, Porbandar, Somnath with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "dwarka-somnath-holy-yatra-standard",
+      "spiritual-yatra",
+      "spiritual-circuits",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/dwarka-somnath-holy-yatra-standard/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/dwarka-somnath-holy-yatra-standard/01.webp",
+      "/images/packages/gujarat/dwarka-somnath-holy-yatra-standard/02.webp",
+      "/images/packages/gujarat/dwarka-somnath-holy-yatra-standard/03.webp",
+      "/images/packages/gujarat/dwarka-somnath-holy-yatra-standard/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dwarka",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Porbandar",
+        "description": "Detailed day 2 itinerary covering sightseeing across Porbandar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Porbandar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Porbandar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Somnath",
+        "description": "Detailed day 3 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 4 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-008",
+    "packageName": "Dwarka & Somnath Romantic & Spiritual Couple Escape",
+    "title": "Dwarka & Somnath Romantic & Spiritual Couple Escape",
+    "subtitle": "Spiritual & Coastal: Covering Dwarka • Somnath • Madhavpur",
+    "slug": "dwarka-somnath-couple-spiritual-escape",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Spiritual & Coastal",
+    "category": "Spiritual Circuits",
+    "travelStyle": "Couple",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 4,
+    "durationNights": 3,
+    "startingPriceInr": 14200,
+    "totalPriceINR": 14200,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Special Couple Darshan at Dwarkadhish & Somnath",
+      "Sunset at Madhavpur Beach",
+      "Seaside resort stay in Somnath"
+    ],
+    "bestSeason": "October to March",
+    "description": "A peaceful, serene spiritual & coastal getaway for couples exploring Dwarka, Madhavpur beach, and Somnath.",
+    "destinations": [
+      "Dwarka",
+      "Somnath",
+      "Madhavpur"
+    ],
+    "includedDestinationIds": [
+      "DEST-0326",
+      "DEST-0332",
+      "DEST-0383"
+    ],
+    "attractions": [
+      "Special Couple Darshan at Dwarkadhish & Somnath",
+      "Sunset at Madhavpur Beach",
+      "Seaside resort stay in Somnath"
+    ],
+    "accommodationCategory": "Couple Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "3 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "4 Days Dwarka & Somnath Romantic & Spiritual Couple Escape | BharatYatra",
+    "seoDescription": "Book 4 Days Dwarka & Somnath Romantic & Spiritual Couple Escape. Explore Dwarka, Somnath, Madhavpur with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "dwarka-somnath-couple-spiritual-escape",
+      "spiritual-and-coastal",
+      "spiritual-circuits",
+      "couple",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/dwarka-somnath-couple-spiritual-escape/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/dwarka-somnath-couple-spiritual-escape/01.webp",
+      "/images/packages/gujarat/dwarka-somnath-couple-spiritual-escape/02.webp",
+      "/images/packages/gujarat/dwarka-somnath-couple-spiritual-escape/03.webp",
+      "/images/packages/gujarat/dwarka-somnath-couple-spiritual-escape/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dwarka",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Somnath",
+        "description": "Detailed day 2 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Madhavpur",
+        "description": "Detailed day 3 itinerary covering sightseeing across Madhavpur. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Madhavpur"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Madhavpur",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 4 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-009",
+    "packageName": "Dwarka, Somnath & Porbandar Premium Senior-Friendly Yatra",
+    "title": "Dwarka, Somnath & Porbandar Premium Senior-Friendly Yatra",
+    "subtitle": "Spiritual Yatra: Covering Dwarka • Porbandar • Somnath",
+    "slug": "dwarka-somnath-porbandar-senior-friendly-yatra",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Spiritual Yatra",
+    "category": "Spiritual Circuits",
+    "travelStyle": "Senior-Friendly",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 5,
+    "durationNights": 4,
+    "startingPriceInr": 18500,
+    "totalPriceINR": 18500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "4-Star Hotels with elevator & senior access",
+      "VIP Queue Entry Coordination",
+      "Private AC Innova Crysta SUV"
+    ],
+    "bestSeason": "October to March",
+    "description": "Unhurried, comfortable 5-day pilgrimage designed for elderly pilgrims with 4-star hotels & VIP access.",
+    "destinations": [
+      "Dwarka",
+      "Porbandar",
+      "Somnath"
+    ],
+    "includedDestinationIds": [
+      "DEST-0326",
+      "DEST-0385",
+      "DEST-0332"
+    ],
+    "attractions": [
+      "4-Star Hotels with elevator & senior access",
+      "VIP Queue Entry Coordination",
+      "Private AC Innova Crysta SUV"
+    ],
+    "accommodationCategory": "Senior-Friendly Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "4 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "5 Days Dwarka, Somnath & Porbandar Premium Senior-Friendly Yatra | BharatYatra",
+    "seoDescription": "Book 5 Days Dwarka, Somnath & Porbandar Premium Senior-Friendly Yatra. Explore Dwarka, Porbandar, Somnath with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "dwarka-somnath-porbandar-senior-friendly-yatra",
+      "spiritual-yatra",
+      "spiritual-circuits",
+      "senior-friendly",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/dwarka-somnath-porbandar-senior-friendly-yatra/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/dwarka-somnath-porbandar-senior-friendly-yatra/01.webp",
+      "/images/packages/gujarat/dwarka-somnath-porbandar-senior-friendly-yatra/02.webp",
+      "/images/packages/gujarat/dwarka-somnath-porbandar-senior-friendly-yatra/03.webp",
+      "/images/packages/gujarat/dwarka-somnath-porbandar-senior-friendly-yatra/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dwarka",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Porbandar",
+        "description": "Detailed day 2 itinerary covering sightseeing across Porbandar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Porbandar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Porbandar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Somnath",
+        "description": "Detailed day 3 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Dwarka",
+        "description": "Detailed day 4 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 5 itinerary covering sightseeing across Porbandar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Porbandar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-010",
+    "packageName": "Dwarka, Somnath & Diu Coastal Spiritual Trail",
+    "title": "Dwarka, Somnath & Diu Coastal Spiritual Trail",
+    "subtitle": "Coastal & Spiritual: Covering Dwarka • Somnath • Diu • Diu Fort",
+    "slug": "dwarka-somnath-diu-coastal-spiritual-trail",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Coastal & Spiritual",
+    "category": "Coastal & Beach",
+    "travelStyle": "Family",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 6,
+    "durationNights": 5,
+    "startingPriceInr": 16200,
+    "totalPriceINR": 16200,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Dwarkadhish & Somnath Shrines",
+      "Portuguese Diu Sea Fort & Naida Caves",
+      "Ghoghla & Nagoa Golden Beaches"
+    ],
+    "bestSeason": "October to March",
+    "description": "Blend holy pilgrimage at Dwarka & Somnath with 2 days of beach relaxing in Portuguese Diu Island.",
+    "destinations": [
+      "Dwarka",
+      "Somnath",
+      "Diu",
+      "Diu Fort"
+    ],
+    "includedDestinationIds": [
+      "DEST-0326",
+      "DEST-0332",
+      "DEST-0327",
+      "DEST-0327"
+    ],
+    "attractions": [
+      "Dwarkadhish & Somnath Shrines",
+      "Portuguese Diu Sea Fort & Naida Caves",
+      "Ghoghla & Nagoa Golden Beaches"
+    ],
+    "accommodationCategory": "Family Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "5 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "6 Days Dwarka, Somnath & Diu Coastal Spiritual Trail | BharatYatra",
+    "seoDescription": "Book 6 Days Dwarka, Somnath & Diu Coastal Spiritual Trail. Explore Dwarka, Somnath, Diu, Diu Fort with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "dwarka-somnath-diu-coastal-spiritual-trail",
+      "coastal-and-spiritual",
+      "coastal-and-beach",
+      "family",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/dwarka-somnath-diu-coastal-spiritual-trail/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/dwarka-somnath-diu-coastal-spiritual-trail/01.webp",
+      "/images/packages/gujarat/dwarka-somnath-diu-coastal-spiritual-trail/02.webp",
+      "/images/packages/gujarat/dwarka-somnath-diu-coastal-spiritual-trail/03.webp",
+      "/images/packages/gujarat/dwarka-somnath-diu-coastal-spiritual-trail/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dwarka",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Somnath",
+        "description": "Detailed day 2 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Diu",
+        "description": "Detailed day 3 itinerary covering sightseeing across Diu. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Diu"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Diu",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Diu Fort",
+        "description": "Detailed day 4 itinerary covering sightseeing across Diu Fort. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Diu Fort"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Diu Fort",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Dwarka",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 6 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-011",
+    "packageName": "Saurashtra Coastal Road Trip (Dwarka - Somnath - Diu)",
+    "title": "Saurashtra Coastal Road Trip (Dwarka - Somnath - Diu)",
+    "subtitle": "Road Trip: Covering Dwarka • Madhavpur • Somnath • Diu",
+    "slug": "saurashtra-coastal-road-trip",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Road Trip",
+    "category": "Road Trips",
+    "travelStyle": "Road Trip",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 5,
+    "durationNights": 4,
+    "startingPriceInr": 15500,
+    "totalPriceINR": 15500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Scenic Coastal Highway NH8D drive",
+      "Madhavpur Beach Sunset",
+      "Somnath & Diu Fort"
+    ],
+    "bestSeason": "October to March",
+    "description": "Exciting self-drive / private cab coastal road trip spanning Dwarka, Madhavpur beach, Somnath & Diu.",
+    "destinations": [
+      "Dwarka",
+      "Madhavpur",
+      "Somnath",
+      "Diu"
+    ],
+    "includedDestinationIds": [
+      "DEST-0326",
+      "DEST-0383",
+      "DEST-0332",
+      "DEST-0327"
+    ],
+    "attractions": [
+      "Scenic Coastal Highway NH8D drive",
+      "Madhavpur Beach Sunset",
+      "Somnath & Diu Fort"
+    ],
+    "accommodationCategory": "Road Trip Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "4 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "5 Days Saurashtra Coastal Road Trip (Dwarka - Somnath - Diu) | BharatYatra",
+    "seoDescription": "Book 5 Days Saurashtra Coastal Road Trip (Dwarka - Somnath - Diu). Explore Dwarka, Madhavpur, Somnath, Diu with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "saurashtra-coastal-road-trip",
+      "road-trip",
+      "road-trips",
+      "road-trip",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/saurashtra-coastal-road-trip/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/saurashtra-coastal-road-trip/01.webp",
+      "/images/packages/gujarat/saurashtra-coastal-road-trip/02.webp",
+      "/images/packages/gujarat/saurashtra-coastal-road-trip/03.webp",
+      "/images/packages/gujarat/saurashtra-coastal-road-trip/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dwarka",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Madhavpur",
+        "description": "Detailed day 2 itinerary covering sightseeing across Madhavpur. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Madhavpur"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Madhavpur",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Somnath",
+        "description": "Detailed day 3 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Diu",
+        "description": "Detailed day 4 itinerary covering sightseeing across Diu. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Diu"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Diu",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-012",
+    "packageName": "Saurashtra Holy Tridevi & Sacred Hill Circuit",
+    "title": "Saurashtra Holy Tridevi & Sacred Hill Circuit",
+    "subtitle": "Spiritual Pilgrimage: Covering Palitana • Junagadh • Somnath • Dwarka",
+    "slug": "saurashtra-holy-tridevi-sacred-hill-circuit",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Spiritual Pilgrimage",
+    "category": "Spiritual Circuits",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 6,
+    "durationNights": 5,
+    "startingPriceInr": 17500,
+    "totalPriceINR": 17500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Palitana Shatrunjaya Hill 863 Temples",
+      "Girnar Hill & Uparkot Fort Junagadh",
+      "Somnath & Dwarkadhish Shrines"
+    ],
+    "bestSeason": "October to March",
+    "description": "Comprehensive 6-day pilgrimage covering Palitana Jain mountain temples, Girnar, Somnath, and Dwarka.",
+    "destinations": [
+      "Palitana",
+      "Junagadh",
+      "Somnath",
+      "Dwarka"
+    ],
+    "includedDestinationIds": [
+      "DEST-0319",
+      "DEST-0344",
+      "DEST-0332",
+      "DEST-0326"
+    ],
+    "attractions": [
+      "Palitana Shatrunjaya Hill 863 Temples",
+      "Girnar Hill & Uparkot Fort Junagadh",
+      "Somnath & Dwarkadhish Shrines"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "5 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "6 Days Saurashtra Holy Tridevi & Sacred Hill Circuit | BharatYatra",
+    "seoDescription": "Book 6 Days Saurashtra Holy Tridevi & Sacred Hill Circuit. Explore Palitana, Junagadh, Somnath, Dwarka with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "saurashtra-holy-tridevi-sacred-hill-circuit",
+      "spiritual-pilgrimage",
+      "spiritual-circuits",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/saurashtra-holy-tridevi-sacred-hill-circuit/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/saurashtra-holy-tridevi-sacred-hill-circuit/01.webp",
+      "/images/packages/gujarat/saurashtra-holy-tridevi-sacred-hill-circuit/02.webp",
+      "/images/packages/gujarat/saurashtra-holy-tridevi-sacred-hill-circuit/03.webp",
+      "/images/packages/gujarat/saurashtra-holy-tridevi-sacred-hill-circuit/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Palitana",
+        "description": "Detailed day 1 itinerary covering sightseeing across Palitana. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Palitana"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Palitana",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Junagadh",
+        "description": "Detailed day 2 itinerary covering sightseeing across Junagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Junagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Junagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Somnath",
+        "description": "Detailed day 3 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Dwarka",
+        "description": "Detailed day 4 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Palitana",
+        "description": "Detailed day 5 itinerary covering sightseeing across Palitana. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Palitana"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Palitana",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 6 itinerary covering sightseeing across Junagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Junagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-013",
+    "packageName": "Gir Forest Asiatic Lion Wildlife Safari",
+    "title": "Gir Forest Asiatic Lion Wildlife Safari",
+    "subtitle": "Wildlife Safari: Covering Gir National Park • Junagadh • Devalia Safari Park",
+    "slug": "gir-forest-asiatic-lion-wildlife-safari",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Wildlife Safari",
+    "category": "Wildlife & Nature",
+    "travelStyle": "Standard",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 3,
+    "durationNights": 2,
+    "startingPriceInr": 10500,
+    "totalPriceINR": 10500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Guided 4x4 Open Jeep Safari in Gir Forest",
+      "Spotting Asiatic Lions & Leopards",
+      "Jungle Resort Stay with Meals"
+    ],
+    "bestSeason": "October to March",
+    "description": "3-day wildlife adventure in Sasan Gir, the sole remaining natural habitat of the Asiatic Lion.",
+    "destinations": [
+      "Gir National Park",
+      "Junagadh",
+      "Devalia Safari Park"
+    ],
+    "includedDestinationIds": [
+      "DEST-0341",
+      "DEST-0344",
+      "DEST-GJ-GENERIC"
+    ],
+    "attractions": [
+      "Guided 4x4 Open Jeep Safari in Gir Forest",
+      "Spotting Asiatic Lions & Leopards",
+      "Jungle Resort Stay with Meals"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "2 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "3 Days Gir Forest Asiatic Lion Wildlife Safari | BharatYatra",
+    "seoDescription": "Book 3 Days Gir Forest Asiatic Lion Wildlife Safari. Explore Gir National Park, Junagadh, Devalia Safari Park with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "gir-forest-asiatic-lion-wildlife-safari",
+      "wildlife-safari",
+      "wildlife-and-nature",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/gir-forest-asiatic-lion-wildlife-safari/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/gir-forest-asiatic-lion-wildlife-safari/01.webp",
+      "/images/packages/gujarat/gir-forest-asiatic-lion-wildlife-safari/02.webp",
+      "/images/packages/gujarat/gir-forest-asiatic-lion-wildlife-safari/03.webp",
+      "/images/packages/gujarat/gir-forest-asiatic-lion-wildlife-safari/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Gir National Park",
+        "description": "Detailed day 1 itinerary covering sightseeing across Gir National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gir National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Gir National Park",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Junagadh",
+        "description": "Detailed day 2 itinerary covering sightseeing across Junagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Junagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Junagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 3 itinerary covering sightseeing across Devalia Safari Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Devalia Safari Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-014",
+    "packageName": "Gir Wildlife & Somnath Divine Combination",
+    "title": "Gir Wildlife & Somnath Divine Combination",
+    "subtitle": "Wildlife & Spiritual: Covering Somnath • Gir National Park • Junagadh",
+    "slug": "gir-wildlife-somnath-divine-combination",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Wildlife & Spiritual",
+    "category": "Wildlife & Nature",
+    "travelStyle": "Family",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 4,
+    "durationNights": 3,
+    "startingPriceInr": 12500,
+    "totalPriceINR": 12500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Somnath Jyotirlinga Temple & Light Show",
+      "Gir National Park Open Jeep Safari",
+      "Devalia Safari Park"
+    ],
+    "bestSeason": "October to March",
+    "description": "Combine Asiatic Lion safaris in Gir Forest with divine blessings at Somnath Jyotirlinga.",
+    "destinations": [
+      "Somnath",
+      "Gir National Park",
+      "Junagadh"
+    ],
+    "includedDestinationIds": [
+      "DEST-0332",
+      "DEST-0341",
+      "DEST-0344"
+    ],
+    "attractions": [
+      "Somnath Jyotirlinga Temple & Light Show",
+      "Gir National Park Open Jeep Safari",
+      "Devalia Safari Park"
+    ],
+    "accommodationCategory": "Family Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "3 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "4 Days Gir Wildlife & Somnath Divine Combination | BharatYatra",
+    "seoDescription": "Book 4 Days Gir Wildlife & Somnath Divine Combination. Explore Somnath, Gir National Park, Junagadh with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "gir-wildlife-somnath-divine-combination",
+      "wildlife-and-spiritual",
+      "wildlife-and-nature",
+      "family",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/gir-wildlife-somnath-divine-combination/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/gir-wildlife-somnath-divine-combination/01.webp",
+      "/images/packages/gujarat/gir-wildlife-somnath-divine-combination/02.webp",
+      "/images/packages/gujarat/gir-wildlife-somnath-divine-combination/03.webp",
+      "/images/packages/gujarat/gir-wildlife-somnath-divine-combination/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Somnath",
+        "description": "Detailed day 1 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Gir National Park",
+        "description": "Detailed day 2 itinerary covering sightseeing across Gir National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gir National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Gir National Park",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Junagadh",
+        "description": "Detailed day 3 itinerary covering sightseeing across Junagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Junagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Junagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 4 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-015",
+    "packageName": "Little Rann of Kutch Wild Ass Safari Escape",
+    "title": "Little Rann of Kutch Wild Ass Safari Escape",
+    "subtitle": "Wildlife Safari: Covering Little Rann of Kutch • Dasada • Ahmedabad",
+    "slug": "little-rann-of-kutch-wild-ass-safari",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Wildlife Safari",
+    "category": "Wildlife & Nature",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 3,
+    "durationNights": 2,
+    "startingPriceInr": 9500,
+    "totalPriceINR": 9500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Open-top Jeep Safari in Little Rann Salt Marsh",
+      "Spotting Endangered Indian Wild Ass (Khur)",
+      "Flamingo & Waterfowl Bird Watching"
+    ],
+    "bestSeason": "October to March",
+    "description": "Explore the unique mudflat salt ecosystem of Little Rann of Kutch protecting Khur wild asses.",
+    "destinations": [
+      "Little Rann of Kutch",
+      "Dasada",
+      "Ahmedabad"
+    ],
+    "includedDestinationIds": [
+      "DEST-0393",
+      "DEST-GJ-GENERIC",
+      "DEST-0305"
+    ],
+    "attractions": [
+      "Open-top Jeep Safari in Little Rann Salt Marsh",
+      "Spotting Endangered Indian Wild Ass (Khur)",
+      "Flamingo & Waterfowl Bird Watching"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "2 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "3 Days Little Rann of Kutch Wild Ass Safari Escape | BharatYatra",
+    "seoDescription": "Book 3 Days Little Rann of Kutch Wild Ass Safari Escape. Explore Little Rann of Kutch, Dasada, Ahmedabad with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "little-rann-of-kutch-wild-ass-safari",
+      "wildlife-safari",
+      "wildlife-and-nature",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/little-rann-of-kutch-wild-ass-safari/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/little-rann-of-kutch-wild-ass-safari/01.webp",
+      "/images/packages/gujarat/little-rann-of-kutch-wild-ass-safari/02.webp",
+      "/images/packages/gujarat/little-rann-of-kutch-wild-ass-safari/03.webp",
+      "/images/packages/gujarat/little-rann-of-kutch-wild-ass-safari/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Little Rann of Kutch",
+        "description": "Detailed day 1 itinerary covering sightseeing across Little Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Little Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Little Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Dasada",
+        "description": "Detailed day 2 itinerary covering sightseeing across Dasada. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dasada"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dasada",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 3 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-016",
+    "packageName": "Gujarat Ultimate Wildlife Safari (Gir + Velavadar + LRK)",
+    "title": "Gujarat Ultimate Wildlife Safari (Gir + Velavadar + LRK)",
+    "subtitle": "Wildlife Expedition: Covering Velavadar National Park • Gir National Park • Little Rann of Kutch • Nal Sarovar",
+    "slug": "gujarat-ultimate-wildlife-safari",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Wildlife Expedition",
+    "category": "Wildlife & Nature",
+    "travelStyle": "Premium",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 6,
+    "durationNights": 5,
+    "startingPriceInr": 22500,
+    "totalPriceINR": 22500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Gir Asiatic Lions 4x4 Safari",
+      "Velavadar Blackbuck Grassland Sanctuary",
+      "Little Rann Wild Ass & Nal Sarovar Birding"
+    ],
+    "bestSeason": "October to March",
+    "description": "The ultimate 6-day nature & wildlife expedition covering Lions, Blackbucks, Wild Asses & Flamingos.",
+    "destinations": [
+      "Velavadar National Park",
+      "Gir National Park",
+      "Little Rann of Kutch",
+      "Nal Sarovar"
+    ],
+    "includedDestinationIds": [
+      "DEST-0320",
+      "DEST-0341",
+      "DEST-0393",
+      "DEST-0309"
+    ],
+    "attractions": [
+      "Gir Asiatic Lions 4x4 Safari",
+      "Velavadar Blackbuck Grassland Sanctuary",
+      "Little Rann Wild Ass & Nal Sarovar Birding"
+    ],
+    "accommodationCategory": "Premium Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "5 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "6 Days Gujarat Ultimate Wildlife Safari (Gir + Velavadar + LRK) | BharatYatra",
+    "seoDescription": "Book 6 Days Gujarat Ultimate Wildlife Safari (Gir + Velavadar + LRK). Explore Velavadar National Park, Gir National Park, Little Rann of Kutch, Nal Sarovar with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "gujarat-ultimate-wildlife-safari",
+      "wildlife-expedition",
+      "wildlife-and-nature",
+      "premium",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/gujarat-ultimate-wildlife-safari/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/gujarat-ultimate-wildlife-safari/01.webp",
+      "/images/packages/gujarat/gujarat-ultimate-wildlife-safari/02.webp",
+      "/images/packages/gujarat/gujarat-ultimate-wildlife-safari/03.webp",
+      "/images/packages/gujarat/gujarat-ultimate-wildlife-safari/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Velavadar National Park",
+        "description": "Detailed day 1 itinerary covering sightseeing across Velavadar National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Velavadar National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Velavadar National Park",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Gir National Park",
+        "description": "Detailed day 2 itinerary covering sightseeing across Gir National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gir National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Gir National Park",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Little Rann of Kutch",
+        "description": "Detailed day 3 itinerary covering sightseeing across Little Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Little Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Little Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Nal Sarovar",
+        "description": "Detailed day 4 itinerary covering sightseeing across Nal Sarovar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Nal Sarovar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Nal Sarovar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Velavadar National Park",
+        "description": "Detailed day 5 itinerary covering sightseeing across Velavadar National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Velavadar National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Velavadar National Park",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 6 itinerary covering sightseeing across Gir National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gir National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-017",
+    "packageName": "Rann of Kutch White Desert Experience (Standard)",
+    "title": "Rann of Kutch White Desert Experience (Standard)",
+    "subtitle": "Desert & Culture: Covering Great Rann of Kutch • Bhuj • Dhordo • Kalo Dungar",
+    "slug": "rann-of-kutch-white-desert-experience",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Desert & Culture",
+    "category": "Desert & Culture",
+    "travelStyle": "Standard",
+    "startingPoint": "Bhuj",
+    "startingCity": "Bhuj",
+    "endingPoint": "Bhuj",
+    "endingCity": "Bhuj",
+    "durationDays": 4,
+    "durationNights": 3,
+    "startingPriceInr": 12900,
+    "totalPriceINR": 12900,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Sunset over Dhordo White Salt Desert",
+      "Kalo Dungar Black Hill (462m)",
+      "Bhuj Aina Mahal & Prag Mahal"
+    ],
+    "bestSeason": "October to March",
+    "description": "Experience the magical White Desert of Kutch, Kutchi craft villages, and historic Bhuj palaces.",
+    "destinations": [
+      "Great Rann of Kutch",
+      "Bhuj",
+      "Dhordo",
+      "Kalo Dungar"
+    ],
+    "includedDestinationIds": [
+      "DEST-0348",
+      "DEST-0345",
+      "DEST-0347",
+      "DEST-0350"
+    ],
+    "attractions": [
+      "Sunset over Dhordo White Salt Desert",
+      "Kalo Dungar Black Hill (462m)",
+      "Bhuj Aina Mahal & Prag Mahal"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "3 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "4 Days Rann of Kutch White Desert Experience (Standard) | BharatYatra",
+    "seoDescription": "Book 4 Days Rann of Kutch White Desert Experience (Standard). Explore Great Rann of Kutch, Bhuj, Dhordo, Kalo Dungar with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "rann-of-kutch-white-desert-experience",
+      "desert-and-culture",
+      "desert-and-culture",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/rann-of-kutch-white-desert-experience/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/rann-of-kutch-white-desert-experience/01.webp",
+      "/images/packages/gujarat/rann-of-kutch-white-desert-experience/02.webp",
+      "/images/packages/gujarat/rann-of-kutch-white-desert-experience/03.webp",
+      "/images/packages/gujarat/rann-of-kutch-white-desert-experience/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Great Rann of Kutch",
+        "description": "Detailed day 1 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Great Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Bhuj",
+        "description": "Detailed day 2 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Bhuj",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Dhordo",
+        "description": "Detailed day 3 itinerary covering sightseeing across Dhordo. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dhordo"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dhordo",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Final Sightseeing & Departure from Bhuj",
+        "description": "Detailed day 4 itinerary covering sightseeing across Kalo Dungar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Kalo Dungar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-018",
+    "packageName": "Rann of Kutch Luxury Tent City Experience",
+    "title": "Rann of Kutch Luxury Tent City Experience",
+    "subtitle": "Desert Culture & Luxury: Covering Great Rann of Kutch • Dhordo • Bhuj",
+    "slug": "rann-of-kutch-luxury-tent-city-experience",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Desert Culture & Luxury",
+    "category": "Desert & Culture",
+    "travelStyle": "Luxury",
+    "startingPoint": "Bhuj",
+    "startingCity": "Bhuj",
+    "endingPoint": "Bhuj",
+    "endingCity": "Bhuj",
+    "durationDays": 4,
+    "durationNights": 3,
+    "startingPriceInr": 21500,
+    "totalPriceINR": 21500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Luxury AC Tent Stay at Rann Utsav Tent City",
+      "Cultural Folk Music & Dance Nights",
+      "Full Moon Night White Rann Walk"
+    ],
+    "bestSeason": "October to March",
+    "description": "Premium luxury experience staying inside the official Rann Utsav Tent City at Dhordo.",
+    "destinations": [
+      "Great Rann of Kutch",
+      "Dhordo",
+      "Bhuj"
+    ],
+    "includedDestinationIds": [
+      "DEST-0348",
+      "DEST-0347",
+      "DEST-0345"
+    ],
+    "attractions": [
+      "Luxury AC Tent Stay at Rann Utsav Tent City",
+      "Cultural Folk Music & Dance Nights",
+      "Full Moon Night White Rann Walk"
+    ],
+    "accommodationCategory": "Luxury Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "3 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "4 Days Rann of Kutch Luxury Tent City Experience | BharatYatra",
+    "seoDescription": "Book 4 Days Rann of Kutch Luxury Tent City Experience. Explore Great Rann of Kutch, Dhordo, Bhuj with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "rann-of-kutch-luxury-tent-city-experience",
+      "desert-culture-and-luxury",
+      "desert-and-culture",
+      "luxury",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/rann-of-kutch-luxury-tent-city-experience/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/rann-of-kutch-luxury-tent-city-experience/01.webp",
+      "/images/packages/gujarat/rann-of-kutch-luxury-tent-city-experience/02.webp",
+      "/images/packages/gujarat/rann-of-kutch-luxury-tent-city-experience/03.webp",
+      "/images/packages/gujarat/rann-of-kutch-luxury-tent-city-experience/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Great Rann of Kutch",
+        "description": "Detailed day 1 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Great Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Dhordo",
+        "description": "Detailed day 2 itinerary covering sightseeing across Dhordo. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dhordo"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dhordo",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Bhuj",
+        "description": "Detailed day 3 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Bhuj",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Final Sightseeing & Departure from Bhuj",
+        "description": "Detailed day 4 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-019",
+    "packageName": "Bhuj, White Rann & Mandvi Beach Coastal Escape",
+    "title": "Bhuj, White Rann & Mandvi Beach Coastal Escape",
+    "subtitle": "Desert & Beach: Covering Bhuj • Great Rann of Kutch • Mandvi • Mandvi Beach",
+    "slug": "bhuj-white-rann-mandvi-coastal-escape",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Desert & Beach",
+    "category": "Coastal & Beach",
+    "travelStyle": "Family",
+    "startingPoint": "Bhuj",
+    "startingCity": "Bhuj",
+    "endingPoint": "Bhuj",
+    "endingCity": "Bhuj",
+    "durationDays": 5,
+    "durationNights": 4,
+    "startingPriceInr": 15800,
+    "totalPriceINR": 15800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "White Rann Salt Desert Sunset",
+      "Mandvi Vijay Vilas Beach Palace",
+      "Rukmavati Wooden Shipbuilding Yard"
+    ],
+    "bestSeason": "October to March",
+    "description": "Enjoy the white salt desert, Kalo Dungar, royal palace history, and golden sands of Mandvi Beach.",
+    "destinations": [
+      "Bhuj",
+      "Great Rann of Kutch",
+      "Mandvi",
+      "Mandvi Beach"
+    ],
+    "includedDestinationIds": [
+      "DEST-0345",
+      "DEST-0348",
+      "DEST-0354",
+      "DEST-0354"
+    ],
+    "attractions": [
+      "White Rann Salt Desert Sunset",
+      "Mandvi Vijay Vilas Beach Palace",
+      "Rukmavati Wooden Shipbuilding Yard"
+    ],
+    "accommodationCategory": "Family Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "4 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "5 Days Bhuj, White Rann & Mandvi Beach Coastal Escape | BharatYatra",
+    "seoDescription": "Book 5 Days Bhuj, White Rann & Mandvi Beach Coastal Escape. Explore Bhuj, Great Rann of Kutch, Mandvi, Mandvi Beach with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "bhuj-white-rann-mandvi-coastal-escape",
+      "desert-and-beach",
+      "coastal-and-beach",
+      "family",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/bhuj-white-rann-mandvi-coastal-escape/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/bhuj-white-rann-mandvi-coastal-escape/01.webp",
+      "/images/packages/gujarat/bhuj-white-rann-mandvi-coastal-escape/02.webp",
+      "/images/packages/gujarat/bhuj-white-rann-mandvi-coastal-escape/03.webp",
+      "/images/packages/gujarat/bhuj-white-rann-mandvi-coastal-escape/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Bhuj",
+        "description": "Detailed day 1 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Bhuj",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Great Rann of Kutch",
+        "description": "Detailed day 2 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Great Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Mandvi",
+        "description": "Detailed day 3 itinerary covering sightseeing across Mandvi. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Mandvi"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Mandvi",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Mandvi Beach",
+        "description": "Detailed day 4 itinerary covering sightseeing across Mandvi Beach. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Mandvi Beach"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Mandvi Beach",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Final Sightseeing & Departure from Bhuj",
+        "description": "Detailed day 5 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-020",
+    "packageName": "Dholavira Harappan Metropolis & White Rann Expedition",
+    "title": "Dholavira Harappan Metropolis & White Rann Expedition",
+    "subtitle": "UNESCO & Desert Expedition: Covering Dholavira • Great Rann of Kutch • Kalo Dungar • Bhuj",
+    "slug": "dholavira-harappan-metropolis-rann-expedition",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "UNESCO & Desert Expedition",
+    "category": "Heritage Circuits",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Bhuj",
+    "endingCity": "Bhuj",
+    "durationDays": 5,
+    "durationNights": 4,
+    "startingPriceInr": 17200,
+    "totalPriceINR": 17200,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Dholavira UNESCO Harappan City & Citadel",
+      "Surreal \"Road to Heaven\" 30km Salt Expressway",
+      "Wood Fossil Park & White Rann Sunset"
+    ],
+    "bestSeason": "October to March",
+    "description": "Drive along the Road to Heaven expressway toexplore 4,500-year-old Dholavira Harappan metropolis.",
+    "destinations": [
+      "Dholavira",
+      "Great Rann of Kutch",
+      "Kalo Dungar",
+      "Bhuj"
+    ],
+    "includedDestinationIds": [
+      "DEST-0346",
+      "DEST-0348",
+      "DEST-0350",
+      "DEST-0345"
+    ],
+    "attractions": [
+      "Dholavira UNESCO Harappan City & Citadel",
+      "Surreal \"Road to Heaven\" 30km Salt Expressway",
+      "Wood Fossil Park & White Rann Sunset"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "4 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "5 Days Dholavira Harappan Metropolis & White Rann Expedition | BharatYatra",
+    "seoDescription": "Book 5 Days Dholavira Harappan Metropolis & White Rann Expedition. Explore Dholavira, Great Rann of Kutch, Kalo Dungar, Bhuj with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "dholavira-harappan-metropolis-rann-expedition",
+      "unesco-and-desert-expedition",
+      "heritage-circuits",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/dholavira-harappan-metropolis-rann-expedition/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/dholavira-harappan-metropolis-rann-expedition/01.webp",
+      "/images/packages/gujarat/dholavira-harappan-metropolis-rann-expedition/02.webp",
+      "/images/packages/gujarat/dholavira-harappan-metropolis-rann-expedition/03.webp",
+      "/images/packages/gujarat/dholavira-harappan-metropolis-rann-expedition/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Dholavira",
+        "description": "Detailed day 1 itinerary covering sightseeing across Dholavira. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dholavira"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dholavira",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Great Rann of Kutch",
+        "description": "Detailed day 2 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Great Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Kalo Dungar",
+        "description": "Detailed day 3 itinerary covering sightseeing across Kalo Dungar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Kalo Dungar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Kalo Dungar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Bhuj",
+        "description": "Detailed day 4 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Bhuj",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Final Sightseeing & Departure from Bhuj",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dholavira. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dholavira"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-021",
+    "packageName": "Kutch Complete Cultural & Offbeat Explorer",
+    "title": "Kutch Complete Cultural & Offbeat Explorer",
+    "subtitle": "Desert & Heritage: Covering Bhuj • Lakhpat • Narayan Sarovar • Koteshwar • Dhordo • Dholavira",
+    "slug": "kutch-complete-cultural-offbeat-explorer",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Desert & Heritage",
+    "category": "Desert & Culture",
+    "travelStyle": "Offbeat",
+    "startingPoint": "Bhuj",
+    "startingCity": "Bhuj",
+    "endingPoint": "Bhuj",
+    "endingCity": "Bhuj",
+    "durationDays": 6,
+    "durationNights": 5,
+    "startingPriceInr": 19800,
+    "totalPriceINR": 19800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Ghost Town Fort of Lakhpat & Gurudwara",
+      "Koteshwar Shiva Temple on Arabian Sea",
+      "White Rann & Dholavira Citadel"
+    ],
+    "bestSeason": "October to March",
+    "description": "Offbeat 6-day explorer deep into Kutch: Lakhpat Fort, Koteshwar, White Rann & Dholavira.",
+    "destinations": [
+      "Bhuj",
+      "Lakhpat",
+      "Narayan Sarovar",
+      "Koteshwar",
+      "Dhordo",
+      "Dholavira"
+    ],
+    "includedDestinationIds": [
+      "DEST-0345",
+      "DEST-0353",
+      "DEST-0356",
+      "DEST-0352",
+      "DEST-0347",
+      "DEST-0346"
+    ],
+    "attractions": [
+      "Ghost Town Fort of Lakhpat & Gurudwara",
+      "Koteshwar Shiva Temple on Arabian Sea",
+      "White Rann & Dholavira Citadel"
+    ],
+    "accommodationCategory": "Offbeat Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "5 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "6 Days Kutch Complete Cultural & Offbeat Explorer | BharatYatra",
+    "seoDescription": "Book 6 Days Kutch Complete Cultural & Offbeat Explorer. Explore Bhuj, Lakhpat, Narayan Sarovar, Koteshwar, Dhordo, Dholavira with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "kutch-complete-cultural-offbeat-explorer",
+      "desert-and-heritage",
+      "desert-and-culture",
+      "offbeat",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/kutch-complete-cultural-offbeat-explorer/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/kutch-complete-cultural-offbeat-explorer/01.webp",
+      "/images/packages/gujarat/kutch-complete-cultural-offbeat-explorer/02.webp",
+      "/images/packages/gujarat/kutch-complete-cultural-offbeat-explorer/03.webp",
+      "/images/packages/gujarat/kutch-complete-cultural-offbeat-explorer/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Bhuj",
+        "description": "Detailed day 1 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Bhuj",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Lakhpat",
+        "description": "Detailed day 2 itinerary covering sightseeing across Lakhpat. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Lakhpat"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Lakhpat",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Narayan Sarovar",
+        "description": "Detailed day 3 itinerary covering sightseeing across Narayan Sarovar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Narayan Sarovar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Narayan Sarovar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Koteshwar",
+        "description": "Detailed day 4 itinerary covering sightseeing across Koteshwar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Koteshwar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Koteshwar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Dhordo",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dhordo. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dhordo"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dhordo",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Final Sightseeing & Departure from Bhuj",
+        "description": "Detailed day 6 itinerary covering sightseeing across Dholavira. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dholavira"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-022",
+    "packageName": "Saputara Hill Station & Dang Forest Retreat",
+    "title": "Saputara Hill Station & Dang Forest Retreat",
+    "subtitle": "Hill Station & Nature: Covering Saputara • Surat • Dharampur",
+    "slug": "saputara-hill-station-dang-forest-retreat",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Hill Station & Nature",
+    "category": "Hills & Nature",
+    "travelStyle": "Family",
+    "startingPoint": "Surat",
+    "startingCity": "Surat",
+    "endingPoint": "Surat",
+    "endingCity": "Surat",
+    "durationDays": 3,
+    "durationNights": 2,
+    "startingPriceInr": 8500,
+    "totalPriceINR": 8500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Saputara Lake Boating",
+      "Sunset Point Cable Car Ropeway",
+      "Cascading Gira Waterfalls & Waghai Garden"
+    ],
+    "bestSeason": "October to March",
+    "description": "Refresh in Gujarat's only hill station surrounded by Sahyadri mountains and dense Dang forests.",
+    "destinations": [
+      "Saputara",
+      "Surat",
+      "Dharampur"
+    ],
+    "includedDestinationIds": [
+      "DEST-0325",
+      "DEST-0391",
+      "DEST-0396"
+    ],
+    "attractions": [
+      "Saputara Lake Boating",
+      "Sunset Point Cable Car Ropeway",
+      "Cascading Gira Waterfalls & Waghai Garden"
+    ],
+    "accommodationCategory": "Family Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "2 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "3 Days Saputara Hill Station & Dang Forest Retreat | BharatYatra",
+    "seoDescription": "Book 3 Days Saputara Hill Station & Dang Forest Retreat. Explore Saputara, Surat, Dharampur with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "saputara-hill-station-dang-forest-retreat",
+      "hill-station-and-nature",
+      "hills-and-nature",
+      "family",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/saputara-hill-station-dang-forest-retreat/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/saputara-hill-station-dang-forest-retreat/01.webp",
+      "/images/packages/gujarat/saputara-hill-station-dang-forest-retreat/02.webp",
+      "/images/packages/gujarat/saputara-hill-station-dang-forest-retreat/03.webp",
+      "/images/packages/gujarat/saputara-hill-station-dang-forest-retreat/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Saputara",
+        "description": "Detailed day 1 itinerary covering sightseeing across Saputara. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Saputara"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Saputara",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Surat",
+        "description": "Detailed day 2 itinerary covering sightseeing across Surat. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Surat"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Surat",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Final Sightseeing & Departure from Surat",
+        "description": "Detailed day 3 itinerary covering sightseeing across Dharampur. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dharampur"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-023",
+    "packageName": "Ahmedabad to Saputara & South Gujarat Trail",
+    "title": "Ahmedabad to Saputara & South Gujarat Trail",
+    "subtitle": "Hills & City Culture: Covering Ahmedabad • Vadodara • Saputara • Surat",
+    "slug": "ahmedabad-saputara-south-gujarat-trail",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Hills & City Culture",
+    "category": "Hills & Nature",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 4,
+    "durationNights": 3,
+    "startingPriceInr": 11500,
+    "totalPriceINR": 11500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Vadodara Laxmi Vilas Palace",
+      "Saputara Hill Station & Gira Falls",
+      "Surat Textile & Food Market"
+    ],
+    "bestSeason": "October to March",
+    "description": "Drive from Ahmedabad to South Gujarat covering Vadodara, Saputara hill station, and Surat.",
+    "destinations": [
+      "Ahmedabad",
+      "Vadodara",
+      "Saputara",
+      "Surat"
+    ],
+    "includedDestinationIds": [
+      "DEST-0305",
+      "DEST-0395",
+      "DEST-0325",
+      "DEST-0391"
+    ],
+    "attractions": [
+      "Vadodara Laxmi Vilas Palace",
+      "Saputara Hill Station & Gira Falls",
+      "Surat Textile & Food Market"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "3 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "4 Days Ahmedabad to Saputara & South Gujarat Trail | BharatYatra",
+    "seoDescription": "Book 4 Days Ahmedabad to Saputara & South Gujarat Trail. Explore Ahmedabad, Vadodara, Saputara, Surat with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "ahmedabad-saputara-south-gujarat-trail",
+      "hills-and-city-culture",
+      "hills-and-nature",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/ahmedabad-saputara-south-gujarat-trail/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/ahmedabad-saputara-south-gujarat-trail/01.webp",
+      "/images/packages/gujarat/ahmedabad-saputara-south-gujarat-trail/02.webp",
+      "/images/packages/gujarat/ahmedabad-saputara-south-gujarat-trail/03.webp",
+      "/images/packages/gujarat/ahmedabad-saputara-south-gujarat-trail/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Ahmedabad",
+        "description": "Detailed day 1 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Vadodara",
+        "description": "Detailed day 2 itinerary covering sightseeing across Vadodara. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Vadodara"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Vadodara",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Saputara",
+        "description": "Detailed day 3 itinerary covering sightseeing across Saputara. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Saputara"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Saputara",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 4 itinerary covering sightseeing across Surat. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Surat"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-024",
+    "packageName": "Polo Forest & Northern Aravalli Wilderness Escape",
+    "title": "Polo Forest & Northern Aravalli Wilderness Escape",
+    "subtitle": "Nature & Ancient Ruins: Covering Polo Forest • Sabarkantha • Ahmedabad",
+    "slug": "polo-forest-aravalli-wilderness-escape",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Nature & Ancient Ruins",
+    "category": "Weekend Escapes",
+    "travelStyle": "Standard",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 2,
+    "durationNights": 1,
+    "startingPriceInr": 5800,
+    "totalPriceINR": 5800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "15th-century Jain & Shiva temple ruins in forest",
+      "Harnav River Dam Walk",
+      "Idar Fort Hill Rocks"
+    ],
+    "bestSeason": "October to March",
+    "description": "Weekend nature retreat exploring ancient overgrown temple ruins in Polo Forest.",
+    "destinations": [
+      "Polo Forest",
+      "Sabarkantha",
+      "Ahmedabad"
+    ],
+    "includedDestinationIds": [
+      "DEST-0390",
+      "DEST-GJ-GENERIC",
+      "DEST-0305"
+    ],
+    "attractions": [
+      "15th-century Jain & Shiva temple ruins in forest",
+      "Harnav River Dam Walk",
+      "Idar Fort Hill Rocks"
+    ],
+    "accommodationCategory": "Standard Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "1 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "2 Days Polo Forest & Northern Aravalli Wilderness Escape | BharatYatra",
+    "seoDescription": "Book 2 Days Polo Forest & Northern Aravalli Wilderness Escape. Explore Polo Forest, Sabarkantha, Ahmedabad with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "polo-forest-aravalli-wilderness-escape",
+      "nature-and-ancient-ruins",
+      "weekend-escapes",
+      "standard",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/polo-forest-aravalli-wilderness-escape/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/polo-forest-aravalli-wilderness-escape/01.webp",
+      "/images/packages/gujarat/polo-forest-aravalli-wilderness-escape/02.webp",
+      "/images/packages/gujarat/polo-forest-aravalli-wilderness-escape/03.webp",
+      "/images/packages/gujarat/polo-forest-aravalli-wilderness-escape/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Polo Forest",
+        "description": "Detailed day 1 itinerary covering sightseeing across Polo Forest. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Polo Forest"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Polo Forest",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 2 itinerary covering sightseeing across Sabarkantha. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Sabarkantha"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-025",
+    "packageName": "Gujarat Jain Pilgrimage Trail (Palitana, Taranga & Shankheshwar)",
+    "title": "Gujarat Jain Pilgrimage Trail (Palitana, Taranga & Shankheshwar)",
+    "subtitle": "Jain Pilgrimage: Covering Palitana • Shankheshwar • Taranga • Ahmedabad",
+    "slug": "gujarat-jain-pilgrimage-trail",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Jain Pilgrimage",
+    "category": "Spiritual Circuits",
+    "travelStyle": "Spiritual",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 5,
+    "durationNights": 4,
+    "startingPriceInr": 14800,
+    "totalPriceINR": 14800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Palitana Shatrunjaya Hill (863 Temples)",
+      "Shankheshwar Parshvanath Temple",
+      "Taranga Hill Jain Temples"
+    ],
+    "bestSeason": "October to March",
+    "description": "Sacred Jain pilgrimage covering Palitana, Shankheshwar Parshvanath, Taranga Hills, and Hutheesing Temple.",
+    "destinations": [
+      "Palitana",
+      "Shankheshwar",
+      "Taranga",
+      "Ahmedabad"
+    ],
+    "includedDestinationIds": [
+      "DEST-0319",
+      "DEST-0379",
+      "DEST-0362",
+      "DEST-0305"
+    ],
+    "attractions": [
+      "Palitana Shatrunjaya Hill (863 Temples)",
+      "Shankheshwar Parshvanath Temple",
+      "Taranga Hill Jain Temples"
+    ],
+    "accommodationCategory": "Spiritual Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "4 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "5 Days Gujarat Jain Pilgrimage Trail (Palitana, Taranga & Shankheshwar) | BharatYatra",
+    "seoDescription": "Book 5 Days Gujarat Jain Pilgrimage Trail (Palitana, Taranga & Shankheshwar). Explore Palitana, Shankheshwar, Taranga, Ahmedabad with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "gujarat-jain-pilgrimage-trail",
+      "jain-pilgrimage",
+      "spiritual-circuits",
+      "spiritual",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/gujarat-jain-pilgrimage-trail/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/gujarat-jain-pilgrimage-trail/01.webp",
+      "/images/packages/gujarat/gujarat-jain-pilgrimage-trail/02.webp",
+      "/images/packages/gujarat/gujarat-jain-pilgrimage-trail/03.webp",
+      "/images/packages/gujarat/gujarat-jain-pilgrimage-trail/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Palitana",
+        "description": "Detailed day 1 itinerary covering sightseeing across Palitana. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Palitana"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Palitana",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Shankheshwar",
+        "description": "Detailed day 2 itinerary covering sightseeing across Shankheshwar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Shankheshwar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Shankheshwar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Taranga",
+        "description": "Detailed day 3 itinerary covering sightseeing across Taranga. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Taranga"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Taranga",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Ahmedabad",
+        "description": "Detailed day 4 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 5 itinerary covering sightseeing across Palitana. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Palitana"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-026",
+    "packageName": "Balasinor Dinosaur Fossil Park & Central Heritage Tour",
+    "title": "Balasinor Dinosaur Fossil Park & Central Heritage Tour",
+    "subtitle": "Paleontology & Heritage: Covering Balasinor • Champaner-Pavagadh • Ahmedabad",
+    "slug": "balasinor-dinosaur-fossil-park-heritage-tour",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Paleontology & Heritage",
+    "category": "Heritage Circuits",
+    "travelStyle": "Family",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 2,
+    "durationNights": 1,
+    "startingPriceInr": 6200,
+    "totalPriceINR": 6200,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Raiyoli Balasinor Dinosaur Fossil Site & Museum",
+      "Champaner Jama Masjid",
+      "Vadodara Palace"
+    ],
+    "bestSeason": "October to March",
+    "description": "Fascinating educational family tour to the world's 3rd largest dinosaur fossil hatchery in Balasinor.",
+    "destinations": [
+      "Balasinor",
+      "Champaner-Pavagadh",
+      "Ahmedabad"
+    ],
+    "includedDestinationIds": [
+      "DEST-0357",
+      "DEST-0372",
+      "DEST-0305"
+    ],
+    "attractions": [
+      "Raiyoli Balasinor Dinosaur Fossil Site & Museum",
+      "Champaner Jama Masjid",
+      "Vadodara Palace"
+    ],
+    "accommodationCategory": "Family Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "1 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "2 Days Balasinor Dinosaur Fossil Park & Central Heritage Tour | BharatYatra",
+    "seoDescription": "Book 2 Days Balasinor Dinosaur Fossil Park & Central Heritage Tour. Explore Balasinor, Champaner-Pavagadh, Ahmedabad with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "balasinor-dinosaur-fossil-park-heritage-tour",
+      "paleontology-and-heritage",
+      "heritage-circuits",
+      "family",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/balasinor-dinosaur-fossil-park-heritage-tour/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/balasinor-dinosaur-fossil-park-heritage-tour/01.webp",
+      "/images/packages/gujarat/balasinor-dinosaur-fossil-park-heritage-tour/02.webp",
+      "/images/packages/gujarat/balasinor-dinosaur-fossil-park-heritage-tour/03.webp",
+      "/images/packages/gujarat/balasinor-dinosaur-fossil-park-heritage-tour/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Balasinor",
+        "description": "Detailed day 1 itinerary covering sightseeing across Balasinor. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Balasinor"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Balasinor",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 2 itinerary covering sightseeing across Champaner-Pavagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Champaner-Pavagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-027",
+    "packageName": "Saurashtra Royal Heritage & Palace Circuit",
+    "title": "Saurashtra Royal Heritage & Palace Circuit",
+    "subtitle": "Royal Heritage: Covering Gondal • Junagadh • Morbi • Wankaner",
+    "slug": "saurashtra-heritage-royal-palace-circuit",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Royal Heritage",
+    "category": "Heritage Circuits",
+    "travelStyle": "Deluxe",
+    "startingPoint": "Rajkot",
+    "startingCity": "Rajkot",
+    "endingPoint": "Rajkot",
+    "endingCity": "Rajkot",
+    "durationDays": 5,
+    "durationNights": 4,
+    "startingPriceInr": 16800,
+    "totalPriceINR": 16800,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Gondal Naulakha Palace & Vintage Car Collection",
+      "Junagadh Uparkot Fort & Mahabat Maqbara",
+      "Wankaner Ranjit Vilas Palace"
+    ],
+    "bestSeason": "October to March",
+    "description": "Tour the royal palaces, vintage car museums, and gothic architecture of Saurashtra princely states.",
+    "destinations": [
+      "Gondal",
+      "Junagadh",
+      "Morbi",
+      "Wankaner"
+    ],
+    "includedDestinationIds": [
+      "DEST-0387",
+      "DEST-0344",
+      "DEST-0366",
+      "DEST-0367"
+    ],
+    "attractions": [
+      "Gondal Naulakha Palace & Vintage Car Collection",
+      "Junagadh Uparkot Fort & Mahabat Maqbara",
+      "Wankaner Ranjit Vilas Palace"
+    ],
+    "accommodationCategory": "Deluxe Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "4 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "5 Days Saurashtra Royal Heritage & Palace Circuit | BharatYatra",
+    "seoDescription": "Book 5 Days Saurashtra Royal Heritage & Palace Circuit. Explore Gondal, Junagadh, Morbi, Wankaner with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "saurashtra-heritage-royal-palace-circuit",
+      "royal-heritage",
+      "heritage-circuits",
+      "deluxe",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/saurashtra-heritage-royal-palace-circuit/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/saurashtra-heritage-royal-palace-circuit/01.webp",
+      "/images/packages/gujarat/saurashtra-heritage-royal-palace-circuit/02.webp",
+      "/images/packages/gujarat/saurashtra-heritage-royal-palace-circuit/03.webp",
+      "/images/packages/gujarat/saurashtra-heritage-royal-palace-circuit/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Gondal",
+        "description": "Detailed day 1 itinerary covering sightseeing across Gondal. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gondal"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Gondal",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Junagadh",
+        "description": "Detailed day 2 itinerary covering sightseeing across Junagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Junagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Junagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Morbi",
+        "description": "Detailed day 3 itinerary covering sightseeing across Morbi. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Morbi"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Morbi",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Wankaner",
+        "description": "Detailed day 4 itinerary covering sightseeing across Wankaner. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Wankaner"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Wankaner",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Final Sightseeing & Departure from Rajkot",
+        "description": "Detailed day 5 itinerary covering sightseeing across Gondal. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gondal"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-028",
+    "packageName": "Grand Saurashtra & Kutch Road Trip",
+    "title": "Grand Saurashtra & Kutch Road Trip",
+    "subtitle": "Road Trip & Flagship Explorer: Covering Ahmedabad • Little Rann of Kutch • Bhuj • Great Rann of Kutch • Dwarka • Porbandar • Somnath • Gir National Park",
+    "slug": "grand-saurashtra-kutch-road-trip",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Road Trip & Flagship Explorer",
+    "category": "Road Trips",
+    "travelStyle": "Road Trip",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 8,
+    "durationNights": 7,
+    "startingPriceInr": 28500,
+    "totalPriceINR": 28500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Little Rann Wild Ass Safari",
+      "Dhordo White Rann Sunset",
+      "Dwarkadhish & Somnath Shrines",
+      "Gir Asiatic Lion Safari"
+    ],
+    "bestSeason": "October to March",
+    "description": "The ultimate 8-day road trip circuiting Little Rann, White Desert, Dwarka, Somnath & Gir Forest.",
+    "destinations": [
+      "Ahmedabad",
+      "Little Rann of Kutch",
+      "Bhuj",
+      "Great Rann of Kutch",
+      "Dwarka",
+      "Porbandar",
+      "Somnath",
+      "Gir National Park"
+    ],
+    "includedDestinationIds": [
+      "DEST-0305",
+      "DEST-0393",
+      "DEST-0345",
+      "DEST-0348",
+      "DEST-0326",
+      "DEST-0385",
+      "DEST-0332",
+      "DEST-0341"
+    ],
+    "attractions": [
+      "Little Rann Wild Ass Safari",
+      "Dhordo White Rann Sunset",
+      "Dwarkadhish & Somnath Shrines",
+      "Gir Asiatic Lion Safari"
+    ],
+    "accommodationCategory": "Road Trip Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "7 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "8 Days Grand Saurashtra & Kutch Road Trip | BharatYatra",
+    "seoDescription": "Book 8 Days Grand Saurashtra & Kutch Road Trip. Explore Ahmedabad, Little Rann of Kutch, Bhuj, Great Rann of Kutch, Dwarka, Porbandar, Somnath, Gir National Park with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "grand-saurashtra-kutch-road-trip",
+      "road-trip-and-flagship-explorer",
+      "road-trips",
+      "road-trip",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/grand-saurashtra-kutch-road-trip/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/grand-saurashtra-kutch-road-trip/01.webp",
+      "/images/packages/gujarat/grand-saurashtra-kutch-road-trip/02.webp",
+      "/images/packages/gujarat/grand-saurashtra-kutch-road-trip/03.webp",
+      "/images/packages/gujarat/grand-saurashtra-kutch-road-trip/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Ahmedabad",
+        "description": "Detailed day 1 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Little Rann of Kutch",
+        "description": "Detailed day 2 itinerary covering sightseeing across Little Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Little Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Little Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Bhuj",
+        "description": "Detailed day 3 itinerary covering sightseeing across Bhuj. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Bhuj"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Bhuj",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Great Rann of Kutch",
+        "description": "Detailed day 4 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Great Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Dwarka",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Exploring Porbandar",
+        "description": "Detailed day 6 itinerary covering sightseeing across Porbandar. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Porbandar"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Porbandar",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 7,
+        "title": "Day 7: Exploring Somnath",
+        "description": "Detailed day 7 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 8,
+        "title": "Day 8: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 8 itinerary covering sightseeing across Gir National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gir National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-029",
+    "packageName": "Gujarat UNESCO World Heritage Trail",
+    "title": "Gujarat UNESCO World Heritage Trail",
+    "subtitle": "UNESCO Heritage: Covering Ahmedabad • Patan • Modhera • Champaner-Pavagadh • Dholavira",
+    "slug": "gujarat-unesco-world-heritage-trail",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "UNESCO Heritage",
+    "category": "Heritage Circuits",
+    "travelStyle": "Deluxe",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 7,
+    "durationNights": 6,
+    "startingPriceInr": 24500,
+    "totalPriceINR": 24500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Ahmedabad Historic Walled City",
+      "Rani ki Vav Patan Stepwell",
+      "Champaner-Pavagadh Archaeological Park",
+      "Dholavira Harappan Site"
+    ],
+    "bestSeason": "October to March",
+    "description": "Comprehensive 7-day tour covering all UNESCO World Heritage sites in Gujarat.",
+    "destinations": [
+      "Ahmedabad",
+      "Patan",
+      "Modhera",
+      "Champaner-Pavagadh",
+      "Dholavira"
+    ],
+    "includedDestinationIds": [
+      "DEST-0305",
+      "DEST-0377",
+      "DEST-0359",
+      "DEST-0372",
+      "DEST-0346"
+    ],
+    "attractions": [
+      "Ahmedabad Historic Walled City",
+      "Rani ki Vav Patan Stepwell",
+      "Champaner-Pavagadh Archaeological Park",
+      "Dholavira Harappan Site"
+    ],
+    "accommodationCategory": "Deluxe Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "6 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "7 Days Gujarat UNESCO World Heritage Trail | BharatYatra",
+    "seoDescription": "Book 7 Days Gujarat UNESCO World Heritage Trail. Explore Ahmedabad, Patan, Modhera, Champaner-Pavagadh, Dholavira with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "gujarat-unesco-world-heritage-trail",
+      "unesco-heritage",
+      "heritage-circuits",
+      "deluxe",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/gujarat-unesco-world-heritage-trail/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/gujarat-unesco-world-heritage-trail/01.webp",
+      "/images/packages/gujarat/gujarat-unesco-world-heritage-trail/02.webp",
+      "/images/packages/gujarat/gujarat-unesco-world-heritage-trail/03.webp",
+      "/images/packages/gujarat/gujarat-unesco-world-heritage-trail/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Ahmedabad",
+        "description": "Detailed day 1 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Patan",
+        "description": "Detailed day 2 itinerary covering sightseeing across Patan. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Patan"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Patan",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Modhera",
+        "description": "Detailed day 3 itinerary covering sightseeing across Modhera. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Modhera"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Modhera",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Champaner-Pavagadh",
+        "description": "Detailed day 4 itinerary covering sightseeing across Champaner-Pavagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Champaner-Pavagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Champaner-Pavagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Dholavira",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dholavira. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dholavira"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dholavira",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Exploring Ahmedabad",
+        "description": "Detailed day 6 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 7,
+        "title": "Day 7: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 7 itinerary covering sightseeing across Patan. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Patan"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  },
+  {
+    "packageId": "BY-GJ-030",
+    "packageName": "The Grand Gujarat Master Tour",
+    "title": "The Grand Gujarat Master Tour",
+    "subtitle": "Flagship Grand Tour: Covering Ahmedabad • Statue of Unity • Champaner-Pavagadh • Patan • Dwarka • Somnath • Gir National Park • Great Rann of Kutch • Dholavira",
+    "slug": "grand-gujarat-master-tour",
+    "country": "India",
+    "stateOrRegion": "Gujarat",
+    "state": "Gujarat",
+    "region": "Western India",
+    "tourismType": "Flagship Grand Tour",
+    "category": "Grand Circuit",
+    "travelStyle": "Comprehensive",
+    "startingPoint": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingPoint": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "durationDays": 10,
+    "durationNights": 9,
+    "startingPriceInr": 38500,
+    "totalPriceINR": 38500,
+    "isEstimated": true,
+    "priceDisclaimer": "Estimated starting price per person on twin sharing basis. Final price depends on travel dates, hotel category & transport selection.",
+    "recommendedTravellerTypes": [
+      "Families",
+      "Couples",
+      "Senior Citizens",
+      "Solo Travellers",
+      "Groups"
+    ],
+    "highlights": [
+      "Statue of Unity & 3 UNESCO Sites",
+      "Dwarka & Somnath Jyotirlingas",
+      "Gir Asiatic Lions & White Rann Dhordo"
+    ],
+    "bestSeason": "October to March",
+    "description": "The crown jewel 10-day flagship grand tour of Gujarat covering every major destination and circuit.",
+    "destinations": [
+      "Ahmedabad",
+      "Statue of Unity",
+      "Champaner-Pavagadh",
+      "Patan",
+      "Dwarka",
+      "Somnath",
+      "Gir National Park",
+      "Great Rann of Kutch",
+      "Dholavira"
+    ],
+    "includedDestinationIds": [
+      "DEST-0305",
+      "DEST-0370",
+      "DEST-0372",
+      "DEST-0377",
+      "DEST-0326",
+      "DEST-0332",
+      "DEST-0341",
+      "DEST-0348",
+      "DEST-0346"
+    ],
+    "attractions": [
+      "Statue of Unity & 3 UNESCO Sites",
+      "Dwarka & Somnath Jyotirlingas",
+      "Gir Asiatic Lions & White Rann Dhordo"
+    ],
+    "accommodationCategory": "Comprehensive Hotels & Resorts",
+    "transportRequirement": "Private AC Cab for Transfers & Sightseeing",
+    "mealsIncluded": "Daily Breakfast & Select Dinners Included",
+    "inclusions": [
+      "9 Nights Accommodation in handpicked hotel/resort",
+      "Daily Breakfast at hotel",
+      "Private AC Car for transfers & sightseeing as per itinerary",
+      "Tolls, parking, driver allowance & state taxes"
+    ],
+    "exclusions": [
+      "Entry tickets to monuments/parks",
+      "Lunches & personal expenses",
+      "GST 5%"
+    ],
+    "importantNotes": [
+      "Standard check-in time: 12:00 PM / Check-out time: 10:00 AM."
+    ],
+    "faq": [
+      {
+        "question": "Is transport private for our group?",
+        "answer": "Yes, all transfers and sightseeing are provided in a dedicated private AC vehicle."
+      },
+      {
+        "question": "Are customization options available?",
+        "answer": "Yes, you can upgrade hotel category, add extra safari permits or extend days."
+      }
+    ],
+    "seoTitle": "10 Days The Grand Gujarat Master Tour | BharatYatra",
+    "seoDescription": "Book 10 Days The Grand Gujarat Master Tour. Explore Ahmedabad, Statue of Unity, Champaner-Pavagadh, Patan, Dwarka, Somnath, Gir National Park, Great Rann of Kutch, Dholavira with verified hotels, AC transport & detailed itinerary.",
+    "searchTags": [
+      "gujarat",
+      "grand-gujarat-master-tour",
+      "flagship-grand-tour",
+      "grand-circuit",
+      "comprehensive",
+      "family",
+      "budget",
+      "verified"
+    ],
+    "coverImage": "/images/packages/gujarat/grand-gujarat-master-tour/hero.webp",
+    "galleryImages": [
+      "/images/packages/gujarat/grand-gujarat-master-tour/01.webp",
+      "/images/packages/gujarat/grand-gujarat-master-tour/02.webp",
+      "/images/packages/gujarat/grand-gujarat-master-tour/03.webp",
+      "/images/packages/gujarat/grand-gujarat-master-tour/04.webp"
+    ],
+    "dailyItinerary": [
+      {
+        "day": 1,
+        "title": "Day 1: Arrival & Sightseeing in Ahmedabad",
+        "description": "Detailed day 1 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Ahmedabad",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 2,
+        "title": "Day 2: Exploring Statue of Unity",
+        "description": "Detailed day 2 itinerary covering sightseeing across Statue of Unity. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Statue of Unity"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Statue of Unity",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 3,
+        "title": "Day 3: Exploring Champaner-Pavagadh",
+        "description": "Detailed day 3 itinerary covering sightseeing across Champaner-Pavagadh. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Champaner-Pavagadh"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Champaner-Pavagadh",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 4,
+        "title": "Day 4: Exploring Patan",
+        "description": "Detailed day 4 itinerary covering sightseeing across Patan. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Patan"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Patan",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 5,
+        "title": "Day 5: Exploring Dwarka",
+        "description": "Detailed day 5 itinerary covering sightseeing across Dwarka. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dwarka"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dwarka",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 6,
+        "title": "Day 6: Exploring Somnath",
+        "description": "Detailed day 6 itinerary covering sightseeing across Somnath. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Somnath"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Somnath",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 7,
+        "title": "Day 7: Exploring Gir National Park",
+        "description": "Detailed day 7 itinerary covering sightseeing across Gir National Park. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Gir National Park"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Gir National Park",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 8,
+        "title": "Day 8: Exploring Great Rann of Kutch",
+        "description": "Detailed day 8 itinerary covering sightseeing across Great Rann of Kutch. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Great Rann of Kutch"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Great Rann of Kutch",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 9,
+        "title": "Day 9: Exploring Dholavira",
+        "description": "Detailed day 9 itinerary covering sightseeing across Dholavira. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Dholavira"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Dholavira",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      },
+      {
+        "day": 10,
+        "title": "Day 10: Final Sightseeing & Departure from Ahmedabad",
+        "description": "Detailed day 10 itinerary covering sightseeing across Ahmedabad. Enjoy local experiences and comfortable evening stay.",
+        "places": [
+          "Ahmedabad"
+        ],
+        "meals": [
+          "Breakfast"
+        ],
+        "overnight": "Departure",
+        "travelDistanceTime": "Inter-city / Local Sightseeing Travel"
+      }
+    ]
+  }
+]

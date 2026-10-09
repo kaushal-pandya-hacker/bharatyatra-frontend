@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getBaseUrl } from '@/lib/api/client';
 
 interface TransactionItem {
   bookingId: string;
@@ -62,7 +63,7 @@ export default function SupplierPaymentsPage() {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/v1/supplier/payments', {
+      const res = await fetch(`${getBaseUrl()}/supplier/payments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
@@ -121,7 +122,7 @@ export default function SupplierPaymentsPage() {
           <div className="text-2xl font-bold text-amber-400 mt-2">
             ₹{metrics.totalCommissionDeductedInr.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1">Chalo Farva marketplace fee</div>
+          <div className="text-[11px] text-slate-500 mt-1">BharatYatra marketplace fee</div>
         </div>
 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">

@@ -19,8 +19,19 @@ interface ActivityDetailPageProps {
   };
 }
 
+export function generateStaticParams() {
+  return [
+    { id: 'dwarka-evening-aarti' },
+    { id: 'somnath-light-sound' },
+    { id: 'rann-camel-safari' },
+    { id: 'statue-viewing-deck' },
+    { id: 'gir-jungle-safari' },
+    { id: 'demo' },
+  ];
+}
+
 async function fetchActivityDetail(id: string) {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
   try {
     const res = await fetch(`${apiBase}/destinations/inventory/activities/${id}`, { cache: 'no-store' });
     if (res.ok) {

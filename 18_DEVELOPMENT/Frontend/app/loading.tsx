@@ -1,9 +1,15 @@
 export default function Loading() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-primary border-t-transparent" />
-        <span className="text-xs font-semibold text-slate-600">Loading Chalo Farva Travel Engine...</span>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-900 p-6">
+      <div className="flex flex-col items-center gap-4 text-center">
+        <div className="p-4 bg-white rounded-3xl shadow-xl border-2 border-slate-200">
+          <img
+            src="/logo.png"
+            alt="BharatYatra Logo"
+            className="h-16 w-auto object-contain animate-pulse"
+          />
+        </div>
+        <span className="text-base font-extrabold text-slate-900">Loading BharatYatra...</span>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierInventoryPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -26,7 +27,7 @@ export default function SupplierInventoryPage() {
         headers['x-supplier-id'] = 'supp_001';
       }
 
-      const res = await fetch('http://localhost:4000/api/v1/suppliers/inventory', { headers });
+      const res = await fetch(`${getBaseUrl()}/suppliers/inventory`, { headers });
       const json = await res.json();
 
       if (json.success && Array.isArray(json.data)) {
@@ -55,7 +56,7 @@ export default function SupplierInventoryPage() {
         headers['x-supplier-id'] = 'supp_001';
       }
 
-      const res = await fetch('http://localhost:4000/api/v1/suppliers/inventory', {
+      const res = await fetch(`${getBaseUrl()}/suppliers/inventory`, {
         method: 'POST',
         headers,
         body: JSON.stringify(newItem),

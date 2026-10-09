@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function AdminSuppliersPage() {
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -30,7 +31,7 @@ export default function AdminSuppliersPage() {
       if (verificationFilter !== 'ALL') params.append('verificationStatus', verificationFilter);
       if (statusFilter !== 'ALL') params.append('status', statusFilter);
 
-      const res = await fetch(`http://localhost:4000/api/v1/admin/suppliers?${params.toString()}`, {
+      const res = await fetch(`${getBaseUrl()}/admin/suppliers?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
@@ -65,16 +66,16 @@ export default function AdminSuppliersPage() {
       let payload = {};
 
       if (actionType === 'VERIFY') {
-        endpoint = `http://localhost:4000/api/v1/admin/suppliers/${targetSupplier.id}/verification`;
+        endpoint = `${getBaseUrl()}/admin/suppliers/${targetSupplier.id}/verification`;
         payload = { status: 'VERIFIED', reason: reason || 'Verified by Operations Admin' };
       } else if (actionType === 'REJECT') {
-        endpoint = `http://localhost:4000/api/v1/admin/suppliers/${targetSupplier.id}/verification`;
+        endpoint = `${getBaseUrl()}/admin/suppliers/${targetSupplier.id}/verification`;
         payload = { status: 'REJECTED', reason: reason || 'Application rejected by Operations Admin' };
       } else if (actionType === 'SUSPEND') {
-        endpoint = `http://localhost:4000/api/v1/admin/suppliers/${targetSupplier.id}/verification`;
+        endpoint = `${getBaseUrl()}/admin/suppliers/${targetSupplier.id}/verification`;
         payload = { status: 'SUSPENDED', reason: reason || 'Account suspended by Operations Admin' };
       } else if (actionType === 'REACTIVATE') {
-        endpoint = `http://localhost:4000/api/v1/admin/suppliers/${targetSupplier.id}/verification`;
+        endpoint = `${getBaseUrl()}/admin/suppliers/${targetSupplier.id}/verification`;
         payload = { status: 'VERIFIED', reason: reason || 'Account reactivated by Operations Admin' };
       }
 

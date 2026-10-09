@@ -1,4 +1,4 @@
-# CHALO FARVA — FRONTEND APPLICATION FOUNDATION
+# BHARAT YATRA — FRONTEND APPLICATION FOUNDATION
 > **Next.js 14 (App Router) + TypeScript + Tailwind CSS Production Application**
 
 ---
@@ -20,7 +20,7 @@
 ## 🏗️ Architecture Overview
 - **Framework**: Next.js 14 with App Router (`/app`)
 - **Language**: TypeScript (`strict: true`)
-- **Styling**: Tailwind CSS extended with Chalo Farva Design Tokens
+- **Styling**: Tailwind CSS extended with BharatYatra Design Tokens
 - **Icons**: Lucide React
 - **API Client**: Centralized type-safe fetch wrapper in `lib/api/client.ts`
 - **Design Tokens**: `brand-primary` (`#FF6B35`), `brand-secondary` (`#008080`), `brand-dark` (`#0A192F`), `brand-light` (`#F4F1EA`)

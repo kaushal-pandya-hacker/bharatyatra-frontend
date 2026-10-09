@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin/', '/supplier/', '/api/', '/my-trips/'],
       },
     ],
-    sitemap: 'https://www.chalofarva.com/sitemap.xml',
+    sitemap: 'https://www.bharatyatra.com/sitemap.xml',
   };
 }

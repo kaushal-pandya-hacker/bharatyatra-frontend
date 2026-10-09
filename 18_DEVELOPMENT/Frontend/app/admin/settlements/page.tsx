@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 interface SettlementRecord {
   id: string;
@@ -47,11 +48,10 @@ export default function AdminSettlementsPage() {
         return;
       }
 
-      const res = await fetch(`http://localhost:5000/api/v1/admin/settlements?status=${statusFilter}`, {
+      const json = await apiFetch<any>(`/admin/settlements?status=${statusFilter}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const json = await res.json();
-      if (res.ok && json.success) {
+      if (json?.success) {
         setSettlements(json.data.items || []);
       } else {
         setError(json.message || 'Failed to fetch settlements.');
@@ -70,10 +70,9 @@ export default function AdminSettlementsPage() {
     setUpdating(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await fetch(`http://localhost:5000/api/v1/admin/settlements/${selectedSettlement.id}/status`, {
+      const updateJson = await apiFetch<any>(`/admin/settlements/${selectedSettlement.id}/status`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
@@ -83,14 +82,13 @@ export default function AdminSettlementsPage() {
         }),
       });
 
-      const json = await res.json();
-      if (res.ok && json.success) {
+      if (updateJson?.success) {
         setSelectedSettlement(null);
         setReferenceInput('');
         setReasonInput('');
         fetchSettlements();
       } else {
-        alert(json.message || 'Failed to update settlement status.');
+        setError(updateJson?.message || 'Failed to update settlement status.');
       }
     } catch (err: any) {
       alert(err.message || 'Network error updating settlement.');

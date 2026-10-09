@@ -2,8 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { Calendar, Users, Clock, CheckCircle2, AlertCircle, ShieldCheck, Loader2, ExternalLink, Sparkles } from 'lucide-react';
+import { getMakeMyTripHotelLink, getMakeMyTripRestaurantLink } from '@/lib/makemytrip';
+import { MakeMyTripBookingModal } from './MakeMyTripModal';
+import { isBookingServiceAvailable } from '@/lib/booking-availability';
 import { useAuth } from '@/lib/auth/auth-context';
-import { Calendar, Users, Clock, CheckCircle2, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 
 interface BookingCardProps {
   inventoryType: 'HOTEL' | 'RESTAURANT' | 'ACTIVITY';
@@ -21,6 +24,7 @@ export default function BookingCard({
   supplierId,
 }: BookingCardProps) {
   const { token, user } = useAuth();
+  const [showMmtModal, setShowMmtModal] = useState(false);
   
   // Default dates
   const todayStr = new Date().toISOString().split('T')[0];
@@ -58,6 +62,13 @@ export default function BookingCard({
   const handleCreateBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const serviceCategory = inventoryType === 'HOTEL' ? 'hotels' : inventoryType === 'ACTIVITY' ? 'activities' : 'hotels';
+    const availability = isBookingServiceAvailable(serviceCategory);
+    if (!availability.available) {
+      setShowMmtModal(true);
+      return;
+    }
 
     if (!token) {
       setError('Please sign in to make a reservation.');
@@ -391,9 +402,28 @@ export default function BookingCard({
           )}
         </button>
 
-        <p className="text-[10px] text-center text-slate-400">
-          Demo Mode: No payment card required. Immediate confirmation.
-        </p>
+        {/* MakeMyTrip Partner Action Button */}
+        <a
+          href={
+            inventoryType === 'HOTEL'
+              ? getMakeMyTripHotelLink(inventoryName)
+              : getMakeMyTripRestaurantLink(inventoryName)
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full rounded-xl bg-[#eb2226] hover:bg-[#d41c20] py-3 text-xs font-extrabold text-white shadow-md transition-all flex items-center justify-center gap-2 border border-red-400/30 cursor-pointer"
+        >
+          <span>Book with MakeMyTrip</span>
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+
+        <MakeMyTripBookingModal
+          isOpen={showMmtModal}
+          onClose={() => setShowMmtModal(false)}
+          bookingType={inventoryType === 'HOTEL' ? 'hotel' : 'package'}
+          title={inventoryName}
+          priceInr={totalPreview}
+        />
       </form>
     </div>
   );

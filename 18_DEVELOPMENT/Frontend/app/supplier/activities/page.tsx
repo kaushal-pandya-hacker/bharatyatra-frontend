@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierActivitiesPage() {
   const [activities, setActivities] = useState<any[]>([]);
@@ -39,7 +40,7 @@ export default function SupplierActivitiesPage() {
   const fetchActivities = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:4000/api/v1/supplier/activities', { headers: getHeaders() });
+      const res = await fetch(`${getBaseUrl()}/supplier/activities`, { headers: getHeaders() });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setActivities(json.data);
@@ -51,7 +52,7 @@ export default function SupplierActivitiesPage() {
 
   const fetchDestinations = async () => {
     try {
-      const res = await fetch('http://localhost:4000/api/v1/destinations');
+      const res = await fetch(`${getBaseUrl()}/destinations`);
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setDestinations(json.data);
@@ -105,8 +106,8 @@ export default function SupplierActivitiesPage() {
     try {
       const isEdit = !!editingActivity;
       const url = isEdit
-        ? `http://localhost:4000/api/v1/supplier/activities/${editingActivity.id}`
-        : 'http://localhost:4000/api/v1/supplier/activities';
+        ? `${getBaseUrl()}/supplier/activities/${editingActivity.id}`
+        : `${getBaseUrl()}/supplier/activities`;
       const method = isEdit ? 'PATCH' : 'POST';
 
       const res = await fetch(url, {
@@ -134,7 +135,7 @@ export default function SupplierActivitiesPage() {
   const toggleStatus = async (act: any) => {
     const newStatus = act.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/supplier/activities/${act.id}`, {
+      const res = await fetch(`${getBaseUrl()}/supplier/activities/${act.id}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify({ status: newStatus }),

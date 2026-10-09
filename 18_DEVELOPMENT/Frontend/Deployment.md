@@ -1,4 +1,4 @@
-# DEPLOYMENT & CI/CD SPECIFICATION — CHALO FARVA
+# DEPLOYMENT & CI/CD SPECIFICATION — BHARAT YATRA
 
 1. **Deployment Target**: Vercel / AWS Amplify / Docker Containerized Node.js.
 2. **CI/CD Pipeline Stages**:

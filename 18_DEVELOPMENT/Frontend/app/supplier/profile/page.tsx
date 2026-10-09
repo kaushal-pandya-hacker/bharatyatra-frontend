@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -25,7 +26,7 @@ export default function SupplierProfilePage() {
         headers['x-supplier-id'] = 'supp_001';
       }
 
-      const res = await fetch('http://localhost:4000/api/v1/suppliers/me', { headers });
+      const res = await fetch(`${getBaseUrl()}/suppliers/me`, { headers });
       const json = await res.json();
 
       if (json.success && json.data) {
@@ -60,7 +61,7 @@ export default function SupplierProfilePage() {
         headers['x-supplier-id'] = 'supp_001';
       }
 
-      const res = await fetch('http://localhost:4000/api/v1/suppliers/me', {
+      const res = await fetch(`${getBaseUrl()}/suppliers/me`, {
         method: 'PATCH',
         headers,
         body: JSON.stringify(formData),

@@ -1,4 +1,4 @@
-# PERFORMANCE BUDGET & OPTIMIZATION — CHALO FARVA
+# PERFORMANCE BUDGET & OPTIMIZATION — BHARAT YATRA
 
 1. **Lighthouse Performance Score Target**: >= 90 on mobile & desktop.
 2. **Core Web Vitals**:

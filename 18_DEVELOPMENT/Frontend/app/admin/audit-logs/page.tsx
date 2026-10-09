@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api/client';
 
 export default function AdminAuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -20,11 +21,10 @@ export default function AdminAuditLogsPage() {
       if (actionFilter) params.append('action', actionFilter);
       if (entityFilter) params.append('entityType', entityFilter);
 
-      const res = await fetch(`http://localhost:4000/api/v1/admin/audit-logs?${params.toString()}`, {
+      const json = await apiFetch<any>(`/admin/audit-logs?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const json = await res.json();
-      if (res.ok && json.success) {
+      if (json?.success) {
         setLogs(json.data || []);
       }
     } catch (e) {
@@ -93,7 +93,7 @@ export default function AdminAuditLogsPage() {
                     <td className="px-6 py-4 font-mono text-[11px] text-slate-500">
                       {new Date(log.createdAt).toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 font-medium text-slate-800">{log.adminEmail || log.user?.email || 'admin@chalofarva.com'}</td>
+                    <td className="px-6 py-4 font-medium text-slate-800">{log.adminEmail || log.user?.email || 'admin@bharatyatra.com'}</td>
                     <td className="px-6 py-4 font-bold text-slate-900">
                       <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 font-mono text-[10px]">
                         {log.action}

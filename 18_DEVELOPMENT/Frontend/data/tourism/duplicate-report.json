@@ -1,0 +1,18 @@
+[
+  {
+    "originalName": "Shaheed Dweep/Neil Island",
+    "canonicalName": "Shaheed Dweep",
+    "state_ut": "Andaman & Nicobar",
+    "district": "South Andaman",
+    "existingId": "DEST-0014",
+    "action": "Merged with existing canonical destination"
+  },
+  {
+    "originalName": "Swaraj Dweep/Havelock",
+    "canonicalName": "Swaraj Dweep",
+    "state_ut": "Andaman & Nicobar",
+    "district": "South Andaman",
+    "existingId": "DEST-0016",
+    "action": "Merged with existing canonical destination"
+  }
+]

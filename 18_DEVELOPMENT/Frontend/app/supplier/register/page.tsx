@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierRegisterPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function SupplierRegisterPage() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/api/v1/suppliers/register', {
+      const response = await fetch(`${getBaseUrl()}/suppliers/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

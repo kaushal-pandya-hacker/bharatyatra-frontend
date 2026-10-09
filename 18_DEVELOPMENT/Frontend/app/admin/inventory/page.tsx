@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function AdminInventoryPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -29,7 +30,7 @@ export default function AdminInventoryPage() {
       if (statusFilter !== 'ALL') params.append('status', statusFilter);
       if (search) params.append('search', search);
 
-      const res = await fetch(`http://localhost:4000/api/v1/admin/inventory?${params.toString()}`, {
+      const res = await fetch(`${getBaseUrl()}/admin/inventory?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const json = await res.json();
@@ -61,7 +62,7 @@ export default function AdminInventoryPage() {
     try {
       const token = localStorage.getItem('admin_token');
       const res = await fetch(
-        `http://localhost:4000/api/v1/admin/inventory/${targetItem.type}/${targetItem.id}/review`,
+        `${getBaseUrl()}/admin/inventory/${targetItem.type}/${targetItem.id}/review`,
         {
           method: 'PATCH',
           headers: {
@@ -91,7 +92,7 @@ export default function AdminInventoryPage() {
       const token = localStorage.getItem('admin_token');
       const newStatus = item.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       const res = await fetch(
-        `http://localhost:4000/api/v1/admin/inventory/${item.type}/${item.id}/status`,
+        `${getBaseUrl()}/admin/inventory/${item.type}/${item.id}/status`,
         {
           method: 'PATCH',
           headers: {

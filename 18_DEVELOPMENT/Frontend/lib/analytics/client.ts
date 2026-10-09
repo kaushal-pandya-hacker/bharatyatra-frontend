@@ -1,5 +1,5 @@
 /**
- * Chalo Farva Frontend Analytics Client SDK v1.1
+ * BharatYatra Frontend Analytics Client SDK v1.1
  * Provides non-blocking first-party event tracking, anonymous session management, and failure isolation.
  */
 

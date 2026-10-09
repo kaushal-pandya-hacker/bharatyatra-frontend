@@ -1,9 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-royal-navy: #141A32;
+  --color-deep-navy: #0A1128;
+  --color-sahara-gold: #FED65B;
+  --color-porcelain: #FCF8FB;
+}
+
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-brand-light text-slate-900 font-body antialiased;
+    @apply bg-farva-navy-deep text-farva-porcelain font-body antialiased selection:bg-farva-gold-sahara selection:text-farva-navy-deep;
+    font-feature-settings: "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1, "liga" 1, "calt" 1;
+    letter-spacing: -0.011em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight text-white;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
+
+@layer utilities {
+  .glass-card {
+    background: rgba(20, 26, 50, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(254, 214, 91, 0.12);
+  }
+
+  .glass-card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card-hover:hover {
+    border-color: rgba(254, 214, 91, 0.4);
+    box-shadow: 0 12px 36px -10px rgba(254, 214, 91, 0.22);
+    transform: translateY(-2px);
+  }
+
+  .glass-nav {
+    background: rgba(10, 17, 40, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(254, 214, 91, 0.15);
+  }
+
+  /* 99/100 Typography & Letter Styling Utilities */
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #FED65B 0%, #FFEAA7 45%, #E5BF42 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gold-gradient-bg {
+    background: linear-gradient(135deg, #FED65B 0%, #E5BF42 100%);
+  }
+
+  .gold-border-glow {
+    box-shadow: 0 0 24px rgba(254, 214, 91, 0.25);
+  }
+
+  .text-glow-gold {
+    text-shadow: 0 0 20px rgba(254, 214, 91, 0.45);
+  }
+
+  .text-shadow-hero {
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.75);
+  }
+
+  .letter-spacing-luxury {
+    letter-spacing: 0.14em;
+  }
+
+  .letter-spacing-headline {
+    letter-spacing: -0.025em;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0A1128;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E2646;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FED65B;
+}
+
+/* Animations */
+@keyframes pulse-radar {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 0.4; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-pulse-radar {
+  animation: pulse-radar 3s infinite ease-in-out;
+}
+
+

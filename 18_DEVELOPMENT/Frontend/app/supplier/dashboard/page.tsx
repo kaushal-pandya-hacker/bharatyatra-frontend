@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierDashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -20,7 +21,7 @@ export default function SupplierDashboardPage() {
         headers['x-supplier-id'] = 'supp_001';
       }
 
-      const res = await fetch('http://localhost:4000/api/v1/suppliers/dashboard', { headers });
+      const res = await fetch(`${getBaseUrl()}/suppliers/dashboard`, { headers });
       const json = await res.json();
 
       if (json.success && json.data) {

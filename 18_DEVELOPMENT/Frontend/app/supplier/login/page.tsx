@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierLoginPage() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function SupplierLoginPage() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/api/v1/suppliers/login', {
+      const response = await fetch(`${getBaseUrl()}/suppliers/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

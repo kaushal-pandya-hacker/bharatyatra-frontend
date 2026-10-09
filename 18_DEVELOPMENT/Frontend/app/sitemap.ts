@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.chalofarva.com';
+  const baseUrl = 'https://www.bharatyatra.com';
 
   const gujaratDestinations = [
     'ahmedabad',
@@ -37,37 +37,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const mainPages = [
+    { url: baseUrl, priority: 1.0, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/explore`, priority: 0.9, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/destinations`, priority: 0.9, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/plan`, priority: 0.9, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/packages`, priority: 0.9, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/stays`, priority: 0.8, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/buses`, priority: 0.8, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/trains`, priority: 0.8, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/flights`, priority: 0.8, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/restaurants`, priority: 0.7, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/experiences`, priority: 0.7, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/map`, priority: 0.7, changeFrequency: 'weekly' as const },
+  ];
+
   return [
-    {
-      url: baseUrl,
+    ...mainPages.map((p) => ({
+      ...p,
       lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/search`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/ai-planner`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/packages`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/support`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
+    })),
     ...destinationUrls,
   ];
 }

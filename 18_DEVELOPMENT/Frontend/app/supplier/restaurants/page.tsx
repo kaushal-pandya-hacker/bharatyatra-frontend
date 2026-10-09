@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getBaseUrl } from '@/lib/api/client';
 
 export default function SupplierRestaurantsPage() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
@@ -41,7 +42,7 @@ export default function SupplierRestaurantsPage() {
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:4000/api/v1/supplier/restaurants', { headers: getHeaders() });
+      const res = await fetch(`${getBaseUrl()}/supplier/restaurants`, { headers: getHeaders() });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setRestaurants(json.data);
@@ -53,7 +54,7 @@ export default function SupplierRestaurantsPage() {
 
   const fetchDestinations = async () => {
     try {
-      const res = await fetch('http://localhost:4000/api/v1/destinations');
+      const res = await fetch(`${getBaseUrl()}/destinations`);
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setDestinations(json.data);
@@ -111,8 +112,8 @@ export default function SupplierRestaurantsPage() {
     try {
       const isEdit = !!editingRestaurant;
       const url = isEdit
-        ? `http://localhost:4000/api/v1/supplier/restaurants/${editingRestaurant.id}`
-        : 'http://localhost:4000/api/v1/supplier/restaurants';
+        ? `${getBaseUrl()}/supplier/restaurants/${editingRestaurant.id}`
+        : `${getBaseUrl()}/supplier/restaurants`;
       const method = isEdit ? 'PATCH' : 'POST';
 
       const res = await fetch(url, {
@@ -140,7 +141,7 @@ export default function SupplierRestaurantsPage() {
   const toggleStatus = async (rest: any) => {
     const newStatus = rest.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/supplier/restaurants/${rest.id}`, {
+      const res = await fetch(`${getBaseUrl()}/supplier/restaurants/${rest.id}`, {
         method: 'PATCH',
         headers: getHeaders(),
         body: JSON.stringify({ status: newStatus }),

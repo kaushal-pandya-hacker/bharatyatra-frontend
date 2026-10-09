@@ -20,7 +20,7 @@ export default function BetaFeedbackPage() {
       <div style={{ maxWidth: '650px', margin: '0 auto', background: '#1E293B', padding: '2rem', borderRadius: '12px', border: '1px solid #334155' }}>
         <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>💬 Beta Feedback & Bug Reporting</h1>
         <p style={{ color: '#94A3B8', fontSize: '0.95rem', marginBottom: '2rem' }}>
-          Help us refine Chalo Farva before public launch. Report bugs, travel data inaccuracies, or UX suggestions directly to our product team.
+          Help us refine BharatYatra before public launch. Report bugs, travel data inaccuracies, or UX suggestions directly to our product team.
         </p>
 
         {submitted ? (

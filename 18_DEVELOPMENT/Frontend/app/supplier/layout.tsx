@@ -105,7 +105,7 @@ export default function SupplierLayout({ children }: { children: React.ReactNode
               </Link>
             </div>
           )}
-          <div className="text-[11px] text-slate-500 text-center">Chalo Farva v1.0 • B2B Tenant</div>
+          <div className="text-[11px] text-slate-500 text-center">BharatYatra v1.0 • B2B Tenant</div>
         </div>
       </aside>
 

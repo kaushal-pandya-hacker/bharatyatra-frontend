@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api/client';
 
 export default function AdminDashboardPage() {
   const [metrics, setMetrics] = useState<any>(null);
@@ -17,11 +18,10 @@ export default function AdminDashboardPage() {
     setError('');
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await fetch('http://localhost:4000/api/v1/admin/dashboard', {
+      const json = await apiFetch<any>('/admin/dashboard', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const json = await res.json();
-      if (!res.ok || !json.success) {
+      if (!json.success) {
         throw new Error(json.message || 'Failed to fetch admin metrics');
       }
       setMetrics(json.data);
@@ -217,7 +217,7 @@ export default function AdminDashboardPage() {
                     <td className="px-4 py-3 font-mono text-[11px] text-slate-500">
                       {new Date(log.createdAt).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-800">{log.adminEmail || 'admin@chalofarva.com'}</td>
+                    <td className="px-4 py-3 font-medium text-slate-800">{log.adminEmail || 'admin@bharatyatra.com'}</td>
                     <td className="px-4 py-3 font-bold text-slate-900">
                       <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px]">
                         {log.action}

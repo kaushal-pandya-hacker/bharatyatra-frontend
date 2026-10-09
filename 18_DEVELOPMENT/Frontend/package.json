@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run sync:state-images && next dev",
+    "build": "npm run sync:state-images && next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "sync:state-images": "node ../Scripts/sync_state_images.js && node ../Scripts/build_state_folder_catalog.js",
+    "validate:package-images": "node ../Scripts/validate-package-images.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
     "@types/leaflet": "^1.9.22",
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",

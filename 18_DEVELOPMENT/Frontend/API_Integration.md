@@ -1,4 +1,4 @@
-# API INTEGRATION STRATEGY — CHALO FARVA
+# API INTEGRATION STRATEGY — BHARAT YATRA
 
 1. **Centralized Fetch Wrapper**: All HTTP calls route through `lib/api/client.ts`.
 2. **JWT Authorization Interceptor**: Token automatically attached from local storage / HTTP-only cookie.
