@@ -1,0 +1,71 @@
+[
+  {
+    "slug": "sample-package-import-template",
+    "title": "Sample Indian Travel Package Template",
+    "shortTitle": "Sample Package",
+    "shortDescription": "Template for importing packages into BharatYatra platform.",
+    "description": "Comprehensive description of the travel package including sights, itinerary, inclusions, and terms.",
+    "packageType": "HOLIDAY",
+    "domesticOrInternational": "DOMESTIC",
+    "destinationName": "Destination Name",
+    "country": "India",
+    "state": "Gujarat",
+    "city": "Ahmedabad",
+    "startingCity": "Ahmedabad",
+    "endingCity": "Ahmedabad",
+    "region": "Central Gujarat",
+    "durationDays": 3,
+    "durationNights": 2,
+    "category": "Heritage",
+    "subcategory": "Cultural Trail",
+    "tags": ["Gujarat", "Heritage", "Sample"],
+    "theme": "Cultural Exploration",
+    "suitableFor": ["Families", "Couples"],
+    "difficulty": "Easy",
+    "startingPrice": 9999,
+    "originalPrice": 12999,
+    "discountedPrice": 9999,
+    "discountPercentage": 23,
+    "priceType": "PER_PERSON",
+    "priceDisclaimer": "Starting price per person on twin-sharing basis.",
+    "currency": "INR",
+    "bestMonths": ["October", "November", "December", "January", "February", "March"],
+    "minimumTravellers": 1,
+    "maximumTravellers": 10,
+    "featured": false,
+    "popular": true,
+    "rating": 4.8,
+    "totalReviews": 100,
+    "coverImage": "/images/packages/gujarat/sample/hero.jpg",
+    "galleryImages": ["/images/packages/gujarat/sample/01.jpg"],
+    "highlights": [
+      { "title": "Highlight Title", "description": "Highlight detail description", "icon": "star" }
+    ],
+    "itineraryDays": [
+      {
+        "dayNumber": 1,
+        "title": "Day 1 Arrival & Sightseeing",
+        "description": "Arrival at starting city and check-in.",
+        "activities": ["Activity 1", "Activity 2"],
+        "meals": ["Dinner"],
+        "hotel": "Hotel Name (3 Star)",
+        "transport": "Private AC Car",
+        "overnightCity": "City Name"
+      }
+    ],
+    "inclusions": [
+      { "title": "Hotel Stay", "description": "3 star hotel stay", "included": true }
+    ],
+    "exclusions": [
+      { "title": "Airfare", "description": "Flights excluded", "included": false }
+    ],
+    "hotels": [
+      { "hotelName": "Hotel Standard", "hotelCategory": "3 Star", "roomType": "Standard AC Room", "nights": 2, "upgradePricePerNightInr": 0, "isDefault": true }
+    ],
+    "transports": [
+      { "transportType": "CAB", "title": "Private AC Sedan", "isIncluded": true, "additionalPriceInr": 0 }
+    ],
+    "seoTitle": "Sample Package | BharatYatra",
+    seoDescription: "Book sample travel package with BharatYatra."
+  }
+]

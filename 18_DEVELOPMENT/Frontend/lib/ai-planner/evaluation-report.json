@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-10-05T10:40:48.418Z",
+  "totalScenarios": 500,
+  "passedCount": 500,
+  "failedCount": 0,
+  "passRate": "100.0%",
+  "criticalFailures": 0,
+  "hallucinationFailures": 0,
+  "routeFailures": 0,
+  "budgetFailures": 0,
+  "timeFeasibilityFailures": 0,
+  "overallPlannerScore": "96.4/100",
+  "productionReadiness": "YES",
+  "suites": [
+    {
+      "suiteName": "1. Basic Test Scenarios (Goa, Kashmir, Rajasthan)",
+      "total": 100,
+      "passed": 100,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "suiteName": "2. Intermediate Multi-Day Circuits (Gujarat, Kerala, Himachal)",
+      "total": 100,
+      "passed": 100,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "suiteName": "3. Complex Multi-City Routes (Haridwar-Rishikesh-Kedarnath-Badrinath)",
+      "total": 100,
+      "passed": 100,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "suiteName": "4. Pure Gujarati Language Prompts (અમદાવાદથી કાશ્મીર...)",
+      "total": 50,
+      "passed": 50,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "suiteName": "5. Gujarati-English Mixed Natural Prompts (Mare Ahmedabad thi...)",
+      "total": 50,
+      "passed": 50,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "suiteName": "6. Incomplete & Ambiguous Requests (3 days mountain, etc.)",
+      "total": 50,
+      "passed": 50,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "suiteName": "7. Impossible & Adversarial Requests (10 cities in 3d, -₹5k, etc.)",
+      "total": 50,
+      "passed": 50,
+      "failed": 0,
+      "passRate": "100.0%"
+    }
+  ]
+}
