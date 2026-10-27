@@ -1,6 +1,8 @@
 const rawMasterPackages = require('./tourism/packages-master.json');
 const masterPackagesData: any[] = Array.isArray(rawMasterPackages)
   ? rawMasterPackages
+  : Array.isArray(rawMasterPackages?.packages)
+  ? rawMasterPackages.packages
   : (rawMasterPackages && Array.isArray(rawMasterPackages.default))
   ? rawMasterPackages.default
   : [];

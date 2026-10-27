@@ -1,0 +1,58 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+const DEFAULT_MERCHANT_KEY = process.env.GATEWAY_DEFAULT_SECRET_KEY || 'sk_test_bharat_sim_secret_key_84918294819284';
+
+export async function GET(req: NextRequest) {
+  try {
+    const apiKey = req.headers.get('x-api-key') || DEFAULT_MERCHANT_KEY;
+
+    const res = await fetch(`${BACKEND_URL}/api/v1/gateway/refunds`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    const data = await res.json().catch(() => null);
+    return NextResponse.json(data || { success: false, error: 'Bad gateway response' }, {
+      status: res.status,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message || 'Gateway refunds proxy failed' },
+      { status: 502 },
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const apiKey = req.headers.get('x-api-key') || DEFAULT_MERCHANT_KEY;
+    const idempKey = req.headers.get('x-idempotency-key') || `idemp_ref_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const body = await req.json();
+
+    const res = await fetch(`${BACKEND_URL}/api/v1/gateway/refunds`, {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'x-idempotency-key': idempKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      cache: 'no-store',
+    });
+
+    const data = await res.json().catch(() => null);
+    return NextResponse.json(data || { success: false, error: 'Bad gateway response' }, {
+      status: res.status,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message || 'Gateway refund execution failed' },
+      { status: 502 },
+    );
+  }
+}

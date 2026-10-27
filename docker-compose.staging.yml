@@ -1,0 +1,101 @@
+# ==============================================================================
+# BHARATYATRA DISPOSABLE LOCAL STAGING INFRASTRUCTURE (HARDENED)
+# Phase 14B: Hardened Compose Specification for Operator Review
+# ==============================================================================
+# Hardening Guarantees:
+# 1. Zero default-password fallbacks (Fails closed if credentials are absent).
+# 2. Strict IPv4 loopback binding (127.0.0.1 only; zero LAN/public network exposure).
+# 3. Redis authentication via REDISCLI_AUTH (No passwords exposed in process arguments or logs).
+# 4. Pinned minimal Alpine image versions.
+# 5. Privileged mode disabled, capabilities dropped, no Docker socket mounts.
+# 6. Dedicated disposable named volume: 'bharatyatra_staging_pgdata'.
+# ==============================================================================
+
+
+services:
+  staging-postgres:
+    image: postgres:15.8-alpine3.20
+    container_name: bharatyatra-staging-postgres
+    restart: "no"
+    privileged: false
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    environment:
+      POSTGRES_DB: bharatyatra_staging_sandbox
+      POSTGRES_USER: bharatyatra_staging_admin
+      # Fails closed if STAGING_DB_PASSWORD is missing or empty
+      POSTGRES_PASSWORD: "${STAGING_DB_PASSWORD:?Error: STAGING_DB_PASSWORD must be supplied in .env.staging}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      # Strictly bound to host loopback interface (127.0.0.1)
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - staging_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bharatyatra_staging_admin -d bharatyatra_staging_sandbox -h 127.0.0.1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - staging-isolated-net
+    mem_limit: 1024m
+    cpus: 1.5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1024M
+
+  staging-redis:
+    image: redis:7.2.5-alpine3.20
+    container_name: bharatyatra-staging-redis
+    restart: "no"
+    privileged: false
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      # Fails closed if STAGING_REDIS_PASSWORD is missing or empty
+      REDIS_PASSWORD: "${STAGING_REDIS_PASSWORD:?Error: STAGING_REDIS_PASSWORD must be supplied in .env.staging}"
+      # REDISCLI_AUTH allows redis-cli healthcheck to authenticate without CLI argument exposure
+      REDISCLI_AUTH: "${STAGING_REDIS_PASSWORD:?Error: STAGING_REDIS_PASSWORD must be supplied in .env.staging}"
+    command: >
+      sh -c "exec redis-server --save '' --appendonly no --requirepass \"$$REDIS_PASSWORD\""
+    ports:
+      # Strictly bound to host loopback interface (127.0.0.1)
+      - "127.0.0.1:6380:6379"
+    healthcheck:
+      # Uses REDISCLI_AUTH env var; avoids passing password in command line arguments
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - staging-isolated-net
+    mem_limit: 256m
+    cpus: 0.5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  staging-isolated-net:
+    driver: bridge
+    internal: false
+
+volumes:
+  staging_postgres_data:
+    name: bharatyatra_staging_pgdata

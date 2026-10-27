@@ -8,8 +8,13 @@ import { Compass, Sparkles, MapPin, ShieldCheck, PhoneCall, Mail, Heart, ArrowRi
 export function Footer() {
   const pathname = usePathname();
 
-  // Hide footer only on admin or supplier dashboard routes if desired
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/supplier') || pathname === '/checkout') {
+  // Hide footer on admin, supplier, checkout, and trip command center routes
+  if (
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/supplier') ||
+    pathname === '/checkout' ||
+    (pathname?.startsWith('/trips') && pathname !== '/trips')
+  ) {
     return null;
   }
 

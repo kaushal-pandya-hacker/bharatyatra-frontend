@@ -221,7 +221,7 @@ function CartPageContent() {
     <div className="min-h-screen bg-[#070D18] text-gray-100 font-sans pb-28">
       {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-4 pt-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-white tracking-tight">Your Unified Trip Cart</h1>
             <p className="text-sm text-gray-400 mt-1">Review all travel components together in a single checkout session</p>

@@ -36,7 +36,7 @@ export default function GlobalDestinationSelectionBar() {
   return (
     <>
       {/* Floating Selection Bar (Sticky Bottom Bar - Styled Premium Glassmorphism) */}
-      <div className="fixed bottom-20 md:bottom-6 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto z-40 max-w-2xl w-full bg-slate-950/95 border border-amber-400/50 rounded-2xl shadow-2xl p-3 sm:p-4 backdrop-blur-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+      <div className="fixed bottom-20 md:bottom-6 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto z-40 max-w-2xl w-[calc(100%-2rem)] sm:w-full bg-slate-950/95 border border-amber-400/50 rounded-2xl shadow-2xl p-3 sm:p-4 backdrop-blur-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           
           {/* Left info badge */}

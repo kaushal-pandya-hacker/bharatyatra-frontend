@@ -647,7 +647,7 @@ export default function Gujarat100LandmarksDirectory({
 
       {/* STICKY BOTTOM FLOATING SELECTION BAR */}
       {selectedPlaceIds.length > 0 && (
-        <div className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-8 z-40 bg-slate-950/95 border border-amber-500/50 backdrop-blur-xl p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-6 max-w-xl animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-20 md:bottom-6 left-4 right-4 sm:left-auto sm:right-8 z-40 bg-slate-950/95 border border-amber-500/50 backdrop-blur-xl p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-6 max-w-xl animate-in slide-in-from-bottom-5 duration-300">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-base shadow-md">
               {selectedPlaceIds.length}

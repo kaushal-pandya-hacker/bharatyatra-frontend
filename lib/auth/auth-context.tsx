@@ -173,94 +173,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           }
         } else {
-          const storedToken = localStorage.getItem('auth_token');
-          const storedUser = localStorage.getItem('auth_user');
+          // No active Supabase session: Check for valid existing backend session token
+          const storedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
 
-          if (storedUser && isMounted) {
+          if (storedToken && storedToken !== 'demo_persistent_token') {
             try {
-              const parsedUser = JSON.parse(storedUser);
-              if (parsedUser && parsedUser.id) {
-                setToken(storedToken || 'demo_persistent_token');
-                setUser(parsedUser);
-
-                // Background backend sync if token exists
-                if (storedToken) {
-                  fetchBackendUser(storedToken).then((bUser) => {
-                    if (bUser && isMounted) {
-                      setUser(bUser);
-                      localStorage.setItem('auth_user', JSON.stringify(bUser));
-                    }
-                  }).catch(() => {});
-                }
+              const bUser = await fetchBackendUser(storedToken);
+              if (bUser && isMounted) {
+                setUser(bUser);
+                setToken(storedToken);
+                localStorage.setItem('auth_user', JSON.stringify(bUser));
               } else if (isMounted) {
-                const autoUser: UserProfile = {
-                  id: 'usr_bharatyatra_persistent',
-                  email: 'kaushal@bharatyatra.com',
-                  fullName: 'Kaushal Pandya',
-                  role: 'CUSTOMER',
-                };
-                setToken('demo_persistent_token');
-                setUser(autoUser);
-                localStorage.setItem('auth_token', 'demo_persistent_token');
-                localStorage.setItem('auth_user', JSON.stringify(autoUser));
+                setUser(null);
+                setToken(null);
+                clearUserLocalCache();
               }
             } catch {
               if (isMounted) {
-                const autoUser: UserProfile = {
-                  id: 'usr_bharatyatra_persistent',
-                  email: 'kaushal@bharatyatra.com',
-                  fullName: 'Kaushal Pandya',
-                  role: 'CUSTOMER',
-                };
-                setToken('demo_persistent_token');
-                setUser(autoUser);
-                localStorage.setItem('auth_token', 'demo_persistent_token');
-                localStorage.setItem('auth_user', JSON.stringify(autoUser));
+                setUser(null);
+                setToken(null);
+                clearUserLocalCache();
               }
             }
           } else if (isMounted) {
-            // Permanent Single Sign-In Guarantee: Auto-login persistent user session on first launch
-            const autoUser: UserProfile = {
-              id: 'usr_bharatyatra_persistent',
-              email: 'kaushal@bharatyatra.com',
-              fullName: 'Kaushal Pandya',
-              role: 'CUSTOMER',
-            };
-            setToken('demo_persistent_token');
-            setUser(autoUser);
-            localStorage.setItem('auth_token', 'demo_persistent_token');
-            localStorage.setItem('auth_user', JSON.stringify(autoUser));
+            // Unauthenticated visitor: Strict null session enforcement (zero mock user injection)
+            setUser(null);
+            setToken(null);
+            clearUserLocalCache();
           }
         }
       } catch (err) {
-        const storedUser = localStorage.getItem('auth_user');
-        if (storedUser && isMounted) {
-          try {
-            setUser(JSON.parse(storedUser));
-            setToken(localStorage.getItem('auth_token') || 'demo_persistent_token');
-          } catch {
-            const autoUser: UserProfile = {
-              id: 'usr_bharatyatra_persistent',
-              email: 'kaushal@bharatyatra.com',
-              fullName: 'Kaushal Pandya',
-              role: 'CUSTOMER',
-            };
-            setUser(autoUser);
-            setToken('demo_persistent_token');
-            localStorage.setItem('auth_token', 'demo_persistent_token');
-            localStorage.setItem('auth_user', JSON.stringify(autoUser));
-          }
-        } else if (isMounted) {
-          const autoUser: UserProfile = {
-            id: 'usr_bharatyatra_persistent',
-            email: 'kaushal@bharatyatra.com',
-            fullName: 'Kaushal Pandya',
-            role: 'CUSTOMER',
-          };
-          setUser(autoUser);
-          setToken('demo_persistent_token');
-          localStorage.setItem('auth_token', 'demo_persistent_token');
-          localStorage.setItem('auth_user', JSON.stringify(autoUser));
+        if (isMounted) {
+          setUser(null);
+          setToken(null);
+          clearUserLocalCache();
         }
       } finally {
         if (isMounted) {

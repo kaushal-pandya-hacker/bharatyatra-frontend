@@ -16,9 +16,26 @@ import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPath = pathname?.startsWith('/bharatyatra-ops');
+  const isTripDashboard = pathname?.startsWith('/trips/') && pathname !== '/trips';
 
   if (isAdminPath) {
     return <>{children}</>;
+  }
+
+  if (isTripDashboard) {
+    return (
+      <AccessibilityProvider>
+        <AuthProvider>
+          <BookingGuardProvider>
+            <DestinationSelectionProvider>
+              <main className="min-h-screen">{children}</main>
+              <AccessibilityModal />
+              <NexiChatFloating />
+            </DestinationSelectionProvider>
+          </BookingGuardProvider>
+        </AuthProvider>
+      </AccessibilityProvider>
+    );
   }
 
   return (

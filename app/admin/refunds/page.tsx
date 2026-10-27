@@ -160,7 +160,7 @@ export default function AdminRefundsPage() {
       </div>
 
       {/* REFUNDS TABLE */}
-      <div className="bg-[#0B1528] rounded-2xl border border-gray-800 overflow-hidden">
+      <div className="bg-[#0B1528] rounded-2xl border border-gray-800 overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-900/80 text-xs text-gray-400 border-b border-gray-800 uppercase tracking-wider">

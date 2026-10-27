@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  gateway-postgres:
+    image: postgres:15-alpine
+    container_name: bharatgateway-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gateway_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gateway_secure_password_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-bharatgateway_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - gateway_pgdata:/var/lib/postgresql/data
+      - ./11_PAYMENTS_FINANCE/Payment_Gateway/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gateway_user} -d ${POSTGRES_DB:-bharatgateway_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  gateway-redis:
+    image: redis:7-alpine
+    container_name: bharatgateway-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - gateway_redisdata:/data
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "volatile-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  gateway-backend:
+    build:
+      context: ./18_DEVELOPMENT/Backend
+      dockerfile: Dockerfile
+    container_name: bharatgateway-backend
+    restart: unless-stopped
+    depends_on:
+      gateway-postgres:
+        condition: service_healthy
+      gateway-redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-gateway_user}:${POSTGRES_PASSWORD:-gateway_secure_password_2026}@gateway-postgres:5432/${POSTGRES_DB:-bharatgateway_dev}
+      REDIS_URL: redis://gateway-redis:6379
+      GATEWAY_SIMULATOR_MODE: "true"
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_gateway_secret_minimum_32_characters_long_2026}
+      WEBHOOK_SIGNING_SALT: ${WEBHOOK_SIGNING_SALT:-dev_webhook_salt_secure_2026}
+    ports:
+      - "3001:3001"
+
+  gateway-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bharatgateway-frontend
+    restart: unless-stopped
+    depends_on:
+      - gateway-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      NEXT_PUBLIC_GATEWAY_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+
+volumes:
+  gateway_pgdata:
+  gateway_redisdata:

@@ -52,6 +52,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { label: 'Dashboard', href: '/admin', icon: '📊' },
+    { label: 'Travel Partners', href: '/admin/travel-partners', icon: '🤝' },
+    { label: 'Travel Packages', href: '/admin/travel-packages', icon: '🎒' },
+    { label: 'Partner Commissions', href: '/admin/travel-commissions', icon: '💰' },
+    { label: 'Partner Audit Log', href: '/admin/travel-partner-audit', icon: '🛡️' },
     { label: 'Suppliers', href: '/admin/suppliers', icon: '🏢' },
     { label: 'Inventory Moderation', href: '/admin/inventory', icon: '🏨' },
     { label: 'Bookings Directory', href: '/admin/bookings', icon: '📑' },

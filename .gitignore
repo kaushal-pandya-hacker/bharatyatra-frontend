@@ -29,3 +29,11 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+
+# staging evidence & backups
+security-audit/local-staging-evidence/
+
+# build artifacts & caches
+*.tsbuildinfo
+dist/
+BharatYatra-Vercel-Frontend/

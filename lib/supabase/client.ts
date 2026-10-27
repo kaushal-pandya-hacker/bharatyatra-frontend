@@ -9,7 +9,12 @@ const supabasePublishableKey =
   'sb_publishable_s-dMVkeMYG384Cyz9sO0cg_JkrRjbSV';
 
 let supabaseInstance: SupabaseClient | null = null;
+let supabaseServerInstance: SupabaseClient | null = null;
 
+/**
+ * Public client for browser and standard authenticated requests.
+ * Uses publishable / anon key and enforces Row Level Security.
+ */
 export function getSupabaseClient(): SupabaseClient {
   if (!supabaseInstance) {
     supabaseInstance = createClient(supabaseUrl, supabasePublishableKey, {
@@ -22,6 +27,38 @@ export function getSupabaseClient(): SupabaseClient {
     });
   }
   return supabaseInstance;
+}
+
+export function setSupabaseClientForTesting(client: SupabaseClient | null): void {
+  supabaseInstance = client;
+}
+
+/**
+ * Secure server-only client for backend API routes.
+ * Uses SUPABASE_SERVICE_ROLE_KEY if configured in server environment.
+ * Never exposes privileged keys to the browser.
+ */
+export function getSupabaseServerClient(): SupabaseClient {
+  // Never use service role key in browser
+  if (typeof window !== 'undefined') {
+    return getSupabaseClient();
+  }
+
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (serviceRoleKey) {
+    if (!supabaseServerInstance) {
+      supabaseServerInstance = createClient(supabaseUrl, serviceRoleKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      });
+    }
+    return supabaseServerInstance;
+  }
+
+  // Graceful fallback to publishable client if service role key is unconfigured
+  return getSupabaseClient();
 }
 
 export const supabase = getSupabaseClient();

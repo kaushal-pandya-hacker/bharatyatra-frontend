@@ -264,7 +264,7 @@ export default function HomePageClient() {
 
 
           {/* SECTION 5: COMMAND LAUNCH FOOTER (Aerospace Grade Command Deck) */}
-          <section className="w-full bg-on-secondary-fixed text-surface py-20 px-gutter-desktop relative overflow-hidden">
+          <section className="w-full bg-on-secondary-fixed text-surface py-16 sm:py-20 px-4 sm:px-6 lg:px-gutter-desktop relative overflow-hidden">
             {/* Ambient Golden Glow behind Command Console */}
             <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary-container/10 blur-[120px] rounded-full pointer-events-none"></div>
             <div className="max-w-5xl mx-auto relative z-10">

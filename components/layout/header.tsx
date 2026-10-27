@@ -32,6 +32,7 @@ export function Header() {
   const { user, logout } = useAuth();
   const { openSettings, language, setLanguage, t } = useAccessibility();
   const pathname = usePathname();
+
   const [moreOpen, setMoreOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -66,6 +67,11 @@ export function Header() {
     };
   }, []);
 
+  // Hide global marketing header on trip command center routes (which have their own dedicated navigation)
+  if (pathname?.startsWith('/trips') && pathname !== '/trips') {
+    return null;
+  }
+
   // Hide global header on auth pages, checkout, admin, or supplier routes
   if (
     pathname?.startsWith('/admin') ||
@@ -80,17 +86,19 @@ export function Header() {
     return null;
   }
 
-  // Primary navigation items displayed directly in header bar (sleek 5 items)
+  // Primary navigation items displayed directly in header bar (3 core on lg, 5 on xl+)
   const mainNavItems = [
     { label: t.nav.explore, href: '/explore', icon: Compass },
-    { label: t.nav.destinations, href: '/destinations', icon: MapPin },
     { label: t.nav.plan, href: '/plan', icon: Sparkles, highlight: true },
     { label: t.nav.packages, href: '/packages', icon: Route },
-    { label: t.nav.stays, href: '/stays', icon: Hotel },
+    { label: t.nav.destinations, href: '/destinations', icon: MapPin, collapseOnLg: true },
+    { label: t.nav.stays, href: '/stays', icon: Hotel, collapseOnLg: true },
   ];
 
   // Secondary navigation items housed inside "More" dropdown
   const secondaryNavItems = [
+    { label: t.nav.destinations, href: '/destinations', icon: MapPin, desc: 'Top places across 36 States', showOnLgOnly: true },
+    { label: t.nav.stays, href: '/stays', icon: Hotel, desc: 'Hotels, resorts & heritage stays', showOnLgOnly: true },
     { label: t.nav.buses, href: '/buses', icon: Bus, desc: 'Intercity bus booking' },
     { label: t.nav.trains, href: '/trains', icon: Train, desc: 'IRCTC train routes & tickets' },
     { label: t.nav.flights, href: '/flights', icon: Plane, desc: 'Domestic & international flights' },
@@ -106,7 +114,19 @@ export function Header() {
   ] as const;
 
   const currentLangObj = languages.find((l) => l.code === language) || languages[0];
-  const allNavItems = [...mainNavItems, ...secondaryNavItems];
+  const allNavItems = [
+    { label: t.nav.explore, href: '/explore', icon: Compass },
+    { label: t.nav.destinations, href: '/destinations', icon: MapPin },
+    { label: t.nav.plan, href: '/plan', icon: Sparkles, highlight: true },
+    { label: t.nav.packages, href: '/packages', icon: Route },
+    { label: t.nav.stays, href: '/stays', icon: Hotel },
+    { label: t.nav.buses, href: '/buses', icon: Bus, desc: 'Intercity bus booking' },
+    { label: t.nav.trains, href: '/trains', icon: Train, desc: 'IRCTC train routes & tickets' },
+    { label: t.nav.flights, href: '/flights', icon: Plane, desc: 'Domestic & international flights' },
+    { label: t.nav.dining, href: '/restaurants', icon: UtensilsCrossed, desc: 'Top restaurants & local food' },
+    { label: t.nav.experiences, href: '/experiences', icon: Mountain, desc: 'Guided tours & adventures' },
+    { label: 'Map Discovery', href: '/map', icon: Map, desc: 'Interactive map navigation' },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs text-slate-900 pt-safe">
@@ -134,11 +154,14 @@ export function Header() {
           {mainNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
             const Icon = item.icon;
+            const isCollapsible = 'collapseOnLg' in item && item.collapseOnLg;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl transition-all text-xs font-bold whitespace-nowrap border shrink-0 ${
+                className={`items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-xl transition-all text-xs font-bold whitespace-nowrap border shrink-0 ${
+                  isCollapsible ? 'hidden xl:flex' : 'flex'
+                } ${
                   isActive
                     ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                     : item.highlight
@@ -173,12 +196,15 @@ export function Header() {
                 {secondaryNavItems.map((item) => {
                   const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
                   const Icon = item.icon;
+                  const isLgOnly = 'showOnLgOnly' in item && item.showOnLgOnly;
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setMoreOpen(false)}
-                      className={`flex items-start gap-3 px-3.5 py-2.5 hover:bg-slate-50 transition-colors ${
+                      className={`items-start gap-3 px-3.5 py-2.5 hover:bg-slate-50 transition-colors ${
+                        isLgOnly ? 'flex xl:hidden' : 'flex'
+                      } ${
                         isActive ? 'bg-blue-50/60 text-blue-700 font-bold' : 'text-slate-800'
                       }`}
                     >
@@ -249,13 +275,13 @@ export function Header() {
             aria-label={t.accessibility.title}
           >
             <Sliders className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-            <span className="hidden sm:inline text-xs">Easy Read</span>
+            <span className="hidden xl:inline text-xs">Easy Read</span>
           </button>
 
           {/* My Trips */}
           <Link
             href="/my-trips"
-            className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-blue-700 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 hover:border-slate-300 transition-colors whitespace-nowrap shrink-0"
+            className="hidden xl:flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-blue-700 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 hover:border-slate-300 transition-colors whitespace-nowrap shrink-0"
           >
             <Compass className="h-3.5 w-3.5 text-blue-600 shrink-0" />
             <span>{t.nav.myTrips}</span>
@@ -272,12 +298,12 @@ export function Header() {
                 className="flex items-center gap-1.5 text-xs font-bold text-slate-900 bg-slate-100 border border-slate-300/80 hover:border-blue-600 px-2.5 py-1.5 rounded-xl transition-all"
               >
                 <User className="h-3.5 w-3.5 text-blue-600" />
-                <span className="max-w-[90px] truncate">{user.fullName || user.email.split('@')[0]}</span>
+                <span className="hidden xl:inline max-w-[90px] truncate">{user.fullName || user.email.split('@')[0]}</span>
               </Link>
               <button
                 onClick={logout}
                 title={t.nav.signOut}
-                className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex items-center justify-center cursor-pointer min-h-[44px] min-w-[44px]"
+                className="hidden sm:flex p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors items-center justify-center cursor-pointer min-h-[44px] min-w-[44px]"
                 aria-label={t.nav.signOut}
               >
                 <LogOut className="h-4 w-4" />
@@ -351,6 +377,45 @@ export function Header() {
               );
             })}
           </div>
+
+          {/* User Sign In / Profile in Mobile Drawer */}
+          {user ? (
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-xs font-bold text-slate-800"
+              >
+                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                  <User className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-extrabold text-slate-900">{user.fullName || user.email.split('@')[0]}</div>
+                  <div className="text-[10px] text-slate-500 font-normal">View Account &amp; Settings</div>
+                </div>
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200 hover:bg-rose-100 transition flex items-center gap-1.5"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span>{t.nav.signOut}</span>
+              </button>
+            </div>
+          ) : (
+            <div className="pt-3 border-t border-slate-100">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-blue-600 text-white font-extrabold text-xs shadow-sm hover:bg-blue-700 transition"
+              >
+                {t.nav.signIn}
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

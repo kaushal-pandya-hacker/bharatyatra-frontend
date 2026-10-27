@@ -32,6 +32,12 @@ export function Header() {
   const { user, logout } = useAuth();
   const { openSettings, language, setLanguage, t } = useAccessibility();
   const pathname = usePathname();
+
+  // Hide global marketing header on trip command center routes (which have their own dedicated navigation)
+  if (pathname?.startsWith('/trips') && pathname !== '/trips') {
+    return null;
+  }
+
   const [moreOpen, setMoreOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

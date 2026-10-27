@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-10-21T12:46:05.142Z",
+  "target": "http://127.0.0.1:4000/api/v1",
+  "tests": {
+    "loginBruteForce": {
+      "passed": true,
+      "totalAttempts": 20,
+      "unauthorized401Count": 5,
+      "throttled429Count": 15,
+      "latencies": {
+        "min": 2,
+        "p50": 6,
+        "p95": 4106,
+        "p99": 4106,
+        "max": 4106,
+        "mean": 1030
+      }
+    },
+    "otpRateLimiting": {
+      "passed": true,
+      "totalAttempts": 15,
+      "throttled429Count": 12,
+      "latencies": {
+        "min": 2,
+        "p50": 3,
+        "p95": 9,
+        "p99": 9,
+        "max": 9,
+        "mean": 4
+      }
+    },
+    "concurrentReadBurst": {
+      "passed": true,
+      "totalRequests": 50,
+      "concurrency": 15,
+      "successful200Count": 50,
+      "latencies": {
+        "min": 3,
+        "p50": 4,
+        "p95": 7,
+        "p99": 8,
+        "max": 8,
+        "mean": 5
+      }
+    },
+    "oversizedPayloadRejection": {
+      "passed": true,
+      "status": 413,
+      "latencyMs": 12
+    },
+    "securityHeadersAndErrorSanitizing": {
+      "passed": true,
+      "hasNoSniff": true,
+      "hasFrameDeny": true,
+      "hidesPoweredBy": true,
+      "stackTraceLeakFree": true
+    },
+    "postLoadRecovery": {
+      "passed": true,
+      "steadyStateLatencyMs": 16
+    }
+  },
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "allPassed": true
+  }
+}

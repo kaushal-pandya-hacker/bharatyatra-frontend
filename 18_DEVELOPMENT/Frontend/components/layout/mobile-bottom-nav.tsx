@@ -33,6 +33,7 @@ export function MobileBottomNav() {
     pathname?.startsWith('/auth') ||
     pathname?.startsWith('/signup') ||
     pathname?.startsWith('/register') ||
+    (pathname?.startsWith('/trips') && pathname !== '/trips') ||
     isDetailBookingRoute
   ) {
     return null;

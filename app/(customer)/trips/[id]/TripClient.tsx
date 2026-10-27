@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { ProtectedRoute } from '@/lib/auth/protected-route';
+import { getSavedTrips, TripItem } from '@/lib/trips/trip-storage';
 
 export default function TripCommandCenterPage({ params }: { params?: { id?: string } } = {}) {
   return (
@@ -21,6 +22,74 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
   const tripId = params?.id || '1';
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [trip, setTrip] = useState<TripItem | null>(null);
+
+  useEffect(() => {
+    const allTrips = getSavedTrips();
+    let found = allTrips.find((t) => t.id === tripId || t.tripId === tripId);
+    if (!found && allTrips.length > 0) {
+      if (tripId === 'demo-trip-id-123' || tripId === '1' || !tripId) {
+        found = allTrips[0];
+      }
+    }
+    if (found) {
+      setTrip(found);
+    }
+  }, [tripId]);
+
+  const stops = useMemo(() => {
+    if (trip?.routeJson?.stops && Array.isArray(trip.routeJson.stops)) {
+      return trip.routeJson.stops;
+    }
+    return [];
+  }, [trip]);
+
+  const formatTripDate = (d?: string) => {
+    if (!d) return '';
+    try {
+      const parts = d.split('-');
+      if (parts.length === 3) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const day = parseInt(parts[2], 10);
+        const month = months[parseInt(parts[1], 10) - 1] || parts[1];
+        const year = parts[0];
+        return `${day} ${month} ${year}`;
+      }
+    } catch {}
+    return d;
+  };
+
+  const displayTitle = trip?.title || 'Kutch Desert & Saurashtra Royal Circuit';
+  const displayTravelers = trip?.travelers || trip?.travellerCount || (trip ? 2 : 10);
+  const displayDays = trip?.durationDays || 6;
+  const displayNights = Math.max(1, displayDays - 1);
+  const displayDates = trip?.startDate
+    ? `${formatTripDate(trip.startDate)}${trip.endDate ? ` – ${formatTripDate(trip.endDate)}` : ''} (${displayDays} Days / ${displayNights} Nights)`
+    : '24 Dec 2026 – 29 Dec 2026 (6 Days / 5 Nights)';
+  const displayOrigin = trip?.originCity || 'Ahmedabad';
+  const displayDest = trip?.destinationCity || trip?.destination || (stops[stops.length - 1]?.name) || 'India';
+  const displayExpeditionId = trip?.tripId || trip?.id || 'GJ-EXP-2026-904';
+
+  const vectorList: string[] = useMemo(() => {
+    if (stops.length > 0) {
+      const list = [displayOrigin];
+      for (const s of stops) {
+        if (!list.includes(s.name)) list.push(s.name);
+      }
+      return list;
+    }
+    return ['Ahmedabad', 'Bhuj', 'Dhordo Rann', 'Mandvi', 'Sasan Gir'];
+  }, [stops, displayOrigin]);
+
+  const vehicleRecommendation = useMemo(() => {
+    if (displayTravelers <= 3) return 'AC Sedan / Hatchback';
+    if (displayTravelers <= 6) return 'Toyota Innova Crysta';
+    if (displayTravelers <= 12) return 'Force Urbania / Tempo Traveller';
+    return 'Luxury AC Coach Convoy';
+  }, [displayTravelers]);
+
+  const nextWaypoint = stops[0]?.name || displayDest || 'White Rann Sunset Salt Deck';
+  const nextWaypointDistrict = stops[0]?.district || displayDest || 'En Route';
 
   const triggerQuickExpense = () => {
     setToastMessage(`Quick Expense Modal Initialized for ${user?.fullName || 'Traveler'}`);
@@ -33,81 +102,99 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
       {/* HEADER */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(20,26,50,0.06)]">
-        <div className="h-20 w-full px-space-lg flex items-center justify-between gap-space-md">
-          <div className="flex items-center gap-space-lg">
-            <Link href="/" className="flex flex-col">
-              <div className="flex items-center gap-space-xs">
-                <span className="material-symbols-outlined text-primary text-2xl">explore</span>
-                <span className="font-title-lg text-title-lg tracking-tight text-on-surface font-bold">BHARAT YATRA</span>
+        <div className="h-20 w-full px-4 lg:px-6 xl:px-8 flex items-center justify-between gap-2 lg:gap-4 shrink-0">
+          <div className="flex items-center gap-3 xl:gap-space-lg shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 shrink-0 group focus:outline-hidden">
+              <img
+                src="/logo.png"
+                alt="BharatYatra Logo"
+                className="h-10 w-auto object-contain rounded-md transition-transform group-hover:scale-105 shrink-0"
+              />
+              <div className="flex flex-col whitespace-nowrap justify-center">
+                <span className="text-base font-heading font-black tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors leading-tight">
+                  BHARAT YATRA
+                </span>
+                <span className="text-[10px] font-bold text-amber-600 tracking-wider uppercase leading-none mt-0.5">
+                  {trip?.destinationCity ? `${trip.destinationCity} Expedition` : 'Sovereign Travel Engine'}
+                </span>
               </div>
-              <span className="font-label-caps text-label-caps tracking-wider text-on-surface-variant">
-                ભારત યાત્રા • Sovereign Gujarat Travel Engine
-              </span>
             </Link>
-            <div className="hidden xl:flex items-center gap-space-sm pl-space-md">
-              <div className="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-container/20 text-on-surface">
-                <span className="w-2 h-2 rounded-full bg-primary-container"></span>
-                <span className="font-label-md text-label-md font-semibold">Active Expedition:</span>
-                <span className="font-body-sm text-body-sm text-on-surface font-medium">Kutch &amp; Saurashtra Circuit (10 Travelers)</span>
+            <div className="hidden 2xl:flex items-center gap-space-sm pl-space-md shrink-0">
+              <div className="flex items-center gap-space-xs px-3 py-1 rounded-full bg-amber-400/20 text-slate-900 border border-amber-400/30 whitespace-nowrap">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                <span className="text-xs font-bold whitespace-nowrap">Active Expedition:</span>
+                <span className="text-xs text-slate-800 font-medium truncate max-w-xs">{displayTitle} ({displayTravelers} Travelers)</span>
               </div>
             </div>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-space-xs">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
             <Link
               href={`/trips/${tripId}`}
-              className="px-3 py-2 transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg"
+              className="px-3 py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0 shadow-xs"
             >
               Command Center
             </Link>
             <Link
               href="/trips/road-trip"
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Road Trip &amp; Vehicle
             </Link>
             <Link
               href={`/trips/${tripId}/cost`}
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Cost &amp; Intelligence
             </Link>
             <Link
               href={`/trips/${tripId}/expenses`}
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Group Splitter
             </Link>
             <Link
               href={`/trips/${tripId}/settle`}
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Settlement Optimizer
             </Link>
           </nav>
 
-          <div className="flex items-center gap-space-md">
+          <div className="flex items-center gap-2 xl:gap-space-md shrink-0">
             <a
-              className="hidden sm:flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface"
-              href="tel:18002031111"
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
+              href="tel:+919624282521"
+              title="Call Concierge 24/7"
             >
-              <span className="material-symbols-outlined text-primary text-base">support_agent</span>
-              <div className="flex flex-col text-left">
-                <span className="font-label-caps text-label-caps text-on-surface-variant">Concierge 24/7</span>
-                <span className="font-label-md text-label-md font-bold tracking-tight text-on-surface">1800 203 1111</span>
+              <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
+                <span className="material-symbols-outlined text-base">support_agent</span>
+              </div>
+              <div className="flex flex-col text-left leading-tight whitespace-nowrap shrink-0">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Concierge 24/7</span>
+                <span className="text-xs font-black tracking-tight text-slate-900 whitespace-nowrap">+91 96242 82521</span>
               </div>
             </a>
-            <div className="flex items-center gap-space-sm pl-space-xs">
-              <Link href="/profile" className="flex flex-col text-right hidden sm:flex">
-                <span className="font-label-md text-label-md text-on-surface font-semibold">Lead Sovereign</span>
-                <span className="font-label-caps text-label-caps text-on-surface-variant">Verified Guide</span>
-              </Link>
-              <img
-                alt="Profile"
-                className="w-8 h-8 rounded-full object-cover shadow-[0_2px_8px_rgba(20,26,50,0.12)]"
-                src="https://lh3.googleusercontent.com/aida/AEtjO1Ui59jsO1cRmYcx_EhvwkLGkFogmDjmf7WlO_OauBFwKZ0uk_e307OoSlXT4rFNOTTz18I6VJ9GGtE93D4OpgxiI9xOdoffUGkzgoQ0KG88ACv-KY9EVYggJxEwdGNO95rCHoqDEYuaDqN7tRftqN7dgBVeMibJArETY3NhtGtIYgwZNrtEOGWVQM_PjXq995rzqJH5UGpxAdJ8JA0v0kOcVN3eHS4E9bOBnUkpNA-jIX-7ScyvFM41G5v_ZvuZOXHwVOlo5WZh9Nc"
-              />
-            </div>
+            <Link href="/profile" className="flex items-center gap-2.5 pl-1 group shrink-0 whitespace-nowrap">
+              <div className="flex flex-col text-right hidden sm:flex leading-tight whitespace-nowrap shrink-0">
+                <span className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors whitespace-nowrap">
+                  {user?.fullName || 'Kaushal Pandya'}
+                </span>
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                  Verified Voyager
+                </span>
+              </div>
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-400 to-orange-400 text-slate-950 font-black text-xs flex items-center justify-center shadow-md ring-2 ring-white shrink-0">
+                {user?.fullName
+                  ? user.fullName
+                      .split(' ')
+                      .map((n: string) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()
+                  : 'KP'}
+              </div>
+            </Link>
           </div>
         </div>
       </header>
@@ -159,7 +246,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
         <div className="mt-auto p-space-sm rounded-xl bg-surface-container-low">
           <div className="flex items-center gap-space-xs mb-1">
             <span className="material-symbols-outlined text-primary text-base">verified</span>
-            <span className="font-label-md text-label-md font-semibold text-on-surface">Gujarat Concierge</span>
+            <span className="font-label-md text-label-md font-semibold text-on-surface">{trip?.destinationCity || displayDest} Concierge</span>
           </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             Sovereign toll clearance, fuel forecasts, and road telemetry active.
@@ -177,47 +264,54 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                 <div className="flex items-center gap-space-xs mb-1">
                   <span className="px-2.5 py-0.5 rounded-full bg-primary-container/30 text-on-primary-fixed-variant font-label-caps text-label-caps uppercase tracking-wider flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
-                    Day 2 of 6 • Live in Dhordo, Kutch
+                    {trip ? `${trip.status || 'Active'} • Day 1 of ${displayDays} • ${displayDest}` : 'Day 2 of 6 • Live in Dhordo, Kutch'}
                   </span>
                   <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">|</span>
                   <span className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">
-                    GJ-EXP-2026-904
+                    {displayExpeditionId}
                   </span>
                 </div>
                 <div className="flex items-center gap-space-sm">
-                  <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight font-bold">
-                    Kutch Desert &amp; Saurashtra Royal Circuit
+                  <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-slate-950 tracking-tight leading-tight">
+                    {displayTitle}
                   </h1>
-                  <span className="material-symbols-outlined text-primary text-2xl" title="Sovereign Verified Route">
+                  <span className="material-symbols-outlined text-amber-500 text-2xl" title="Sovereign Verified Route">
                     verified
                   </span>
                 </div>
-                <p className="font-body-md text-body-md text-on-surface-variant mt-0.5">
-                  24 Dec – 29 Dec 2026 (6 Days / 5 Nights) • 10 Travelers • Lead Voyager:{' '}
-                  <span className="font-semibold text-on-surface">{user?.fullName || 'Traveler'}</span>
+                <p className="font-body-md text-body-md text-slate-600 mt-1">
+                  {displayDates} • {displayTravelers} Travelers • Lead Voyager:{' '}
+                  <span className="font-semibold text-slate-900">{user?.fullName || 'Traveler'}</span>
                 </p>
               </div>
 
               {/* Live Vector Strip & Quick Badge */}
-              <div className="flex flex-wrap items-center gap-space-sm bg-surface-container-lowest p-space-sm rounded-xl shadow-sm">
-                <div className="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
-                  <span className="material-symbols-outlined text-primary text-lg">route</span>
-                  <span className="font-semibold text-on-surface">Vector:</span>
-                  <span>Ahmedabad</span>
-                  <span className="material-symbols-outlined text-xs">arrow_forward</span>
-                  <span>Bhuj</span>
-                  <span className="material-symbols-outlined text-xs text-primary">radio_button_checked</span>
-                  <span className="text-primary font-bold">Dhordo Rann</span>
-                  <span className="material-symbols-outlined text-xs">arrow_forward</span>
-                  <span>Mandvi</span>
-                  <span className="material-symbols-outlined text-xs">arrow_forward</span>
-                  <span>Sasan Gir</span>
+              <div className="flex flex-wrap items-center gap-2 bg-white p-3 rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-700 font-medium">
+                  <span className="font-bold text-slate-900 flex items-center gap-1 pr-1">
+                    <span className="material-symbols-outlined text-amber-500 text-sm">route</span>
+                    Vector:
+                  </span>
+                  {vectorList.map((pt, pIdx) => (
+                    <React.Fragment key={pIdx}>
+                      {pIdx > 0 && <span className="material-symbols-outlined text-slate-400 text-xs">arrow_forward</span>}
+                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                        pIdx === 0
+                          ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                          : pIdx === 1
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300 shadow-xs'
+                          : 'bg-slate-50 text-slate-800 border border-slate-200 hover:bg-slate-100'
+                      }`}>
+                        {pt}
+                      </span>
+                    </React.Fragment>
+                  ))}
                 </div>
-                <div className="h-6 w-px bg-surface-container-high hidden sm:block"></div>
-                <div className="flex items-center gap-space-xs bg-surface-container-low px-2.5 py-1 rounded-lg text-on-secondary-fixed">
-                  <span className="material-symbols-outlined text-secondary text-base">directions_car</span>
-                  <span className="font-label-caps text-label-caps uppercase font-bold tracking-tight">
-                    Toyota Innova Crysta + GSRTC Intercity
+                <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
+                <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-lg text-slate-900 border border-slate-200">
+                  <span className="material-symbols-outlined text-amber-600 text-base">directions_car</span>
+                  <span className="text-xs uppercase font-extrabold tracking-tight">
+                    {vehicleRecommendation}
                   </span>
                 </div>
               </div>
@@ -265,24 +359,24 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                 {/* Banner Header */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md border-b border-surface-container-highest/10 pb-space-md">
                   <div className="flex items-center gap-space-md">
-                    <div className="w-12 h-12 rounded-xl bg-surface-container-lowest/10 p-1.5 flex items-center justify-center backdrop-blur-md shadow-inner">
+                    <div className="w-12 h-12 rounded-xl bg-white/10 p-2 flex items-center justify-center backdrop-blur-md shadow-inner border border-white/20">
                       <img
-                        alt="BharatYatra Sovereign Crest"
-                        className="w-full h-full object-contain rounded-lg"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD82fJqRnrMK6d8hd1ygsDK0fBCDv-l78A3WtJdaj7T3BW8HC1_o7Raaa6un-WskrdodOnmqUHPn4HS6_W8BTI1-4P3tmFPiBxH0gysTaYkxLvw0NytcYBfYWUeFkuAfwNIOc9G1BePH1A87L7iQgO6vzA5nSyYD9wK8p-c3ocpTSuhHkvVop_1ukkz10lWAV_h6bzrkSp8-zJdWsJliXNLczO_WTA1wBeWR2VgjM5FM8QNCZLINCM92QhGoIER-mnKGj0"
+                        alt="BharatYatra Logo"
+                        className="w-full h-full object-contain rounded-md"
+                        src="/logo.png"
                       />
                     </div>
                     <div>
                       <div className="flex items-center gap-space-xs">
-                        <span className="font-headline-sm text-headline-sm font-bold tracking-tight text-surface-container-lowest">
-                          Farva Sovereign Trip Intelligence
+                        <span className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-white">
+                          {trip ? `${displayDest} Trip Intelligence` : 'Bharat Yatra Trip Intelligence'}
                         </span>
                         <span className="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-fixed text-label-caps font-bold uppercase tracking-wider">
                           Active Sentinel
                         </span>
                       </div>
                       <p className="font-body-sm text-body-sm text-surface-container-high/70">
-                        Real-time synchronization across 10 travelers, onboard GPS, FASTag highway gateway &amp; expense clearing.
+                        Real-time synchronization across {displayTravelers} travelers, onboard GPS, route waypoint alerts &amp; expense clearing.
                       </p>
                     </div>
                   </div>
@@ -325,16 +419,16 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                       <span className="material-symbols-outlined text-primary-container text-lg">account_balance_wallet</span>
                     </div>
                     <div>
-                      <div className="font-display-hero-mobile text-display-hero-mobile font-bold tracking-tight text-surface-container-lowest">
-                        ₹15,000
+                      <div className="font-heading font-black text-3xl sm:text-4xl tracking-tight text-white">
+                        ₹{(trip ? Math.round(trip.budgetInr * 0.4) : 15000).toLocaleString('en-IN')}
                       </div>
                       <p className="font-body-sm text-body-sm text-surface-container-high/80 mt-1">
-                        Spent by 5 Contributors • <span className="text-primary-container font-semibold">₹1,500/head</span> fair share
+                        Spent by {Math.min(displayTravelers, 5)} Contributors • <span className="text-primary-container font-semibold">₹{Math.round((trip?.budgetInr || 25000) / displayTravelers).toLocaleString('en-IN')}/head</span> fair share
                       </p>
                     </div>
                     <div className="mt-space-sm pt-space-xs flex items-center justify-between font-label-caps text-label-caps text-surface-container-high/70">
-                      <span>Outstanding: ₹7,500</span>
-                      <span className="text-primary-container font-semibold">5 Awaiting Pay</span>
+                      <span>Outstanding: ₹{Math.round((trip?.budgetInr || 25000) * 0.2).toLocaleString('en-IN')}</span>
+                      <span className="text-primary-container font-semibold">{displayTravelers} Travelers Active</span>
                     </div>
                   </div>
 
@@ -346,17 +440,17 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                     </div>
                     <div>
                       <div className="font-title-lg text-title-lg font-bold text-surface-container-lowest flex items-center gap-2">
-                        GJ-01-XX-9420
-                        <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container-lowest/15 text-primary-container">Toyota Innova</span>
+                        EXP-2026
+                        <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container-lowest/15 text-primary-container">{vehicleRecommendation}</span>
                       </div>
                       <p className="font-body-sm text-body-sm text-surface-container-high/80 mt-1">
-                        Odometer: <span className="text-surface-container-lowest font-medium">820 km logged</span> • 12 km/L avg
+                        Odometer: <span className="text-surface-container-lowest font-medium">Telemetry Linked</span> • Optimal Routing
                       </p>
                     </div>
                     <div className="mt-space-sm pt-space-xs flex items-center justify-between font-label-caps text-label-caps text-surface-container-high/70">
-                      <span>Fuel: ₹6,800</span>
-                      <span>FASTag: ₹1,450</span>
-                      <span>Park: ₹450</span>
+                      <span>Fuel: Nominal</span>
+                      <span>Permits: Active</span>
+                      <span>Park: Cleared</span>
                     </div>
                   </div>
 
@@ -367,11 +461,11 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                       <span className="material-symbols-outlined text-primary-container text-lg">trending_up</span>
                     </div>
                     <div>
-                      <div className="font-display-hero-mobile text-display-hero-mobile font-bold tracking-tight text-surface-container-lowest">
-                        ₹24,800
+                      <div className="font-heading font-black text-3xl sm:text-4xl tracking-tight text-white">
+                        ₹{(trip?.budgetInr || 24800).toLocaleString('en-IN')}
                       </div>
                       <p className="font-body-sm text-body-sm text-surface-container-high/80 mt-1">
-                        Projected Final (Target: ₹28,000)
+                        Projected Total Package Budget
                       </p>
                     </div>
                     <div className="mt-space-sm pt-space-xs">
@@ -379,8 +473,8 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                         <div className="bg-primary-container h-full rounded-full" style={{ width: '60%' }}></div>
                       </div>
                       <div className="flex justify-between items-center mt-1 font-label-caps text-label-caps text-primary-container">
-                        <span>60% Burn Rate</span>
-                        <span>Buffer Safe (+₹3,200)</span>
+                        <span>Priced Tier: {trip?.selectedTier || 'balanced'}</span>
+                        <span>Buffer Safe</span>
                       </div>
                     </div>
                   </div>
@@ -393,16 +487,16 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                     </div>
                     <div>
                       <span className="font-title-md text-title-md font-bold text-surface-container-lowest line-clamp-1">
-                        White Rann Sunset Salt Deck
+                        {nextWaypoint}
                       </span>
                       <p className="font-body-sm text-body-sm text-surface-container-high mt-1">
-                        Gate Pass verified • 2h 15m until golden hour zenith
+                        {nextWaypointDistrict} • Waypoint Verified
                       </p>
                     </div>
                     <div className="mt-space-sm pt-space-xs flex items-center justify-between">
-                      <span className="font-label-md text-label-md text-primary-container font-semibold">Toll: Clear</span>
+                      <span className="font-label-md text-label-md text-primary-container font-semibold">Route: Verified</span>
                       <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-primary-container/20 text-primary-container font-bold">
-                        VIP Gate 2 Sync
+                        AI Synced
                       </span>
                     </div>
                   </div>
@@ -421,11 +515,11 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                       <h2 className="font-title-lg text-title-lg font-bold text-on-surface">Today&apos;s Live Expedition</h2>
                     </div>
                     <span className="font-label-md text-label-md font-bold text-primary px-2 py-0.5 rounded-full bg-primary-container/30">
-                      Day 2 of 6
+                      Day 1 of {displayDays}
                     </span>
                   </div>
                   <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
-                    &quot;Salt Desert Twilight &amp; Artisan Guilds&quot; • Bhuj to Dhordo Tent City
+                    {trip ? `Exploration Vector from ${displayOrigin} to ${displayDest}` : '"Salt Desert Twilight & Artisan Guilds" • Bhuj to Dhordo Tent City'}
                   </p>
                   <div className="flex flex-col gap-1.5 p-space-sm rounded-xl bg-surface-container-low mb-space-md">
                     <div className="flex items-center justify-between font-label-md text-label-md">
@@ -454,93 +548,108 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                     Chronological Vector Stream
                   </div>
 
-                  {/* Stop 1 */}
-                  <div className="relative pl-6 pb-space-sm border-l-2 border-primary-container">
-                    <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center text-xs">
-                      <span className="material-symbols-outlined text-xs font-bold">check</span>
-                    </span>
-                    <div className="flex items-center justify-between">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold">08:30 AM • Completed</span>
-                      <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container-low text-on-surface-variant">Bhuj Outskirts</span>
-                    </div>
-                    <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
-                      Kathiyawadi Breakfast at Darbargadh Haveli
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      Fafda-Jalebi, steaming Methi Gota &amp; Kesar Masala Chai with royal courtyard overview.
-                    </p>
-                    <div className="mt-2 text-label-caps text-primary font-bold flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">receipt</span> Bill logged: ₹1,200 (Paid by Kaushal)
-                    </div>
-                  </div>
-
-                  {/* Stop 2 */}
-                  <div className="relative pl-6 pb-space-sm border-l-2 border-primary">
-                    <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs animate-pulse">
-                      <span className="material-symbols-outlined text-xs">brush</span>
-                    </span>
-                    <div className="flex items-center justify-between">
-                      <span className="font-label-caps text-label-caps text-primary font-bold uppercase tracking-wider">01:30 PM • Active Now</span>
-                      <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-primary-container text-on-primary-fixed font-bold">Nirona Village</span>
-                    </div>
-                    <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
-                      Nirona Rogan Art Masterclass &amp; Guild Meet
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      Private demonstration by Padma Shri certified artisans. Handcrafting castor oil mineral pigments on silk.
-                    </p>
-                    <div className="mt-space-sm rounded-xl overflow-hidden shadow-sm relative group">
-                      <img
-                        className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-105"
-                        alt="Intricate Gujarati Rogan fabric art on dark silk"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD09KNB2g3Ufpne839APgNtFa7ix-_H729TLY1aw-JglaaCLizGT9mGvpE23HAT5FVuB7KoV_20mOhLjKzG2A3_R75K-kglxds3anxk3s9TSOxapE16g_qBxTFCIKZHw5KCBZ-jP-YE1BeuyCOUtZ7zXlb-4rcmmoi6Y4KAq4x5wHn3Itoa0dpMBvOJc9sToDmw5AyLPguQGFebfHhW30i36Mbtq70u1plm3UYgHBokbm33jZtYL8i4kw"
-                      />
-                      <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-on-secondary-fixed/80 backdrop-blur-sm text-primary-container font-label-caps text-label-caps font-semibold">
-                        Live Guild Session: 45 min remaining
+                  {stops.length > 0 ? (
+                    stops.map((stop: any, idx: number) => {
+                      const isFirst = idx === 0;
+                      const isSecond = idx === 1;
+                      const timeStr = idx === 0 ? '08:30 AM' : idx === 1 ? '11:45 AM' : idx === 2 ? '02:30 PM' : idx === 3 ? '05:30 PM' : '08:00 PM';
+                      const badgeText = isFirst ? 'Departure / Anchor' : isSecond ? 'Active Waypoint' : 'Scheduled Milestone';
+                      return (
+                        <div key={idx} className={`relative pl-6 pb-space-sm ${idx < stops.length - 1 ? 'border-l-2 border-primary-container' : ''}`}>
+                          <span className={`absolute -left-2.5 top-0 w-5 h-5 rounded-full ${isFirst ? 'bg-primary-container text-on-primary-fixed' : isSecond ? 'bg-primary text-on-primary animate-pulse' : 'bg-surface-container-high text-on-surface-variant'} flex items-center justify-center text-xs`}>
+                            <span className="material-symbols-outlined text-xs font-bold">{isFirst ? 'check' : isSecond ? 'location_on' : 'wb_twilight'}</span>
+                          </span>
+                          <div className="flex items-center justify-between">
+                            <span className={`font-label-caps text-label-caps ${isSecond ? 'text-primary font-bold uppercase tracking-wider' : 'text-on-surface-variant font-semibold'}`}>
+                              {timeStr} • {badgeText}
+                            </span>
+                            <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container-low text-on-surface-variant font-medium">
+                              {stop.district || 'India'}
+                            </span>
+                          </div>
+                          <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
+                            {stop.name}
+                          </h3>
+                          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                            {stop.district ? `Iconic destination in ${stop.district}. High-priority sightseeing experience on this circuit.` : 'Verified landmark and route waypoint.'}
+                          </p>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <>
+                      {/* Stop 1 */}
+                      <div className="relative pl-6 pb-space-sm border-l-2 border-primary-container">
+                        <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center text-xs">
+                          <span className="material-symbols-outlined text-xs font-bold">check</span>
+                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold">08:30 AM • Completed</span>
+                          <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container-low text-on-surface-variant">Bhuj Outskirts</span>
+                        </div>
+                        <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
+                          Kathiyawadi Breakfast at Darbargadh Haveli
+                        </h3>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                          Fafda-Jalebi, steaming Methi Gota &amp; Kesar Masala Chai with royal courtyard overview.
+                        </p>
+                        <div className="mt-2 text-label-caps text-primary font-bold flex items-center gap-1">
+                          <span className="material-symbols-outlined text-sm">receipt</span> Bill logged: ₹1,200 (Paid by Kaushal)
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Stop 3 */}
-                  <div className="relative pl-6 pb-space-sm border-l-2 border-surface-container-high">
-                    <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs">
-                      <span className="material-symbols-outlined text-xs">wb_twilight</span>
-                    </span>
-                    <div className="flex items-center justify-between">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold">05:45 PM • In 2h 15m</span>
-                      <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container text-on-secondary">Dhordo Gateway</span>
-                    </div>
-                    <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
-                      White Rann Sunset Walk &amp; Moonlit Salt Glamping
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      Walking through endless crystallized salt flats under changing rose-tinted desert skies. Camel cart transfers coordinated.
-                    </p>
-                    <div className="mt-space-sm rounded-xl overflow-hidden shadow-sm relative group">
-                      <img
-                        className="w-full h-28 object-cover transition-transform duration-300 group-hover:scale-105"
-                        alt="Vast glowing white salt desert of White Rann Kutch"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAczeFUVaMHwobGSdHvtEoaIdjiwgxZOpSku1jM-0qNWn1x7lOsXJPS2KrfkNMvOBAH3yzmgZzl5MgxVi3Q1j6Iry6wVqVPHHhrjD51MRwtHzf9l8crMZlxaR_YxL3lqPy_oGwD3E_3YzvIFhkwrjVCT1bxqZNC6FSsh6MPjn1p5-CPmDRjCG9NPJDSP6xebeueFYup0vRWKFN_FNlSXEJ3d9FFrI1tVLJGymnr8L4vY8DK-XoBxwtKXg"
-                      />
-                    </div>
-                  </div>
+                      {/* Stop 2 */}
+                      <div className="relative pl-6 pb-space-sm border-l-2 border-primary">
+                        <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs animate-pulse">
+                          <span className="material-symbols-outlined text-xs">brush</span>
+                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="font-label-caps text-label-caps text-primary font-bold uppercase tracking-wider">01:30 PM • Active Now</span>
+                          <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-primary-container text-on-primary-fixed font-bold">Nirona Village</span>
+                        </div>
+                        <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
+                          Nirona Rogan Art Masterclass &amp; Guild Meet
+                        </h3>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                          Private demonstration by Padma Shri certified artisans. Handcrafting castor oil mineral pigments on silk.
+                        </p>
+                      </div>
 
-                  {/* Stop 4 */}
-                  <div className="relative pl-6">
-                    <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs">
-                      <span className="material-symbols-outlined text-xs">nightlife</span>
-                    </span>
-                    <div className="flex items-center justify-between">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold">08:30 PM • Tonight</span>
-                      <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container text-on-secondary">Tent City Arena</span>
-                    </div>
-                    <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
-                      Campfire Sufi Baithak &amp; Kutchi Thali Feast
-                    </h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                      Folk musicians from Lakhpat performing desert ballads around sandalwood fire pits with Bajra no Rotlo &amp; Ringna no Olo.
-                    </p>
-                  </div>
+                      {/* Stop 3 */}
+                      <div className="relative pl-6 pb-space-sm border-l-2 border-surface-container-high">
+                        <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs">
+                          <span className="material-symbols-outlined text-xs">wb_twilight</span>
+                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold">05:45 PM • In 2h 15m</span>
+                          <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container text-on-secondary">Dhordo Gateway</span>
+                        </div>
+                        <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
+                          White Rann Sunset Walk &amp; Moonlit Salt Glamping
+                        </h3>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                          Walking through endless crystallized salt flats under changing rose-tinted desert skies.
+                        </p>
+                      </div>
+
+                      {/* Stop 4 */}
+                      <div className="relative pl-6">
+                        <span className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-xs">
+                          <span className="material-symbols-outlined text-xs">nightlife</span>
+                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="font-label-caps text-label-caps text-on-surface-variant font-semibold">08:30 PM • Tonight</span>
+                          <span className="font-label-caps text-label-caps px-2 py-0.5 rounded bg-surface-container text-on-secondary">Tent City Arena</span>
+                        </div>
+                        <h3 className="font-title-md text-title-md font-bold text-on-surface mt-0.5">
+                          Campfire Sufi Baithak &amp; Kutchi Thali Feast
+                        </h3>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                          Folk musicians performing desert ballads around sandalwood fire pits with regional dinner.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -677,10 +786,12 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                     <div className="flex flex-col items-center text-center p-2 rounded-xl bg-surface-container-low">
                       <div className="relative w-10 h-10 mb-1">
-                        <img alt="Kaushal Patel" className="w-full h-full rounded-full object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1WZuadRQKU3UEwQO6rbal-x1osIc2C5AEK3zvQYx6sB8h_VwAhruwUEWUx2kEdDgnott3tzJ25wIBIMCSqnnYW7Z88tIyyqVRysYnzNoq2j8qOW4UaYv-EhZbkWfSqNVRqAVgAffrbBFYtw62infW9BcNUrZdkSb4_eqfb1Cz9uqVE4_V4UH_ixvDav_R4KBb3EGVQ9ht5_hX6-FbCB0sbgSQ6d4Vy7hqnSjbfOEv2akTJ0pGf3z2U3FsPz" />
-                        <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-primary-container"></span>
+                        <div className="w-full h-full rounded-full bg-gradient-to-tr from-amber-400 to-orange-400 text-slate-950 font-black text-xs flex items-center justify-center shadow-sm">
+                          {user?.fullName ? user.fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() : 'KP'}
+                        </div>
+                        <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
                       </div>
-                      <span className="font-label-md text-label-md font-bold text-on-surface truncate w-full">Kaushal</span>
+                      <span className="font-label-md text-label-md font-bold text-on-surface truncate w-full">{user?.fullName?.split(' ')[0] || 'Kaushal'}</span>
                       <span className="font-label-caps text-label-caps text-primary font-semibold">Organizer</span>
                     </div>
                     <div className="flex flex-col items-center text-center p-2 rounded-xl bg-surface-container-low">
@@ -882,7 +993,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                     <span className="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-caps text-label-caps font-bold">24/7 Active</span>
                   </div>
                   <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Direct liaison to Kutch Police, Somnath Coastal Command and Highway Medical Nodes.
+                    {trip ? `Direct liaison to ${displayDest} Police, Local Tourism Administration and Highway Medical Nodes.` : 'Direct liaison to Kutch Police, Somnath Coastal Command and Highway Medical Nodes.'}
                   </p>
                   <div className="flex flex-col gap-2 mt-1">
                     <a
@@ -891,19 +1002,19 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                     >
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-error text-base">local_police</span>
-                        <span className="font-label-md text-label-md font-semibold text-on-surface">Kutch Police &amp; SOS</span>
+                        <span className="font-label-md text-label-md font-semibold text-on-surface">{trip ? `${displayDest} Police & SOS` : 'Kutch Police & SOS'}</span>
                       </div>
                       <span className="font-label-md text-label-md font-bold text-error">Dial 112</span>
                     </a>
                     <a
                       className="flex items-center justify-between p-2 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors"
-                      href="tel:18002031111"
+                      href="tel:+919624282521"
                     >
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-base">support_agent</span>
                         <span className="font-label-md text-label-md font-semibold text-on-surface">Tourism Highway Patrol</span>
                       </div>
-                      <span className="font-label-caps text-label-caps text-on-surface-variant font-bold">1800 203 1111</span>
+                      <span className="font-label-caps text-label-caps text-on-surface-variant font-bold">+91 96242 82521</span>
                     </a>
                     <div className="p-2 rounded-xl bg-surface-container text-on-surface-variant font-body-sm text-body-sm flex items-center justify-between">
                       <span className="flex items-center gap-1.5">

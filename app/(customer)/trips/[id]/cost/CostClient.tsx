@@ -52,58 +52,61 @@ export default function TripCostIntelligencePage({ params }: { params?: { id?: s
             </div>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-space-xs">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
             <Link
               href={`/trips/${tripId}`}
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Command Center
             </Link>
             <Link
               href="/trips/road-trip"
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Road Trip &amp; Vehicle
             </Link>
             <Link
               href={`/trips/${tripId}/cost`}
-              className="px-3 py-2 transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg"
+              className="px-3 py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0 shadow-xs"
             >
               Cost &amp; Intelligence
             </Link>
             <Link
               href={`/trips/${tripId}/expenses`}
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Group Splitter
             </Link>
             <Link
               href={`/trips/${tripId}/settle`}
-              className="px-3 py-2 text-on-surface-variant font-label-lg text-label-lg transition-colors hover:text-on-surface"
+              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
             >
               Settlement Optimizer
             </Link>
           </nav>
 
-          <div className="flex items-center gap-space-md">
+          <div className="flex items-center gap-2 xl:gap-space-md shrink-0">
             <a
-              className="hidden sm:flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface"
-              href="tel:18002031111"
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
+              href="tel:+919624282521"
+              title="Call Concierge 24/7"
             >
-              <span className="material-symbols-outlined text-primary text-base">support_agent</span>
-              <div className="flex flex-col text-left">
-                <span className="font-label-caps text-label-caps text-on-surface-variant">Concierge 24/7</span>
-                <span className="font-label-md text-label-md font-bold tracking-tight text-on-surface">1800 203 1111</span>
+              <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
+                <span className="material-symbols-outlined text-base">support_agent</span>
+              </div>
+              <div className="flex flex-col text-left leading-tight whitespace-nowrap shrink-0">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Concierge 24/7</span>
+                <span className="text-xs font-black tracking-tight text-slate-900 whitespace-nowrap">+91 96242 82521</span>
               </div>
             </a>
-            <div className="flex items-center gap-space-sm pl-space-xs">
-              <Link href="/profile" className="flex flex-col text-right hidden sm:flex">
-                <span className="font-label-md text-label-md text-on-surface font-semibold">Lead Sovereign</span>
-                <span className="font-label-caps text-label-caps text-on-surface-variant">Verified Guide</span>
+            <div className="flex items-center gap-space-sm pl-space-xs shrink-0 whitespace-nowrap">
+              <Link href="/profile" className="flex flex-col text-right hidden sm:flex leading-tight whitespace-nowrap shrink-0">
+                <span className="font-label-md text-label-md text-on-surface font-semibold whitespace-nowrap">Lead Sovereign</span>
+                <span className="font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">Verified Guide</span>
               </Link>
               <img
                 alt="Profile"
-                className="w-8 h-8 rounded-full object-cover shadow-[0_2px_8px_rgba(20,26,50,0.12)]"
+                className="w-8 h-8 rounded-full object-cover shadow-[0_2px_8px_rgba(20,26,50,0.12)] shrink-0"
                 src="https://lh3.googleusercontent.com/aida/AEtjO1Ui59jsO1cRmYcx_EhvwkLGkFogmDjmf7WlO_OauBFwKZ0uk_e307OoSlXT4rFNOTTz18I6VJ9GGtE93D4OpgxiI9xOdoffUGkzgoQ0KG88ACv-KY9EVYggJxEwdGNO95rCHoqDEYuaDqN7tRftqN7dgBVeMibJArETY3NhtGtIYgwZNrtEOGWVQM_PjXq995rzqJH5UGpxAdJ8JA0v0kOcVN3eHS4E9bOBnUkpNA-jIX-7ScyvFM41G5v_ZvuZOXHwVOlo5WZh9Nc"
               />
             </div>
