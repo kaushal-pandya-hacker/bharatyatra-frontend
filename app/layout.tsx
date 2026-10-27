@@ -1,6 +1,35 @@
 import type { Metadata, Viewport } from 'next';
+import { Outfit, Inter, Hanken_Grotesk, Space_Mono } from 'next/font/google';
 import '@/styles/globals.css';
 import { CustomerLayoutWrapper } from '@/components/layout/CustomerLayoutWrapper';
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-outfit',
+  weight: ['400', '500', '600', '700', '800'],
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-hanken',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-mono',
+  weight: ['400', '700'],
+});
 
 export const viewport: Viewport = {
   themeColor: '#0A1128',
@@ -109,12 +138,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${outfit.variable} ${inter.variable} ${hankenGrotesk.variable} ${spaceMono.variable}`}
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           rel="stylesheet"
         />
         <script

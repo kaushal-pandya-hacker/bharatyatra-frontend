@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
@@ -38,17 +39,19 @@ export default function HomePageClient() {
           {/* SECTION 1: IMMERSIVE EDITORIAL HERO DECK */}
           <section className="relative w-full overflow-hidden bg-surface-container-lowest">
             {/* Cinematic Full-Bleed Imagery with Scrim */}
-            <div
-              className="relative w-full min-h-[520px] sm:min-h-[640px] bg-cover bg-center flex flex-col justify-between pt-16 sm:pt-24 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-12"
-              data-alt="Cinematic luxury editorial photograph of an ornate Rajasthani palace courtyard carved in sandstone at sunrise. Warm amber rays filtering through delicate jali screens onto glistening marble pools, surrounded by regal architecture, soft atmospheric golden mist, high-fashion travel aesthetic with deep navy shadows and Sahara gold highlights."
-              style={{
-                backgroundImage:
-                  "url('/hero-bg.jpg')",
-              }}
-            >
+            <div className="relative w-full min-h-[520px] sm:min-h-[640px] flex flex-col justify-between pt-16 sm:pt-24 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-12">
+              <Image
+                src="/hero-bg.jpg"
+                alt="Cinematic luxury editorial photograph of an ornate Rajasthani palace courtyard carved in sandstone at sunrise"
+                fill
+                priority
+                quality={80}
+                sizes="100vw"
+                className="object-cover object-center pointer-events-none -z-0"
+              />
               {/* Dual Direction Scrim for Maximum Legibility */}
-              <div className="absolute inset-0 bg-gradient-to-r from-on-secondary-fixed/85 via-on-secondary-fixed/50 to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-b from-on-secondary-fixed/60 via-transparent to-on-secondary-fixed/80"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-on-secondary-fixed/85 via-on-secondary-fixed/50 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-on-secondary-fixed/60 via-transparent to-on-secondary-fixed/80 pointer-events-none"></div>
 
               {/* Centerpiece Editorial Typography */}
               <div className="relative z-10 my-auto max-w-5xl">
@@ -218,10 +221,13 @@ export default function HomePageClient() {
                   className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between border border-slate-200/80 hover:border-emerald-500/50 hover:-translate-y-1.5"
                 >
                   <div className="relative h-60 w-full overflow-hidden bg-slate-900">
-                    <img
+                    <Image
                       src={place.image}
                       alt={place.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent" />
                     <div className="absolute top-3 left-3 flex items-center gap-2">
@@ -266,7 +272,7 @@ export default function HomePageClient() {
           {/* SECTION 5: COMMAND LAUNCH FOOTER (Aerospace Grade Command Deck) */}
           <section className="w-full bg-on-secondary-fixed text-surface py-16 sm:py-20 px-4 sm:px-6 lg:px-gutter-desktop relative overflow-hidden">
             {/* Ambient Golden Glow behind Command Console */}
-            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary-container/10 blur-[120px] rounded-full pointer-events-none"></div>
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-primary-container/10 blur-3xl rounded-full pointer-events-none"></div>
             <div className="max-w-5xl mx-auto relative z-10">
               <div className="flex flex-col items-center text-center mb-10">
                 <div className="flex items-center gap-2 mb-3">

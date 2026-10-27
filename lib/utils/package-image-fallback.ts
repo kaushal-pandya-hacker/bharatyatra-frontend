@@ -33,22 +33,25 @@ export function getPackageImageUrl(
   stateOrDestination?: string,
   fallbackIndex: number = 0
 ): string {
+  let targetUrl = REGION_FALLBACK_IMAGES['DEFAULT'];
+
   if (providedUrl && providedUrl.startsWith('http')) {
-    return providedUrl;
-  }
-
-  if (stateOrDestination && REGION_FALLBACK_IMAGES[stateOrDestination]) {
-    return REGION_FALLBACK_IMAGES[stateOrDestination];
-  }
-
-  // Check state match
-  if (stateOrDestination) {
+    targetUrl = providedUrl;
+  } else if (stateOrDestination && REGION_FALLBACK_IMAGES[stateOrDestination]) {
+    targetUrl = REGION_FALLBACK_IMAGES[stateOrDestination];
+  } else if (stateOrDestination) {
     for (const [key, url] of Object.entries(REGION_FALLBACK_IMAGES)) {
       if (stateOrDestination.toLowerCase().includes(key.toLowerCase())) {
-        return url;
+        targetUrl = url;
+        break;
       }
     }
   }
 
-  return REGION_FALLBACK_IMAGES['DEFAULT'];
+  // Optimize Unsplash thumbnail queries for responsive mobile and desktop cards
+  if (targetUrl.includes('images.unsplash.com') && targetUrl.includes('w=1200')) {
+    return targetUrl.replace('w=1200', 'w=720').replace('q=80', 'q=75');
+  }
+
+  return targetUrl;
 }

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { saveTrip, saveTripToApi, TripItem } from '@/lib/trips/trip-storage';
-import Gujarat100LandmarksDirectory from '@/components/travel/Gujarat100LandmarksDirectory';
 import { GUJARAT_100_LANDMARKS, LandmarkItem } from '@/lib/data/destinations';
 import { generateItineraryBlueprint, PlanningResult } from '@/lib/trips/itinerary-generator';
 import { useDestinationSelection } from '@/lib/tourism/destination-selection-context';

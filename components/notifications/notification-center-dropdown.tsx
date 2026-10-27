@@ -30,14 +30,19 @@ export function NotificationCenterDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = async () => {
+    // Avoid dead localhost polling in production browser environments
+    if (typeof window !== 'undefined' && API_BASE.includes('localhost') && !window.location.hostname.includes('localhost')) {
+      return;
+    }
+
     try {
       const uid = user?.id || 'usr_customer_demo';
       const [listRes, countRes] = await Promise.all([
-        fetch(`${API_BASE}/notifications?userId=${uid}&limit=10`),
-        fetch(`${API_BASE}/notifications/unread-count?userId=${uid}`),
+        fetch(`${API_BASE}/notifications?userId=${uid}&limit=10`).catch(() => null),
+        fetch(`${API_BASE}/notifications/unread-count?userId=${uid}`).catch(() => null),
       ]);
 
-      if (listRes.ok) {
+      if (listRes && listRes.ok) {
         const data = await listRes.json();
         const items = Array.isArray(data)
           ? data
@@ -48,21 +53,36 @@ export function NotificationCenterDropdown() {
           : [];
         setNotifications(items);
       }
-      if (countRes.ok) {
+      if (countRes && countRes.ok) {
         const countData = await countRes.json();
         setUnreadCount(countData.count ?? countData.unreadCount ?? 0);
       }
-    } catch (e) {
-      console.error('[NotificationCenter] Fetch error:', e);
+    } catch {
+      // Graceful fallback without console spam
       setNotifications([]);
     }
   };
 
   useEffect(() => {
+    // Only poll if user is logged in and document is active
+    if (!user) return;
+
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15000); // Polling every 15s
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && !document.hidden) {
+        fetchNotifications();
+      }
+    }, 60000); // 60s idle polling instead of aggressive 15s
+
     return () => clearInterval(interval);
   }, [user]);
+
+  // Fetch immediately when user explicitly opens dropdown
+  useEffect(() => {
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

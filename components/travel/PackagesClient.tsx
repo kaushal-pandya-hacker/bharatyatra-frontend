@@ -13,6 +13,7 @@ export default function PackagesClient() {
   const [maxDays, setMaxDays] = useState<number>(15);
   const [sortBy, setSortBy] = useState<'POPULAR' | 'PRICE_LOW' | 'PRICE_HIGH' | 'DURATION'>('POPULAR');
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
+  const [visibleCount, setVisibleCount] = useState<number>(9);
 
   useEffect(() => {
     fetch('/api/v1/travel-packages')
@@ -258,8 +259,9 @@ export default function PackagesClient() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPackages.map(pkg => {
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredPackages.slice(0, visibleCount).map(pkg => {
               const displayPrice = pkg.discountedPrice || pkg.startingPriceInr || pkg.startingPrice || 15000;
               const imgUrl = getPackageImageUrl(pkg.coverImage || pkg.heroImageUrl || pkg.primaryImageUrl, pkg.stateOrRegion || pkg.state);
               const isWishlisted = wishlist.has(pkg.id);
@@ -284,6 +286,7 @@ export default function PackagesClient() {
                           alt={pkg.packageName || pkg.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
+                          decoding="async"
                           onError={(e: any) => {
                             e.target.src = 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
                           }}
@@ -389,7 +392,23 @@ export default function PackagesClient() {
               );
             })}
           </div>
-        )}
+
+          {filteredPackages.length > visibleCount && (
+            <div className="flex flex-col items-center justify-center mt-12 gap-3">
+              <span className="text-xs text-slate-500 font-semibold">
+                Showing {visibleCount} of {filteredPackages.length} packages
+              </span>
+              <button
+                type="button"
+                onClick={() => setVisibleCount(prev => prev + 9)}
+                className="px-8 py-3 bg-[#0B132B] hover:bg-[#1C2541] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+              >
+                Load More Packages (+9)
+              </button>
+            </div>
+          )}
+        </>
+      )}
       </section>
     </div>
   );
