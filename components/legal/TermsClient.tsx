@@ -1194,28 +1194,6 @@ export function TermsClient() {
                 </div>
               </div>
 
-              {/* Gujarat-First AI Travel Engine Promotion */}
-              <div className="p-space-lg rounded-2xl bg-primary-container/25 flex flex-col gap-space-sm shadow-sm">
-                <span className="font-label-caps text-label-caps uppercase text-primary font-bold tracking-wider">Gujarat-First AI Travel Engine</span>
-                <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">Ready to explore authentic Gujarat?</h3>
-                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                  &ldquo;Plan less. Coordinate less. Enjoy more.&rdquo; Synthesize a personalized itinerary with instant permits, stays &amp; transit.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-space-xs pt-space-xs">
-                  <Link
-                    className="px-space-md py-space-sm rounded-xl bg-primary-container text-on-secondary-fixed hover:bg-primary-fixed font-label-lg text-label-lg font-semibold text-center shadow-sm transition-all"
-                    href="/trips/new"
-                  >
-                    Build AI Itinerary
-                  </Link>
-                  <Link
-                    className="px-space-md py-space-sm rounded-xl bg-surface-container-lowest hover:bg-surface-container font-label-lg text-label-lg text-on-surface text-center transition-all"
-                    href="/destinations"
-                  >
-                    View Packages
-                  </Link>
-                </div>
-              </div>
             </aside>
           </div>
         </div>
