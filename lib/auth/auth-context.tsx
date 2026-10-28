@@ -81,12 +81,39 @@ export function getSiteUrl(): string {
   return url.replace(/\/+$/, '');
 }
 
-function clearUserLocalCache() {
+export function setAuthSessionCookie(token: string) {
+  if (typeof document === 'undefined') return;
+  document.cookie = `sb_auth_token=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Max-Age=604800`;
+}
+
+export function clearUserLocalCache() {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('auth_token');
   localStorage.removeItem('auth_user');
   localStorage.removeItem('chalo_farva_saved_trips');
   localStorage.removeItem('chalo_farva_selected_destinations');
+  localStorage.removeItem('bharatyatra_travel_profile');
+  localStorage.removeItem('bharatyatra_active_booking_context');
+
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (
+        key &&
+        (key.startsWith('chalo_farva_saved_trips') ||
+          key.startsWith('bharatyatra_travel_profile') ||
+          key.startsWith('cf_'))
+      ) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  } catch {}
+
+  if (typeof document !== 'undefined') {
+    document.cookie = 'sb_auth_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
+  }
   sessionStorage.clear();
 }
 
@@ -161,6 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userProfile = mapSupabaseUserToProfile(session.user);
           if (isMounted) {
             setToken(session.access_token);
+            setAuthSessionCookie(session.access_token);
             setUser(userProfile);
             localStorage.setItem('auth_token', session.access_token);
             localStorage.setItem('auth_user', JSON.stringify(userProfile));
@@ -222,6 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session && session.user) {
         const userProfile = mapSupabaseUserToProfile(session.user);
         setToken(session.access_token);
+            setAuthSessionCookie(session.access_token);
         setUser(userProfile);
         localStorage.setItem('auth_token', session.access_token);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
@@ -325,6 +354,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userProfile = mapSupabaseUserToProfile(data.user);
         const authToken = data.session.access_token;
         setToken(authToken);
+        setAuthSessionCookie(authToken);
         setUser(userProfile);
         localStorage.setItem('auth_token', authToken);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
@@ -350,6 +380,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: u.role || 'CUSTOMER',
         };
         setToken(authToken);
+        setAuthSessionCookie(authToken);
         setUser(userProfile);
         localStorage.setItem('auth_token', authToken);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
@@ -380,6 +411,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: u.role || 'CUSTOMER',
         };
         setToken(authToken);
+        setAuthSessionCookie(authToken);
         setUser(userProfile);
         localStorage.setItem('auth_token', authToken);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
@@ -407,6 +439,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (authToken) {
       setToken(authToken);
+        setAuthSessionCookie(authToken);
       setUser(userProfile);
       localStorage.setItem('auth_token', authToken);
       localStorage.setItem('auth_user', JSON.stringify(userProfile));

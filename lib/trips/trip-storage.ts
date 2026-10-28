@@ -47,6 +47,20 @@ export interface TripItem {
 
 export const STORAGE_KEY = 'chalo_farva_saved_trips';
 
+export function getUserTripStorageKey(userId?: string): string {
+  if (userId) return `chalo_farva_saved_trips_${userId}`;
+  if (typeof window !== 'undefined') {
+    try {
+      const authUser = localStorage.getItem('auth_user');
+      if (authUser) {
+        const parsed = JSON.parse(authUser);
+        if (parsed && parsed.id) return `chalo_farva_saved_trips_${parsed.id}`;
+      }
+    } catch {}
+  }
+  return 'chalo_farva_saved_trips_guest';
+}
+
 export function resolveClientTripStatus(trip: { status?: string; startDate?: string; endDate?: string }): CanonicalTripStatus {
   if (!trip) return 'SAVED';
   const statusUpper = (trip.status || '').toUpperCase();
@@ -77,10 +91,11 @@ export function resolveClientTripStatus(trip: { status?: string; startDate?: str
 
 export const DEFAULT_MOCK_TRIPS: TripItem[] = [];
 
-export function getSavedTrips(): TripItem[] {
+export function getSavedTrips(userId?: string): TripItem[] {
   if (typeof window === 'undefined') return [];
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const key = getUserTripStorageKey(userId);
+    const saved = localStorage.getItem(key);
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -97,13 +112,14 @@ export function getSavedTrips(): TripItem[] {
   }
 }
 
-export function saveTrip(trip: TripItem): TripItem[] {
+export function saveTrip(trip: TripItem, userId?: string): TripItem[] {
   if (typeof window === 'undefined') return [trip];
   try {
-    const current = getSavedTrips();
+    const key = getUserTripStorageKey(userId);
+    const current = getSavedTrips(userId);
     const resolvedTrip = { ...trip, status: resolveClientTripStatus(trip) };
     const updated = [resolvedTrip, ...current.filter((t) => t.tripId !== trip.tripId && t.id !== trip.tripId)];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    localStorage.setItem(key, JSON.stringify(updated));
     return updated;
   } catch (err) {
     console.error('Error saving trip to localStorage', err);
@@ -111,12 +127,13 @@ export function saveTrip(trip: TripItem): TripItem[] {
   }
 }
 
-export function deleteSavedTrip(tripId: string): TripItem[] {
+export function deleteSavedTrip(tripId: string, userId?: string): TripItem[] {
   if (typeof window === 'undefined') return [];
   try {
-    const current = getSavedTrips();
+    const key = getUserTripStorageKey(userId);
+    const current = getSavedTrips(userId);
     const updated = current.filter((t) => t.tripId !== tripId && t.id !== tripId);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    localStorage.setItem(key, JSON.stringify(updated));
     return updated;
   } catch {
     return [];
@@ -124,13 +141,14 @@ export function deleteSavedTrip(tripId: string): TripItem[] {
 }
 
 // API Integration Helpers
-export async function fetchUserTripsFromApi(token?: string): Promise<TripItem[]> {
+export async function fetchUserTripsFromApi(token?: string, userId?: string): Promise<TripItem[]> {
   try {
+    const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (effectiveToken) headers['Authorization'] = `Bearer ${effectiveToken}`;
 
     const res = await fetch('/api/v1/trips', { headers });
-    if (!res.ok) return getSavedTrips();
+    if (!res.ok) return getSavedTrips(userId);
 
     const json = await res.json();
     if (json.success && Array.isArray(json.data)) {
@@ -158,9 +176,9 @@ export async function fetchUserTripsFromApi(token?: string): Promise<TripItem[]>
         savedAt: t.savedAt,
       }));
 
-      // Sync with localStorage
+      // Sync with user-scoped storage
       if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tripsFromApi));
+        localStorage.setItem(getUserTripStorageKey(userId), JSON.stringify(tripsFromApi));
       }
       return tripsFromApi;
     }

@@ -1,4 +1,11 @@
 export const getBaseUrl = (): string => {
+  if (typeof window !== 'undefined') {
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (envUrl && !envUrl.includes('localhost:4000')) {
+      return envUrl.replace(/\/+$/, '');
+    }
+    return '/api/v1';
+  }
   const url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
   return url.replace(/\/+$/, '');
 };

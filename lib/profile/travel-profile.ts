@@ -199,38 +199,80 @@ export function buildTripContext(
   };
 }
 
-export async function fetchUserTravelProfile(): Promise<TravelProfile> {
+export function getUserProfileStorageKey(userId?: string): string {
+  if (userId) return `bharatyatra_travel_profile_${userId}`;
   if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem('bharatyatra_travel_profile');
+    try {
+      const authUser = localStorage.getItem('auth_user');
+      if (authUser) {
+        const parsed = JSON.parse(authUser);
+        if (parsed && parsed.id) return `bharatyatra_travel_profile_${parsed.id}`;
+      }
+    } catch {}
+  }
+  return 'bharatyatra_travel_profile_guest';
+}
+
+export async function fetchUserTravelProfile(userId?: string): Promise<TravelProfile> {
+  const storageKey = getUserProfileStorageKey(userId);
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem(storageKey);
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
         if (parsed && parsed.fullName && parsed.origin) {
-          fetchRemoteProfile().catch(() => {});
+          fetchRemoteProfile(userId).catch(() => {});
           return parsed;
         }
       } catch (e) {}
     }
   }
 
-  return fetchRemoteProfile();
+  return fetchRemoteProfile(userId);
 }
 
-async function fetchRemoteProfile(): Promise<TravelProfile> {
+async function fetchRemoteProfile(userId?: string): Promise<TravelProfile> {
+  const storageKey = getUserProfileStorageKey(userId);
   try {
-    const res = await apiFetch<{ success: boolean; profile: TravelProfile }>('/profile/travel');
-    if (res && res.success && res.profile) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('bharatyatra_travel_profile', JSON.stringify(res.profile));
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    // Fetch user preferences from Next.js user API
+    const res = await fetch('/api/v1/me/preferences', { headers });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        const p = json.data;
+        const profile: TravelProfile = {
+          fullName: 'BharatYatra Traveler',
+          origin: {
+            city: p.originCity || 'Ahmedabad',
+            state: p.originState || 'Gujarat',
+            country: p.originCountry || 'India',
+          },
+          travelStyle: p.travelStyle || 'balanced',
+          budget: p.budgetTier || 'moderate',
+          pace: p.travelPace || 'balanced',
+          transport: p.transport || ['train', 'bus'],
+          interests: p.interests || ['heritage', 'nature'],
+          typicalTravelers: p.typicalTravelers || 2,
+          preferredLanguage: p.preferredLanguage || 'en',
+          completed: true,
+        };
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(storageKey, JSON.stringify(profile));
+        }
+        return profile;
       }
-      return res.profile;
     }
   } catch (e) {
     // API endpoint unreachable or unauthorized fallback
   }
 
   if (typeof window !== 'undefined') {
-    const cached = localStorage.getItem('bharatyatra_travel_profile');
+    const cached = localStorage.getItem(storageKey);
     if (cached) {
       try {
         return JSON.parse(cached);
@@ -241,38 +283,57 @@ async function fetchRemoteProfile(): Promise<TravelProfile> {
   return DEFAULT_TRAVEL_PROFILE;
 }
 
-export async function saveUserTravelProfile(profile: Partial<TravelProfile>): Promise<TravelProfile> {
-  const payload = {
-    fullName: profile.fullName,
-    origin: profile.origin,
-    travelStyle: profile.travelStyle,
-    budget: profile.budget,
-    pace: profile.pace,
-    transport: profile.transport,
-    interests: profile.interests,
-    typicalTravelers: profile.typicalTravelers,
-    preferredLanguage: profile.preferredLanguage,
+export async function saveUserTravelProfile(profile: Partial<TravelProfile>, userId?: string): Promise<TravelProfile> {
+  const storageKey = getUserProfileStorageKey(userId);
+  const payload: TravelProfile = {
+    fullName: profile.fullName || 'BharatYatra Traveler',
+    origin: profile.origin || DEFAULT_TRAVEL_PROFILE.origin,
+    travelStyle: profile.travelStyle || 'balanced',
+    budget: profile.budget || 'moderate',
+    pace: profile.pace || 'balanced',
+    transport: profile.transport || ['train', 'bus'],
+    interests: profile.interests || ['heritage', 'nature'],
+    typicalTravelers: profile.typicalTravelers || 2,
+    preferredLanguage: profile.preferredLanguage || 'en',
     completed: true,
   };
 
   if (typeof window !== 'undefined') {
-    localStorage.setItem('bharatyatra_travel_profile', JSON.stringify(payload));
+    localStorage.setItem(storageKey, JSON.stringify(payload));
   }
 
   try {
-    const res = await apiFetch<{ success: boolean; profile: TravelProfile }>('/profile/travel', {
-      method: 'PUT',
-      body: JSON.stringify(payload),
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    await fetch('/api/v1/me/preferences', {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({
+        preferredLanguage: payload.preferredLanguage,
+        budgetTier: payload.budget,
+        travelPace: payload.pace,
+        travelStyle: payload.travelStyle,
+        transport: payload.transport,
+        interests: payload.interests,
+        originCity: payload.origin.city,
+        originState: payload.origin.state,
+        originCountry: payload.origin.country,
+        typicalTravelers: payload.typicalTravelers,
+      }),
     });
-    if (res && res.success && res.profile) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('bharatyatra_travel_profile', JSON.stringify(res.profile));
-      }
-      return res.profile;
+
+    if (payload.fullName) {
+      await fetch('/api/v1/me', {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ fullName: payload.fullName }),
+      });
     }
   } catch (e) {
     // Local fallback saved cleanly
   }
 
-  return payload as TravelProfile;
+  return payload;
 }

@@ -42,47 +42,23 @@ function MyBookingsPageContent() {
   const fetchBookings = async () => {
     setLoading(true);
     setError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 
     try {
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
       const headers: any = {};
-      if (token) headers.Authorization = `Bearer ${token}`;
+      if (effectiveToken) headers.Authorization = `Bearer ${effectiveToken}`;
 
-      const res = await fetch(`${apiBase}/bookings`, { headers });
+      const res = await fetch('/api/v1/bookings', { headers });
 
       if (res.ok) {
         const json = await res.json();
         setBookings(json.data || []);
       } else {
-        // Fallback demo bookings list
-        setBookings([
-          {
-            id: 'demo-booking-1',
-            bookingReference: 'CF-HTL-2026-98402',
-            bookingType: 'HOTEL',
-            inventoryType: 'HOTEL',
-            status: 'CONFIRMED',
-            startDate: '2026-10-15T00:00:00.000Z',
-            endDate: '2026-10-17T00:00:00.000Z',
-            adultCount: 2,
-            childCount: 0,
-            guestCount: 2,
-            totalAmountInr: 9600,
-            currency: 'INR',
-            inventoryTitle: 'Hyatt Regency Ahmedabad',
-            hotelDetail: {
-              supplierReference: 'HBX-REF-884012',
-              hotelName: 'Hyatt Regency Ahmedabad',
-              roomName: 'King Deluxe Room with River View',
-              boardName: 'Breakfast Included',
-              cancellationPolicy: 'Refundable up to 24h prior to check-in',
-            },
-            createdAt: new Date().toISOString(),
-          },
-        ]);
+        // Zero demo mock booking injection — clean empty state
+        setBookings([]);
       }
     } catch (err: any) {
-      setError(err.message || 'Error loading bookings.');
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -98,18 +74,13 @@ function MyBookingsPageContent() {
 
     setCancelling(true);
     setCancelError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-
     try {
-      const endpoint = cancelModalBooking.bookingType === 'HOTEL'
-        ? `${apiBase}/hotels/cancel/${cancelModalBooking.bookingReference || cancelModalBooking.id}`
-        : `${apiBase}/bookings/${cancelModalBooking.id}/cancel`;
-
       const headers: any = { 'Content-Type': 'application/json' };
-      if (token) headers.Authorization = `Bearer ${token}`;
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
+      if (effectiveToken) headers.Authorization = `Bearer ${effectiveToken}`;
 
-      const res = await fetch(endpoint, {
-        method: 'POST',
+      const res = await fetch(`/api/v1/bookings/${cancelModalBooking.id}`, {
+        method: 'PATCH',
         headers,
         body: JSON.stringify({
           cancellationReason: cancellationReason || 'Customer requested cancellation via portal',
