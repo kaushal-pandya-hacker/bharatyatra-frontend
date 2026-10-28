@@ -50,7 +50,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/restaurants`, priority: 0.7, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/experiences`, priority: 0.7, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/map`, priority: 0.7, changeFrequency: 'weekly' as const },
-    { url: `${baseUrl}/terms`, priority: 0.5, changeFrequency: 'monthly' as const },
+    { url: `${baseUrl}/terms/`, priority: 0.5, changeFrequency: 'monthly' as const },
+    { url: `${baseUrl}/privacy/`, priority: 0.5, changeFrequency: 'monthly' as const },
   ];
 
   return [
