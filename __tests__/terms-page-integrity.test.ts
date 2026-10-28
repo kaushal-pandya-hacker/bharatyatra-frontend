@@ -69,5 +69,34 @@ describe('BharatYatra Terms & Conditions Integrity and Integration Suite', () =>
     const loginContent = fs.readFileSync(loginPath, 'utf8');
     assert.match(loginContent, /href="\/terms"/, 'Login page must link to /terms');
   });
-});
 
+  test('8. New Design System UI elements and regulatory metadata strip', () => {
+    const clientContent = fs.readFileSync(termsClientPath, 'utf8');
+    assert.match(clientContent, /LEGAL (&amp;|&) REGULATORY FRAMEWORK • BHARAT YATRA/);
+    assert.match(clientContent, /October 28, 2026/);
+    assert.match(clientContent, /Version 1\.0\.0/);
+    assert.match(clientContent, /IT Act Intermediary/);
+    assert.match(clientContent, /Section 79 Compliant/);
+    assert.match(clientContent, /clause-search-input/);
+    assert.match(clientContent, /search-result-counter/);
+  });
+
+  test('9. Clause cards and Table of Contents scroll spy structure', () => {
+    const clientContent = fs.readFileSync(termsClientPath, 'utf8');
+    for (let i = 1; i <= 24; i++) {
+      assert.ok(
+        clientContent.includes(`id="clause-${i}"`),
+        `Must include clause card with id="clause-${i}"`
+      );
+    }
+    assert.match(clientContent, /id="toc-nav"/);
+    assert.match(clientContent, /IntersectionObserver/);
+  });
+
+  test('10. Interactive cross-links to Privacy Policy and Legal Concierge Desk', () => {
+    const clientContent = fs.readFileSync(termsClientPath, 'utf8');
+    assert.match(clientContent, /href="\/privacy"/, 'Must link to /privacy');
+    assert.match(clientContent, /pandyakaushal294@gmail\.com/);
+    assert.match(clientContent, /\+91 9624282521/);
+  });
+});

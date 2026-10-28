@@ -1,875 +1,1225 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import {
-  FileText,
-  Shield,
-  Scale,
-  Bot,
-  MapPin,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  CreditCard,
-  HelpCircle,
-  Mail,
-  Phone,
-  ChevronRight,
-  ArrowUp,
-  Printer,
-  Compass,
-  Lock,
-  Building2,
-  Sparkles,
-  ExternalLink,
-  Info,
-} from 'lucide-react';
 
-interface SectionItem {
+interface TocItem {
+  clauseNum: number;
   id: string;
-  num: number;
-  title: string;
+  shortTitle: string;
 }
 
-const SECTIONS: SectionItem[] = [
-  { id: 'section-1', num: 1, title: 'Introduction and Acceptance of Terms' },
-  { id: 'section-2', num: 2, title: 'About BharatYatra and Its Services' },
-  { id: 'section-3', num: 3, title: 'Eligibility and Account Registration' },
-  { id: 'section-4', num: 4, title: 'Account Security and User Responsibilities' },
-  { id: 'section-5', num: 5, title: 'Accurate Personal, Traveller and Booking Information' },
-  { id: 'section-6', num: 6, title: 'AI-Generated Itineraries, Recommendations and Limitations' },
-  { id: 'section-7', num: 7, title: 'Travel Information Accuracy and Independent Verification' },
-  { id: 'section-8', num: 8, title: 'Third-Party Travel Providers and Separate Terms' },
-  { id: 'section-9', num: 9, title: 'Booking Requests, Confirmations and Availability' },
-  { id: 'section-10', num: 10, title: 'Pricing, Taxes, Fees and Payment Processing' },
-  { id: 'section-11', num: 11, title: 'Cancellations, Changes, Refunds and Disputes' },
-  { id: 'section-12', num: 12, title: 'User Conduct and Prohibited Activities' },
-  { id: 'section-13', num: 13, title: 'Intellectual Property and Permitted Use' },
-  { id: 'section-14', num: 14, title: 'User-Submitted Content and Permissions' },
-  { id: 'section-15', num: 15, title: 'Privacy and Reference to Privacy Policy' },
-  { id: 'section-16', num: 16, title: 'Service Availability, Maintenance and Technical Limitations' },
-  { id: 'section-17', num: 17, title: 'Limitation of Liability' },
-  { id: 'section-18', num: 18, title: 'Indemnity' },
-  { id: 'section-19', num: 19, title: 'Suspension and Termination of Accounts' },
-  { id: 'section-20', num: 20, title: 'Consumer Complaints and Grievance Redressal' },
-  { id: 'section-21', num: 21, title: 'Changes to the Terms' },
-  { id: 'section-22', num: 22, title: 'Governing Law and Jurisdiction' },
-  { id: 'section-23', num: 23, title: 'Contact Information and Support' },
-  { id: 'section-24', num: 24, title: 'Effective Date and Last-Updated Date' },
+const TOC_ITEMS: TocItem[] = [
+  {
+    "clauseNum": 1,
+    "id": "clause-1",
+    "shortTitle": "01. Acceptance of Terms"
+  },
+  {
+    "clauseNum": 2,
+    "id": "clause-2",
+    "shortTitle": "02. Services & Nexi AI"
+  },
+  {
+    "clauseNum": 3,
+    "id": "clause-3",
+    "shortTitle": "03. Eligibility & Registration"
+  },
+  {
+    "clauseNum": 4,
+    "id": "clause-4",
+    "shortTitle": "04. Account Security"
+  },
+  {
+    "clauseNum": 5,
+    "id": "clause-5",
+    "shortTitle": "05. Traveller ID Accuracy"
+  },
+  {
+    "clauseNum": 6,
+    "id": "clause-6",
+    "shortTitle": "06. AI Itinerary Limitations"
+  },
+  {
+    "clauseNum": 7,
+    "id": "clause-7",
+    "shortTitle": "07. Verification & Permits"
+  },
+  {
+    "clauseNum": 8,
+    "id": "clause-8",
+    "shortTitle": "08. Third-Party Providers"
+  },
+  {
+    "clauseNum": 9,
+    "id": "clause-9",
+    "shortTitle": "09. Bookings & Confirmations"
+  },
+  {
+    "clauseNum": 10,
+    "id": "clause-10",
+    "shortTitle": "10. Pricing, GST & RBI Gateway"
+  },
+  {
+    "clauseNum": 11,
+    "id": "clause-11",
+    "shortTitle": "11. Refunds (5-7 Days)"
+  },
+  {
+    "clauseNum": 12,
+    "id": "clause-12",
+    "shortTitle": "12. Prohibited Conduct"
+  },
+  {
+    "clauseNum": 13,
+    "id": "clause-13",
+    "shortTitle": "13. Intellectual Property"
+  },
+  {
+    "clauseNum": 14,
+    "id": "clause-14",
+    "shortTitle": "14. User-Submitted Content"
+  },
+  {
+    "clauseNum": 15,
+    "id": "clause-15",
+    "shortTitle": "15. Privacy & DPDP 2023"
+  },
+  {
+    "clauseNum": 16,
+    "id": "clause-16",
+    "shortTitle": "16. Availability & Downtime"
+  },
+  {
+    "clauseNum": 17,
+    "id": "clause-17",
+    "shortTitle": "17. Limitation of Liability"
+  },
+  {
+    "clauseNum": 18,
+    "id": "clause-18",
+    "shortTitle": "18. Indemnity"
+  },
+  {
+    "clauseNum": 19,
+    "id": "clause-19",
+    "shortTitle": "19. Suspension & Termination"
+  },
+  {
+    "clauseNum": 20,
+    "id": "clause-20",
+    "shortTitle": "20. Grievance Officer"
+  },
+  {
+    "clauseNum": 21,
+    "id": "clause-21",
+    "shortTitle": "21. Changes to Terms"
+  },
+  {
+    "clauseNum": 22,
+    "id": "clause-22",
+    "shortTitle": "22. Jurisdiction: Ahmedabad"
+  },
+  {
+    "clauseNum": 23,
+    "id": "clause-23",
+    "shortTitle": "23. Contact & Channels"
+  },
+  {
+    "clauseNum": 24,
+    "id": "clause-24",
+    "shortTitle": "24. Effective Date & Notes"
+  }
 ];
 
 export function TermsClient() {
-  const [activeSection, setActiveSection] = useState<string>('section-1');
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeClauseId, setActiveClauseId] = useState('clause-1');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Auto-dismiss toast
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
+    if (!toastMessage) return;
+    const timer = setTimeout(() => setToastMessage(null), 3000);
+    return () => clearTimeout(timer);
+  }, [toastMessage]);
 
-      // Identify currently visible section
-      const scrollPosition = window.scrollY + 160;
-      for (const s of SECTIONS) {
-        const el = document.getElementById(s.id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(s.id);
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+  const showToast = useCallback((msg: string) => {
+    setToastMessage(msg);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const topOffset = 90;
-      const elementPosition = el.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - topOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-      setActiveSection(id);
+  const copyClauseLink = useCallback((clauseId: string, clauseNum: string) => {
+    if (typeof window === 'undefined') return;
+    const url = `${window.location.origin}/terms/#${clauseId}`;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => showToast(`Direct permalink to Clause ${clauseNum} copied to clipboard`))
+        .catch(() => showToast(`Direct reference: #${clauseId}`));
+    } else {
+      showToast(`Direct reference: #${clauseId}`);
     }
-  };
+  }, [showToast]);
 
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
     if (typeof window !== 'undefined') {
       window.print();
     }
-  };
+  }, []);
+
+  // Keyboard shortcut: Cmd/Ctrl + K to focus search, ESC to clear
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('clause-search-input')?.focus();
+      } else if (e.key === 'Escape' && searchQuery) {
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchQuery]);
+
+  // Smooth Active TOC Scroll Spy via IntersectionObserver
+  useEffect(() => {
+    const cards = document.querySelectorAll('.clause-card');
+    if (!cards.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            if (id) {
+              setActiveClauseId(id);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '-100px 0px -60% 0px',
+      }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToClause = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveClauseId(id);
+    }
+  }, []);
+
+  // Search matching logic
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  
+  const clauseMatches = useMemo(() => {
+    const matches: Record<string, boolean> = {};
+    const clauseSearchIndex: Record<string, string> = {
+      'clause-1': "introduction and acceptance of terms  01 introduction and acceptance of terms link welcome to bharatyatra (\"platform\", \"we\", \"us\", or \"our\"), accessible via https://bharatyatra.in and associated domains, subdomains, mobile-responsive interfaces, and micro-applications. these terms and conditions (\"terms\") constitute an electronic record in terms of the information technology act, 2000 and the rules thereunder, forming a legally binding contractual covenant entered into between you (\"user\", \"traveller\", \"customer\", or \"you\") and the operating entity of bharatyatra. by accessing, browsing, registering for an account, generating ai itineraries, saving trips, interacting with our travel assistants (including nexi ai), or making booking requests through bharatyatra, you acknowledge that you have read, understood, and unconditionally agree to be bound by these terms, together with our integrated privacy policy and all applicable statutory rules and notifications issued under the laws of india. gavel important notice: if you do not agree with any provision of these terms or cannot satisfy legal contracting capacity, you must immediately discontinue your access to and use of the platform. ",
+      'clause-2': "about bharatyatra and its services  02 about bharatyatra and its services link bharatyatra is an advanced travel discovery, personalization, and journey coordination technology ecosystem engineered to streamline authentic exploration across india, with an elevated initial repository centered on the cultural, natural, and spiritual circuits of gujarat. auto_awesome ai travel planner hyper-personalized travel itineraries synthesized algorithmically based on pace, interest, seasonality, and party composition. account_balance 100+ landmark directory ground-researched guides, historical summaries, operational hours, and darshan etiquettes for iconic indian monuments. airplane_ticket booking facilitation integration facilitation for heritage hotels, gsrtc luxury express buses, irctc routing, airlines, and artisan masterclasses. smart_toy nexi ai assistant real-time companion providing cultural etiquette cues, multilingual phrasing, and situational transit suggestions. technology intermediary status: bharatyatra operates strictly as an electronic technology platform and intermediary within the statutory definition of the information technology act, 2000 . unless explicitly certified in writing for a specific licensed package, bharatyatra is neither a direct carrier, airline, hotelier, nor fleet operator. ",
+      'clause-3': "eligibility and account registration  03 eligibility and account registration link to be eligible to access bharatyatra or register an account, you represent and warrant that: you are at least 18 years of age (or the age of majority in your jurisdiction) and possess full legal capacity to enter into a binding contract pursuant to the indian contract act, 1872 . minors (individuals under 18 years) may only utilize the platform under the active supervision and explicit consent of a parent or legal guardian who accepts these terms on their behalf. you are not barred from receiving travel or digital services under the laws of india or any applicable foreign jurisdiction. all information submitted during registration (including legal name, email address, and mobile number) is truthful, accurate, and kept updated. ",
+      'clause-4': "account security and user responsibilities  04 account security and user responsibilities link when registering with bharatyatra (whether through google oauth single sign-on or direct email authentication), you are solely responsible for safeguarding the credentials and authenticated tokens of your device. you agree to notify bharatyatra immediately via pandyakaushal294@gmail.com upon discovering any unauthorized entry, credential breach, or suspicious activity. you remain entirely liable for all activities, booking requests, and transactions initiated under your verified session until written notification has been formally delivered to our security desk. ",
+      'clause-5': "accurate personal, traveller and booking information  05 accurate personal, traveller and booking information link all passenger names, contact numbers, email addresses, age declarations, and identification numbers entered during itinerary planning or checkout must match exactly with valid government-issued photo identification (such as aadhaar card, passport, voter id, or indian driving licence ). carriers, hotels, and protected wildlife sanctuaries (including sasan gir forest lion safari and rann of kutch border check-posts) strictly cross-verify traveller identity against booking vouchers. bharatyatra shall not be held liable for denied entry, boarding refusal, or cancellation charges arising from spelling errors, age discrepancies, or false representations provided by the user. ",
+      'clause-6': "ai-generated itineraries, recommendations and limitations  06 ai-generated itineraries, recommendations and limitations link bharatyatra incorporates state-of-the-art algorithmic models and generative artificial intelligence to synthesize custom trip plans, route estimations, dining recommendations, and multi-day circuits. explicit artificial intelligence limitations: ai outputs represent probabilistic planning suggestions, not guaranteed real-time schedules. road conditions, seasonal river flow, monsoon washouts, local festivals, and unexpected municipal closures may alter recommended routes. travellers are strongly advised to independently verify temple darshan timings, museum weekly holidays, inner-line permit mandates, and ferry operational schedules. bharatyatra does not warrant that ai itinerary outputs are error-free, complete, or suitable for every individual physical condition or travel circumstance. ",
+      'clause-7': "travel information accuracy and independent verification  07 travel information accuracy and independent verification link while our editorial and research teams strive to maintain accurate, up-to-date landmark directory profiles across gujarat and india, operational guidelines set by governmental bodies (such as gujarat tourism, archaeological survey of india, and forest department authorities) are subject to revision without prior notice. users bear sole responsibility for obtaining required entry permits (e.g. dhordo rann permit), adhering to cultural dress codes at sacred religious sites (such as somnath, dwarkadhish, and palitana temples), and adhering to local environmental regulations. ",
+      'clause-8': "third-party travel providers and separate terms  08 third-party travel providers and separate terms link when you reserve hotel rooms, bus seats, train tickets, domestic flights, or local cultural activities through bharatyatra, the contract of carriage or hospitality service is formed directly between you and the respective third-party service provider (\"travel provider\"). your booking is subject to the specific terms, conditions, check-in rules, baggage allowances, and tariff restrictions established by that travel provider. bharatyatra does not control the physical premises, transport vehicles, staff conduct, or on-ground service quality of independent operators. ",
+      'clause-9': "booking requests, confirmations and availability  09 booking requests, confirmations and availability link submitting a booking request or generating an itinerary does not constitute an immediate confirmed reservation. a booking is only legally confirmed when: the applicable transaction payment has been successfully authorized and settled. the respective travel provider has confirmed real-time inventory allocation. bharatyatra has dispatched an official booking confirmation voucher containing a valid reference identifier (e.g., by-cf-xxxxx ). in the rare event that inventory becomes unavailable between selection and payment settlement, the transaction will be cancelled and any debited funds will be refunded pursuant to section 11. ",
+      'clause-10': "pricing, taxes, fees and payment processing  10 pricing, taxes, fees and payment processing link all monetary values on bharatyatra are quoted in indian rupees (inr / ₹) . pricing displays clearly delineate the base rate, applicable goods and services tax (gst: 12% or 18% as statutory), and any statutory levies or platform convenience fees prior to final payment authorization. transactions are routed through reserve bank of india (rbi) authorized payment gateway partners (such as razorpay, upi rails, credit/debit cards, and scheduled commercial banks). bharatyatra does not store sensitive cardholder authentication data (cvv/pin). you agree to comply with your issuing bank's multi-factor authentication (otp/sms) requirements. ",
+      'clause-11': "cancellations, changes, refunds and disputes  11 cancellations, changes, refunds and disputes link cancellation eligibility, change windows, and applicable refund percentages are governed by the specific fare rules displayed at the time of purchase and the policies of the respective travel provider: non-refundable fares certain promotional hotel stays, festive dates (e.g. rann utsav peak full moon dates), and special transit passes are strictly non-refundable once issued. 5–7 banking days approved refunds are credited exclusively back to the original source payment instrument within standard banking turnaround windows. convenience &amp; gateway fees: technology convenience fees or gateway surcharges incurred during initial transaction processing are non-refundable unless cancellation resulted directly from a technical failure attributable to bharatyatra. disputed debits must be reported within 14 calendar days to pandyakaushal294@gmail.com . ",
+      'clause-12': "user conduct and prohibited activities  12 user conduct and prohibited activities link you agree not to engage in any of the following prohibited activities: making speculative, fraudulent, or false booking requests or hoarding inventory without genuine intent to travel. using automated scraping, bots, crawlers, or algorithmic extraction tools to index or republish bharatyatra proprietary directory content. attempting to probe, scan, or breach platform security defenses, rate limit guards, api endpoints, or database structures. submitting defamatory, obscene, infringing, or illegal material through reviews, feedback forms, or chat interfaces. impersonating another individual, travel agent, or government official. reselling or commercializing bharatyatra ai trip construction plans without explicit commercial licensing. ",
+      'clause-13': "intellectual property and permitted use  13 intellectual property and permitted use link all content included on bharatyatra—including software code, text, graphics, landmark dossiers, photographs, logo marks, user interface design, audio elements, and algorithmic prompts—is the intellectual property of bharatyatra or its licensors and is protected by the copyright act, 1957 , the trade marks act, 1999 , and international intellectual property conventions. you are granted a limited, personal, non-exclusive, non-transferable, and revocable licence to access and view the platform for personal, non-commercial travel planning purposes only. ",
+      'clause-14': "user-submitted content and permissions  14 user-submitted content and permissions link when you submit reviews, travel tips, photos, or itinerary feedback to bharatyatra, you grant us a worldwide, perpetual, royalty-free, non-exclusive licence to publish, adapt, translate, and display such content across our platform ecosystem. you represent and warrant that you own or possess all requisite rights to the content you submit and that your submissions do not infringe any third-party privacy, publicity, or intellectual property rights. ",
+      'clause-15': "privacy and reference to privacy policy  15 privacy and reference to privacy policy link your privacy and the security of your personal data are paramount to bharatyatra. we process personal and booking data in compliance with applicable indian data protection principles, including the information technology act, 2000 and the digital personal data protection act, 2023 (dpdp act) . read the full privacy policy review how personal identifiers, booking records, and ai prompts are encrypted and retained. view policy arrow_forward ",
+      'clause-16': "service availability, maintenance and technical limitations  16 service availability, maintenance and technical limitations link bharatyatra strives to ensure continuous 24/7 platform availability. however, digital services may be subject to scheduled maintenance, cloud infrastructure updates, telecommunication disruptions, or third-party global distribution system (gds) api downtimes. bharatyatra is provided on an \"as is\" and \"as available\" basis without warranties of uninterrupted uptime or immediate latency resolution during unexpected internet backbone outages. ",
+      'clause-17': "limitation of liability  17 limitation of liability link to the maximum extent permitted under applicable indian law (including the consumer protection act, 2019 and section 73 of the indian contract act, 1872 ): bharatyatra shall not be liable for indirect, incidental, special, punitive, or consequential damages, including loss of profits, vacation time, missed connecting transit, or emotional distress. bharatyatra is not liable for acts, omissions, delays, mechanical breakdowns, overbooking, strikes, or insolvencies of independent third-party carriers, hotels, or experience suppliers. in any event, bharatyatra's aggregate liability arising out of or related to these terms or your use of the platform shall not exceed the convenience fee retained by bharatyatra for the specific transaction giving rise to the claim, or inr 1,000 (one thousand indian rupees), whichever is higher. nothing in these terms limits or excludes liability for death, personal injury, fraud, or gross negligence where such limitation is prohibited by statutory law. ",
+      'clause-18': "indemnity  18 indemnity link to the extent permitted by law, you agree to defend, indemnify, and hold harmless bharatyatra, its affiliates, directors, officers, employees, and software maintainers from and against any claims, liabilities, damages, losses, and reasonable legal expenses arising out of: your willful violation of these terms or applicable statutory laws. your infringement of any third-party intellectual property or privacy right. fraudulent conduct or false passenger declarations made during booking. ",
+      'clause-19': "suspension and termination of accounts  19 suspension and termination of accounts link bharatyatra reserves the right, in its sole discretion and without liability, to suspend, disable, or terminate user accounts or restrict access to the platform upon reasonable belief of: material breach of these terms or suspected fraudulent activities. payment defaults, unauthorized chargeback initiations, or abusive usage of automated agents. conduct detrimental to fellow travellers, suppliers, or the operational integrity of the platform. ",
+      'clause-20': "consumer complaints and grievance redressal  20 consumer complaints and grievance redressal link in accordance with the consumer protection act, 2019 , the consumer protection (e-commerce) rules, 2020 , and the information technology (intermediary guidelines and digital media ethics code) rules, 2021 , bharatyatra has established a formal consumer grievance redressal mechanism. shield_person designated grievance redressal officer designation grievance redressal officer, bharatyatra contact email pandyakaushal294@gmail.com support telephone +91 9624282521 jurisdiction office ahmedabad, gujarat, india schedule response timelines: acknowledgment within 48 hours ; final resolution within 30 days of complete grievance particulars. ",
+      'clause-21': "changes to the terms  21 changes to the terms link bharatyatra reserves the right to amend, update, or replace any part of these terms from time to time to accommodate platform advancements, new travel features, or statutory regulatory directives. any updates become effective immediately upon posting to this url. the \"last updated\" date reflects the most recent revision. your continued use of the platform following published modifications constitutes your binding acceptance of the revised terms. ",
+      'clause-22': "governing law and jurisdiction  22 governing law and jurisdiction link these terms and any dispute, controversy, or claim arising out of or relating to your use of bharatyatra shall be governed by, interpreted, and construed exclusively in accordance with the substantive laws of the republic of india , without giving effect to conflict of laws principles. subject to statutory consumer court jurisdictions where mandatory under the consumer protection act, 2019 , you agree that the competent civil courts situated at ahmedabad, gujarat, india shall possess exclusive territorial jurisdiction over any legal proceedings arising hereunder. ",
+      'clause-23': "contact information and support  23 contact information and support link if you have questions, comments, or require assistance regarding these terms, you may reach our administrative and support team through the following official channels: alternate_email official support email pandyakaushal294@gmail.com ring_volume customer care hotline +91 9624282521 ",
+      'clause-24': "effective date and last-updated date  24 effective date and last-updated date link these terms and conditions are effective as of october 28, 2026 . document version: 1.0.0 (pan-india &amp; gujarat travel release) . fact_check notice for platform owner &amp; legal review checklist before treating these terms as commercially final for enterprise contracts or venture financing, the business owner should complete the following verifications with qualified indian legal counsel: formalize corporate entity name (e.g., private limited / llp / sole proprietorship) once officially incorporated with the ministry of corporate affairs (mca). designate physical registered postal address in gujarat and statutory corporate identification number (cin) or gstin. appoint an official grievance redressal officer by name pursuant to the consumer protection (e-commerce) rules, 2020. publish the corresponding separate privacy policy pursuant to the digital personal data protection act, 2023. ",
+    };
+
+    let count = 0;
+    for (const id in clauseSearchIndex) {
+      const isMatch = !normalizedQuery || clauseSearchIndex[id].includes(normalizedQuery);
+      matches[id] = isMatch;
+      if (isMatch) count++;
+    }
+    return { matches, count };
+  }, [normalizedQuery]);
+
+  const visibleCount = clauseMatches.count;
+  const totalCount = 24;
 
   return (
-    <div className="bg-slate-50 text-slate-800 min-h-screen">
-      {/* 1. HERO HEADER BANNER */}
-      <section className="bg-gradient-to-b from-[#070e1e] via-[#0b1c30] to-[#0f2744] text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
-        {/* Glow decoration */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
-
-        <div className="max-w-7xl mx-auto relative z-10 space-y-6">
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-slate-400">
-            <Link href="/" className="hover:text-amber-400 transition-colors flex items-center gap-1">
-              <Compass className="w-3.5 h-3.5 text-amber-500" />
-              <span>Home</span>
-            </Link>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
-            <span className="text-amber-300 font-semibold">Terms &amp; Conditions</span>
-          </nav>
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-2">
-            <div className="space-y-3 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
-                <Scale className="w-3.5 h-3.5 text-amber-400" />
-                <span>Legal &amp; Regulatory Framework</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-white tracking-tight leading-tight">
-                Terms &amp; Conditions
-              </h1>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Please review these Terms and Conditions carefully before exploring, constructing AI itineraries, or booking travel services through BharatYatra (<span className="text-amber-300 font-mono">bharatyatra.in</span>).
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all flex items-center gap-2 shadow-sm"
-                title="Print Terms for Offline Reference"
-              >
-                <Printer className="w-4 h-4 text-amber-400" />
-                <span>Print Copy</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Meta Badges */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800/80 text-xs">
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
-              <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-medium block">Effective Date</span>
-                <strong className="text-white font-semibold">October 28, 2026</strong>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
-              <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-medium block">Jurisdiction</span>
-                <strong className="text-white font-semibold">Republic of India</strong>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
-              <Building2 className="w-4 h-4 text-blue-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-medium block">Applicable Court</span>
-                <strong className="text-white font-semibold">Ahmedabad, Gujarat</strong>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
-              <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-medium block">Technology</span>
-                <strong className="text-white font-semibold">AI Travel Aggregation</strong>
-              </div>
-            </div>
-          </div>
+    <div className="w-full bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col justify-between">
+      {/* Toast Notification Banner */}
+      {toastMessage && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-on-background text-surface shadow-2xl border border-outline-variant animate-in fade-in slide-in-from-bottom-4 duration-200"
+        >
+          <span className="material-symbols-outlined text-[18px] text-primary-container">check_circle</span>
+          <span className="text-xs font-medium font-body-sm tracking-wide">{toastMessage}</span>
+          <button
+            type="button"
+            onClick={() => setToastMessage(null)}
+            className="ml-2 text-surface/70 hover:text-surface text-xs"
+            aria-label="Dismiss toast"
+          >
+            <span className="material-symbols-outlined text-[14px]">close</span>
+          </button>
         </div>
-      </section>
+      )}
 
-      {/* 2. ADVISORY CALLOUT FOR TRAVELERS & BUSINESS OWNER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 shadow-sm flex items-start gap-3">
-            <Bot className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
-            <div className="text-xs text-amber-900 space-y-1">
-              <strong className="font-bold text-amber-950 block text-sm">AI Planning Advisory</strong>
-              <p className="leading-relaxed">
-                BharatYatra generates dynamic travel itineraries using artificial intelligence. Itineraries, travel timings, monument opening hours, permit rules, and fare estimates are advisory and must be independently verified prior to travel.
-              </p>
-            </div>
-          </div>
+      <div className="flex flex-col w-full">
+        {/* Top Document Header & Hero Canvas */}
+        <div className="w-full bg-surface-container-low/70 py-space-xl px-margin-mobile lg:px-margin">
+          <div className="max-w-[1440px] mx-auto flex flex-col gap-space-lg">
+            {/* Breadcrumb Navigation */}
+            <nav aria-label="Breadcrumb" className="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+              <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1" data-path="home">
+                <span className="material-symbols-outlined text-[16px]">home</span>
+                Home
+              </Link>
+              <span className="material-symbols-outlined text-[14px] opacity-40">chevron_right</span>
+              <span className="text-on-surface-variant">Legal &amp; Governance</span>
+              <span className="material-symbols-outlined text-[14px] opacity-40">chevron_right</span>
+              <span className="text-on-surface font-semibold">Terms &amp; Conditions</span>
+            </nav>
 
-          <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 shadow-sm flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
-            <div className="text-xs text-blue-900 space-y-1">
-              <strong className="font-bold text-blue-950 block text-sm">Third-Party Operator Relationship</strong>
-              <p className="leading-relaxed">
-                Transport carriers (trains, flights, state buses), hotels, and local experience vendors are independent third-party operators. Bookings are subject to the respective operator&apos;s conditions of carriage and property rules.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. MAIN SPLIT CONTENT: TABLE OF CONTENTS + TERMS BODY */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
-          {/* STICKY SIDEBAR: TABLE OF CONTENTS (Desktop) */}
-          <aside className="lg:col-span-4 sticky top-24 space-y-4">
-            <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-amber-600" />
-                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
-                    Table of Contents
-                  </h2>
+            {/* Main Document Title Block */}
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
+              <div className="flex flex-col gap-space-sm max-w-3xl">
+                <div className="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container/25 text-on-primary-container font-label-caps text-label-caps uppercase tracking-widest w-fit">
+                  <span className="material-symbols-outlined text-[14px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>gavel</span>
+                  LEGAL &amp; REGULATORY FRAMEWORK • BHARAT YATRA
                 </div>
-                <span className="text-[11px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                  24 Clauses
-                </span>
-              </div>
-
-              {/* Mobile Dropdown selector */}
-              <div className="block lg:hidden">
-                <label htmlFor="mobile-toc" className="sr-only">Jump to section</label>
-                <select
-                  id="mobile-toc"
-                  aria-label="Jump to a specific section"
-                  value={activeSection}
-                  onChange={(e) => scrollToSection(e.target.value)}
-                  className="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
-                >
-                  {SECTIONS.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.num}. {s.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Desktop Scrollable List */}
-              <nav aria-label="Table of contents" className="hidden lg:block max-h-[calc(100vh-220px)] overflow-y-auto pr-1 space-y-1 text-xs">
-                {SECTIONS.map((s) => {
-                  const isActive = activeSection === s.id;
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => scrollToSection(s.id)}
-                      className={`w-full text-left px-3 py-2 rounded-xl transition-all flex items-start gap-2.5 font-medium ${
-                        isActive
-                          ? 'bg-amber-50 text-amber-900 font-bold border-l-4 border-amber-600 shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span className={`font-mono text-[11px] shrink-0 mt-0.5 ${isActive ? 'text-amber-700 font-bold' : 'text-slate-400'}`}>
-                        {s.num.toString().padStart(2, '0')}
-                      </span>
-                      <span className="leading-snug">{s.title}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-
-              {/* Direct Support Card */}
-              <div className="pt-3 border-t border-slate-100 text-xs space-y-2">
-                <span className="text-[11px] text-slate-500 font-semibold block uppercase">Need Legal Assistance?</span>
-                <p className="text-slate-600 text-[11px] leading-relaxed">
-                  For legal inquiries or statutory notices, reach out to our legal and compliance desk:
+                <h1 className="font-display-hero text-headline-lg lg:text-display-hero text-on-surface tracking-tight leading-tight">
+                  Terms &amp; Conditions
+                </h1>
+                <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                  Please review these Terms and Conditions carefully before exploring, constructing AI itineraries, or booking travel services through BharatYatra (<span className="font-semibold text-on-surface">bharatyatra.in</span>).
                 </p>
-                <a
-                  href="mailto:pandyakaushal294@gmail.com"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 hover:underline"
+              </div>
+
+              {/* Action Tools Bar */}
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-space-sm shrink-0">
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-xl bg-surface-container-highest hover:bg-surface-container font-label-lg text-label-lg text-on-surface shadow-sm transition-all cursor-pointer"
                 >
-                  <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span className="truncate">pandyakaushal294@gmail.com</span>
+                  <span className="material-symbols-outlined text-[18px]">print</span>
+                  Print Copy
+                </button>
+                <a
+                  className="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-xl bg-primary-container text-on-secondary-fixed hover:bg-primary-fixed font-label-lg text-label-lg font-semibold shadow-sm transition-all"
+                  href="mailto:pandyakaushal294@gmail.com?subject=Request%20Legal%20PDF%20Dossier%20BharatYatra"
+                >
+                  <span className="material-symbols-outlined text-[18px]">download_for_offline</span>
+                  PDF Dossier
                 </a>
               </div>
             </div>
-          </aside>
 
-          {/* MAIN TERMS ARTICLES (8 Cols on lg) */}
-          <main className="lg:col-span-8 space-y-8">
-            
-            {/* SECTION 1 */}
-            <article id="section-1" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  01
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Introduction and Acceptance of Terms
-                </h2>
+            {/* Regulatory Metadata Strip */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md p-space-md rounded-2xl bg-surface-container-lowest shadow-sm">
+              <div className="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-low/50">
+                <span className="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Effective Date</span>
+                <span className="font-title-md text-title-md text-on-surface font-bold">October 28, 2026</span>
+                <span className="font-body-sm text-body-sm text-on-surface-variant opacity-80">Version 1.0.0</span>
               </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  Welcome to <strong>BharatYatra</strong> (&quot;Platform&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), accessible via <strong>https://bharatyatra.in</strong> (and associated domains, subdomains, and web applications). These Terms and Conditions (&quot;Terms&quot;) constitute a legally binding agreement entered into between you (&quot;User&quot;, &quot;Traveller&quot;, &quot;Customer&quot;, or &quot;you&quot;) and the operating entity of BharatYatra.
-                </p>
-                <p>
-                  By accessing, browsing, registering for an account, generating AI itineraries, saving trips, interacting with our travel assistants (including Nexi AI), or making booking requests through BharatYatra, you acknowledge that you have read, understood, and unconditionally agree to be bound by these Terms, together with our <strong>Privacy Policy</strong> and all applicable guidelines, rules, and statutory notifications issued from time to time under the laws of India.
-                </p>
-                <p className="p-3.5 rounded-xl bg-slate-50 border-l-4 border-amber-600 text-xs text-slate-700">
-                  <strong>Important Notice:</strong> If you do not agree with any provision of these Terms, you must immediately discontinue your access to and use of the Platform.
-                </p>
+              <div className="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-low/50">
+                <span className="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Jurisdiction</span>
+                <span className="font-title-md text-title-md text-on-surface font-bold">Republic of India</span>
+                <span className="font-body-sm text-body-sm text-on-surface-variant opacity-80">Contract Act, 1872</span>
               </div>
-            </article>
-
-            {/* SECTION 2 */}
-            <article id="section-2" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  02
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  About BharatYatra and Its Services
-                </h2>
+              <div className="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-low/50">
+                <span className="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Applicable Court</span>
+                <span className="font-title-md text-title-md text-on-surface font-bold">Ahmedabad, Gujarat</span>
+                <span className="font-body-sm text-body-sm text-on-surface-variant opacity-80">Exclusive Territorial</span>
               </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  BharatYatra is an AI-powered travel discovery, personalization, and travel coordination technology platform designed to streamline travel exploration across India with an initial focus on authentic Gujarat circuits, heritage trails, and cultural experiences.
-                </p>
-                <p>Our digital platform provides:</p>
-                <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                  <li><strong>AI Travel Planner:</strong> Hyper-personalized travel itineraries synthesized via algorithmic preference matching.</li>
-                  <li><strong>Landmark Directory:</strong> Ground-researched guides, historical summaries, and operational details for 100+ iconic landmarks and destinations.</li>
-                  <li><strong>Booking Discovery &amp; Facilitation:</strong> Integration with third-party suppliers for hotel accommodations, express buses (e.g. GSRTC), express trains (IRCTC routing), flights, dining reservations, and curated local masterclasses.</li>
-                  <li><strong>Nexi AI Assistant:</strong> Real-time travel assistant providing cultural recommendations, multilingual assistance, and itinerary adjustments.</li>
-                </ul>
-                <div className="p-3.5 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 text-xs leading-relaxed">
-                  <strong>Technology Intermediary Status:</strong> BharatYatra operates strictly as an electronic technology platform and intermediary within the meaning of the <em>Information Technology Act, 2000</em>. Unless explicitly certified in writing for a specific licensed package, BharatYatra is not a direct carrier, airline, hotelier, or bus fleet owner.
-                </div>
+              <div className="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-low/50">
+                <span className="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Tech Status</span>
+                <span className="font-title-md text-title-md text-on-surface font-bold">IT Act Intermediary</span>
+                <span className="font-body-sm text-body-sm text-on-surface-variant opacity-80">Section 79 Compliant</span>
               </div>
-            </article>
-
-            {/* SECTION 3 */}
-            <article id="section-3" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  03
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Eligibility and Account Registration
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  To be eligible to access BharatYatra or register an account, you represent and warrant that:
-                </p>
-                <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                  <li>You are at least <strong>18 years of age</strong> (or the age of majority in your jurisdiction) and possess full legal capacity to enter into a binding contract pursuant to the <em>Indian Contract Act, 1872</em>.</li>
-                  <li>Minors (under 18 years) may only utilize the Platform under the active supervision of a parent or legal guardian who accepts these Terms on their behalf.</li>
-                  <li>You are not barred from receiving travel or digital services under the laws of India or any applicable foreign jurisdiction.</li>
-                  <li>All information submitted during registration (including name, email address, and mobile number) is truthful, accurate, and current.</li>
-                </ul>
-              </div>
-            </article>
-
-            {/* SECTION 4 */}
-            <article id="section-4" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  04
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Account Security and User Responsibilities
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  When registering with BharatYatra (whether through Google OAuth single sign-on or email verification), you are solely responsible for maintaining the confidentiality of your credentials and device access.
-                </p>
-                <p>
-                  You agree to immediately notify BharatYatra via <a href="mailto:pandyakaushal294@gmail.com" className="text-amber-700 underline font-semibold">pandyakaushal294@gmail.com</a> upon discovering any unauthorized access, security incident, or compromised account credentials. You accept responsibility for all bookings, orders, and interactions conducted through your authenticated account until verified notification is received.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 5 */}
-            <article id="section-5" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  05
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Accurate Personal, Traveller and Booking Information
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  All passenger names, contact numbers, email addresses, age declarations, and identification details entered during itinerary planning or checkout must match exactly with valid Government-issued photo identification (such as Aadhaar, Passport, Voter ID, or Driving Licence).
-                </p>
-                <p>
-                  Carriers, hotels, and protected wildlife reserves (including Sasan Gir Forest and Rann of Kutch check-posts) strictly cross-verify traveller identity against booking vouchers. BharatYatra is not liable for denied entry, boarding refusal, or cancellation charges arising from spelling errors, age discrepancies, or false representations provided by the user.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 6 */}
-            <article id="section-6" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  06
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  AI-Generated Itineraries, Recommendations and Limitations
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  BharatYatra incorporates state-of-the-art algorithmic models and generative artificial intelligence to synthesize custom trip plans, route estimations, dining recommendations, and multi-day circuits.
-                </p>
-                <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
-                  <div className="flex items-center gap-1.5 font-bold text-amber-950">
-                    <AlertTriangle className="w-4 h-4 text-amber-600" />
-                    <span>Explicit Artificial Intelligence Limitations</span>
-                  </div>
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>AI outputs represent probabilistic planning suggestions, not guaranteed real-time guarantees.</li>
-                    <li>Road conditions, seasonal river flow, monsoon washouts, local festivals, and unexpected municipal closures may alter recommended routes.</li>
-                    <li>Travellers are strongly advised to independently verify temple darshan timings, museum weekly holidays, inner-line permit mandates, and ferry operational schedules.</li>
-                    <li>BharatYatra does not warrant that AI itinerary outputs are error-free, complete, or suitable for every individual physical condition or travel circumstance.</li>
-                  </ul>
-                </div>
-              </div>
-            </article>
-
-            {/* SECTION 7 */}
-            <article id="section-7" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  07
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Travel Information Accuracy and Independent Verification
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  While our editorial and research teams strive to maintain accurate, up-to-date landmark directory profiles across Gujarat and India, operational guidelines set by governmental bodies (such as Gujarat Tourism, Archaeological Survey of India, and Forest Department authorities) are subject to revision without prior notice.
-                </p>
-                <p>
-                  Users bear sole responsibility for obtaining required entry permits (e.g. Dhordo Rann permit), adhering to cultural dress codes at sacred religious sites (such as Somnath, Dwarkadhish, and Palitana temples), and adhering to local environmental regulations.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 8 */}
-            <article id="section-8" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  08
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Third-Party Travel Providers and Separate Terms
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  When you reserve hotel rooms, bus seats, train tickets, domestic flights, or local cultural activities through BharatYatra, the contract of carriage or service is formed directly between you and the respective third-party service provider (&quot;Travel Provider&quot;).
-                </p>
-                <p>
-                  Your booking is subject to the specific terms, conditions, check-in rules, baggage allowances, and tariff restrictions established by that Travel Provider. BharatYatra does not control the physical premises, transport vehicles, staff conduct, or on-ground service quality of independent operators.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 9 */}
-            <article id="section-9" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  09
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Booking Requests, Confirmations and Availability
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  Submitting a booking request or generating an itinerary does not constitute an immediate confirmed reservation. A booking is only legally confirmed when:
-                </p>
-                <ol className="list-decimal pl-5 space-y-1 text-xs sm:text-sm">
-                  <li>The applicable transaction payment has been successfully authorized and settled.</li>
-                  <li>The respective Travel Provider has confirmed real-time inventory allocation.</li>
-                  <li>BharatYatra has dispatched an official booking confirmation voucher containing a valid reference identifier (e.g. CF-BK-XXXXX).</li>
-                </ol>
-                <p>
-                  In the rare event that inventory becomes unavailable between selection and payment settlement, the transaction will be cancelled and any debited funds will be refunded pursuant to Section 11.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 10 */}
-            <article id="section-10" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  10
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Pricing, Taxes, Fees and Payment Processing
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  All monetary values on BharatYatra are quoted in <strong>Indian Rupees (INR / ₹)</strong>. Pricing displays clearly delineate the base rate, applicable Goods and Services Tax (GST), and any statutory levies or platform convenience fees prior to final payment authorization.
-                </p>
-                <p>
-                  Transactions are routed through Reserve Bank of India (RBI) authorized payment gateway partners (such as Razorpay, UPI rails, credit/debit cards, and scheduled commercial banks). BharatYatra does not store sensitive cardholder authentication data (CVV/PIN). You agree to comply with your issuing bank&apos;s multi-factor authentication (OTP/SMS) requirements.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 11 */}
-            <article id="section-11" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  11
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Cancellations, Changes, Refunds and Disputes
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  Cancellation eligibility, change windows, and applicable refund percentages are governed by the specific fare rules displayed at the time of purchase and the policies of the respective Travel Provider:
-                </p>
-                <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                  <li><strong>Non-Refundable Fares:</strong> Certain promotional hotel bookings, festive packages (e.g. Rann Utsav peak dates), or discounted transit passes are strictly non-refundable once booked.</li>
-                  <li><strong>Refund Processing:</strong> Approved refunds are credited exclusively back to the original source payment instrument within standard banking turnaround windows (typically 5 to 7 business days, depending on your issuing bank).</li>
-                  <li><strong>Convenience &amp; Gateway Fees:</strong> Technology convenience fees or gateway surcharges incurred during initial transaction processing may be non-refundable unless cancellation resulted from a technical error on BharatYatra&apos;s part.</li>
-                  <li><strong>Disputes:</strong> If you identify an erroneous debit or discrepancy, you must report it within 14 calendar days to <a href="mailto:pandyakaushal294@gmail.com" className="text-amber-700 underline font-semibold">pandyakaushal294@gmail.com</a> with complete transaction receipts.</li>
-                </ul>
-              </div>
-            </article>
-
-            {/* SECTION 12 */}
-            <article id="section-12" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  12
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  User Conduct and Prohibited Activities
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>You agree not to engage in any of the following prohibited activities:</p>
-                <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                  <li>Making speculative, fraudulent, or false booking requests or blocking inventory without genuine intent to travel.</li>
-                  <li>Using automated scraping, bots, crawlers, or algorithmic extraction tools to index or republish BharatYatra proprietary directory content.</li>
-                  <li>Attempting to probe, scan, or breach platform security defenses, rate limit guards, API endpoints, or database structures.</li>
-                  <li>Submitting defamatory, obscene, infringing, or illegal material through reviews, feedback forms, or chat interfaces.</li>
-                  <li>Impersonating another individual, travel agent, or government official.</li>
-                  <li>Reselling or commercializing BharatYatra AI trip construction plans without explicit commercial licensing.</li>
-                </ul>
-              </div>
-            </article>
-
-            {/* SECTION 13 */}
-            <article id="section-13" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  13
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Intellectual Property and Permitted Use
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  All content included on BharatYatra—including software code, text, graphics, landmark dossiers, photographs, logo marks, user interface design, audio elements, and algorithmic prompts—is the intellectual property of BharatYatra or its licensors and is protected by the <em>Copyright Act, 1957</em>, the <em>Trade Marks Act, 1999</em>, and international intellectual property treaties.
-                </p>
-                <p>
-                  You are granted a limited, personal, non-exclusive, non-transferable, and revocable licence to access and view the Platform for personal, non-commercial travel planning purposes only.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 14 */}
-            <article id="section-14" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  14
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  User-Submitted Content and Permissions
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  When you submit reviews, travel tips, photos, or itinerary feedback to BharatYatra, you grant us a worldwide, perpetual, royalty-free, non-exclusive licence to publish, adapt, translate, and display such content in connection with the Platform&apos;s travel directory and community services.
-                </p>
-                <p>
-                  You represent and warrant that you own or possess all requisite rights to the content you submit and that your submissions do not infringe any third-party privacy, publicity, or intellectual property rights.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 15 */}
-            <article id="section-15" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  15
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Privacy and Reference to Privacy Policy
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  Your privacy and the security of your personal data are paramount to BharatYatra. We process personal and booking data in compliance with applicable Indian data protection principles, including the <em>Information Technology Act, 2000</em> and the <em>Digital Personal Data Protection Act, 2023 (DPDP Act)</em>.
-                </p>
-                <p>
-                  Please review our dedicated <strong>Privacy Policy</strong> for comprehensive details regarding how we collect, store, encrypt, and share information with verified booking partners. Our Privacy Policy is incorporated by reference into these Terms.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 16 */}
-            <article id="section-16" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  16
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Service Availability, Maintenance and Technical Limitations
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  BharatYatra strives to ensure continuous 24/7 service availability. However, digital services may be subject to scheduled maintenance, cloud infrastructure updates, telecommunication disruptions, or third-party global distribution system (GDS) API downtimes.
-                </p>
-                <p>
-                  BharatYatra is provided on an &quot;as is&quot; and &quot;as available&quot; basis without warranties of uninterrupted uptime or immediate latency resolution during unexpected internet service failures.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 17 */}
-            <article id="section-17" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  17
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Limitation of Liability
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  To the maximum extent permitted under applicable Indian law (including the <em>Consumer Protection Act, 2019</em> and Section 73 of the <em>Indian Contract Act, 1872</em>):
-                </p>
-                <ul className="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                  <li>BharatYatra shall not be liable for indirect, incidental, special, punitive, or consequential damages, including loss of profits, vacation time, missed connecting transit, or emotional distress.</li>
-                  <li>BharatYatra is not liable for acts, omissions, delays, mechanical breakdowns, overbooking, strikes, or insolvencies of independent third-party carriers, hotels, or experience suppliers.</li>
-                  <li>In any event, BharatYatra&apos;s aggregate liability arising out of or related to these Terms or your use of the Platform shall not exceed the convenience fee retained by BharatYatra for the specific transaction giving rise to the claim, or INR 1,000 (One Thousand Indian Rupees), whichever is higher.</li>
-                  <li>Nothing in these Terms limits or excludes liability for death, personal injury, fraud, or gross negligence where such limitation is prohibited by statutory law.</li>
-                </ul>
-              </div>
-            </article>
-
-            {/* SECTION 18 */}
-            <article id="section-18" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  18
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Indemnity
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  To the extent permitted by law, you agree to defend, indemnify, and hold harmless BharatYatra, its affiliates, directors, officers, employees, and software maintainers from and against any claims, liabilities, damages, losses, and reasonable legal expenses arising out of:
-                </p>
-                <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm">
-                  <li>Your willful violation of these Terms or applicable statutory laws.</li>
-                  <li>Your infringement of any third-party intellectual property or privacy right.</li>
-                  <li>Fraudulent conduct or false passenger declarations made during booking.</li>
-                </ul>
-              </div>
-            </article>
-
-            {/* SECTION 19 */}
-            <article id="section-19" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  19
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Suspension and Termination of Accounts
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  BharatYatra reserves the right, in its sole discretion and without liability, to suspend, disable, or terminate user accounts or restrict access to the Platform upon reasonable belief of:
-                </p>
-                <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm">
-                  <li>Material breach of these Terms or suspected fraudulent activities.</li>
-                  <li>Payment defaults, unauthorized chargeback initiations, or abusive usage.</li>
-                  <li>Conduct detrimental to fellow travellers, suppliers, or the reputation of the Platform.</li>
-                </ul>
-              </div>
-            </article>
-
-            {/* SECTION 20 */}
-            <article id="section-20" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  20
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Consumer Complaints and Grievance Redressal
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  In accordance with the <em>Consumer Protection Act, 2019</em>, the <em>Consumer Protection (E-Commerce) Rules, 2020</em>, and the <em>Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021</em>, BharatYatra has established a formal consumer grievance redressal mechanism.
-                </p>
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                  <h3 className="font-bold text-slate-900 text-sm">Designated Grievance Redressal Officer</h3>
-                  <div className="space-y-1 font-mono text-[12px] text-slate-700">
-                    <p><strong>Designation:</strong> Grievance Redressal Officer, BharatYatra</p>
-                    <p><strong>Contact Email:</strong> <a href="mailto:pandyakaushal294@gmail.com" className="text-amber-700 underline">pandyakaushal294@gmail.com</a></p>
-                    <p><strong>Support Telephone:</strong> <a href="tel:+919624282521" className="text-amber-700 underline">+91 9624282521</a></p>
-                    <p><strong>Jurisdiction:</strong> Ahmedabad, Gujarat, India</p>
-                    <p><strong>Response Timelines:</strong> Acknowledgment within 48 hours; resolution within 30 days from receipt of complete grievance particulars.</p>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            {/* SECTION 21 */}
-            <article id="section-21" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  21
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Changes to the Terms
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  BharatYatra reserves the right to amend, update, or replace any part of these Terms from time to time to accommodate platform advancements, new travel features, or statutory regulatory directives.
-                </p>
-                <p>
-                  Any updates become effective immediately upon posting to this URL. The &quot;Last Updated&quot; date at the top and bottom of this document reflects the most recent revision. Your continued use of the Platform following published modifications constitutes your binding acceptance of the revised Terms.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 22 */}
-            <article id="section-22" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  22
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Governing Law and Jurisdiction
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-3 pt-1">
-                <p>
-                  These Terms and any dispute, controversy, or claim arising out of or relating to your use of BharatYatra shall be governed by, interpreted, and construed exclusively in accordance with the substantive laws of the <strong>Republic of India</strong>, without giving effect to conflict of laws principles.
-                </p>
-                <p>
-                  Subject to statutory consumer court jurisdictions where mandatory under the <em>Consumer Protection Act, 2019</em>, you agree that the competent civil courts situated at <strong>Ahmedabad, Gujarat, India</strong> shall possess exclusive territorial jurisdiction over any legal proceedings arising hereunder.
-                </p>
-              </div>
-            </article>
-
-            {/* SECTION 23 */}
-            <article id="section-23" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  23
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Contact Information and Support
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-4 pt-1">
-                <p>
-                  If you have questions, comments, or require assistance regarding these Terms, you may reach our administrative and support team through the following official channels:
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
-                    <Mail className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold block">Official Support Email</span>
-                      <a href="mailto:pandyakaushal294@gmail.com" className="font-bold text-slate-900 hover:text-amber-700">
-                        pandyakaushal294@gmail.com
-                      </a>
-                    </div>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
-                    <Phone className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold block">Customer Care Hotline</span>
-                      <a href="tel:+919624282521" className="font-bold text-slate-900 hover:text-amber-700">
-                        +91 9624282521
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            {/* SECTION 24 */}
-            <article id="section-24" className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4 scroll-mt-24">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-mono font-bold text-sm flex items-center justify-center shrink-0">
-                  24
-                </span>
-                <h2 className="text-xl sm:text-2xl font-heading font-bold text-slate-900 tracking-tight">
-                  Effective Date and Last-Updated Date
-                </h2>
-              </div>
-              <div className="text-sm text-slate-700 leading-relaxed space-y-2 pt-1">
-                <p>
-                  These Terms and Conditions are effective as of <strong>October 28, 2026</strong>.
-                </p>
-                <p className="text-xs text-slate-500">
-                  Document Version: 1.0.0 (Pan-India &amp; Gujarat Travel Release).
-                </p>
-              </div>
-            </article>
-
-            {/* OWNER REVIEW CHECKLIST BLOCK */}
-            <div className="p-6 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800 space-y-4 shadow-lg">
-              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm uppercase tracking-wider">
-                <Shield className="w-4 h-4" />
-                <span>Notice for Platform Owner &amp; Legal Review Checklist</span>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Before treating these terms as commercially final for enterprise contracts or venture financing, the business owner should complete the following verifications with qualified Indian legal counsel:
-              </p>
-              <ul className="text-xs space-y-1.5 text-slate-300 list-disc pl-5">
-                <li>Formalize corporate entity name (e.g. Private Limited / LLP / Sole Proprietorship) once officially incorporated with the Ministry of Corporate Affairs (MCA).</li>
-                <li>Designate physical postal address in Gujarat and statutory Corporate Identification Number (CIN) or GSTIN.</li>
-                <li>Appoint an official Grievance Redressal Officer by name pursuant to the Consumer Protection (E-Commerce) Rules, 2020.</li>
-                <li>Publish the corresponding separate Privacy Policy pursuant to the Digital Personal Data Protection Act, 2023.</li>
-              </ul>
             </div>
 
-          </main>
+            {/* In-Document Search & Key Statutory Callouts */}
+            <div className="flex flex-col gap-space-md">
+              {/* Live Instant Search Bar */}
+              <div className="relative w-full rounded-2xl bg-surface-container-lowest p-space-xs shadow-sm flex items-center gap-space-sm border border-transparent focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                <div className="w-12 h-12 flex items-center justify-center text-primary shrink-0">
+                  <span className="material-symbols-outlined text-[24px]">search</span>
+                </div>
+                <input
+                  aria-label="Search clauses"
+                  className="w-full bg-transparent font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none"
+                  id="clause-search-input"
+                  placeholder="Search within all 24 statutory clauses (e.g., refund, cancel, AI, Aadhaar, payment)..."
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <span
+                  className="hidden sm:inline-flex items-center px-space-sm py-space-xs rounded-full bg-surface-container text-on-surface font-label-md text-label-md shrink-0 whitespace-nowrap"
+                  id="search-result-counter"
+                >
+                  {searchQuery.trim() ? `${visibleCount} of ${totalCount} matching` : `${totalCount} clauses active`}
+                </span>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container text-on-surface-variant cursor-pointer transition-colors"
+                    id="clear-search-btn"
+                    title="Clear Search"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">close</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Two Critical Advisory Banners */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                <div className="flex items-start gap-space-md p-space-lg rounded-2xl bg-primary-container/20 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-secondary-fixed shrink-0">
+                    <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-title-md text-title-md text-on-surface font-semibold">AI Planning Advisory</span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                      BharatYatra generates dynamic itineraries using artificial intelligence. Timings, monument darshan hours, permits, and fare estimates are advisory and must be independently verified prior to travel.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-space-md p-space-lg rounded-2xl bg-secondary-container/30 shadow-sm">
+                  <div className="w-10 h-10 rounded-xl bg-on-secondary-fixed text-primary-container flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>directions_bus</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-title-md text-title-md text-on-surface font-semibold">Independent Operator Relationship</span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                      Carriers (GSRTC, IRCTC, domestic airlines), hotels, and local experience guilds operate independently. Bookings are subject to respective conditions of carriage and property rules.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Body Content: Two-Column Editorial Grid */}
+        <div className="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin py-space-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+            {/* LEFT COLUMN: All 24 Statutory Clauses (~70%) */}
+            <div className="lg:col-span-8 flex flex-col gap-space-xl" id="clauses-container">
+              {visibleCount === 0 && (
+                <div className="p-space-xl rounded-2xl bg-surface-container-lowest text-center flex flex-col items-center gap-space-md shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[24px]">search_off</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-title-md text-title-md text-on-surface font-bold">No matching clauses found</span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      No legal terms or provisions matched &ldquo;{searchQuery}&rdquo;. Try keywords like &ldquo;refund&rdquo;, &ldquo;booking&rdquo;, &ldquo;liability&rdquo;, &ldquo;AI&rdquo;, or &ldquo;court&rdquo;.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="px-space-md py-space-xs rounded-xl bg-primary-container text-on-secondary-fixed font-label-md text-label-md font-semibold hover:bg-primary-fixed transition-colors"
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              )}
+
+              {/* Clause 01 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-1'] ? 'flex' : 'none' }} id="clause-1">
+<span id="section-1" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">01</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Introduction and Acceptance of Terms</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-1', '01')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 01">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              Welcome to <strong className="text-on-surface">BharatYatra</strong> ("Platform", "we", "us", or "our"), accessible via <a className="text-primary font-semibold underline underline-offset-4" href="https://bharatyatra.in">https://bharatyatra.in</a> and associated domains, subdomains, mobile-responsive interfaces, and micro-applications. These Terms and Conditions ("Terms") constitute an electronic record in terms of the <em className="text-on-surface">Information Technology Act, 2000</em> and the rules thereunder, forming a legally binding contractual covenant entered into between you ("User", "Traveller", "Customer", or "you") and the operating entity of BharatYatra.
+            </p>
+<p>
+              By accessing, browsing, registering for an account, generating AI itineraries, saving trips, interacting with our travel assistants (including Nexi AI), or making booking requests through BharatYatra, you acknowledge that you have read, understood, and unconditionally agree to be bound by these Terms, together with our integrated <strong className="text-on-surface">Privacy Policy</strong> and all applicable statutory rules and notifications issued under the laws of India.
+            </p>
+<div className="p-space-md rounded-xl bg-error-container/20 text-on-surface font-body-sm text-body-sm flex items-start gap-space-sm">
+<span className="material-symbols-outlined text-error text-[20px] shrink-0">gavel</span>
+<p>
+<strong className="font-semibold text-error">Important Notice:</strong> If you do not agree with any provision of these Terms or cannot satisfy legal contracting capacity, you must immediately discontinue your access to and use of the Platform.
+              </p>
+</div>
+</div>
+</article>
+
+              {/* Clause 02 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-2'] ? 'flex' : 'none' }} id="clause-2">
+<span id="section-2" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">02</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">About BharatYatra and Its Services</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-2', '02')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 02">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              BharatYatra is an advanced travel discovery, personalization, and journey coordination technology ecosystem engineered to streamline authentic exploration across India, with an elevated initial repository centered on the cultural, natural, and spiritual circuits of Gujarat.
+            </p>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-space-md my-space-xs">
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold flex items-center gap-2">
+<span className="material-symbols-outlined text-primary text-[18px]">auto_awesome</span>
+                  AI Travel Planner
+                </span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Hyper-personalized travel itineraries synthesized algorithmically based on pace, interest, seasonality, and party composition.</p>
+</div>
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold flex items-center gap-2">
+<span className="material-symbols-outlined text-primary text-[18px]">account_balance</span>
+                  100+ Landmark Directory
+                </span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Ground-researched guides, historical summaries, operational hours, and darshan etiquettes for iconic Indian monuments.</p>
+</div>
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold flex items-center gap-2">
+<span className="material-symbols-outlined text-primary text-[18px]">airplane_ticket</span>
+                  Booking Facilitation
+                </span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Integration facilitation for heritage hotels, GSRTC luxury express buses, IRCTC routing, airlines, and artisan masterclasses.</p>
+</div>
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold flex items-center gap-2">
+<span className="material-symbols-outlined text-primary text-[18px]">smart_toy</span>
+                  Nexi AI Assistant
+                </span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Real-time companion providing cultural etiquette cues, multilingual phrasing, and situational transit suggestions.</p>
+</div>
+</div>
+<p>
+<strong className="text-on-surface">Technology Intermediary Status:</strong> BharatYatra operates strictly as an electronic technology platform and intermediary within the statutory definition of the <em className="text-on-surface">Information Technology Act, 2000</em>. Unless explicitly certified in writing for a specific licensed package, BharatYatra is neither a direct carrier, airline, hotelier, nor fleet operator.
+            </p>
+</div>
+</article>
+
+              {/* Clause 03 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-3'] ? 'flex' : 'none' }} id="clause-3">
+<span id="section-3" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">03</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Eligibility and Account Registration</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-3', '03')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 03">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>To be eligible to access BharatYatra or register an account, you represent and warrant that:</p>
+<ul className="flex flex-col gap-space-xs pl-space-md list-disc text-on-surface-variant">
+<li>You are at least <strong className="text-on-surface">18 years of age</strong> (or the age of majority in your jurisdiction) and possess full legal capacity to enter into a binding contract pursuant to the <em className="text-on-surface">Indian Contract Act, 1872</em>.</li>
+<li>Minors (individuals under 18 years) may only utilize the Platform under the active supervision and explicit consent of a parent or legal guardian who accepts these Terms on their behalf.</li>
+<li>You are not barred from receiving travel or digital services under the laws of India or any applicable foreign jurisdiction.</li>
+<li>All information submitted during registration (including legal name, email address, and mobile number) is truthful, accurate, and kept updated.</li>
+</ul>
+</div>
+</article>
+
+              {/* Clause 04 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-4'] ? 'flex' : 'none' }} id="clause-4">
+<span id="section-4" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">04</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Account Security and User Responsibilities</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-4', '04')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 04">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              When registering with BharatYatra (whether through Google OAuth single sign-on or direct email authentication), you are solely responsible for safeguarding the credentials and authenticated tokens of your device.
+            </p>
+<p>
+              You agree to notify BharatYatra immediately via <a className="text-primary font-semibold underline underline-offset-4" href="mailto:pandyakaushal294@gmail.com">pandyakaushal294@gmail.com</a> upon discovering any unauthorized entry, credential breach, or suspicious activity. You remain entirely liable for all activities, booking requests, and transactions initiated under your verified session until written notification has been formally delivered to our security desk.
+            </p>
+</div>
+</article>
+
+              {/* Clause 05 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-5'] ? 'flex' : 'none' }} id="clause-5">
+<span id="section-5" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">05</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Accurate Personal, Traveller and Booking Information</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-5', '05')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 05">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              All passenger names, contact numbers, email addresses, age declarations, and identification numbers entered during itinerary planning or checkout must match exactly with valid Government-issued photo identification (such as <strong className="text-on-surface">Aadhaar Card, Passport, Voter ID, or Indian Driving Licence</strong>).
+            </p>
+<p>
+              Carriers, hotels, and protected wildlife sanctuaries (including Sasan Gir Forest Lion Safari and Rann of Kutch border check-posts) strictly cross-verify traveller identity against booking vouchers. BharatYatra shall not be held liable for denied entry, boarding refusal, or cancellation charges arising from spelling errors, age discrepancies, or false representations provided by the user.
+            </p>
+</div>
+</article>
+
+              {/* Clause 06 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-6'] ? 'flex' : 'none' }} id="clause-6">
+<span id="section-6" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">06</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">AI-Generated Itineraries, Recommendations and Limitations</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-6', '06')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 06">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              BharatYatra incorporates state-of-the-art algorithmic models and generative artificial intelligence to synthesize custom trip plans, route estimations, dining recommendations, and multi-day circuits.
+            </p>
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs">
+<span className="font-label-lg text-label-lg text-on-surface font-semibold">Explicit Artificial Intelligence Limitations:</span>
+<ul className="list-disc pl-space-md flex flex-col gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<li>AI outputs represent probabilistic planning suggestions, not guaranteed real-time schedules.</li>
+<li>Road conditions, seasonal river flow, monsoon washouts, local festivals, and unexpected municipal closures may alter recommended routes.</li>
+<li>Travellers are strongly advised to independently verify temple darshan timings, museum weekly holidays, inner-line permit mandates, and ferry operational schedules.</li>
+<li>BharatYatra does not warrant that AI itinerary outputs are error-free, complete, or suitable for every individual physical condition or travel circumstance.</li>
+</ul>
+</div>
+</div>
+</article>
+
+              {/* Clause 07 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-7'] ? 'flex' : 'none' }} id="clause-7">
+<span id="section-7" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">07</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Travel Information Accuracy and Independent Verification</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-7', '07')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 07">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              While our editorial and research teams strive to maintain accurate, up-to-date landmark directory profiles across Gujarat and India, operational guidelines set by governmental bodies (such as Gujarat Tourism, Archaeological Survey of India, and Forest Department authorities) are subject to revision without prior notice.
+            </p>
+<p>
+              Users bear sole responsibility for obtaining required entry permits (e.g. Dhordo Rann permit), adhering to cultural dress codes at sacred religious sites (such as Somnath, Dwarkadhish, and Palitana temples), and adhering to local environmental regulations.
+            </p>
+</div>
+</article>
+
+              {/* Clause 08 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-8'] ? 'flex' : 'none' }} id="clause-8">
+<span id="section-8" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">08</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Third-Party Travel Providers and Separate Terms</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-8', '08')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 08">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              When you reserve hotel rooms, bus seats, train tickets, domestic flights, or local cultural activities through BharatYatra, the contract of carriage or hospitality service is formed directly between you and the respective third-party service provider ("Travel Provider").
+            </p>
+<p>
+              Your booking is subject to the specific terms, conditions, check-in rules, baggage allowances, and tariff restrictions established by that Travel Provider. BharatYatra does not control the physical premises, transport vehicles, staff conduct, or on-ground service quality of independent operators.
+            </p>
+</div>
+</article>
+
+              {/* Clause 09 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-9'] ? 'flex' : 'none' }} id="clause-9">
+<span id="section-9" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">09</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Booking Requests, Confirmations and Availability</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-9', '09')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 09">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              Submitting a booking request or generating an itinerary does not constitute an immediate confirmed reservation. A booking is only legally confirmed when:
+            </p>
+<ol className="list-decimal pl-space-md flex flex-col gap-1 text-on-surface-variant">
+<li>The applicable transaction payment has been successfully authorized and settled.</li>
+<li>The respective Travel Provider has confirmed real-time inventory allocation.</li>
+<li>BharatYatra has dispatched an official booking confirmation voucher containing a valid reference identifier (e.g., <code className="px-1.5 py-0.5 rounded bg-surface-container font-mono text-xs">BY-CF-XXXXX</code>).</li>
+</ol>
+<p>
+              In the rare event that inventory becomes unavailable between selection and payment settlement, the transaction will be cancelled and any debited funds will be refunded pursuant to Section 11.
+            </p>
+</div>
+</article>
+
+              {/* Clause 10 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-10'] ? 'flex' : 'none' }} id="clause-10">
+<span id="section-10" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">10</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Pricing, Taxes, Fees and Payment Processing</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-10', '10')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 10">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              All monetary values on BharatYatra are quoted in <strong className="text-on-surface">Indian Rupees (INR / ₹)</strong>. Pricing displays clearly delineate the base rate, applicable Goods and Services Tax (GST: 12% or 18% as statutory), and any statutory levies or platform convenience fees prior to final payment authorization.
+            </p>
+<p>
+              Transactions are routed through Reserve Bank of India (RBI) authorized payment gateway partners (such as Razorpay, UPI rails, credit/debit cards, and scheduled commercial banks). BharatYatra does not store sensitive cardholder authentication data (CVV/PIN). You agree to comply with your issuing bank's multi-factor authentication (OTP/SMS) requirements.
+            </p>
+</div>
+</article>
+
+              {/* Clause 11 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-11'] ? 'flex' : 'none' }} id="clause-11">
+<span id="section-11" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">11</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Cancellations, Changes, Refunds and Disputes</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-11', '11')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 11">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              Cancellation eligibility, change windows, and applicable refund percentages are governed by the specific fare rules displayed at the time of purchase and the policies of the respective Travel Provider:
+            </p>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold">Non-Refundable Fares</span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Certain promotional hotel stays, festive dates (e.g. Rann Utsav peak full moon dates), and special transit passes are strictly non-refundable once issued.</p>
+</div>
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold">5–7 Banking Days</span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Approved refunds are credited exclusively back to the original source payment instrument within standard banking turnaround windows.</p>
+</div>
+</div>
+<p>
+<strong className="text-on-surface">Convenience &amp; Gateway Fees:</strong> Technology convenience fees or gateway surcharges incurred during initial transaction processing are non-refundable unless cancellation resulted directly from a technical failure attributable to BharatYatra. Disputed debits must be reported within 14 calendar days to <a className="text-primary font-semibold underline underline-offset-4" href="mailto:pandyakaushal294@gmail.com">pandyakaushal294@gmail.com</a>.
+            </p>
+</div>
+</article>
+
+              {/* Clause 12 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-12'] ? 'flex' : 'none' }} id="clause-12">
+<span id="section-12" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">12</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">User Conduct and Prohibited Activities</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-12', '12')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 12">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>You agree not to engage in any of the following prohibited activities:</p>
+<ul className="list-disc pl-space-md flex flex-col gap-space-xs text-on-surface-variant">
+<li>Making speculative, fraudulent, or false booking requests or hoarding inventory without genuine intent to travel.</li>
+<li>Using automated scraping, bots, crawlers, or algorithmic extraction tools to index or republish BharatYatra proprietary directory content.</li>
+<li>Attempting to probe, scan, or breach platform security defenses, rate limit guards, API endpoints, or database structures.</li>
+<li>Submitting defamatory, obscene, infringing, or illegal material through reviews, feedback forms, or chat interfaces.</li>
+<li>Impersonating another individual, travel agent, or government official.</li>
+<li>Reselling or commercializing BharatYatra AI trip construction plans without explicit commercial licensing.</li>
+</ul>
+</div>
+</article>
+
+              {/* Clause 13 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-13'] ? 'flex' : 'none' }} id="clause-13">
+<span id="section-13" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">13</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Intellectual Property and Permitted Use</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-13', '13')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 13">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              All content included on BharatYatra—including software code, text, graphics, landmark dossiers, photographs, logo marks, user interface design, audio elements, and algorithmic prompts—is the intellectual property of BharatYatra or its licensors and is protected by the <em className="text-on-surface">Copyright Act, 1957</em>, the <em className="text-on-surface">Trade Marks Act, 1999</em>, and international intellectual property conventions.
+            </p>
+<p>
+              You are granted a limited, personal, non-exclusive, non-transferable, and revocable licence to access and view the Platform for personal, non-commercial travel planning purposes only.
+            </p>
+</div>
+</article>
+
+              {/* Clause 14 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-14'] ? 'flex' : 'none' }} id="clause-14">
+<span id="section-14" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">14</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">User-Submitted Content and Permissions</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-14', '14')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 14">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              When you submit reviews, travel tips, photos, or itinerary feedback to BharatYatra, you grant us a worldwide, perpetual, royalty-free, non-exclusive licence to publish, adapt, translate, and display such content across our platform ecosystem.
+            </p>
+<p>
+              You represent and warrant that you own or possess all requisite rights to the content you submit and that your submissions do not infringe any third-party privacy, publicity, or intellectual property rights.
+            </p>
+</div>
+</article>
+
+              {/* Clause 15 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-15'] ? 'flex' : 'none' }} id="clause-15">
+<span id="section-15" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">15</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Privacy and Reference to Privacy Policy</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-15', '15')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 15">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              Your privacy and the security of your personal data are paramount to BharatYatra. We process personal and booking data in compliance with applicable Indian data protection principles, including the <em className="text-on-surface">Information Technology Act, 2000</em> and the <em className="text-on-surface">Digital Personal Data Protection Act, 2023 (DPDP Act)</em>.
+            </p>
+<div className="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div className="flex flex-col gap-1">
+<span className="font-title-md text-title-md text-on-surface font-semibold">Read the Full Privacy Policy</span>
+<p className="font-body-sm text-body-sm text-on-surface-variant">Review how personal identifiers, booking records, and AI prompts are encrypted and retained.</p>
+</div>
+<a className="inline-flex items-center gap-1.5 px-space-md py-space-sm rounded-xl bg-surface-container-highest hover:bg-surface-container font-label-lg text-label-lg text-on-surface font-semibold shrink-0 transition-all" data-path="privacy-policy" href="#">
+<span>View Policy</span>
+<span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+
+              {/* Clause 16 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-16'] ? 'flex' : 'none' }} id="clause-16">
+<span id="section-16" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">16</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Service Availability, Maintenance and Technical Limitations</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-16', '16')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 16">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              BharatYatra strives to ensure continuous 24/7 platform availability. However, digital services may be subject to scheduled maintenance, cloud infrastructure updates, telecommunication disruptions, or third-party global distribution system (GDS) API downtimes.
+            </p>
+<p>
+              BharatYatra is provided on an "as is" and "as available" basis without warranties of uninterrupted uptime or immediate latency resolution during unexpected internet backbone outages.
+            </p>
+</div>
+</article>
+
+              {/* Clause 17 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-17'] ? 'flex' : 'none' }} id="clause-17">
+<span id="section-17" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">17</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Limitation of Liability</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-17', '17')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 17">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              To the maximum extent permitted under applicable Indian law (including the <em className="text-on-surface">Consumer Protection Act, 2019</em> and Section 73 of the <em className="text-on-surface">Indian Contract Act, 1872</em>):
+            </p>
+<ul className="list-disc pl-space-md flex flex-col gap-space-xs text-on-surface-variant">
+<li>BharatYatra shall not be liable for indirect, incidental, special, punitive, or consequential damages, including loss of profits, vacation time, missed connecting transit, or emotional distress.</li>
+<li>BharatYatra is not liable for acts, omissions, delays, mechanical breakdowns, overbooking, strikes, or insolvencies of independent third-party carriers, hotels, or experience suppliers.</li>
+<li>In any event, BharatYatra's aggregate liability arising out of or related to these Terms or your use of the Platform shall not exceed the convenience fee retained by BharatYatra for the specific transaction giving rise to the claim, or INR 1,000 (One Thousand Indian Rupees), whichever is higher.</li>
+<li>Nothing in these Terms limits or excludes liability for death, personal injury, fraud, or gross negligence where such limitation is prohibited by statutory law.</li>
+</ul>
+</div>
+</article>
+
+              {/* Clause 18 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-18'] ? 'flex' : 'none' }} id="clause-18">
+<span id="section-18" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">18</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Indemnity</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-18', '18')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 18">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              To the extent permitted by law, you agree to defend, indemnify, and hold harmless BharatYatra, its affiliates, directors, officers, employees, and software maintainers from and against any claims, liabilities, damages, losses, and reasonable legal expenses arising out of:
+            </p>
+<ul className="list-disc pl-space-md flex flex-col gap-1 text-on-surface-variant">
+<li>Your willful violation of these Terms or applicable statutory laws.</li>
+<li>Your infringement of any third-party intellectual property or privacy right.</li>
+<li>Fraudulent conduct or false passenger declarations made during booking.</li>
+</ul>
+</div>
+</article>
+
+              {/* Clause 19 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-19'] ? 'flex' : 'none' }} id="clause-19">
+<span id="section-19" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">19</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Suspension and Termination of Accounts</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-19', '19')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 19">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              BharatYatra reserves the right, in its sole discretion and without liability, to suspend, disable, or terminate user accounts or restrict access to the Platform upon reasonable belief of:
+            </p>
+<ul className="list-disc pl-space-md flex flex-col gap-1 text-on-surface-variant">
+<li>Material breach of these Terms or suspected fraudulent activities.</li>
+<li>Payment defaults, unauthorized chargeback initiations, or abusive usage of automated agents.</li>
+<li>Conduct detrimental to fellow travellers, suppliers, or the operational integrity of the Platform.</li>
+</ul>
+</div>
+</article>
+
+              {/* Clause 20 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-20'] ? 'flex' : 'none' }} id="clause-20">
+<span id="section-20" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">20</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Consumer Complaints and Grievance Redressal</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-20', '20')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 20">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              In accordance with the <em className="text-on-surface">Consumer Protection Act, 2019</em>, the <em className="text-on-surface">Consumer Protection (E-Commerce) Rules, 2020</em>, and the <em className="text-on-surface">Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021</em>, BharatYatra has established a formal consumer grievance redressal mechanism.
+            </p>
+{/* Grievance Officer Box */}
+<div className="p-space-lg rounded-2xl bg-surface-container-low flex flex-col gap-space-sm">
+<div className="flex items-center gap-space-xs text-primary">
+<span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>shield_person</span>
+<span className="font-title-md text-title-md font-semibold text-on-surface">Designated Grievance Redressal Officer</span>
+</div>
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div className="flex flex-col gap-0.5">
+<span className="font-label-caps text-label-caps uppercase text-on-surface-variant">Designation</span>
+<span className="font-body-md text-body-md font-semibold text-on-surface">Grievance Redressal Officer, BharatYatra</span>
+</div>
+<div className="flex flex-col gap-0.5">
+<span className="font-label-caps text-label-caps uppercase text-on-surface-variant">Contact Email</span>
+<a className="font-body-md text-body-md text-primary font-semibold underline underline-offset-4" href="mailto:pandyakaushal294@gmail.com">pandyakaushal294@gmail.com</a>
+</div>
+<div className="flex flex-col gap-0.5">
+<span className="font-label-caps text-label-caps uppercase text-on-surface-variant">Support Telephone</span>
+<a className="font-body-md text-body-md text-on-surface font-semibold hover:text-primary transition-colors" href="tel:+919624282521">+91 9624282521</a>
+</div>
+<div className="flex flex-col gap-0.5">
+<span className="font-label-caps text-label-caps uppercase text-on-surface-variant">Jurisdiction Office</span>
+<span className="font-body-md text-body-md text-on-surface">Ahmedabad, Gujarat, India</span>
+</div>
+</div>
+<div className="pt-space-xs flex items-center gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
+<span>Response Timelines: Acknowledgment within <strong className="text-on-surface">48 hours</strong>; final resolution within <strong className="text-on-surface">30 days</strong> of complete grievance particulars.</span>
+</div>
+</div>
+</div>
+</article>
+
+              {/* Clause 21 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-21'] ? 'flex' : 'none' }} id="clause-21">
+<span id="section-21" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">21</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Changes to the Terms</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-21', '21')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 21">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              BharatYatra reserves the right to amend, update, or replace any part of these Terms from time to time to accommodate platform advancements, new travel features, or statutory regulatory directives.
+            </p>
+<p>
+              Any updates become effective immediately upon posting to this URL. The "Last Updated" date reflects the most recent revision. Your continued use of the Platform following published modifications constitutes your binding acceptance of the revised Terms.
+            </p>
+</div>
+</article>
+
+              {/* Clause 22 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-22'] ? 'flex' : 'none' }} id="clause-22">
+<span id="section-22" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">22</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Governing Law and Jurisdiction</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-22', '22')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 22">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              These Terms and any dispute, controversy, or claim arising out of or relating to your use of BharatYatra shall be governed by, interpreted, and construed exclusively in accordance with the substantive laws of the <strong className="text-on-surface">Republic of India</strong>, without giving effect to conflict of laws principles.
+            </p>
+<p>
+              Subject to statutory consumer court jurisdictions where mandatory under the <em className="text-on-surface">Consumer Protection Act, 2019</em>, you agree that the competent civil courts situated at <strong className="text-on-surface">Ahmedabad, Gujarat, India</strong> shall possess exclusive territorial jurisdiction over any legal proceedings arising hereunder.
+            </p>
+</div>
+</article>
+
+              {/* Clause 23 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-23'] ? 'flex' : 'none' }} id="clause-23">
+<span id="section-23" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">23</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Contact Information and Support</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-23', '23')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 23">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              If you have questions, comments, or require assistance regarding these Terms, you may reach our administrative and support team through the following official channels:
+            </p>
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm my-space-xs">
+<a className="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex items-center gap-space-sm" href="mailto:pandyakaushal294@gmail.com">
+<span className="material-symbols-outlined text-primary text-[24px]">alternate_email</span>
+<div className="flex flex-col">
+<span className="font-label-caps text-label-caps uppercase text-on-surface-variant">Official Support Email</span>
+<span className="font-body-md text-body-md font-semibold text-on-surface">pandyakaushal294@gmail.com</span>
+</div>
+</a>
+<a className="p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container transition-all flex items-center gap-space-sm" href="tel:+919624282521">
+<span className="material-symbols-outlined text-primary text-[24px]">ring_volume</span>
+<div className="flex flex-col">
+<span className="font-label-caps text-label-caps uppercase text-on-surface-variant">Customer Care Hotline</span>
+<span className="font-body-md text-body-md font-semibold text-on-surface">+91 9624282521</span>
+</div>
+</a>
+</div>
+</div>
+</article>
+
+              {/* Clause 24 */}
+              <article className="clause-card flex flex-col gap-space-md p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm scroll-mt-28" style={{ display: clauseMatches.matches['clause-24'] ? 'flex' : 'none' }} id="clause-24">
+<span id="section-24" className="sr-only" aria-hidden="true" />
+<div className="flex items-center justify-between gap-space-md">
+<div className="flex items-center gap-space-sm">
+<span className="px-space-sm py-space-xs rounded-lg bg-surface-container font-label-caps text-label-caps text-primary font-bold">24</span>
+<h2 className="font-headline-sm text-headline-sm text-on-surface">Effective Date and Last-Updated Date</h2>
+</div>
+<button type="button" onClick={() => copyClauseLink('clause-24', '24')} className="text-on-surface-variant hover:text-primary transition-colors opacity-40 hover:opacity-100" title="Copy permalink to Clause 24">
+<span className="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+<div className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-space-sm leading-relaxed">
+<p>
+              These Terms and Conditions are effective as of <strong className="text-on-surface">October 28, 2026</strong>.
+            </p>
+<p className="font-body-sm text-body-sm text-on-surface-variant">
+              Document Version: <span className="font-semibold text-on-surface">1.0.0 (Pan-India &amp; Gujarat Travel Release)</span>.
+            </p>
+{/* Platform Owner & Legal Review Checklist Box */}
+<div className="p-space-lg rounded-2xl bg-surface-container-low flex flex-col gap-space-sm mt-space-sm">
+<div className="flex items-center gap-space-xs text-primary">
+<span className="material-symbols-outlined text-[20px]">fact_check</span>
+<span className="font-title-md text-title-md font-semibold text-on-surface">Notice for Platform Owner &amp; Legal Review Checklist</span>
+</div>
+<p className="font-body-sm text-body-sm text-on-surface-variant">
+                Before treating these terms as commercially final for enterprise contracts or venture financing, the business owner should complete the following verifications with qualified Indian legal counsel:
+              </p>
+<ul className="list-disc pl-space-md flex flex-col gap-1.5 font-body-sm text-body-sm text-on-surface-variant">
+<li>Formalize corporate entity name (e.g., Private Limited / LLP / Sole Proprietorship) once officially incorporated with the Ministry of Corporate Affairs (MCA).</li>
+<li>Designate physical registered postal address in Gujarat and statutory Corporate Identification Number (CIN) or GSTIN.</li>
+<li>Appoint an official Grievance Redressal Officer by name pursuant to the Consumer Protection (E-Commerce) Rules, 2020.</li>
+<li>Publish the corresponding separate Privacy Policy pursuant to the Digital Personal Data Protection Act, 2023.</li>
+</ul>
+</div>
+</div>
+</article>
+
+            </div>
+
+            {/* RIGHT COLUMN: Sticky Sidebar Navigation & Legal Concierge (~30%) */}
+            <aside className="lg:col-span-4 flex flex-col gap-space-lg lg:sticky lg:top-28">
+              {/* Table of Contents Card */}
+              <div className="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md max-h-[calc(100vh-140px)] overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-space-xs">
+                    <span className="material-symbols-outlined text-primary text-[20px]">toc</span>
+                    <span className="font-title-md text-title-md text-on-surface font-bold">Table of Contents</span>
+                  </div>
+                  <span className="font-label-caps text-label-caps uppercase px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant">24 Clauses</span>
+                </div>
+
+                {/* Scrollable Jump Links List */}
+                <nav className="flex flex-col gap-1 overflow-y-auto pr-space-xs text-on-surface-variant text-body-sm font-body-sm" id="toc-nav" style={{ scrollbarWidth: 'thin' }}>
+                  {TOC_ITEMS.map((item) => {
+                    const isActive = activeClauseId === item.id;
+                    const numPadded = item.clauseNum < 10 ? `0${item.clauseNum}` : `${item.clauseNum}`;
+                    return (
+                      <a
+                        key={item.id}
+                        href={`#${item.id}`}
+                        data-clause={item.clauseNum}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          scrollToClause(item.id);
+                        }}
+                        className={`toc-link flex items-center justify-between p-space-xs rounded-lg transition-colors cursor-pointer ${
+                          isActive
+                            ? 'bg-primary-container/30 text-on-surface font-semibold'
+                            : 'hover:bg-surface-container hover:text-on-surface'
+                        }`}
+                      >
+                        <span className="truncate">{item.shortTitle}</span>
+                        <span className="text-xs opacity-50 font-mono">{numPadded}</span>
+                      </a>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              {/* Need Legal Assistance Quick Help Card */}
+              <div className="p-space-lg rounded-2xl bg-inverse-surface text-inverse-on-surface flex flex-col gap-space-md shadow-md">
+                <div className="flex items-center gap-space-xs">
+                  <span className="material-symbols-outlined text-primary-container text-[20px]">support_agent</span>
+                  <span className="font-title-md text-title-md font-semibold text-on-secondary">Need Legal Assistance?</span>
+                </div>
+                <p className="font-body-sm text-body-sm opacity-90 leading-relaxed">
+                  For statutory consumer notices, IP claims, or official compliance matters, communicate with our designated compliance desk:
+                </p>
+                <div className="flex flex-col gap-space-xs text-body-sm font-body-sm">
+                  <a className="flex items-center gap-space-xs text-primary-container hover:underline break-all" href="mailto:pandyakaushal294@gmail.com">
+                    <span className="material-symbols-outlined text-[16px]">mail</span>
+                    pandyakaushal294@gmail.com
+                  </a>
+                  <a className="flex items-center gap-space-xs text-on-secondary hover:text-primary-container transition-colors" href="tel:+919624282521">
+                    <span className="material-symbols-outlined text-[16px]">call</span>
+                    +91 9624282521
+                  </a>
+                  <div className="flex items-center gap-space-xs opacity-75">
+                    <span className="material-symbols-outlined text-[16px]">location_on</span>
+                    Ahmedabad, Gujarat, India
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Legal Navigation Links */}
+              <div className="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+                <span className="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Related Legal Dossiers</span>
+                <div className="flex flex-col gap-1">
+                  <Link className="p-space-xs rounded-lg bg-surface-container text-primary font-label-lg text-label-lg font-semibold flex items-center justify-between" href="/terms">
+                    <span>Terms &amp; Conditions</span>
+                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                  </Link>
+                  <Link className="p-space-xs rounded-lg hover:bg-surface-container text-on-surface font-label-lg text-label-lg transition-colors flex items-center justify-between" href="/privacy">
+                    <span>Privacy Policy</span>
+                    <span className="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_forward</span>
+                  </Link>
+                  <Link className="p-space-xs rounded-lg hover:bg-surface-container text-on-surface font-label-lg text-label-lg transition-colors flex items-center justify-between" href="/terms#clause-11">
+                    <span>Cancellation &amp; Refund Policy</span>
+                    <span className="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_forward</span>
+                  </Link>
+                  <Link className="p-space-xs rounded-lg hover:bg-surface-container text-on-surface font-label-lg text-label-lg transition-colors flex items-center justify-between" href="/terms#clause-8">
+                    <span>Booking &amp; Safety Disclaimer</span>
+                    <span className="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_forward</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Gujarat-First AI Travel Engine Promotion */}
+              <div className="p-space-lg rounded-2xl bg-primary-container/25 flex flex-col gap-space-sm shadow-sm">
+                <span className="font-label-caps text-label-caps uppercase text-primary font-bold tracking-wider">Gujarat-First AI Travel Engine</span>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">Ready to explore authentic Gujarat?</h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  &ldquo;Plan less. Coordinate less. Enjoy more.&rdquo; Synthesize a personalized itinerary with instant permits, stays &amp; transit.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-space-xs pt-space-xs">
+                  <Link
+                    className="px-space-md py-space-sm rounded-xl bg-primary-container text-on-secondary-fixed hover:bg-primary-fixed font-label-lg text-label-lg font-semibold text-center shadow-sm transition-all"
+                    href="/trips/new"
+                  >
+                    Build AI Itinerary
+                  </Link>
+                  <Link
+                    className="px-space-md py-space-sm rounded-xl bg-surface-container-lowest hover:bg-surface-container font-label-lg text-label-lg text-on-surface text-center transition-all"
+                    href="/destinations"
+                  >
+                    View Packages
+                  </Link>
+                </div>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
-
-      {/* FLOATING SCROLL TO TOP BUTTON */}
-      {showScrollTop && (
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-20 right-6 z-40 p-3 rounded-full bg-slate-900 text-white shadow-xl hover:bg-amber-600 transition-all border border-slate-700 focus:outline-hidden"
-          title="Scroll to Top"
-          aria-label="Scroll to top of terms page"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
-      )}
     </div>
   );
 }
-
