@@ -1,3 +1,11 @@
+import {
+  GroupMember,
+  TripExpenseItem,
+  SettlementSuggestion,
+  createTripExpense,
+  inrToPaise,
+  paiseToInr,
+} from '@/lib/trips/group-expense-engine';
 import { getSupabaseClient, getSupabaseServerClient } from '@/lib/supabase/client';
 
 export interface UserProfileRecord {
@@ -118,6 +126,9 @@ class InMemoryUserDataStore {
   private savedDestinations = new Map<string, UserSavedDestinationRecord>();
   private preferences = new Map<string, UserPreferencesRecord>();
   private auditLogs: AdminAuditLogRecord[] = [];
+  private tripMembers = new Map<string, GroupMember[]>();
+  private tripExpenses = new Map<string, TripExpenseItem[]>();
+  private tripSettlements = new Map<string, any[]>();
 
   public clearAll() {
     this.profiles.clear();
@@ -126,6 +137,9 @@ class InMemoryUserDataStore {
     this.savedDestinations.clear();
     this.preferences.clear();
     this.auditLogs = [];
+    this.tripMembers.clear();
+    this.tripExpenses.clear();
+    this.tripSettlements.clear();
   }
 
   // --- PROFILES ---
@@ -201,6 +215,194 @@ class InMemoryUserDataStore {
       return false;
     }
     return this.trips.delete(tripId);
+  }
+
+
+  // --- GROUP EXPENSES & MEMBERS (IN-MEMORY) ---
+  public verifyTripAccess(tripId: string, userId: string): boolean {
+    const trip = this.trips.get(tripId);
+    if (trip && trip.userId === userId) return true;
+    const members = this.tripMembers.get(tripId) || [];
+    const userEmail = this.profiles.get(userId)?.email;
+    const organizerId = `mem_${userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8)}`;
+    return members.some(
+      (m) =>
+        m.id === organizerId ||
+        (Boolean(m.email && userEmail && m.email.toLowerCase() === userEmail.toLowerCase()))
+    );
+  }
+
+  public async getTripMembers(tripId: string, userId: string): Promise<GroupMember[] | null> {
+    const trip = this.trips.get(tripId);
+    if (!trip && !this.tripMembers.has(tripId)) return null;
+    if (!this.verifyTripAccess(tripId, userId)) return null;
+
+    let members = this.tripMembers.get(tripId);
+    if (!members || members.length === 0) {
+      const profile = this.profiles.get(userId);
+      const ownerName = profile?.fullName || (trip?.userId === userId ? 'Trip Organizer' : 'Traveler');
+      const ownerMember: GroupMember = {
+        id: `mem_${userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8) || 'organizer'}`,
+        name: ownerName,
+        isCurrentUser: true,
+        role: 'OWNER',
+        avatar: ownerName.slice(0, 2).toUpperCase(),
+      };
+      members = [ownerMember];
+      this.tripMembers.set(tripId, members);
+    }
+    const currentMemberId = `mem_${userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8) || 'organizer'}`;
+    const userEmail = this.profiles.get(userId)?.email;
+    return members.map((m) => ({
+      ...m,
+      isCurrentUser: m.id === currentMemberId || (!!userEmail && m.email === userEmail),
+    }));
+  }
+
+  public async addTripMember(
+    tripId: string,
+    userId: string,
+    memberData: { name: string; email?: string; phone?: string; upiId?: string; role?: string }
+  ): Promise<GroupMember> {
+    const hasAccess = this.verifyTripAccess(tripId, userId);
+    if (!hasAccess && !this.trips.has(tripId)) {
+      throw new Error('Trip not found or unauthorized to add members.');
+    }
+    const currentMembers = (await this.getTripMembers(tripId, userId)) || [];
+    const newMember: GroupMember = {
+      id: `mem_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      name: memberData.name.trim(),
+      email: memberData.email,
+      phone: memberData.phone,
+      upiId: memberData.upiId,
+      role: memberData.role || 'MEMBER',
+      avatar: memberData.name.trim().slice(0, 2).toUpperCase(),
+    };
+    currentMembers.push(newMember);
+    this.tripMembers.set(tripId, currentMembers);
+    return newMember;
+  }
+
+  public async removeTripMember(tripId: string, memberId: string, userId: string): Promise<boolean> {
+    const hasAccess = this.verifyTripAccess(tripId, userId);
+    if (!hasAccess) return false;
+    const members = this.tripMembers.get(tripId) || [];
+    const filtered = members.filter((m) => m.id !== memberId);
+    this.tripMembers.set(tripId, filtered);
+    const expenses = this.tripExpenses.get(tripId) || [];
+    const updatedExpenses = expenses.map((e) => ({
+      ...e,
+      participants: e.participants.filter((p) => p.memberId !== memberId),
+    }));
+    this.tripExpenses.set(tripId, updatedExpenses);
+    return true;
+  }
+
+  public async getTripExpenses(tripId: string, userId: string): Promise<TripExpenseItem[] | null> {
+    const trip = this.trips.get(tripId);
+    if (!trip && !this.tripMembers.has(tripId)) return null;
+    if (trip && trip.userId !== userId && !this.verifyTripAccess(tripId, userId)) return null;
+    return this.tripExpenses.get(tripId) || [];
+  }
+
+  public async createTripExpense(tripId: string, userId: string, data: any): Promise<TripExpenseItem> {
+    const hasAccess = this.verifyTripAccess(tripId, userId);
+    if (!hasAccess && !this.trips.has(tripId)) {
+      throw new Error('Trip not found or unauthorized to record expense.');
+    }
+    const amountInr = Number(data.amountInr);
+    if (isNaN(amountInr) || amountInr <= 0) {
+      throw new Error('Expense amount must be a positive number.');
+    }
+    const members = (await this.getTripMembers(tripId, userId)) || [];
+    if (members.length > 0 && !members.some((m) => m.id === data.paidByMemberId)) {
+      throw new Error('Payer must be an active member of this trip.');
+    }
+    const participantIds: string[] =
+      data.participantMemberIds ||
+      (data.participants ? data.participants.map((p: any) => p.memberId) : members.map((m) => m.id));
+
+    if (participantIds.length === 0) {
+      throw new Error('Expense must have at least one participant.');
+    }
+    if (members.length > 0) {
+      for (const pId of participantIds) {
+        if (!members.some((m) => m.id === pId)) {
+          throw new Error(`Participant ${pId} is not a member of this trip.`);
+        }
+      }
+    }
+
+    const created = createTripExpense({
+      id: data.id || `exp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      tripId,
+      title: (data.title || 'Untitled Expense').trim(),
+      amountInr,
+      paidByMemberId: data.paidByMemberId,
+      category: data.category || 'Food',
+      splitType: data.splitType || 'EQUAL',
+      participantMemberIds: participantIds,
+      customSplits: data.customSplits,
+    });
+
+    const list = this.tripExpenses.get(tripId) || [];
+    list.unshift(created);
+    this.tripExpenses.set(tripId, list);
+    return created;
+  }
+
+  public async deleteTripExpense(tripId: string, expenseId: string, userId: string): Promise<boolean> {
+    const hasAccess = this.verifyTripAccess(tripId, userId);
+    if (!hasAccess) return false;
+    const list = this.tripExpenses.get(tripId) || [];
+    const filtered = list.filter((e) => e.id !== expenseId);
+    if (filtered.length === list.length) return false;
+    this.tripExpenses.set(tripId, filtered);
+    return true;
+  }
+
+  public async recordSettlement(tripId: string, userId: string, data: any): Promise<any> {
+    const hasAccess = this.verifyTripAccess(tripId, userId);
+    if (!hasAccess) throw new Error('Unauthorized or trip not found.');
+    const list = this.tripSettlements.get(tripId) || [];
+    const key = `${data.fromMemberId}->${data.toMemberId}`;
+    const record = {
+      id: data.id || `set_${Date.now()}`,
+      tripId,
+      fromMemberId: data.fromMemberId,
+      fromMemberName: data.fromMemberName || 'Traveler',
+      toMemberId: data.toMemberId,
+      toMemberName: data.toMemberName || 'Traveler',
+      amountInr: Number(data.amountInr || 0),
+      amountPaise: Math.round(Number(data.amountInr || 0) * 100),
+      status: data.status || 'PENDING',
+      paymentRef: data.paymentRef || data.refCode,
+      settledAt: data.status === 'SETTLED' ? new Date().toISOString() : undefined,
+      createdAt: new Date().toISOString(),
+    };
+    const filtered = list.filter((s) => `${s.fromMemberId}->${s.toMemberId}` !== key);
+    filtered.push(record);
+    this.tripSettlements.set(tripId, filtered);
+    return record;
+  }
+
+  public async getSettlements(tripId: string, userId: string): Promise<SettlementSuggestion[] | null> {
+    const trip = this.trips.get(tripId);
+    if (!trip && !this.tripMembers.has(tripId)) return null;
+    if (trip && trip.userId !== userId && !this.verifyTripAccess(tripId, userId)) return null;
+    const list = this.tripSettlements.get(tripId) || [];
+    return list.map((s) => ({
+      id: s.id,
+      fromMemberId: s.fromMemberId,
+      fromMemberName: s.fromMemberName,
+      toMemberId: s.toMemberId,
+      toMemberName: s.toMemberName,
+      amountInr: s.amountInr,
+      amountPaise: s.amountPaise,
+      status: s.status,
+      refCode: s.paymentRef,
+      paidAt: s.settledAt,
+    }));
   }
 
   // --- BOOKINGS ---
@@ -1261,4 +1463,416 @@ export class UserDataStore {
     }
     return inMemoryStore.getAdminAuditLogs(limit);
   }
+
+  // ============================================================================
+  // TRIP GROUP EXPENSES & MEMBERS (PERSISTENT / TENANT-ISOLATED)
+  // ============================================================================
+
+  public static async getTripMembers(tripId: string, userId: string): Promise<GroupMember[] | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure for trip members.');
+    }
+    try {
+      const supabase = getSupabaseServerClient();
+      // Check authorization: must own user_trips or be in trip_members
+      const { data: trip, error: tripErr } = await supabase
+        .from('user_trips')
+        .select('id, user_id')
+        .eq('id', tripId)
+        .maybeSingle();
+
+      if (tripErr) {
+        if (shouldAllowFallback()) return inMemoryStore.getTripMembers(tripId, userId);
+        throw new DatabasePersistenceError(`Database error verifying trip: ${tripErr.message}`, tripErr);
+      }
+
+      if (trip && trip.user_id !== userId) {
+        // Check if user is a registered member
+        const { data: membership } = await supabase
+          .from('trip_members')
+          .select('id')
+          .eq('trip_id', tripId)
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (!membership) {
+          return null; // Forbidden / Not Found
+        }
+      } else if (!trip) {
+        if (shouldAllowFallback()) return inMemoryStore.getTripMembers(tripId, userId);
+        return null;
+      }
+
+      const { data: members, error: memErr } = await supabase
+        .from('trip_members')
+        .select('*')
+        .eq('trip_id', tripId)
+        .order('created_at', { ascending: true });
+
+      if (memErr) {
+        if (shouldAllowFallback()) return inMemoryStore.getTripMembers(tripId, userId);
+        throw new DatabasePersistenceError(`Error fetching trip members: ${memErr.message}`, memErr);
+      }
+
+      if (!members || members.length === 0) {
+        // Auto-initialize organizer if user owns trip
+        const profile = await this.getProfile(userId);
+        const ownerName = profile?.fullName || 'Trip Organizer';
+        const ownerId = `mem_${userId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8)}`;
+        const { data: inserted, error: insErr } = await supabase
+          .from('trip_members')
+          .insert({
+            id: ownerId,
+            trip_id: tripId,
+            user_id: userId,
+            name: ownerName,
+            email: profile?.email,
+            phone: profile?.phoneNumber,
+            role: 'OWNER',
+            status: 'ACCEPTED',
+          })
+          .select()
+          .single();
+
+        if (insErr) {
+          if (shouldAllowFallback()) return inMemoryStore.getTripMembers(tripId, userId);
+          throw new DatabasePersistenceError(`Failed to initialize trip owner: ${insErr.message}`, insErr);
+        }
+
+        return [
+          {
+            id: inserted.id,
+            name: inserted.name,
+            email: inserted.email,
+            phone: inserted.phone,
+            role: inserted.role,
+            isCurrentUser: true,
+            avatar: inserted.name.slice(0, 2).toUpperCase(),
+          },
+        ];
+      }
+
+      return members.map((m: any) => ({
+        id: m.id,
+        name: m.name,
+        email: m.email,
+        phone: m.phone,
+        upiId: m.upi_id,
+        role: m.role,
+        isCurrentUser: m.user_id === userId,
+        avatar: (m.name || 'TR').slice(0, 2).toUpperCase(),
+      }));
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getTripMembers(tripId, userId);
+      throw new DatabasePersistenceError(`Database error loading members: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async addTripMember(
+    tripId: string,
+    userId: string,
+    memberData: { name: string; email?: string; phone?: string; upiId?: string; role?: string }
+  ): Promise<GroupMember> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure for trip member.');
+    }
+    try {
+      const supabase = getSupabaseServerClient();
+      const existingTrip = await this.getTripById(tripId, userId);
+      if (!existingTrip) {
+        if (shouldAllowFallback()) return inMemoryStore.addTripMember(tripId, userId, memberData);
+        throw new Error('Trip not found or unauthorized to add member.');
+      }
+
+      const id = `mem_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+      const { data, error } = await supabase
+        .from('trip_members')
+        .insert({
+          id,
+          trip_id: tripId,
+          name: memberData.name.trim(),
+          email: memberData.email,
+          phone: memberData.phone,
+          upi_id: memberData.upiId,
+          role: memberData.role || 'MEMBER',
+          status: 'ACCEPTED',
+        })
+        .select()
+        .single();
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.addTripMember(tripId, userId, memberData);
+        throw new DatabasePersistenceError(`Failed to add trip member: ${error.message}`, error);
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        upiId: data.upi_id,
+        role: data.role,
+        isCurrentUser: false,
+        avatar: data.name.slice(0, 2).toUpperCase(),
+      };
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.addTripMember(tripId, userId, memberData);
+      throw new DatabasePersistenceError(`Failed to add member: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async removeTripMember(tripId: string, memberId: string, userId: string): Promise<boolean> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database delete failure.');
+    }
+    try {
+      const supabase = getSupabaseServerClient();
+      const existingTrip = await this.getTripById(tripId, userId);
+      if (!existingTrip) {
+        if (shouldAllowFallback()) return inMemoryStore.removeTripMember(tripId, memberId, userId);
+        return false;
+      }
+      const { error } = await supabase.from('trip_members').delete().eq('id', memberId).eq('trip_id', tripId);
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.removeTripMember(tripId, memberId, userId);
+        throw new DatabasePersistenceError(`Failed to delete member: ${error.message}`, error);
+      }
+      return true;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.removeTripMember(tripId, memberId, userId);
+      throw new DatabasePersistenceError(`Error deleting member: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async getTripExpenses(tripId: string, userId: string): Promise<TripExpenseItem[] | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure for trip expenses.');
+    }
+    try {
+      const members = await this.getTripMembers(tripId, userId);
+      if (!members) {
+        if (shouldAllowFallback()) return inMemoryStore.getTripExpenses(tripId, userId);
+        return null;
+      }
+
+      const supabase = getSupabaseServerClient();
+      const { data, error } = await supabase
+        .from('trip_expenses')
+        .select('*')
+        .eq('trip_id', tripId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getTripExpenses(tripId, userId);
+        throw new DatabasePersistenceError(`Error reading trip expenses: ${error.message}`, error);
+      }
+
+      if (!data) return [];
+
+      return data.map((d: any) => ({
+        id: d.id,
+        tripId: d.trip_id,
+        title: d.title,
+        amountInr: Number(d.amount_inr),
+        amountPaise: d.amount_cents,
+        paidByMemberId: d.payer_id,
+        category: d.category,
+        splitType: d.split_type,
+        participants: d.participants_json || [],
+        sharedByAll: false,
+        createdAt: d.created_at,
+        updatedAt: d.updated_at,
+      }));
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getTripExpenses(tripId, userId);
+      throw new DatabasePersistenceError(`Error reading expenses: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async createTripExpense(tripId: string, userId: string, data: any): Promise<TripExpenseItem> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure for expense creation.');
+    }
+    try {
+      const members = await this.getTripMembers(tripId, userId);
+      if (!members) {
+        if (shouldAllowFallback()) return inMemoryStore.createTripExpense(tripId, userId, data);
+        throw new Error('Trip not found or unauthorized to record expense.');
+      }
+
+      const amountInr = Number(data.amountInr);
+      if (isNaN(amountInr) || amountInr <= 0) {
+        throw new Error('Expense amount must be a positive number.');
+      }
+      if (members.length > 0 && !members.some((m) => m.id === data.paidByMemberId)) {
+        throw new Error('Payer must be an active member of this trip.');
+      }
+
+      const participantIds: string[] =
+        data.participantMemberIds ||
+        (data.participants ? data.participants.map((p: any) => p.memberId) : members.map((m) => m.id));
+
+      if (participantIds.length === 0) {
+        throw new Error('Expense must have at least one participant.');
+      }
+      for (const pId of participantIds) {
+        if (!members.some((m) => m.id === pId)) {
+          throw new Error(`Participant ${pId} is not a member of this trip.`);
+        }
+      }
+
+      const calculated = createTripExpense({
+        id: data.id || `exp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        tripId,
+        title: (data.title || 'Untitled Expense').trim(),
+        amountInr,
+        paidByMemberId: data.paidByMemberId,
+        category: data.category || 'Food',
+        splitType: data.splitType || 'EQUAL',
+        participantMemberIds: participantIds,
+        customSplits: data.customSplits,
+      });
+
+      const supabase = getSupabaseServerClient();
+      const { data: inserted, error } = await supabase
+        .from('trip_expenses')
+        .insert({
+          id: calculated.id,
+          trip_id: tripId,
+          payer_id: calculated.paidByMemberId,
+          title: calculated.title,
+          category: calculated.category,
+          amount_inr: calculated.amountInr,
+          amount_cents: calculated.amountPaise,
+          split_type: calculated.splitType,
+          participants_json: calculated.participants,
+          created_by: userId,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.createTripExpense(tripId, userId, data);
+        throw new DatabasePersistenceError(`Failed to save expense to database: ${error.message}`, error);
+      }
+
+      return calculated;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.createTripExpense(tripId, userId, data);
+      throw new DatabasePersistenceError(`Failed to create expense: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async deleteTripExpense(tripId: string, expenseId: string, userId: string): Promise<boolean> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database delete failure for expense.');
+    }
+    try {
+      const members = await this.getTripMembers(tripId, userId);
+      if (!members) {
+        if (shouldAllowFallback()) return inMemoryStore.deleteTripExpense(tripId, expenseId, userId);
+        return false;
+      }
+      const supabase = getSupabaseServerClient();
+      const { error } = await supabase.from('trip_expenses').delete().eq('id', expenseId).eq('trip_id', tripId);
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.deleteTripExpense(tripId, expenseId, userId);
+        throw new DatabasePersistenceError(`Failed to delete expense: ${error.message}`, error);
+      }
+      return true;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.deleteTripExpense(tripId, expenseId, userId);
+      throw new DatabasePersistenceError(`Error deleting expense: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async recordSettlement(tripId: string, userId: string, data: any): Promise<any> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database failure for settlement.');
+    }
+    try {
+      const members = await this.getTripMembers(tripId, userId);
+      if (!members) {
+        if (shouldAllowFallback()) return inMemoryStore.recordSettlement(tripId, userId, data);
+        throw new Error('Unauthorized or trip not found.');
+      }
+      const supabase = getSupabaseServerClient();
+      const id = data.id || `set_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+      const payload = {
+        id,
+        trip_id: tripId,
+        from_member_id: data.fromMemberId,
+        from_member_name: data.fromMemberName || 'Traveler',
+        to_member_id: data.toMemberId,
+        to_member_name: data.toMemberName || 'Traveler',
+        amount_inr: Number(data.amountInr || 0),
+        amount_cents: Math.round(Number(data.amountInr || 0) * 100),
+        status: data.status || 'PENDING',
+        payment_ref: data.paymentRef || data.refCode,
+        settled_at: data.status === 'SETTLED' ? new Date().toISOString() : null,
+      };
+
+      const { data: inserted, error } = await supabase
+        .from('group_expense_settlements')
+        .upsert(payload)
+        .select()
+        .single();
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.recordSettlement(tripId, userId, data);
+        throw new DatabasePersistenceError(`Failed to record settlement: ${error.message}`, error);
+      }
+      return inserted;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.recordSettlement(tripId, userId, data);
+      throw new DatabasePersistenceError(`Error recording settlement: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
+  public static async getSettlements(tripId: string, userId: string): Promise<SettlementSuggestion[] | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure for settlements.');
+    }
+    try {
+      const members = await this.getTripMembers(tripId, userId);
+      if (!members) {
+        if (shouldAllowFallback()) return inMemoryStore.getSettlements(tripId, userId);
+        return null;
+      }
+      const supabase = getSupabaseServerClient();
+      const { data, error } = await supabase
+        .from('group_expense_settlements')
+        .select('*')
+        .eq('trip_id', tripId);
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getSettlements(tripId, userId);
+        throw new DatabasePersistenceError(`Error reading settlements: ${error.message}`, error);
+      }
+      if (!data) return [];
+      return data.map((s: any) => ({
+        id: s.id,
+        fromMemberId: s.from_member_id,
+        fromMemberName: s.from_member_name,
+        toMemberId: s.to_member_id,
+        toMemberName: s.to_member_name,
+        amountInr: Number(s.amount_inr),
+        amountPaise: s.amount_cents,
+        status: s.status,
+        refCode: s.payment_ref,
+        paidAt: s.settled_at,
+      }));
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getSettlements(tripId, userId);
+      throw new DatabasePersistenceError(`Error reading settlements: ${err?.message || 'Unknown'}`, err);
+    }
+  }
+
 }

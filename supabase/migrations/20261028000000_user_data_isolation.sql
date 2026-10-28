@@ -390,3 +390,142 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.user_preferences (user_id)
 SELECT id FROM auth.users
 ON CONFLICT (user_id) DO NOTHING;
+
+
+-- ============================================================================
+-- 13. TRIP GROUP MEMBERS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.trip_members (
+    id VARCHAR(64) PRIMARY KEY DEFAULT ('mem_' || gen_random_uuid()::text),
+    trip_id VARCHAR(64) NOT NULL REFERENCES public.user_trips(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    upi_id VARCHAR(100),
+    role VARCHAR(50) NOT NULL DEFAULT 'MEMBER',
+    status VARCHAR(50) NOT NULL DEFAULT 'ACCEPTED',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_trip_members_trip_id ON public.trip_members(trip_id);
+CREATE INDEX IF NOT EXISTS idx_trip_members_user_id ON public.trip_members(user_id);
+
+-- ============================================================================
+-- 14. TRIP GROUP EXPENSES TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.trip_expenses (
+    id VARCHAR(64) PRIMARY KEY DEFAULT ('exp_' || gen_random_uuid()::text),
+    trip_id VARCHAR(64) NOT NULL REFERENCES public.user_trips(id) ON DELETE CASCADE,
+    payer_id VARCHAR(64) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(50) NOT NULL DEFAULT 'Food',
+    amount_inr NUMERIC(12, 2) NOT NULL,
+    amount_cents INTEGER NOT NULL,
+    split_type VARCHAR(50) NOT NULL DEFAULT 'EQUAL',
+    expense_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    participants_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_trip_expenses_trip_id ON public.trip_expenses(trip_id);
+CREATE INDEX IF NOT EXISTS idx_trip_expenses_payer_id ON public.trip_expenses(payer_id);
+
+-- ============================================================================
+-- 15. GROUP EXPENSE SETTLEMENTS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.group_expense_settlements (
+    id VARCHAR(64) PRIMARY KEY DEFAULT ('set_' || gen_random_uuid()::text),
+    trip_id VARCHAR(64) NOT NULL REFERENCES public.user_trips(id) ON DELETE CASCADE,
+    from_member_id VARCHAR(64) NOT NULL,
+    from_member_name VARCHAR(255) NOT NULL,
+    to_member_id VARCHAR(64) NOT NULL,
+    to_member_name VARCHAR(255) NOT NULL,
+    amount_inr NUMERIC(12, 2) NOT NULL,
+    amount_cents INTEGER NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    payment_ref VARCHAR(100),
+    settled_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_group_settlements_trip_id ON public.group_expense_settlements(trip_id);
+
+ALTER TABLE public.trip_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.trip_expenses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.group_expense_settlements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Service role full access on trip_members" ON public.trip_members;
+CREATE POLICY "Service role full access on trip_members" ON public.trip_members
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role full access on trip_expenses" ON public.trip_expenses;
+CREATE POLICY "Service role full access on trip_expenses" ON public.trip_expenses
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role full access on group_expense_settlements" ON public.group_expense_settlements;
+CREATE POLICY "Service role full access on group_expense_settlements" ON public.group_expense_settlements
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can access members of own trips" ON public.trip_members;
+CREATE POLICY "Users can access members of own trips" ON public.trip_members
+    FOR ALL TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.user_trips ut
+            WHERE ut.id = trip_members.trip_id
+            AND (ut.user_id = auth.uid() OR trip_members.user_id = auth.uid())
+        )
+    )
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.user_trips ut
+            WHERE ut.id = trip_members.trip_id
+            AND ut.user_id = auth.uid()
+        )
+    );
+
+DROP POLICY IF EXISTS "Users can access expenses of own trips" ON public.trip_expenses;
+CREATE POLICY "Users can access expenses of own trips" ON public.trip_expenses
+    FOR ALL TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.user_trips ut
+            WHERE ut.id = trip_expenses.trip_id AND ut.user_id = auth.uid()
+        )
+        OR
+        EXISTS (
+            SELECT 1 FROM public.trip_members tm
+            WHERE tm.trip_id = trip_expenses.trip_id AND tm.user_id = auth.uid()
+        )
+    )
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.user_trips ut
+            WHERE ut.id = trip_expenses.trip_id AND ut.user_id = auth.uid()
+        )
+        OR
+        EXISTS (
+            SELECT 1 FROM public.trip_members tm
+            WHERE tm.trip_id = trip_expenses.trip_id AND tm.user_id = auth.uid()
+        )
+    );
+
+DROP POLICY IF EXISTS "Users can access settlements of own trips" ON public.group_expense_settlements;
+CREATE POLICY "Users can access settlements of own trips" ON public.group_expense_settlements
+    FOR ALL TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.user_trips ut
+            WHERE ut.id = group_expense_settlements.trip_id AND ut.user_id = auth.uid()
+        )
+    )
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.user_trips ut
+            WHERE ut.id = group_expense_settlements.trip_id AND ut.user_id = auth.uid()
+        )
+    );

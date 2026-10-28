@@ -11,6 +11,9 @@ DROP TRIGGER IF EXISTS trg_protect_user_profile_role ON public.user_profiles;
 DROP FUNCTION IF EXISTS public.protect_user_profile_role();
 
 -- 2. DROP TABLES IN REVERSE DEPENDENCY ORDER
+DROP TABLE IF EXISTS public.group_expense_settlements CASCADE;
+DROP TABLE IF EXISTS public.trip_expenses CASCADE;
+DROP TABLE IF EXISTS public.trip_members CASCADE;
 DROP TABLE IF EXISTS public.admin_audit_logs CASCADE;
 DROP TABLE IF EXISTS public.user_notifications CASCADE;
 DROP TABLE IF EXISTS public.user_preferences CASCADE;
@@ -18,4 +21,3 @@ DROP TABLE IF EXISTS public.user_saved_destinations CASCADE;
 DROP TABLE IF EXISTS public.user_bookings CASCADE;
 DROP TABLE IF EXISTS public.user_trips CASCADE;
 DROP TABLE IF EXISTS public.user_profiles CASCADE;
-
