@@ -142,6 +142,7 @@ export function Footer() {
               <li><Link href="/notifications" className="hover:text-primary-container transition-colors">Travel Alerts</Link></li>
               <li><Link href="/login" className="hover:text-primary-container transition-colors">Client Sign In</Link></li>
               <li><Link href="/signup" className="hover:text-primary-container transition-colors">Join BharatYatra</Link></li>
+              <li><Link href="/terms" className="hover:text-primary-container transition-colors">Terms &amp; Conditions</Link></li>
             </ul>
             <div className="pt-3 space-y-2">
               <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
@@ -167,6 +168,8 @@ export function Footer() {
             <span className="flex items-center gap-1 text-slate-400">
               Made with <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 inline mx-0.5" /> for Gujarat Tourism
             </span>
+            <span className="hidden sm:inline">•</span>
+            <Link href="/terms" className="hover:text-primary-container underline-offset-4 hover:underline transition-colors">Terms &amp; Conditions</Link>
           </div>
           
           <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-4 py-2 rounded-full text-xs text-slate-300 shadow-md">
