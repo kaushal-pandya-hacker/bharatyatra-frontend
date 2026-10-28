@@ -76,4 +76,28 @@ describe('BharatYatra Privacy Policy Integrity and Integration Suite', () => {
     const clientContent = fs.readFileSync(privacyClientPath, 'utf8');
     assert.match(clientContent, /href="\/terms"/, 'Privacy page must cross-link to /terms');
   });
+
+  test('9. New Design System UI elements, trust halo, and metric pills', () => {
+    const clientContent = fs.readFileSync(privacyClientPath, 'utf8');
+    assert.match(clientContent, /DPDP Act 2023 Compliant Architecture/);
+    assert.match(clientContent, /Statutory Charter • IT Act 2000/);
+    assert.match(clientContent, /AES-256 Vault Protection/);
+    assert.match(clientContent, /policySearchInput/);
+    assert.match(clientContent, /100% Indian/);
+    assert.match(clientContent, /Zero CVV/);
+    assert.match(clientContent, /48 Hours/);
+    assert.match(clientContent, /Nexi AI/);
+  });
+
+  test('10. Sticky governance sidebar, Charter Directory, and DPDP interactive modals', () => {
+    const clientContent = fs.readFileSync(privacyClientPath, 'utf8');
+    assert.match(clientContent, /Charter Directory/);
+    assert.match(clientContent, /Exercise Your Rights/);
+    assert.match(clientContent, /Kaushal Pandya/);
+    assert.match(clientContent, /Grievance Redressal Officer/);
+    assert.match(clientContent, /1800 203 1111/);
+    assert.match(clientContent, /exportDataBtn/);
+    assert.match(clientContent, /cookieConsentBtn/);
+    assert.match(clientContent, /deleteAccountModalBtn/);
+  });
 });

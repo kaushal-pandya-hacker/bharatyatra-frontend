@@ -3,34 +3,18 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import {
-  Shield,
-  ShieldCheck,
-  Lock,
-  FileText,
-  Search,
-  Printer,
-  Link2,
-  CheckCircle2,
-  AlertTriangle,
-  UserCheck,
-  Server,
-  Database,
   Building2,
+  UserCheck,
+  FileText,
   Mail,
-  ChevronRight,
-  ArrowUp,
-  X,
-  ExternalLink,
-  History,
-  Info,
-  Scale,
-  Cookie,
-  Trash2,
+  Lock,
+  CheckCircle2,
   Eye,
   Edit3,
   UserX,
-  HelpCircle,
-  FileCheck2,
+  Scale,
+  Trash2,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface PolicySection {
@@ -42,19 +26,53 @@ interface PolicySection {
   content: React.ReactNode;
 }
 
+interface TocItem {
+  id: string;
+  num: string;
+  title: string;
+}
+
+const TOC_ITEMS: TocItem[] = [
+  { id: 'sec-1', num: '01', title: 'Scope & Identity' },
+  { id: 'sec-2', num: '02', title: 'Personal Information' },
+  { id: 'sec-3', num: '03', title: 'Registration & Bookings' },
+  { id: 'sec-4', num: '04', title: 'Auth & Supabase Security' },
+  { id: 'sec-5', num: '05', title: 'Nexi AI Synthesis' },
+  { id: 'sec-6', num: '06', title: 'Cookies & Telemetry' },
+  { id: 'sec-7', num: '07', title: 'Lawful Grounds (DPDP)' },
+  { id: 'sec-8', num: '08', title: 'Cloud & Infrastructure' },
+  { id: 'sec-9', num: '09', title: 'Carriers & Operators' },
+  { id: 'sec-10', num: '10', title: 'Storage & Retention' },
+  { id: 'sec-11', num: '11', title: 'Security Safeguards' },
+  { id: 'sec-12', num: '12', title: 'User Rights (DPDP)' },
+  { id: 'sec-13', num: '13', title: 'Account Deletion' },
+  { id: 'sec-14', num: '14', title: "Children's Protection" },
+  { id: 'sec-15', num: '15', title: 'Cross-Border Data' },
+  { id: 'sec-16', num: '16', title: 'Grievance Officer' },
+  { id: 'sec-17', num: '17', title: 'Policy Revisions' },
+];
+
 export function PrivacyClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSection, setActiveSection] = useState('sec-1');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [perfConsent, setPerfConsent] = useState(true);
-  const [showDeletionModal, setShowDeletionModal] = useState(false);
-  const [deletionSubmitted, setDeletionSubmitted] = useState(false);
-  const [ticketId, setTicketId] = useState('');
 
-  // Toast notification timer
+  // Modals state
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
+  const [deleteEmail, setDeleteEmail] = useState('');
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+
+  // Consent preferences state
+  const [consentPrefs, setConsentPrefs] = useState({
+    nexiAi: true,
+    telemetry: true,
+  });
+
+  // Auto-dismiss toast
   useEffect(() => {
     if (!toastMessage) return;
-    const timer = setTimeout(() => setToastMessage(null), 3200);
+    const timer = setTimeout(() => setToastMessage(null), 3500);
     return () => clearTimeout(timer);
   }, [toastMessage]);
 
@@ -62,16 +80,16 @@ export function PrivacyClient() {
     setToastMessage(msg);
   }, []);
 
-  const copyClauseLink = useCallback((sectionId: string) => {
+  const copyClauseLink = useCallback((secId: string) => {
     if (typeof window === 'undefined') return;
-    const url = `${window.location.origin}/privacy/#${sectionId}`;
+    const url = `${window.location.origin}/privacy/#${secId}`;
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard
         .writeText(url)
         .then(() => showToast('Direct permalink copied to clipboard'))
-        .catch(() => showToast(`Section reference: #${sectionId}`));
+        .catch(() => showToast(`Section reference: #${secId}`));
     } else {
-      showToast(`Section reference: #${sectionId}`);
+      showToast(`Section reference: #${secId}`);
     }
   }, [showToast]);
 
@@ -81,65 +99,73 @@ export function PrivacyClient() {
     }
   }, []);
 
-  // Keyboard shortcut: Cmd/Ctrl + K to focus search, ESC to clear
+  // Keyboard shortcut: Cmd/Ctrl + K to focus search, ESC to clear or close modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        document.getElementById('policy-search')?.focus();
+        document.getElementById('policySearchInput')?.focus();
       } else if (e.key === 'Escape') {
-        if (showDeletionModal) {
-          setShowDeletionModal(false);
-        } else if (searchQuery) {
-          setSearchQuery('');
-        }
+        if (showDeletionModal) setShowDeletionModal(false);
+        else if (showExportModal) setShowExportModal(false);
+        else if (showConsentModal) setShowConsentModal(false);
+        else if (searchQuery) setSearchQuery('');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchQuery, showDeletionModal]);
+  }, [searchQuery, showDeletionModal, showExportModal, showConsentModal]);
 
-  // Track active section on scroll
+  // Smooth Active TOC Scroll Spy via IntersectionObserver
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = document.querySelectorAll('article[id^="sec-"]');
-      const scrollPosition = window.scrollY + 200;
+    const cards = document.querySelectorAll('.policy-section');
+    if (!cards.length) return;
 
-      sections.forEach((section) => {
-        const top = (section as HTMLElement).offsetTop;
-        const height = (section as HTMLElement).offsetHeight;
-        const id = section.getAttribute('id');
-        if (id && scrollPosition >= top && scrollPosition < top + height) {
-          setActiveSection(id);
-        }
-      });
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            if (id) {
+              setActiveSection(id);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '-100px 0px -60% 0px',
+      }
+    );
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
   }, []);
 
-  const toggleTelemetry = useCallback(() => {
-    setPerfConsent((prev) => {
-      const next = !prev;
-      showToast(next ? 'Performance telemetry enabled' : 'Performance telemetry disabled');
-      return next;
-    });
-  }, [showToast]);
+  const scrollToSection = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveSection(id);
+    }
+  }, []);
 
+  // Handle Deletion Confirmation
   const handleTriggerDeletion = useCallback(() => {
-    setDeletionSubmitted(false);
     setShowDeletionModal(true);
   }, []);
 
   const handleConfirmDeletion = useCallback(() => {
-    const generatedTicket = `BY-DPDP-${Math.floor(1000 + Math.random() * 9000)}`;
-    setTicketId(generatedTicket);
-    setDeletionSubmitted(true);
-    showToast(`Erasure Request #${generatedTicket} logged successfully`);
-  }, [showToast]);
+    if (!deleteEmail.trim()) {
+      showToast('Please enter your email to confirm the erasure request.');
+      return;
+    }
+    const ticket = `BY-DPDP-${Math.floor(1000 + Math.random() * 9000)}`;
+    setShowDeletionModal(false);
+    setDeleteEmail('');
+    showToast(`Erasure ticket #${ticket} logged for ${deleteEmail}. Under DPDP Section 12, our Data Officer will process this within 48 hours.`);
+  }, [deleteEmail, showToast]);
 
-  // Comprehensive sections meeting all 17 required criteria
+  // Comprehensive sections meeting all statutory DPDP criteria
   const SECTIONS: PolicySection[] = useMemo(
     () => [
       {
@@ -768,6 +794,8 @@ export function PrivacyClient() {
   );
 
   // Filter sections by search query
+  
+
   const filteredSections = useMemo(() => {
     if (!searchQuery.trim()) return SECTIONS;
     const query = searchQuery.toLowerCase().trim();
@@ -780,327 +808,223 @@ export function PrivacyClient() {
   }, [SECTIONS, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#FAF9F4] text-[#1E293B] flex flex-col font-body selection:bg-amber-100 selection:text-slate-900">
-      {/* Toast Notification */}
+    <div className="w-full bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col justify-between selection:bg-primary-container selection:text-on-secondary-fixed">
+      {/* Toast Notification Banner */}
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-20 left-4 right-4 md:left-auto md:right-8 md:bottom-8 z-50 bg-[#091426] text-white py-2.5 px-4 rounded-xl shadow-2xl flex items-center justify-between gap-3 text-xs font-medium border border-slate-700 animate-in fade-in slide-in-from-bottom-4 duration-200"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-on-background text-surface shadow-2xl border border-outline-variant animate-in fade-in slide-in-from-bottom-4 duration-200"
         >
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
-            <span>{toastMessage}</span>
-          </div>
+          <span className="material-symbols-outlined text-[18px] text-primary-container">check_circle</span>
+          <span className="text-xs font-medium font-body-sm tracking-wide max-w-sm">{toastMessage}</span>
           <button
+            type="button"
             onClick={() => setToastMessage(null)}
-            className="text-slate-400 hover:text-white p-1"
-            aria-label="Dismiss notification"
+            className="ml-2 text-surface/70 hover:text-surface text-xs"
+            aria-label="Dismiss toast"
           >
-            <X className="w-3.5 h-3.5" />
+            <span className="material-symbols-outlined text-[14px]">close</span>
           </button>
         </div>
       )}
 
-      {/* Irrevocable Deletion Confirmation Modal */}
-      {showDeletionModal && (
-        <div
-          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-        >
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <button
-                onClick={() => setShowDeletionModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      {/* Top Ambient Trust Halo */}
+      <div className="relative w-full overflow-hidden">
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-primary-container/20 via-surface-container-high/30 to-transparent blur-3xl pointer-events-none -z-10" />
 
-            <div>
-              <h3 id="modal-title" className="text-lg font-bold text-slate-900 font-heading">
-                {deletionSubmitted ? 'Erasure Request Logged' : 'Confirm Irrevocable Erasure Request?'}
-              </h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {deletionSubmitted
-                  ? `Your data erasure request has been formally logged under Ticket #${ticketId}. Our Data Fiduciary desk will process your cascade purge across Supabase clusters within 72 business hours.`
-                  : 'Under Section 12 of the Digital Personal Data Protection Act 2023, this will register an official request to purge your account credentials, saved itineraries, traveller preferences, and booking dossiers.'}
+        {/* Hero / Breadcrumb / Charter Header */}
+        <div className="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin pt-space-lg pb-space-xl">
+          {/* Breadcrumb navigation */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-space-xs text-on-surface-variant mb-space-md">
+            <Link className="font-body-sm text-body-sm hover:text-primary transition-colors flex items-center gap-1" data-path="home" href="/">
+              <span className="material-symbols-outlined text-[16px]">home</span> Home
+            </Link>
+            <span className="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+            <span className="font-body-sm text-body-sm text-on-surface-variant">Legal &amp; Governance</span>
+            <span className="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span>
+            <span className="font-body-sm text-body-sm font-semibold text-primary">Privacy Policy</span>
+          </nav>
+
+          {/* Compliance Charter Capsule */}
+          <div className="flex flex-wrap items-center gap-space-sm mb-space-md">
+            <div className="inline-flex items-center gap-2 px-space-md py-1 rounded-full bg-emerald-900/10 text-emerald-800 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+              <span className="font-label-caps text-label-caps uppercase tracking-wider font-bold">DPDP Act 2023 Compliant Architecture</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-high text-on-secondary-fixed">
+              <span className="material-symbols-outlined text-[16px] text-primary">gavel</span>
+              <span className="font-label-caps text-label-caps uppercase tracking-wider font-semibold">Statutory Charter • IT Act 2000</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-primary-container/30 text-on-primary-fixed">
+              <span className="material-symbols-outlined text-[16px] text-primary">lock</span>
+              <span className="font-label-caps text-label-caps uppercase tracking-wider font-semibold">AES-256 Vault Protection</span>
+            </div>
+          </div>
+
+          {/* Main Headline Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-end">
+            <div className="lg:col-span-8 flex flex-col gap-space-sm">
+              <h1 className="font-display-hero text-headline-lg lg:text-display-hero text-on-surface tracking-tight leading-none font-bold">
+                Privacy Policy
+              </h1>
+              <p className="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+                How BharatYatra collects, secures, synthesizes, and respects your personal travel data across our sovereign AI-powered luxury exploration ecosystem.
               </p>
             </div>
 
-            {deletionSubmitted ? (
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs space-y-1 text-emerald-950">
-                <div className="font-bold flex items-center gap-1.5 text-emerald-800">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Ticket Reference: {ticketId}</span>
+            {/* Quick Telemetry Card */}
+            <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl p-space-md shadow-md">
+              <div className="flex items-center justify-between pb-space-sm mb-space-sm border-b border-surface-container">
+                <span className="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant">Policy Version</span>
+                <span className="font-label-md text-label-md font-bold text-on-surface bg-surface-container-high px-2 py-0.5 rounded">v1.0.0 (Production)</span>
+              </div>
+              <div className="grid grid-cols-2 gap-space-sm font-body-sm text-body-sm">
+                <div>
+                  <span className="text-on-surface-variant block text-xs">Effective Date</span>
+                  <span className="font-semibold text-on-surface">October 28, 2026</span>
                 </div>
-                <p className="text-[11px] text-emerald-800">
-                  A verification confirmation has been sent to our Fiduciary Desk at <code>privacy@bharatyatra.in</code>.
-                </p>
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowDeletionModal(false)}
-                    className="w-full py-2 bg-emerald-700 text-white rounded-lg font-semibold text-xs hover:bg-emerald-800 transition-colors"
-                  >
-                    Close Window
-                  </button>
+                <div>
+                  <span className="text-on-surface-variant block text-xs">Data Jurisdiction</span>
+                  <span className="font-semibold text-on-surface">Ahmedabad, Gujarat</span>
                 </div>
               </div>
-            ) : (
-              <div className="space-y-2 pt-2">
-                <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-[11px] text-amber-900">
-                  <strong>Important:</strong> Accounting and taxation audit records for completed commercial bookings will be decoupled from your identity but retained for statutory GST compliance.
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={handleConfirmDeletion}
-                    className="flex-1 py-2.5 px-4 bg-rose-600 text-white rounded-xl font-semibold text-xs hover:bg-rose-700 transition-colors shadow-sm"
-                  >
-                    Submit Erasure Request
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowDeletionModal(false)}
-                    className="py-2.5 px-4 bg-slate-100 text-slate-700 rounded-xl font-semibold text-xs hover:bg-slate-200 transition-colors"
-                  >
-                    Dismiss
-                  </button>
-                </div>
+            </div>
+          </div>
+
+          {/* Interactive Actions & Search Bar */}
+          <div className="mt-space-lg bg-surface-container-low p-space-sm rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-sm">
+            {/* Live Clause Search Filter */}
+            <div className="relative w-full md:w-96 flex items-center bg-surface-container-lowest rounded-xl px-space-md py-2.5 shadow-inner">
+              <span className="material-symbols-outlined text-primary text-[20px] mr-2">search</span>
+              <input
+                aria-label="Search within privacy clauses"
+                className="w-full bg-transparent text-on-surface font-body-sm text-body-sm outline-none placeholder:text-outline"
+                id="policySearchInput"
+                placeholder="Search clauses (e.g., 'Supabase', 'DPDP', 'Cookies', 'Deletion')..."
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="text-outline hover:text-on-surface cursor-pointer"
+                  id="clearSearchBtn"
+                  title="Clear search"
+                >
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              )}
+            </div>
+
+            {/* Utilities (Print, PDF) */}
+            <div className="flex items-center gap-space-sm w-full md:w-auto justify-end">
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="inline-flex items-center gap-1.5 px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all shadow-sm cursor-pointer"
+                title="Print entire legal agreement"
+              >
+                <span className="material-symbols-outlined text-[18px]">print</span>
+                <span>Print Policy</span>
+              </button>
+              <a
+                className="inline-flex items-center gap-1.5 px-space-md py-2.5 rounded-xl bg-primary-container text-on-secondary-fixed hover:bg-primary-fixed font-label-md text-label-md font-semibold transition-all shadow-sm"
+                href="mailto:pandyakaushal294@gmail.com?subject=BharatYatra%20Privacy%20Charter%20PDF%20Request"
+              >
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                <span>Charter PDF</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Metric Pills Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md mt-space-lg">
+            <div className="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-emerald-800 text-[22px]">verified_user</span>
               </div>
-            )}
+              <div>
+                <div className="font-title-md text-title-md font-bold text-on-surface">100% Indian</div>
+                <div className="font-body-sm text-body-sm text-on-surface-variant">Sovereign Data Storage</div>
+              </div>
+            </div>
+            <div className="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-amber-900 text-[22px]">key</span>
+              </div>
+              <div>
+                <div className="font-title-md text-title-md font-bold text-on-surface">Zero CVV</div>
+                <div className="font-body-sm text-body-sm text-on-surface-variant">RBI Tokenized Rails</div>
+              </div>
+            </div>
+            <div className="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-blue-900 text-[22px]">history_toggle_off</span>
+              </div>
+              <div>
+                <div className="font-title-md text-title-md font-bold text-on-surface">48 Hours</div>
+                <div className="font-body-sm text-body-sm text-on-surface-variant">Statutory Redressal SLA</div>
+              </div>
+            </div>
+            <div className="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-purple-900 text-[22px]">auto_awesome</span>
+              </div>
+              <div>
+                <div className="font-title-md text-title-md font-bold text-on-surface">Nexi AI</div>
+                <div className="font-body-sm text-body-sm text-on-surface-variant">Private Prompt Isolation</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Results Notification Banner */}
+      {searchQuery.trim() && (
+        <div className="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin mb-space-md w-full" id="searchResultsBanner">
+          <div className="p-space-sm px-space-md bg-secondary-container text-on-secondary-fixed rounded-xl flex items-center justify-between font-body-sm text-body-sm">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">filter_alt</span>
+              <span id="searchResultCount">
+                {filteredSections.length} {filteredSections.length === 1 ? 'section matched query "' : 'sections matched query "'}
+                {searchQuery}&quot;
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="font-semibold underline hover:text-primary cursor-pointer"
+              id="resetSearchFilterBtn"
+            >
+              Reset Filter
+            </button>
           </div>
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-slate-500 font-medium">
-          <Link href="/" className="hover:text-slate-900 transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <Link href="/terms" className="hover:text-slate-900 transition-colors">
-            Legal
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-900 font-semibold">Privacy Policy</span>
-        </nav>
-
-        {/* Hero & Document Metadata Card */}
-        <header className="bg-white rounded-2xl p-6 md:p-8 border border-[#E2E8F0] shadow-sm mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16"></div>
-
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-              <span>DPDP Act (2023) Verified</span>
-            </div>
-            <div className="flex items-center gap-2 font-mono text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-              <History className="w-3.5 h-3.5 text-amber-700" />
-              <span>Version 1.8 • Active</span>
-            </div>
-          </div>
-
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-2 font-heading">
-            Privacy Policy
-          </h1>
-          <p className="text-sm md:text-base text-slate-600 max-w-3xl leading-relaxed">
-            Transparent data stewardship, Supabase cryptographic safety, and user consent mechanisms in rigorous accordance with the <em>Digital Personal Data Protection (DPDP) Act, 2023</em> and applicable Indian travel directives.
-          </p>
-
-          {/* Quick Meta & Action Bar */}
-          <div className="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <div className="p-3 bg-[#FAF9F4] rounded-xl border border-[#E2E8F0]">
-              <span className="text-slate-500 block text-[11px] font-medium">Effective Date</span>
-              <strong className="text-slate-900 font-semibold text-xs">October 24, 2024</strong>
-            </div>
-            <div className="p-3 bg-[#FAF9F4] rounded-xl border border-[#E2E8F0]">
-              <span className="text-slate-500 block text-[11px] font-medium">Last Validated</span>
-              <strong className="text-slate-900 font-semibold text-xs">October 28, 2026</strong>
-            </div>
-            <div className="p-3 bg-[#FAF9F4] rounded-xl border border-[#E2E8F0]">
-              <span className="text-slate-500 block text-[11px] font-medium">Fiduciary Desk</span>
-              <a href="mailto:privacy@bharatyatra.in" className="text-teal-700 font-mono font-semibold hover:underline">
-                privacy@bharatyatra.in
-              </a>
-            </div>
-            <div className="p-3 bg-[#FAF9F4] rounded-xl border border-[#E2E8F0]">
-              <span className="text-slate-500 block text-[11px] font-medium">Jurisdiction</span>
-              <strong className="text-slate-900 font-semibold text-xs">Ahmedabad, Gujarat, India</strong>
-            </div>
-          </div>
-
-          {/* Quick Action Buttons */}
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="px-4 py-2.5 rounded-xl bg-white border border-[#E2E8F0] text-slate-800 font-semibold text-xs hover:bg-[#FAF9F4] transition-colors shadow-sm inline-flex items-center gap-2"
-            >
-              <Printer className="w-4 h-4 text-slate-600" />
-              <span>Print Policy</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => document.getElementById('policy-search')?.focus()}
-              className="px-4 py-2.5 rounded-xl bg-[#091426] text-white font-semibold text-xs hover:bg-slate-800 transition-colors shadow-sm inline-flex items-center gap-2"
-            >
-              <Search className="w-4 h-4 text-amber-400" />
-              <span>Search Clauses</span>
-            </button>
-            <Link
-              href="/terms"
-              className="px-4 py-2.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 font-semibold text-xs hover:bg-amber-100 transition-colors inline-flex items-center gap-1.5 ml-auto"
-            >
-              <Scale className="w-3.5 h-3.5 text-amber-700" />
-              <span>View Terms of Service</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </header>
-
-        {/* Real-time Search Input */}
-        <div className="mb-6 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-2 flex items-center gap-2">
-          <Search className="w-4 h-4 text-slate-400 ml-2 shrink-0" />
-          <input
-            id="policy-search"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search terms, Supabase, IRCTC, DPDP Act, cookies, deletion..."
-            className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-            aria-label="Search Privacy Policy clauses"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600"
-              aria-label="Clear search"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-100 border border-slate-200 rounded">
-            ESC
-          </kbd>
-        </div>
-
-        {/* Mobile / Tablet Horizontal Chapter Scroller */}
-        <section aria-label="Fast Chapter Navigation" className="mb-8 lg:hidden">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-slate-500">
-              Fast Navigation ({SECTIONS.length} Clauses)
-            </span>
-            <span className="text-xs text-amber-700 font-semibold">Tap to Jump</span>
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {SECTIONS.map((sec) => (
-              <a
-                key={sec.id}
-                href={`#${sec.id}`}
-                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
-                  activeSection === sec.id
-                    ? 'bg-[#091426] text-white border-[#091426]'
-                    : 'bg-white text-slate-700 border-[#E2E8F0] hover:bg-slate-50'
-                }`}
-              >
-                § {sec.num} {sec.title.split(' ')[0]}
-              </a>
-            ))}
-          </div>
-        </section>
-
-        {/* Statutory DPDP Summary Banner */}
-        <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-[#091426] text-white rounded-2xl p-6 md:p-8 mb-8 shadow-lg border border-teal-800/40">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[11px] font-semibold uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
-                <span>Data Principal Sovereignty</span>
-              </div>
-              <h2 className="text-xl md:text-2xl font-bold font-heading">
-                Your Fundamental Rights Under DPDP Act, 2023
-              </h2>
-              <p className="text-xs md:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                As a lawful Data Principal in the Republic of India, you hold sovereign authority to review, amend, nominate successors, and demand irrevocable erasure of personal travel dossiers.
-              </p>
-            </div>
-            <a
-              href="#sec-12"
-              className="px-4 py-2.5 rounded-xl bg-teal-400 text-slate-950 font-bold text-xs hover:bg-teal-300 transition-colors shrink-0 shadow-md flex items-center gap-1.5"
-            >
-              <span>Explore Section 12 Rights</span>
-              <ChevronRight className="w-4 h-4" />
-            </a>
-          </div>
-        </div>
-
-        {/* DUAL PANE LAYOUT (Desktop Sticky TOC + Document Sheet) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT: Desktop Sticky Table of Contents (3 Cols) */}
-          <aside className="hidden lg:block lg:col-span-4 sticky top-24 bg-white rounded-2xl p-5 border border-[#E2E8F0] shadow-sm max-h-[calc(100vh-7rem)] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                <FileCheck2 className="w-4 h-4 text-amber-700" />
-                <span>Table of Contents</span>
-              </span>
-              <span className="text-[11px] font-mono text-slate-500">
-                {filteredSections.length} / {SECTIONS.length}
-              </span>
-            </div>
-
-            <nav aria-label="Table of Contents Navigation" className="space-y-1">
-              {filteredSections.map((sec) => (
-                <a
-                  key={sec.id}
-                  href={`#${sec.id}`}
-                  className={`block px-3 py-2 rounded-lg text-xs transition-colors leading-snug ${
-                    activeSection === sec.id
-                      ? 'bg-amber-50 text-amber-950 font-bold border-l-2 border-amber-600'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                  }`}
-                >
-                  <span className="text-slate-400 font-mono mr-1.5">{sec.num}</span>
-                  <span>{sec.title}</span>
-                </a>
-              ))}
-            </nav>
-
-            <div className="mt-6 pt-4 border-t border-slate-100 space-y-2">
-              <Link
-                href="/terms"
-                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#FAF9F4] hover:bg-slate-100 text-slate-800 text-xs font-semibold transition-colors border border-[#E2E8F0]"
-              >
-                <span className="flex items-center gap-1.5">
-                  <Scale className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Terms &amp; Conditions</span>
-                </span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-              </Link>
-            </div>
-          </aside>
-
-          {/* RIGHT: Document Sheet (8 Cols) */}
-          <div className="lg:col-span-8 space-y-6">
-            {searchQuery && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between">
-                <span>
-                  Showing <strong>{filteredSections.length}</strong> matching sections for &quot;{searchQuery}&quot;
-                </span>
+      {/* Main Body: Two-Column Architecture */}
+      <div className="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin pb-space-xl w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+          {/* LEFT: Comprehensive Legal Sections (~70% width, 8 of 12 cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-space-lg" id="policyClausesContainer">
+            {filteredSections.length === 0 && (
+              <div className="bg-surface-container-lowest rounded-2xl p-space-xl text-center space-y-3 shadow-sm">
+                <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mx-auto text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[24px]">search_off</span>
+                </div>
+                <div className="font-title-md font-bold text-on-surface">No policy sections match your search</div>
+                <p className="text-on-surface-variant text-body-sm">
+                  We couldn&apos;t find any clauses matching &ldquo;{searchQuery}&rdquo;. Try keywords like &ldquo;cookies&rdquo;, &ldquo;Supabase&rdquo;, &ldquo;erasure&rdquo;, or &ldquo;DPDP&rdquo;.
+                </p>
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
-                  className="font-bold underline hover:text-amber-950 ml-2"
+                  className="px-space-md py-1.5 rounded-xl bg-primary-container text-on-secondary-fixed font-semibold text-xs hover:bg-primary-fixed transition-colors"
                 >
-                  Reset Filter
+                  Clear Search
                 </button>
               </div>
             )}
@@ -1109,132 +1033,332 @@ export function PrivacyClient() {
               <article
                 key={sec.id}
                 id={sec.id}
-                className="clause-item scroll-mt-24 bg-white rounded-2xl p-6 md:p-8 border border-[#E2E8F0] shadow-sm transition-all hover:border-slate-300"
+                className="policy-section bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm transition-all hover:shadow-md scroll-mt-28"
               >
-                <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-mono text-[11px] font-bold">
-                      Section {sec.num}
+                {/* Legacy section number anchor */}
+                <span id={`sec-${sec.num.replace('.0', '')}`} className="sr-only" aria-hidden="true" />
+
+                <div className="flex items-start justify-between gap-space-sm mb-space-sm border-b border-surface-container pb-space-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="px-2.5 py-1 rounded-lg bg-surface-container-high text-primary font-title-md text-title-md font-bold">
+                      {sec.num}
                     </span>
+                    <h2 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                      {sec.title}
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-2">
                     {sec.badge && (
-                      <span className="px-2 py-0.5 rounded bg-teal-50 text-teal-800 font-medium text-[11px] border border-teal-200">
+                      <span className="px-2 py-0.5 rounded bg-emerald-900/10 text-emerald-800 text-[11px] font-bold border border-emerald-200">
                         {sec.badge}
                       </span>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => copyClauseLink(sec.id)}
+                      className="p-1.5 rounded-lg text-outline hover:text-primary hover:bg-surface-container transition-colors cursor-pointer"
+                      title="Copy section link"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">link</span>
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => copyClauseLink(sec.id)}
-                    className="text-slate-400 hover:text-teal-700 text-xs flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-slate-50"
-                    title="Copy section permalink"
-                  >
-                    <Link2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Copy Ref</span>
-                  </button>
                 </div>
 
-                <h2 className="text-xl font-bold text-[#0F172A] tracking-tight mb-2 font-heading">
-                  {sec.title}
-                </h2>
-                <p className="text-xs text-slate-500 italic mb-4">
+                <p className="text-xs text-on-surface-variant italic mb-4">
                   {sec.summary}
                 </p>
 
-                <div className="pt-2">{sec.content}</div>
+                <div className="font-body-md text-body-md text-on-surface space-y-3 leading-relaxed">
+                  {sec.content}
+                </div>
               </article>
             ))}
+          </div>
 
-            {/* Interactive Preference Management Card */}
-            <section
-              id="privacy-preferences"
-              className="bg-white rounded-2xl p-6 md:p-8 border border-[#E2E8F0] shadow-sm space-y-4"
-            >
-              <div className="flex items-center gap-2 text-slate-900 font-heading text-lg font-bold">
-                <Cookie className="w-5 h-5 text-amber-700" />
-                <span>Interactive Preference &amp; Storage Controls</span>
+          {/* RIGHT: Sticky Governance Sidebar (~30% width, 4 of 12 cols) */}
+          <aside className="lg:col-span-4 sticky top-24 space-y-space-md">
+            {/* Table of Contents (TOC) with Active State */}
+            <div className="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm border border-surface-container">
+              <div className="flex items-center justify-between pb-space-sm border-b border-surface-container mb-space-sm">
+                <span className="font-title-md text-title-md text-on-surface font-bold flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-primary text-[20px]">list_alt</span>
+                  Charter Directory
+                </span>
+                <span className="font-label-caps text-label-caps uppercase text-outline">17 Clauses</span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                BharatYatra respects your digital boundaries. Manage technical telemetry and session storage tokens in accordance with your consent preferences:
-              </p>
-
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between p-3.5 bg-[#FAF9F4] rounded-xl border border-[#E2E8F0]">
-                  <div className="space-y-0.5">
-                    <div className="font-semibold text-slate-900 text-xs">Strictly Essential Security Tokens</div>
-                    <div className="text-[11px] text-slate-500">Supabase authentication session, CSRF safety nonces, and login state.</div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-bold text-[10px] uppercase tracking-wider">
-                    Always Active
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3.5 bg-[#FAF9F4] rounded-xl border border-[#E2E8F0]">
-                  <div className="space-y-0.5">
-                    <div className="font-semibold text-slate-900 text-xs">Performance &amp; Route Telemetry</div>
-                    <div className="text-[11px] text-slate-500">Anonymous page render latency and Core Web Vitals diagnostics.</div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={toggleTelemetry}
-                    className={`w-12 h-6 rounded-full p-0.5 transition-colors duration-200 relative ${
-                      perfConsent ? 'bg-teal-600' : 'bg-slate-300'
-                    }`}
-                    aria-label="Toggle performance telemetry consent"
-                  >
-                    <div
-                      className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 ${
-                        perfConsent ? 'translate-x-6' : 'translate-x-0'
+              <nav className="max-h-[380px] overflow-y-auto space-y-1 pr-1 font-body-sm text-body-sm" id="tocNav" style={{ scrollbarWidth: 'thin' }}>
+                {TOC_ITEMS.map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(item.id);
+                      }}
+                      className={`toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-colors text-xs cursor-pointer ${
+                        isActive
+                          ? 'bg-primary-container/40 font-semibold text-on-surface'
+                          : 'text-on-surface-variant hover:bg-surface-container-high'
                       }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            </section>
+                    >
+                      <span className="font-semibold text-primary">{item.num}</span>
+                      <span className="truncate">{item.title}</span>
+                    </a>
+                  );
+                })}
+              </nav>
+            </div>
 
-            {/* Related Contracts & Terms Banner */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-[#FAF9F4] border border-amber-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <Scale className="w-4 h-4 text-amber-700" />
-                  <span>Sister Contractual Agreement</span>
-                </div>
-                <h3 className="font-bold text-slate-900 text-base font-heading">
-                  Terms &amp; Conditions of Service
-                </h3>
-                <p className="text-xs text-slate-600 max-w-xl">
-                  Review traveller booking rules, supplier liability boundaries, payment terms, and cancellation policies in our accompanying Terms of Service.
-                </p>
+            {/* Privacy Action Station: "Exercise Your Rights" */}
+            <div className="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm border border-surface-container">
+              <div className="flex items-center gap-2 mb-space-sm text-on-surface">
+                <span className="material-symbols-outlined text-primary text-[22px]">admin_panel_settings</span>
+                <span className="font-title-md text-title-md font-bold">Exercise Your Rights</span>
               </div>
-              <Link
-                href="/terms"
-                className="px-5 py-2.5 rounded-xl bg-[#091426] text-white font-semibold text-xs hover:bg-slate-800 transition-colors shadow-sm shrink-0 flex items-center gap-1.5"
-              >
-                <span>Read Terms</span>
-                <ChevronRight className="w-4 h-4" />
+              <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                Directly invoke your legal prerogatives under the Indian Data Protection Act:
+              </p>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setShowExportModal(true)}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface text-body-sm font-medium transition-all cursor-pointer"
+                  id="exportDataBtn"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-primary">download_for_offline</span>
+                    <span>Download My Data Dossier</span>
+                  </div>
+                  <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowConsentModal(true)}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface text-body-sm font-medium transition-all cursor-pointer"
+                  id="cookieConsentBtn"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-primary">tune</span>
+                    <span>Adjust Consent Preferences</span>
+                  </div>
+                  <span className="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDeletionModal(true)}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-error text-body-sm font-medium transition-all cursor-pointer"
+                  id="deleteAccountModalBtn"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-error">person_remove</span>
+                    <span>Request Account Deletion</span>
+                  </div>
+                  <span className="material-symbols-outlined text-[16px] text-error">chevron_right</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Data Protection Officer (DPO) Fast Card */}
+            <div className="bg-gradient-to-br from-surface-container to-surface-container-low rounded-2xl p-space-md shadow-sm">
+              <div className="flex items-center gap-3 mb-space-sm">
+                <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center font-bold text-sm shrink-0">
+                  KP
+                </div>
+                <div>
+                  <div className="font-title-md text-title-md font-bold text-on-surface">Kaushal Pandya</div>
+                  <div className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Grievance Redressal Officer</div>
+                </div>
+              </div>
+              <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                Directly dedicated to privacy enquiries, permit documentation purging, and consent revocations.
+              </p>
+              <div className="space-y-1.5 font-body-sm text-body-sm">
+                <a className="flex items-center gap-2 text-on-surface hover:text-primary transition-colors" href="mailto:pandyakaushal294@gmail.com">
+                  <span className="material-symbols-outlined text-[18px] text-primary">mail</span>
+                  <span className="truncate">pandyakaushal294@gmail.com</span>
+                </a>
+                <a className="flex items-center gap-2 text-on-surface hover:text-primary transition-colors" href="tel:+919624282521">
+                  <span className="material-symbols-outlined text-[18px] text-primary">call</span>
+                  <span>+91 9624282521</span>
+                </a>
+              </div>
+            </div>
+
+            {/* 24/7 Sovereign Care Hotline */}
+            <div className="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm border border-surface-container text-center">
+              <span className="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest block mb-1">State Tourism Concierge</span>
+              <div className="font-title-lg text-title-lg text-on-surface font-bold">1800 203 1111</div>
+              <span className="text-on-surface-variant text-xs block mt-1">24/7 Toll-Free Sovereign Care Desk</span>
+            </div>
+
+            {/* Complementary Legal Docs Navigation */}
+            <div className="bg-surface-container-low rounded-2xl p-space-md space-y-2">
+              <span className="font-label-caps text-label-caps text-on-surface uppercase tracking-wider font-bold block mb-1">Related Charters</span>
+              <Link className="flex items-center justify-between text-body-sm text-on-surface hover:text-primary transition-colors py-1" href="/terms">
+                <span>Terms &amp; Conditions</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_outward</span>
               </Link>
+              <Link className="flex items-center justify-between text-body-sm text-on-surface hover:text-primary transition-colors py-1" href="/terms#clause-11">
+                <span>Cancellation &amp; Refund Policy</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_outward</span>
+              </Link>
+              <Link className="flex items-center justify-between text-body-sm text-on-surface hover:text-primary transition-colors py-1" href="/terms#clause-8">
+                <span>Booking &amp; Safety Disclaimer</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_outward</span>
+              </Link>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      {/* Interactive Modal: Account Deletion Simulation */}
+      {showDeletionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-surface-container-lowest max-w-md w-full rounded-2xl p-space-lg shadow-2xl space-y-space-md border border-surface-container">
+            <div className="w-12 h-12 rounded-xl bg-red-100 text-error flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px]">delete_forever</span>
+            </div>
+            <div>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">Delete BharatYatra Profile?</h3>
+              <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
+                Under Section 12 of the DPDP Act 2023, you can request immediate eradication of your account credentials, AI itinerary dialogues, and traveler profiles. Historical GST financial receipts will remain archived for 7 tax years.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="font-label-md text-label-md text-on-surface block" htmlFor="deleteConfirmEmail">Confirm your email address</label>
+              <input
+                className="w-full bg-surface-container-low px-3 py-2 rounded-xl font-body-sm text-body-sm outline-none border border-transparent focus:border-primary text-on-surface"
+                id="deleteConfirmEmail"
+                placeholder="your-email@domain.com"
+                type="email"
+                value={deleteEmail}
+                onChange={(e) => setDeleteEmail(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center justify-end gap-space-sm pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeletionModal(false);
+                  setDeleteEmail('');
+                }}
+                className="px-space-md py-2 rounded-xl text-on-surface-variant hover:bg-surface-container font-label-md text-label-md cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeletion}
+                className="px-space-md py-2 rounded-xl bg-error text-on-error font-label-md text-label-md font-semibold hover:bg-red-700 shadow-sm cursor-pointer"
+              >
+                Submit Erasure Request
+              </button>
             </div>
           </div>
         </div>
-      </main>
+      )}
 
-      {/* Floating Bottom Dock for Mobile (Terms vs Privacy Switcher) */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg px-4 py-2">
-        <div className="flex items-center justify-around max-w-md mx-auto">
-          <Link
-            href="/terms"
-            className="flex-1 py-2 px-3 text-center text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            Terms of Service
-          </Link>
-          <div className="w-px h-5 bg-slate-200"></div>
-          <Link
-            href="/privacy"
-            className="flex-1 py-2 px-3 text-center text-xs font-bold text-teal-700 bg-teal-50 rounded-lg transition-colors"
-          >
-            Privacy Policy
-          </Link>
+      {/* Interactive Modal: Data Dossier Export Confirmation */}
+      {showExportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-surface-container-lowest max-w-md w-full rounded-2xl p-space-lg shadow-2xl space-y-space-md border border-surface-container text-center">
+            <div className="w-12 h-12 mx-auto rounded-xl bg-primary-container text-on-secondary-fixed flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px]">inventory_2</span>
+            </div>
+            <div>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">Preparing Your Data Dossier</h3>
+              <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
+                We are consolidating your active bookings, Nexi AI preferences, and registered tokens into an encrypted machine-readable ZIP archive (JSON + PDF).
+              </p>
+            </div>
+            <div className="p-space-sm bg-surface-container-low rounded-xl text-xs text-on-surface-variant">
+              This file will be transmitted to your authenticated email address within 15 minutes.
+            </div>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExportModal(false);
+                  showToast('Data Dossier export requested. Check your email shortly.');
+                }}
+                className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:opacity-90 cursor-pointer"
+              >
+                Got It, Close Window
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Interactive Modal: Consent Preferences Manager */}
+      {showConsentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-surface-container-lowest max-w-md w-full rounded-2xl p-space-lg shadow-2xl space-y-space-md border border-surface-container">
+            <div className="flex items-center gap-2 text-on-surface">
+              <span className="material-symbols-outlined text-primary text-[24px]">tune</span>
+              <h3 className="font-headline-sm text-headline-sm font-bold">Consent Preferences Manager</h3>
+            </div>
+            <p className="font-body-sm text-body-sm text-on-surface-variant">
+              Manage your technical telemetry and session storage tokens in accordance with Section 6 of the DPDP Act 2023:
+            </p>
+
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+                <div>
+                  <div className="font-semibold text-xs text-on-surface">Essential Cookies &amp; Auth</div>
+                  <div className="text-[11px] text-on-surface-variant">Supabase session tokens, CSRF protection.</div>
+                </div>
+                <span className="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-bold text-[10px] uppercase">
+                  Mandatory
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+                <div>
+                  <div className="font-semibold text-xs text-on-surface">Nexi AI Recommendations</div>
+                  <div className="text-[11px] text-on-surface-variant">Trip context, preferred pace &amp; interests.</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setConsentPrefs(p => ({ ...p, nexiAi: !p.nexiAi }))}
+                  className={`w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer ${consentPrefs.nexiAi ? 'bg-primary' : 'bg-outline-variant'}`}
+                >
+                  <div className={`w-5 h-5 bg-surface rounded-full shadow-sm transition-transform ${consentPrefs.nexiAi ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+                <div>
+                  <div className="font-semibold text-xs text-on-surface">Performance &amp; Route Telemetry</div>
+                  <div className="text-[11px] text-on-surface-variant">Anonymous latency metrics &amp; error logs.</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setConsentPrefs(p => ({ ...p, telemetry: !p.telemetry }))}
+                  className={`w-11 h-6 rounded-full p-0.5 transition-colors cursor-pointer ${consentPrefs.telemetry ? 'bg-primary' : 'bg-outline-variant'}`}
+                >
+                  <div className={`w-5 h-5 bg-surface rounded-full shadow-sm transition-transform ${consentPrefs.telemetry ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConsentModal(false);
+                  showToast('Consent preferences updated and saved.');
+                }}
+                className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:opacity-90 cursor-pointer"
+              >
+                Save Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
