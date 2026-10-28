@@ -18,7 +18,7 @@ describe('BharatYatra Terms & Conditions Integrity and Integration Suite', () =>
 
   test('2. Server page exports correct SEO metadata and canonical URL', () => {
     const pageContent = fs.readFileSync(termsPagePath, 'utf8');
-    assert.match(pageContent, /canonical:\s*['"]https:\/\/bharatyatra\.in\/terms['"]/, 'Canonical URL must be https://bharatyatra.in/terms');
+    assert.match(pageContent, /canonical:\s*['"]https:\/\/bharatyatra\.in\/terms\/?['"]/, 'Canonical URL must be https://bharatyatra.in/terms or https://bharatyatra.in/terms/');
     assert.match(pageContent, /title:\s*['"]Terms & Conditions \| BharatYatra['"]/, 'Title must be defined');
     assert.match(pageContent, /description:/, 'Description metadata must be present');
     assert.match(pageContent, /openGraph:/, 'OpenGraph metadata must be present');
@@ -70,3 +70,4 @@ describe('BharatYatra Terms & Conditions Integrity and Integration Suite', () =>
     assert.match(loginContent, /href="\/terms"/, 'Login page must link to /terms');
   });
 });
+

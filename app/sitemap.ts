@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.bharatyatra.com';
+  const baseUrl = 'https://bharatyatra.in';
 
   const gujaratDestinations = [
     'ahmedabad',

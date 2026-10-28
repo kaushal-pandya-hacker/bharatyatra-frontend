@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     'Official Terms and Conditions for BharatYatra — India AI Travel Planning, Destination Discovery, and Travel Booking Coordination.',
   alternates: {
-    canonical: 'https://bharatyatra.in/terms',
+    canonical: 'https://bharatyatra.in/terms/',
   },
   openGraph: {
     title: 'Terms & Conditions | BharatYatra',
     description:
       'Official Terms and Conditions for BharatYatra — India AI Travel Planning, Destination Discovery, and Travel Booking Coordination.',
-    url: 'https://bharatyatra.in/terms',
+    url: 'https://bharatyatra.in/terms/',
     siteName: 'BharatYatra',
     locale: 'en_IN',
     type: 'website',
