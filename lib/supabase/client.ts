@@ -61,4 +61,23 @@ export function getSupabaseServerClient(): SupabaseClient {
   return getSupabaseClient();
 }
 
+/**
+ * User-scoped client forwarding the caller's JWT to Supabase.
+ * Enforces PostgreSQL Row Level Security (RLS) under the caller's identity
+ * without requiring elevated service role permissions.
+ */
+export function getSupabaseUserClient(accessToken: string): SupabaseClient {
+  return createClient(supabaseUrl, supabasePublishableKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  });
+}
+
 export const supabase = getSupabaseClient();

@@ -54,7 +54,7 @@ export default function BookingConfirmationPage() {
     const loadBooking = async () => {
       setLoading(true);
       try {
-        const apiBase = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
+        const apiBase = ((process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || '/api/v1');
         const res = await fetch(`${apiBase}/bookings/reference/${ref}`);
         if (res.ok) {
           const json = await res.json();
@@ -87,27 +87,8 @@ export default function BookingConfirmationPage() {
         // Fallback default confirmation dataset
       }
 
-      // Default evaluation booking state
-      setBooking({
-        chaloFarvaBookingId: `CF-HTL-${Date.now().toString().slice(-6)}`,
-        bookingReference: ref,
-        supplierReference: `HBX-REF-${Math.floor(100000 + Math.random() * 900000)}`,
-        status: 'CONFIRMED',
-        hotelId: '105432',
-        hotelName: 'Hyatt Regency Ahmedabad',
-        checkIn: '2026-10-15',
-        checkOut: '2026-10-17',
-        roomName: 'King Deluxe Room with River View',
-        boardName: 'Breakfast Included (Buffet)',
-        holderName: 'Kaushal Pandya',
-        holderEmail: 'kaushal@chalo-farva.in',
-        holderPhone: '+91 98251 00492',
-        guestsCount: 2,
-        totalPrice: 9600,
-        currency: 'INR',
-        cancellationPolicy: 'Refundable up to 24h prior to check-in (HBX Evaluation Policy)',
-        createdAt: new Date().toISOString(),
-      });
+      // Strict empty state: zero demo fallback injection
+      setBooking(null);
       setLoading(false);
     };
 
@@ -120,7 +101,7 @@ export default function BookingConfirmationPage() {
 
     setCancelling(true);
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
+      const apiBase = ((process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || '/api/v1');
       const res = await fetch(`${apiBase}/hotels/cancel/${booking.bookingReference}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

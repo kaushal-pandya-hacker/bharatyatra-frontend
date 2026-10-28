@@ -60,9 +60,10 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       data: cancelled,
     });
   } catch (err: any) {
+    const isDbError = err?.name === 'DatabasePersistenceError' || err?.code === 'DATABASE_PERSISTENCE_ERROR';
     return NextResponse.json(
-      { success: false, error: err.message || 'Failed to cancel booking' },
-      { status: 400 }
+      { success: false, error: err.message || 'Failed to cancel booking', code: isDbError ? 'DATABASE_ERROR' : 'BAD_REQUEST' },
+      { status: isDbError ? 503 : 400 }
     );
   }
 }

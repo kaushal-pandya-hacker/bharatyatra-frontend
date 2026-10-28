@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Compass, Sparkles, MapPin, ShieldCheck, PhoneCall, Mail, Heart, ArrowRight } from 'lucide-react';
+import { Compass, MapPin, ShieldCheck, PhoneCall, Mail, Heart } from 'lucide-react';
 
 export function Footer() {
   const pathname = usePathname();
@@ -25,37 +25,6 @@ export function Footer() {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
-        {/* TOP SECTION: Call to Action Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-800 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/20 text-primary-container text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Gujarat-First AI Travel Engine</span>
-            </div>
-            <h3 className="text-2xl md:text-3xl font-heading font-bold text-white tracking-tight">
-              Ready to explore authentic Gujarat?
-            </h3>
-            <p className="text-sm text-slate-400 max-w-xl">
-              &quot;Plan less. Coordinate less. Enjoy more.&quot; Synthesize a personalized itinerary with instant permits, stays &amp; transit.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Link
-              href="/plan"
-              className="px-6 py-3.5 rounded-xl bg-primary-container text-on-secondary-fixed font-bold text-sm hover:bg-primary-fixed transition-all shadow-lg flex items-center gap-2"
-            >
-              <span>Build AI Itinerary</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/packages"
-              className="px-6 py-3.5 rounded-xl bg-slate-800 text-white font-semibold text-sm hover:bg-slate-700 transition-all border border-slate-700"
-            >
-              View Packages
-            </Link>
-          </div>
-        </div>
-
         {/* MAIN FOOTER GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           

@@ -58,11 +58,9 @@ export default function BookingCancellationPage() {
       if (res.ok) {
         const data = await res.json();
         setEligibility(data);
-      } else {
-        setEligibility({ isEligible: true, cancellationPolicy: { refundable: true, feePercentage: 10 } });
       }
     } catch (e) {
-      setEligibility({ isEligible: true, cancellationPolicy: { refundable: true, feePercentage: 10 } });
+      // Fallback
     } finally {
       setLoading(false);
     }
@@ -74,36 +72,39 @@ export default function BookingCancellationPage() {
       const res = await fetch(`/api/v1/orders/${sampleItem.orderId}/cancellation-quote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderItemId: bookingId || 'item-1', reason }),
+        body: JSON.stringify({
+          orderItemId: bookingId,
+          reason,
+        }),
       });
       if (res.ok) {
         const data = await res.json();
         setQuote(data);
       } else {
-        // Fallback calculation demo
+        // Fallback calculation quote
         setQuote({
-          cancellationRequestId: `req-${Date.now()}`,
+          cancellationRequestId: `quote_sim_${Date.now()}`,
           originalAmount: sampleItem.originalAmount,
-          supplierCancellationFee: 720,
-          platformFee: 100,
-          taxRefund: 130,
-          estimatedRefund: 6510,
+          supplierCancellationFee: Math.round(sampleItem.originalAmount * (sampleItem.cancellationFeePct / 100)),
+          platformFee: 200,
+          taxRefund: 180,
+          estimatedRefund: sampleItem.originalAmount - Math.round(sampleItem.originalAmount * (sampleItem.cancellationFeePct / 100)) - 200 + 180,
           currency: 'INR',
           policyText: sampleItem.policyText,
-          deadline: '17 Oct 2026, 23:59 IST',
+          deadline: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
         });
       }
     } catch (e) {
       setQuote({
-        cancellationRequestId: `req-${Date.now()}`,
+        cancellationRequestId: `quote_sim_${Date.now()}`,
         originalAmount: sampleItem.originalAmount,
-        supplierCancellationFee: 720,
-        platformFee: 100,
-        taxRefund: 130,
-        estimatedRefund: 6510,
+        supplierCancellationFee: Math.round(sampleItem.originalAmount * (sampleItem.cancellationFeePct / 100)),
+        platformFee: 200,
+        taxRefund: 180,
+        estimatedRefund: sampleItem.originalAmount - Math.round(sampleItem.originalAmount * (sampleItem.cancellationFeePct / 100)) - 200 + 180,
         currency: 'INR',
         policyText: sampleItem.policyText,
-        deadline: '17 Oct 2026, 23:59 IST',
+        deadline: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       });
     } finally {
       setRequestingQuote(false);
@@ -111,8 +112,9 @@ export default function BookingCancellationPage() {
   };
 
   const handleConfirmCancellation = async () => {
-    if (!warningAccepted || !quote) return;
+    if (!quote || !warningAccepted) return;
     setConfirming(true);
+
     try {
       const res = await fetch(`/api/v1/orders/${sampleItem.orderId}/cancel-item`, {
         method: 'POST',
@@ -146,14 +148,27 @@ export default function BookingCancellationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070D18] text-gray-100 font-sans pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
       {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-[#0B1528]/90 backdrop-blur-md border-b border-gray-800">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/my-trips" className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition">
-            ← Back to My Trips
-          </Link>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800 font-semibold">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2 group shrink-0">
+              <img
+                src="/logo.png"
+                alt="BharatYatra Logo"
+                className="h-8 w-auto object-contain transition-transform group-hover:scale-105 rounded-md"
+              />
+              <span className="font-heading font-black text-slate-900 text-sm tracking-tight uppercase group-hover:text-amber-600 transition-colors">
+                BharatYatra
+              </span>
+            </Link>
+            <span className="text-slate-300">|</span>
+            <Link href="/my-trips" className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+              ← Back to My Trips
+            </Link>
+          </div>
+          <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-semibold font-mono">
             CANCELLATION MANAGER
           </span>
         </div>
@@ -162,43 +177,43 @@ export default function BookingCancellationPage() {
       {/* MAIN CONTAINER */}
       <main className="max-w-3xl mx-auto px-4 pt-8">
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Cancel Booking Component</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Cancel Booking Component</h1>
+          <p className="text-sm text-slate-500 mt-1">
             Review cancellation terms, fee breakdown, and estimated refund before confirming
           </p>
         </div>
 
         {resultStatus ? (
           /* RESULT SCREEN */
-          <div className="p-8 rounded-2xl bg-[#0B1528] border border-emerald-800 text-center space-y-4">
-            <div className="w-16 h-16 bg-emerald-950 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-700">
+          <div className="p-8 rounded-2xl bg-white border border-emerald-200 text-center space-y-4 shadow-xs">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-200">
               ✓
             </div>
-            <h2 className="text-2xl font-bold text-white">Cancellation Confirmed</h2>
-            <p className="text-sm text-gray-300">
-              Your booking for <span className="font-semibold text-white">{sampleItem.productName}</span> has been cancelled.
+            <h2 className="text-2xl font-bold text-slate-900">Cancellation Confirmed</h2>
+            <p className="text-sm text-slate-600">
+              Your booking for <span className="font-bold text-slate-900">{sampleItem.productName}</span> has been cancelled.
             </p>
-            <div className="p-4 rounded-xl bg-gray-900/80 border border-gray-800 max-w-md mx-auto text-left text-sm space-y-2">
-              <div className="flex justify-between text-gray-300">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 max-w-md mx-auto text-left text-sm space-y-2">
+              <div className="flex justify-between text-slate-700">
                 <span>Estimated Refund:</span>
-                <span className="font-bold text-emerald-400">₹{resultStatus.refundAmount?.toLocaleString('en-IN')} INR</span>
+                <span className="font-bold text-emerald-600">₹{resultStatus.refundAmount?.toLocaleString('en-IN')} INR</span>
               </div>
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between text-slate-700">
                 <span>Refund Status:</span>
-                <span className="font-semibold text-amber-400">{resultStatus.refundStatus || 'PROCESSING'}</span>
+                <span className="font-semibold text-amber-700">{resultStatus.refundStatus || 'PROCESSING'}</span>
               </div>
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between text-slate-700">
                 <span>Trip Order Status:</span>
-                <span className="font-semibold text-blue-400">{resultStatus.orderStatus || 'PARTIALLY_CANCELLED'}</span>
+                <span className="font-semibold text-blue-700">{resultStatus.orderStatus || 'PARTIALLY_CANCELLED'}</span>
               </div>
             </div>
-            <p className="text-xs text-gray-400">
-              The refund will be credited back to your original Razorpay payment method within 3–5 business days. Remaining components of your trip remain active and confirmed.
+            <p className="text-xs text-slate-500">
+              The refund will be credited back to your original payment method within 3–5 business days. Remaining components of your trip remain active and confirmed.
             </p>
             <div className="pt-4 flex justify-center gap-4">
               <Link
                 href="/my-trips"
-                className="px-6 py-2.5 rounded-xl bg-[#FF6500] hover:bg-[#e05800] text-white font-bold text-sm transition"
+                className="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm transition shadow-xs"
               >
                 View Updated Trip
               </Link>
@@ -207,45 +222,45 @@ export default function BookingCancellationPage() {
         ) : (
           /* STEP 1: ITEM DETAILS & POLICY */
           <div className="space-y-6">
-            <div className="p-6 rounded-2xl bg-[#0B1528] border border-gray-800 space-y-4">
-              <h2 className="text-lg font-bold text-white border-b border-gray-800 pb-3">Booking Details</h2>
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs">
+              <h2 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">Booking Details</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-xs text-gray-400 block">Product</span>
-                  <span className="font-bold text-white">{sampleItem.productName}</span>
+                  <span className="text-xs text-slate-500 block">Product</span>
+                  <span className="font-bold text-slate-900">{sampleItem.productName}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-400 block">Supplier</span>
-                  <span className="text-gray-200">{sampleItem.supplier}</span>
+                  <span className="text-xs text-slate-500 block">Supplier</span>
+                  <span className="text-slate-700">{sampleItem.supplier}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-400 block">Dates</span>
-                  <span className="text-gray-200">{sampleItem.travelDates}</span>
+                  <span className="text-xs text-slate-500 block">Dates</span>
+                  <span className="text-slate-700">{sampleItem.travelDates}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-400 block">Original Paid Amount</span>
-                  <span className="font-extrabold text-white">₹{sampleItem.originalAmount.toLocaleString('en-IN')} INR</span>
+                  <span className="text-xs text-slate-500 block">Original Paid Amount</span>
+                  <span className="font-extrabold text-slate-900">₹{sampleItem.originalAmount.toLocaleString('en-IN')} INR</span>
                 </div>
               </div>
             </div>
 
             {/* POLICY NOTICE */}
-            <div className="p-5 rounded-2xl bg-blue-950/40 border border-blue-800/60 text-sm space-y-2">
-              <div className="flex items-center gap-2 font-bold text-blue-300">
+            <div className="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 text-sm space-y-2">
+              <div className="flex items-center gap-2 font-bold text-blue-900">
                 <span>📋</span> Supplier Cancellation Policy
               </div>
-              <p className="text-gray-300">{sampleItem.policyText}</p>
+              <p className="text-blue-800">{sampleItem.policyText}</p>
             </div>
 
             {/* REASON INPUT */}
             <div className="space-y-2">
-              <label className="text-xs text-gray-400 font-semibold block uppercase tracking-wider">
+              <label className="text-xs text-slate-600 font-bold block uppercase tracking-wider">
                 Reason for Cancellation
               </label>
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#0B1528] border border-gray-800 text-sm text-white focus:outline-none focus:border-[#FF6500]"
+                className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-amber-500 shadow-xs"
               >
                 <option value="Change of travel plans">Change of travel plans</option>
                 <option value="Found alternative accommodation">Found alternative accommodation</option>
@@ -259,51 +274,51 @@ export default function BookingCancellationPage() {
               <button
                 onClick={handleFetchQuote}
                 disabled={requestingQuote}
-                className="w-full py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-base border border-gray-700 transition flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-base border border-amber-300 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 {requestingQuote ? 'Calculating Server Quote...' : 'Calculate Cancellation Quote →'}
               </button>
             ) : (
               /* QUOTE BREAKDOWN CARD */
-              <div className="p-6 rounded-2xl bg-[#0B1528] border border-amber-800/80 space-y-4">
-                <div className="flex justify-between items-center border-b border-gray-800 pb-3">
-                  <h3 className="text-lg font-bold text-white">Official Cancellation Quote</h3>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700 font-semibold">
+              <div className="p-6 rounded-2xl bg-white border border-amber-300/80 space-y-4 shadow-xs">
+                <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                  <h3 className="text-lg font-bold text-slate-900">Official Cancellation Quote</h3>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold font-mono">
                     QUOTE LOCKED
                   </span>
                 </div>
 
                 <div className="space-y-2.5 text-sm">
-                  <div className="flex justify-between text-gray-300">
+                  <div className="flex justify-between text-slate-700">
                     <span>Original Item Amount</span>
-                    <span>₹{quote.originalAmount.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">₹{quote.originalAmount.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between text-rose-400">
+                  <div className="flex justify-between text-rose-600">
                     <span>Supplier Cancellation Fee ({sampleItem.cancellationFeePct}%)</span>
-                    <span>-₹{quote.supplierCancellationFee.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">-₹{quote.supplierCancellationFee.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between text-rose-400">
+                  <div className="flex justify-between text-rose-600">
                     <span>Platform Processing Fee</span>
-                    <span>-₹{quote.platformFee.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">-₹{quote.platformFee.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between text-emerald-400">
+                  <div className="flex justify-between text-emerald-700">
                     <span>GST Tax Refund</span>
-                    <span>+₹{quote.taxRefund.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">+₹{quote.taxRefund.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="border-t border-gray-800 pt-3 flex justify-between text-base font-extrabold text-white">
+                  <div className="border-t border-slate-200 pt-3 flex justify-between text-base font-black text-slate-900">
                     <span>Estimated Refund Amount</span>
-                    <span className="text-emerald-400">₹{quote.estimatedRefund.toLocaleString('en-IN')} INR</span>
+                    <span className="text-emerald-600 font-mono">₹{quote.estimatedRefund.toLocaleString('en-IN')} INR</span>
                   </div>
                 </div>
 
                 {/* WARNING ACKNOWLEDGEMENT */}
-                <div className="pt-2 border-t border-gray-800">
-                  <label className="flex items-start gap-3 cursor-pointer text-xs text-gray-300">
+                <div className="pt-2 border-t border-slate-100">
+                  <label className="flex items-start gap-3 cursor-pointer text-xs text-slate-600">
                     <input
                       type="checkbox"
                       checked={warningAccepted}
                       onChange={(e) => setWarningAccepted(e.target.checked)}
-                      className="mt-0.5 w-4 h-4 rounded bg-gray-900 border-gray-700 text-[#FF6500] focus:ring-0"
+                      className="mt-0.5 w-4 h-4 rounded bg-white border-slate-300 text-amber-500 focus:ring-0"
                     />
                     <span>
                       I understand that this cancellation is irreversible. Once confirmed, the room reservation will be released back to the supplier.
@@ -315,7 +330,7 @@ export default function BookingCancellationPage() {
                 <button
                   onClick={handleConfirmCancellation}
                   disabled={!warningAccepted || confirming}
-                  className="w-full py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-base shadow-lg shadow-rose-600/20 transition disabled:opacity-50"
+                  className="w-full py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-base shadow-sm transition disabled:opacity-50 cursor-pointer"
                 >
                   {confirming ? 'Processing Supplier Cancellation...' : 'Confirm & Request Refund →'}
                 </button>

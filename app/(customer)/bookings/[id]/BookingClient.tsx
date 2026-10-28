@@ -37,17 +37,17 @@ export default function BookingDetailPage() {
   const [cancelError, setCancelError] = useState<string | null>(null);
 
   const fetchDetail = async () => {
-    if (!token || !id) return;
+    if (!id) return;
     setLoading(true);
     setError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || '/api/v1';
 
     try {
-      const res = await fetch(`${apiBase}/bookings/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
+      const headers: Record<string, string> = {};
+      if (effectiveToken) headers['Authorization'] = `Bearer ${effectiveToken}`;
+
+      const res = await fetch(`${apiBase}/bookings/${id}`, { headers });
 
       if (!res.ok) {
         if (res.status === 403 || res.status === 404) {
@@ -71,19 +71,20 @@ export default function BookingDetailPage() {
 
   const handleCancelBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !id) return;
+    if (!id) return;
 
     setCancelling(true);
     setCancelError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || '/api/v1';
 
     try {
-      const res = await fetch(`${apiBase}/bookings/${id}/cancel`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (effectiveToken) headers['Authorization'] = `Bearer ${effectiveToken}`;
+
+      const res = await fetch(`${apiBase}/bookings/${id}`, {
+        method: 'PATCH',
+        headers,
         body: JSON.stringify({
           cancellationReason: cancellationReason || 'Customer requested cancellation via portal',
         }),

@@ -1,12 +1,13 @@
 import test, { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { NextRequest } from 'next/server';
-import { UserDataStore } from '../lib/user/user-store';
+import { UserDataStore, DatabasePersistenceError } from '../lib/user/user-store';
 import { getServerUser, requireServerUser, requireAdminUser } from '../lib/auth/server-auth';
 import { GET as getTripsRoute, POST as postTripsRoute } from '../app/api/v1/trips/route';
 import { GET as getSingleTripRoute, PATCH as patchSingleTripRoute, DELETE as deleteTripRoute } from '../app/api/v1/trips/[id]/route';
 import { GET as getBookingsRoute, POST as postBookingsRoute } from '../app/api/v1/bookings/route';
 import { GET as getSingleBookingRoute, PATCH as patchSingleBookingRoute } from '../app/api/v1/bookings/[id]/route';
+import { POST as postCancelBookingRoute } from '../app/api/v1/bookings/[id]/cancel/route';
 import { GET as getMeRoute, PATCH as patchMeRoute } from '../app/api/v1/me/route';
 import { GET as getSavedDestRoute, POST as postSavedDestRoute, DELETE as deleteSavedDestRoute } from '../app/api/v1/me/saved-destinations/route';
 import { GET as getPreferencesRoute, PATCH as patchPreferencesRoute } from '../app/api/v1/me/preferences/route';
@@ -371,6 +372,174 @@ describe('BharatYatra Multi-User Data Isolation & User Management Security Suite
       assert.strictEqual(auditLogs[0].adminId, ADMIN_ID);
       assert.strictEqual(auditLogs[0].targetUserId, USER_A_ID);
       assert.strictEqual(auditLogs[0].action, 'UPDATE_USER_STATUS_ROLE');
+    });
+  });
+
+  describe('6. Cross-Account Modification & Deletion Rejection', () => {
+    it('User B cannot modify or delete User A trip', async () => {
+      // 1. User A creates a trip
+      const createReq = new NextRequest('http://localhost:3000/api/v1/trips', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TOKEN_USER_A}`,
+        },
+        body: JSON.stringify({
+          title: 'Alice Private Trip',
+          destination: 'Rann of Kutch',
+        }),
+      });
+      const createRes = await postTripsRoute(createReq);
+      const { data: tripA } = await createRes.json();
+
+      // 2. User B attempts to PATCH User A trip
+      const patchReq = new NextRequest(`http://localhost:3000/api/v1/trips/${tripA.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TOKEN_USER_B}`,
+        },
+        body: JSON.stringify({
+          title: 'Hacked by Bob',
+        }),
+      });
+      const patchRes = await patchSingleTripRoute(patchReq, { params: { id: tripA.id } });
+      assert.strictEqual(patchRes.status, 404);
+
+      // 3. User B attempts to DELETE User A trip
+      const deleteReq = new NextRequest(`http://localhost:3000/api/v1/trips/${tripA.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${TOKEN_USER_B}` },
+      });
+      const deleteRes = await deleteTripRoute(deleteReq, { params: { id: tripA.id } });
+      assert.strictEqual(deleteRes.status, 404);
+
+      // Verify User A trip is still intact
+      const verifyReq = new NextRequest(`http://localhost:3000/api/v1/trips/${tripA.id}`, {
+        headers: { Authorization: `Bearer ${TOKEN_USER_A}` },
+      });
+      const verifyRes = await getSingleTripRoute(verifyReq, { params: { id: tripA.id } });
+      assert.strictEqual(verifyRes.status, 200);
+      const { data: verifiedTrip } = await verifyRes.json();
+      assert.strictEqual(verifiedTrip.title, 'Alice Private Trip');
+    });
+
+    it('User B cannot cancel User A booking', async () => {
+      // 1. User A creates a booking
+      const bookReq = new NextRequest('http://localhost:3000/api/v1/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TOKEN_USER_A}`,
+        },
+        body: JSON.stringify({
+          inventoryTitle: 'Gir Lion Safari Lodge',
+          totalAmountInr: 12000,
+        }),
+      });
+      const bookRes = await postBookingsRoute(bookReq);
+      const { data: bookingA } = await bookRes.json();
+
+      // 2. User B attempts to cancel via PATCH /api/v1/bookings/[id]
+      const patchCancelReq = new NextRequest(`http://localhost:3000/api/v1/bookings/${bookingA.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TOKEN_USER_B}`,
+        },
+        body: JSON.stringify({
+          cancellationReason: 'Bob cancelling Alice booking',
+        }),
+      });
+      const patchCancelRes = await patchSingleBookingRoute(patchCancelReq, { params: { id: bookingA.id } });
+      assert.strictEqual(patchCancelRes.status, 404);
+
+      // 3. User B attempts to cancel via POST /api/v1/bookings/[id]/cancel
+      const postCancelReq = new NextRequest(`http://localhost:3000/api/v1/bookings/${bookingA.id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${TOKEN_USER_B}`,
+        },
+        body: JSON.stringify({
+          cancellationReason: 'Malicious cancellation attempt',
+        }),
+      });
+      const postCancelRes = await postCancelBookingRoute(postCancelReq, { params: { id: bookingA.id } });
+      assert.strictEqual(postCancelRes.status, 404);
+
+      // Verify booking is still CONFIRMED for Alice
+      const verifyReq = new NextRequest(`http://localhost:3000/api/v1/bookings/${bookingA.id}`, {
+        headers: { Authorization: `Bearer ${TOKEN_USER_A}` },
+      });
+      const verifyRes = await getSingleBookingRoute(verifyReq, { params: { id: bookingA.id } });
+      const { data: verifiedBooking } = await verifyRes.json();
+      assert.strictEqual(verifiedBooking.status, 'CONFIRMED');
+    });
+  });
+
+  describe('7. Database Persistence Failure Honest Error Reporting', () => {
+    it('never reports successful writes when the database operation fails', async () => {
+      UserDataStore.setSimulateDatabaseFailure(true);
+
+      try {
+        const req = new NextRequest('http://localhost:3000/api/v1/trips', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${TOKEN_USER_A}`,
+          },
+          body: JSON.stringify({
+            title: 'Trip that should fail honestly',
+            destination: 'Dwarka',
+          }),
+        });
+
+        const res = await postTripsRoute(req);
+        assert.notStrictEqual(res.status, 200);
+        assert.notStrictEqual(res.status, 201);
+        const json = await res.json();
+        assert.strictEqual(json.success, false);
+      } finally {
+        UserDataStore.setSimulateDatabaseFailure(false);
+      }
+    });
+
+    it('returns honest error when booking creation encounters database failure', async () => {
+      UserDataStore.setSimulateDatabaseFailure(true);
+
+      try {
+        const req = new NextRequest('http://localhost:3000/api/v1/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${TOKEN_USER_A}`,
+          },
+          body: JSON.stringify({
+            inventoryTitle: 'Somnath Heritage Hotel',
+            totalAmountInr: 8500,
+          }),
+        });
+
+        const res = await postBookingsRoute(req);
+        assert.notStrictEqual(res.status, 200);
+        assert.notStrictEqual(res.status, 201);
+        const json = await res.json();
+        assert.strictEqual(json.success, false);
+      } finally {
+        UserDataStore.setSimulateDatabaseFailure(false);
+      }
+    });
+  });
+
+  describe('8. Public Registration Role Spoofing Rejection', () => {
+    it('strictly assigns CUSTOMER role even if client provides ADMIN role metadata in public registration', async () => {
+      const spoofToken = 'test-jwt-usr_spoof_attacker-customer';
+      const req = new NextRequest('http://localhost:3000/api/v1/admin/users', {
+        headers: { Authorization: `Bearer ${spoofToken}` },
+      });
+      const res = await getAdminUsersRoute(req);
+      assert.strictEqual(res.status, 403);
     });
   });
 });

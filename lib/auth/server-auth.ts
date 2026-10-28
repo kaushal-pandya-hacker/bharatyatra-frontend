@@ -67,31 +67,52 @@ export async function getServerUser(req: NextRequest | Request): Promise<Authent
     const supabase = getSupabaseServerClient();
     const { data: { user }, error } = await supabase.auth.getUser(token);
 
-    if (error || !user) {
+    let activeUser = user;
+    if (error || !activeUser) {
       // Fallback: Check public supabase client
       const pubSupabase = getSupabaseClient();
       const { data: pubData, error: pubErr } = await pubSupabase.auth.getUser(token);
       if (pubErr || !pubData.user) {
         return null;
       }
-      const u = pubData.user;
-      const meta = u.user_metadata || {};
-      return {
-        id: u.id,
-        email: u.email || '',
-        role: (meta.role || 'CUSTOMER').toUpperCase() as any,
-        fullName: meta.full_name || meta.name || '',
-        phoneNumber: u.phone || meta.phone || '',
-      };
+      activeUser = pubData.user;
     }
 
-    const meta = user.user_metadata || {};
+    // Authoritative role resolution:
+    // 1. app_metadata is signed by Supabase Auth and tamper-proof.
+    // 2. user_profiles table is protected by PostgreSQL triggers.
+    // 3. user_metadata is UNTRUSTED (client can set arbitrary values during public signup).
+    let verifiedRole: 'CUSTOMER' | 'ADMIN' | 'SUPPLIER' | 'AGENCY' = 'CUSTOMER';
+    if (
+      activeUser.app_metadata?.role &&
+      ['ADMIN', 'SUPPLIER', 'AGENCY', 'CUSTOMER'].includes(activeUser.app_metadata.role.toUpperCase())
+    ) {
+      verifiedRole = activeUser.app_metadata.role.toUpperCase() as any;
+    } else {
+      try {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('id', activeUser.id)
+          .single();
+        if (
+          profile?.role &&
+          ['ADMIN', 'SUPPLIER', 'AGENCY', 'CUSTOMER'].includes(profile.role.toUpperCase())
+        ) {
+          verifiedRole = profile.role.toUpperCase() as any;
+        }
+      } catch {
+        // Fall back to CUSTOMER
+      }
+    }
+
+    const meta = activeUser.user_metadata || {};
     return {
-      id: user.id,
-      email: user.email || '',
-      role: (meta.role || 'CUSTOMER').toUpperCase() as any,
+      id: activeUser.id,
+      email: activeUser.email || '',
+      role: verifiedRole,
       fullName: meta.full_name || meta.name || '',
-      phoneNumber: user.phone || meta.phone || '',
+      phoneNumber: activeUser.phone || meta.phone || '',
     };
   } catch (err) {
     console.error('[server-auth] Exception during token verification:', err);

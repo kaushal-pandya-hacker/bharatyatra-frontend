@@ -93,6 +93,21 @@ export interface AdminAuditLogRecord {
 }
 
 /**
+ * Custom error indicating a persistent storage failure.
+ * Ensures caller receives an honest error and is never misled by a silent in-memory fallback.
+ */
+export class DatabasePersistenceError extends Error {
+  public readonly code: string;
+  public readonly details?: any;
+  constructor(message: string, details?: any) {
+    super(message);
+    this.name = 'DatabasePersistenceError';
+    this.code = 'DATABASE_PERSISTENCE_ERROR';
+    this.details = details;
+  }
+}
+
+/**
  * In-memory fallback and test store for multi-user isolation.
  * Automatically keeps memory clean and isolated per user.
  */
@@ -366,17 +381,32 @@ class InMemoryUserDataStore {
  */
 const inMemoryStore = new InMemoryUserDataStore();
 
+let simulateDatabaseFailure = false;
+
+function shouldAllowFallback(): boolean {
+  if (simulateDatabaseFailure) return false;
+  return process.env.NODE_ENV === 'test' && process.env.USE_REAL_DB !== 'true';
+}
+
 /**
  * Universal User Data Store
- * Checks Supabase PostgreSQL first; falls back to in-memory store if tables are unmigrated or in offline tests.
+ * Checks Supabase PostgreSQL first; never masks database write failures in production.
  */
 export class UserDataStore {
   public static clearForTesting() {
     inMemoryStore.clearAll();
+    simulateDatabaseFailure = false;
+  }
+
+  public static setSimulateDatabaseFailure(enabled: boolean) {
+    simulateDatabaseFailure = enabled;
   }
 
   // --- PROFILES ---
   public static async getProfile(userId: string): Promise<UserProfileRecord | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database connection failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
@@ -394,11 +424,25 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
+      if (error && error.code === 'PGRST116') {
+        return null;
+      }
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getProfile(userId);
+        throw new DatabasePersistenceError(`Database error querying user_profiles: ${error.message}`, error);
+      }
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getProfile(userId);
+      throw new DatabasePersistenceError(`Database connection failure: ${err?.message || 'Unknown error'}`, err);
+    }
     return inMemoryStore.getProfile(userId);
   }
 
   public static async updateProfile(userId: string, data: Partial<UserProfileRecord>): Promise<UserProfileRecord> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload: any = {
@@ -416,7 +460,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && updated) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
+        throw new DatabasePersistenceError(`Failed to update profile in database: ${error.message}`, error);
+      }
+
+      if (updated) {
         return {
           id: updated.id,
           email: updated.email,
@@ -430,12 +479,19 @@ export class UserDataStore {
           updatedAt: updated.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.updateProfile(userId, data);
+      throw new DatabasePersistenceError('Profile update completed without returning data');
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
+      throw new DatabasePersistenceError(`Profile update error: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   // --- TRIPS ---
   public static async getUserTrips(userId: string): Promise<UserTripRecord[]> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -444,7 +500,12 @@ export class UserDataStore {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (!error && Array.isArray(data)) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getTrips(userId);
+        throw new DatabasePersistenceError(`Database error querying user_trips: ${error.message}`, error);
+      }
+
+      if (Array.isArray(data)) {
         return data.map((t: any) => ({
           id: t.id,
           userId: t.user_id,
@@ -465,11 +526,18 @@ export class UserDataStore {
           updatedAt: t.updated_at,
         }));
       }
-    } catch {}
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getTrips(userId);
+      throw new DatabasePersistenceError(`Error reading user trips: ${err?.message || 'Unknown database error'}`, err);
+    }
     return inMemoryStore.getTrips(userId);
   }
 
   public static async getTripById(tripId: string, userId: string): Promise<UserTripRecord | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -479,7 +547,16 @@ export class UserDataStore {
         .eq('user_id', userId) // STRICT OWNERSHIP FILTER
         .single();
 
-      if (!error && data) {
+      if (error && error.code === 'PGRST116') {
+        return null;
+      }
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getTripById(tripId, userId);
+        throw new DatabasePersistenceError(`Database error fetching trip: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           id: data.id,
           userId: data.user_id,
@@ -500,12 +577,19 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.getTripById(tripId, userId);
+      return null;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getTripById(tripId, userId);
+      throw new DatabasePersistenceError(`Error fetching trip: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   public static async saveTrip(userId: string, trip: Partial<UserTripRecord>): Promise<UserTripRecord> {
     const id = trip.id || `trip-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database persistence failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload = {
@@ -533,7 +617,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.saveTrip(userId, trip);
+        throw new DatabasePersistenceError(`Database persistence failed for user_trips: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           id: data.id,
           userId: data.user_id,
@@ -554,11 +643,18 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.saveTrip(userId, trip);
+      throw new DatabasePersistenceError('Database upsert completed without returning record');
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.saveTrip(userId, trip);
+      throw new DatabasePersistenceError(`Database write failure: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   public static async deleteTrip(tripId: string, userId: string): Promise<boolean> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database deletion failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { error } = await supabase
@@ -567,13 +663,23 @@ export class UserDataStore {
         .eq('id', tripId)
         .eq('user_id', userId);
 
-      if (!error) return true;
-    } catch {}
-    return inMemoryStore.deleteTrip(tripId, userId);
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.deleteTrip(tripId, userId);
+        throw new DatabasePersistenceError(`Database deletion failed for user_trips: ${error.message}`, error);
+      }
+      return true;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.deleteTrip(tripId, userId);
+      throw new DatabasePersistenceError(`Database deletion failure: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   // --- BOOKINGS ---
   public static async getUserBookings(userId: string): Promise<UserBookingRecord[]> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -582,7 +688,12 @@ export class UserDataStore {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (!error && Array.isArray(data)) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getBookings(userId);
+        throw new DatabasePersistenceError(`Database error querying user_bookings: ${error.message}`, error);
+      }
+
+      if (Array.isArray(data)) {
         return data.map((b: any) => ({
           id: b.id,
           bookingReference: b.booking_reference,
@@ -606,11 +717,18 @@ export class UserDataStore {
           updatedAt: b.updated_at,
         }));
       }
-    } catch {}
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getBookings(userId);
+      throw new DatabasePersistenceError(`Error reading bookings: ${err?.message || 'Unknown database error'}`, err);
+    }
     return inMemoryStore.getBookings(userId);
   }
 
   public static async getBookingById(bookingId: string, userId: string): Promise<UserBookingRecord | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -620,7 +738,16 @@ export class UserDataStore {
         .eq('user_id', userId) // STRICT OWNERSHIP ENFORCEMENT
         .single();
 
-      if (!error && data) {
+      if (error && error.code === 'PGRST116') {
+        return null;
+      }
+
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getBookingById(bookingId, userId);
+        throw new DatabasePersistenceError(`Database error querying booking: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           id: data.id,
           bookingReference: data.booking_reference,
@@ -644,13 +771,20 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.getBookingById(bookingId, userId);
+      return null;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getBookingById(bookingId, userId);
+      throw new DatabasePersistenceError(`Error fetching booking: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   public static async createBooking(userId: string, booking: Partial<UserBookingRecord>): Promise<UserBookingRecord> {
     const id = booking.id || `bk-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const ref = booking.bookingReference || `BY-HTL-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload = {
@@ -679,7 +813,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.createBooking(userId, booking);
+        throw new DatabasePersistenceError(`Database insert failed for user_bookings: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           id: data.id,
           bookingReference: data.booking_reference,
@@ -701,11 +840,18 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.createBooking(userId, booking);
+      throw new DatabasePersistenceError('Database insert completed without returning record');
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.createBooking(userId, booking);
+      throw new DatabasePersistenceError(`Database write failure: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   public static async cancelBooking(bookingId: string, userId: string, reason?: string): Promise<UserBookingRecord | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database cancellation failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload = {
@@ -723,7 +869,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.cancelBooking(bookingId, userId, reason);
+        throw new DatabasePersistenceError(`Database cancellation failed for user_bookings: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           id: data.id,
           bookingReference: data.booking_reference,
@@ -747,12 +898,19 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.cancelBooking(bookingId, userId, reason);
+      return null;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.cancelBooking(bookingId, userId, reason);
+      throw new DatabasePersistenceError(`Database cancellation failure: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   // --- SAVED DESTINATIONS ---
   public static async getSavedDestinations(userId: string): Promise<UserSavedDestinationRecord[]> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -761,7 +919,12 @@ export class UserDataStore {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (!error && Array.isArray(data)) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getSavedDestinations(userId);
+        throw new DatabasePersistenceError(`Database read error on user_saved_destinations: ${error.message}`, error);
+      }
+
+      if (Array.isArray(data)) {
         return data.map((d: any) => ({
           id: d.id,
           userId: d.user_id,
@@ -771,11 +934,18 @@ export class UserDataStore {
           createdAt: d.created_at,
         }));
       }
-    } catch {}
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getSavedDestinations(userId);
+      throw new DatabasePersistenceError(`Database read failure: ${err?.message || 'Unknown database error'}`, err);
+    }
     return inMemoryStore.getSavedDestinations(userId);
   }
 
   public static async saveDestination(userId: string, dest: { destinationId: string; name?: string; data?: any }): Promise<UserSavedDestinationRecord> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload = {
@@ -791,7 +961,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.saveDestination(userId, dest);
+        throw new DatabasePersistenceError(`Database write failure on user_saved_destinations: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           id: data.id,
           userId: data.user_id,
@@ -801,11 +976,18 @@ export class UserDataStore {
           createdAt: data.created_at,
         };
       }
-    } catch {}
-    return inMemoryStore.saveDestination(userId, dest);
+      throw new DatabasePersistenceError('Failed to return saved destination record');
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.saveDestination(userId, dest);
+      throw new DatabasePersistenceError(`Database write failure: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   public static async removeSavedDestination(userId: string, destinationId: string): Promise<boolean> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database deletion failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { error } = await supabase
@@ -814,13 +996,23 @@ export class UserDataStore {
         .eq('user_id', userId)
         .eq('destination_id', destinationId);
 
-      if (!error) return true;
-    } catch {}
-    return inMemoryStore.removeSavedDestination(userId, destinationId);
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.removeSavedDestination(userId, destinationId);
+        throw new DatabasePersistenceError(`Database delete failed for user_saved_destinations: ${error.message}`, error);
+      }
+      return true;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.removeSavedDestination(userId, destinationId);
+      throw new DatabasePersistenceError(`Database deletion failure: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   // --- PREFERENCES ---
   public static async getPreferences(userId: string): Promise<UserPreferencesRecord> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase.from('user_preferences').select('*').eq('user_id', userId).single();
@@ -841,11 +1033,25 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
+      if (error && error.code === 'PGRST116') {
+        return inMemoryStore.getPreferences(userId);
+      }
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getPreferences(userId);
+        throw new DatabasePersistenceError(`Database error on user_preferences: ${error.message}`, error);
+      }
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getPreferences(userId);
+      throw new DatabasePersistenceError(`Database failure reading preferences: ${err?.message || 'Unknown error'}`, err);
+    }
     return inMemoryStore.getPreferences(userId);
   }
 
   public static async savePreferences(userId: string, prefs: Partial<UserPreferencesRecord>): Promise<UserPreferencesRecord> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload: any = {
@@ -870,7 +1076,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.savePreferences(userId, prefs);
+        throw new DatabasePersistenceError(`Database write failed for user_preferences: ${error.message}`, error);
+      }
+
+      if (data) {
         return {
           userId: data.user_id,
           preferredLanguage: data.preferred_language,
@@ -887,12 +1098,19 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.savePreferences(userId, prefs);
+      throw new DatabasePersistenceError('Failed to return updated preferences');
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.savePreferences(userId, prefs);
+      throw new DatabasePersistenceError(`Database write failure: ${err?.message || 'Unknown error'}`, err);
+    }
   }
 
   // --- ADMIN OPERATIONS ---
   public static async getAdminUsers(filters: { search?: string; role?: string; status?: string; limit?: number; offset?: number } = {}) {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       let query = supabase.from('user_profiles').select('*', { count: 'exact' });
@@ -905,7 +1123,12 @@ export class UserDataStore {
       query = query.range(offset, offset + limit - 1).order('created_at', { ascending: false });
 
       const { data, count, error } = await query;
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getAdminUsers(filters);
+        throw new DatabasePersistenceError(`Database query error on user_profiles: ${error.message}`, error);
+      }
+
+      if (data) {
         const users: UserProfileRecord[] = data.map((u: any) => ({
           id: u.id,
           email: u.email,
@@ -920,7 +1143,11 @@ export class UserDataStore {
         }));
         return { users, total: count || users.length };
       }
-    } catch {}
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getAdminUsers(filters);
+      throw new DatabasePersistenceError(`Error querying users: ${err?.message || 'Unknown database error'}`, err);
+    }
     return inMemoryStore.getAdminUsers(filters);
   }
 
@@ -930,6 +1157,9 @@ export class UserDataStore {
     targetUserId: string,
     updates: { role?: string; status?: string }
   ): Promise<UserProfileRecord | null> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload: any = { updated_at: new Date().toISOString() };
@@ -943,8 +1173,12 @@ export class UserDataStore {
         .select()
         .single();
 
-      if (!error && data) {
-        // Record admin audit log
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.updateUserStatusOrRole(adminId, adminEmail, targetUserId, updates);
+        throw new DatabasePersistenceError(`Database update failed for user_profiles: ${error.message}`, error);
+      }
+
+      if (data) {
         await this.logAdminAudit({
           id: `audit-${Date.now()}`,
           adminId,
@@ -968,8 +1202,12 @@ export class UserDataStore {
           updatedAt: data.updated_at,
         };
       }
-    } catch {}
-    return inMemoryStore.updateUserStatusOrRole(adminId, adminEmail, targetUserId, updates);
+      return null;
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.updateUserStatusOrRole(adminId, adminEmail, targetUserId, updates);
+      throw new DatabasePersistenceError(`Error updating user status/role: ${err?.message || 'Unknown database error'}`, err);
+    }
   }
 
   public static async logAdminAudit(log: AdminAuditLogRecord): Promise<void> {
@@ -988,6 +1226,9 @@ export class UserDataStore {
   }
 
   public static async getAdminAuditLogs(limit = 50): Promise<AdminAuditLogRecord[]> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database read failure.');
+    }
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -996,7 +1237,12 @@ export class UserDataStore {
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (!error && data) {
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.getAdminAuditLogs(limit);
+        throw new DatabasePersistenceError(`Error fetching admin audit logs: ${error.message}`, error);
+      }
+
+      if (data) {
         return data.map((d: any) => ({
           id: d.id,
           adminId: d.admin_id,
@@ -1008,8 +1254,11 @@ export class UserDataStore {
           createdAt: d.created_at,
         }));
       }
-    } catch {}
+    } catch (err: any) {
+      if (err instanceof DatabasePersistenceError) throw err;
+      if (shouldAllowFallback()) return inMemoryStore.getAdminAuditLogs(limit);
+      throw new DatabasePersistenceError(`Error reading audit logs: ${err?.message || 'Unknown database error'}`, err);
+    }
     return inMemoryStore.getAdminAuditLogs(limit);
   }
 }
-

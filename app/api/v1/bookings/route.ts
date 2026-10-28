@@ -52,9 +52,10 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (err: any) {
+    const isDbError = err?.name === 'DatabasePersistenceError' || err?.code === 'DATABASE_PERSISTENCE_ERROR';
     return NextResponse.json(
-      { success: false, error: err.message || 'Failed to create booking' },
-      { status: 400 }
+      { success: false, error: err.message || 'Failed to create booking', code: isDbError ? 'DATABASE_ERROR' : 'BAD_REQUEST' },
+      { status: isDbError ? 503 : 400 }
     );
   }
 }

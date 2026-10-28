@@ -154,122 +154,137 @@ ALTER TABLE user_notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- 9.1 Service Role Unrestricted Access (Backend Server-Side Operations)
+DROP POLICY IF EXISTS "Service role full access on user_profiles" ON user_profiles;
 CREATE POLICY "Service role full access on user_profiles" ON user_profiles
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role full access on user_trips" ON user_trips;
 CREATE POLICY "Service role full access on user_trips" ON user_trips
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role full access on user_bookings" ON user_bookings;
 CREATE POLICY "Service role full access on user_bookings" ON user_bookings
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role full access on user_saved_destinations" ON user_saved_destinations;
 CREATE POLICY "Service role full access on user_saved_destinations" ON user_saved_destinations
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role full access on user_preferences" ON user_preferences;
 CREATE POLICY "Service role full access on user_preferences" ON user_preferences
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role full access on user_notifications" ON user_notifications;
 CREATE POLICY "Service role full access on user_notifications" ON user_notifications
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role full access on admin_audit_logs" ON admin_audit_logs;
 CREATE POLICY "Service role full access on admin_audit_logs" ON admin_audit_logs
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- 9.2 USER PROFILES POLICIES
--- Authenticated users can view their own profile
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
 CREATE POLICY "Users can view own profile" ON user_profiles
     FOR SELECT TO authenticated
     USING (id = auth.uid());
 
--- Authenticated users can update their own profile
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
 CREATE POLICY "Users can update own profile" ON user_profiles
     FOR UPDATE TO authenticated
     USING (id = auth.uid())
     WITH CHECK (id = auth.uid());
 
--- Authenticated users can insert their own profile on registration
+DROP POLICY IF EXISTS "Users can insert own profile" ON user_profiles;
 CREATE POLICY "Users can insert own profile" ON user_profiles
     FOR INSERT TO authenticated
     WITH CHECK (id = auth.uid());
 
 -- 9.3 USER TRIPS POLICIES
--- Authenticated users can only see their own trips
+DROP POLICY IF EXISTS "Users can view own trips" ON user_trips;
 CREATE POLICY "Users can view own trips" ON user_trips
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
 
--- Authenticated users can only insert trips for themselves
+DROP POLICY IF EXISTS "Users can insert own trips" ON user_trips;
 CREATE POLICY "Users can insert own trips" ON user_trips
     FOR INSERT TO authenticated
     WITH CHECK (user_id = auth.uid());
 
--- Authenticated users can only update their own trips
+DROP POLICY IF EXISTS "Users can update own trips" ON user_trips;
 CREATE POLICY "Users can update own trips" ON user_trips
     FOR UPDATE TO authenticated
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
--- Authenticated users can only delete their own trips
+DROP POLICY IF EXISTS "Users can delete own trips" ON user_trips;
 CREATE POLICY "Users can delete own trips" ON user_trips
     FOR DELETE TO authenticated
     USING (user_id = auth.uid());
 
 -- 9.4 USER BOOKINGS POLICIES
--- Authenticated users can only view their own bookings
+DROP POLICY IF EXISTS "Users can view own bookings" ON user_bookings;
 CREATE POLICY "Users can view own bookings" ON user_bookings
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
 
--- Authenticated users can only create bookings for themselves
+DROP POLICY IF EXISTS "Users can insert own bookings" ON user_bookings;
 CREATE POLICY "Users can insert own bookings" ON user_bookings
     FOR INSERT TO authenticated
     WITH CHECK (user_id = auth.uid());
 
--- Authenticated users can only cancel/modify their own bookings
+DROP POLICY IF EXISTS "Users can update own bookings" ON user_bookings;
 CREATE POLICY "Users can update own bookings" ON user_bookings
     FOR UPDATE TO authenticated
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
 -- 9.5 USER SAVED DESTINATIONS POLICIES
+DROP POLICY IF EXISTS "Users can view own saved destinations" ON user_saved_destinations;
 CREATE POLICY "Users can view own saved destinations" ON user_saved_destinations
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can insert own saved destinations" ON user_saved_destinations;
 CREATE POLICY "Users can insert own saved destinations" ON user_saved_destinations
     FOR INSERT TO authenticated
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can delete own saved destinations" ON user_saved_destinations;
 CREATE POLICY "Users can delete own saved destinations" ON user_saved_destinations
     FOR DELETE TO authenticated
     USING (user_id = auth.uid());
 
 -- 9.6 USER PREFERENCES POLICIES
+DROP POLICY IF EXISTS "Users can view own preferences" ON user_preferences;
 CREATE POLICY "Users can view own preferences" ON user_preferences
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can insert own preferences" ON user_preferences;
 CREATE POLICY "Users can insert own preferences" ON user_preferences
     FOR INSERT TO authenticated
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update own preferences" ON user_preferences;
 CREATE POLICY "Users can update own preferences" ON user_preferences
     FOR UPDATE TO authenticated
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
 -- 9.7 USER NOTIFICATIONS POLICIES
+DROP POLICY IF EXISTS "Users can view own notifications" ON user_notifications;
 CREATE POLICY "Users can view own notifications" ON user_notifications
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update own notifications" ON user_notifications;
 CREATE POLICY "Users can update own notifications" ON user_notifications
     FOR UPDATE TO authenticated
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
 -- 9.8 ADMIN AUTHORIZATION POLICIES
--- Platform Admins (role = 'ADMIN' in user_profiles) can view all profiles, bookings, and audit logs
+DROP POLICY IF EXISTS "Admins can view all profiles" ON user_profiles;
 CREATE POLICY "Admins can view all profiles" ON user_profiles
     FOR SELECT TO authenticated
     USING (
@@ -279,6 +294,7 @@ CREATE POLICY "Admins can view all profiles" ON user_profiles
         )
     );
 
+DROP POLICY IF EXISTS "Admins can view all bookings" ON user_bookings;
 CREATE POLICY "Admins can view all bookings" ON user_bookings
     FOR SELECT TO authenticated
     USING (
@@ -288,6 +304,7 @@ CREATE POLICY "Admins can view all bookings" ON user_bookings
         )
     );
 
+DROP POLICY IF EXISTS "Admins can view audit logs" ON admin_audit_logs;
 CREATE POLICY "Admins can view audit logs" ON admin_audit_logs
     FOR SELECT TO authenticated
     USING (
@@ -298,7 +315,36 @@ CREATE POLICY "Admins can view audit logs" ON admin_audit_logs
     );
 
 -- ============================================================================
--- 10. AUTOMATIC PROFILE PROVISIONING TRIGGER ON SUPABASE AUTH.USERS
+-- 10. PRIVILEGE ESCALATION PREVENTION TRIGGER
+-- Guarantees that only platform administrators or service_role can alter role or status
+-- ============================================================================
+CREATE OR REPLACE FUNCTION public.protect_user_profile_role()
+RETURNS trigger AS $$
+BEGIN
+    IF (NEW.role IS DISTINCT FROM OLD.role) OR (NEW.status IS DISTINCT FROM OLD.status) THEN
+        IF auth.role() = 'service_role' THEN
+            RETURN NEW;
+        END IF;
+
+        IF NOT EXISTS (
+            SELECT 1 FROM public.user_profiles
+            WHERE id = auth.uid() AND role = 'ADMIN'
+        ) THEN
+            RAISE EXCEPTION 'Unauthorized: Only platform administrators can change user roles or status.';
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trg_protect_user_profile_role ON user_profiles;
+CREATE TRIGGER trg_protect_user_profile_role
+    BEFORE UPDATE ON user_profiles
+    FOR EACH ROW EXECUTE FUNCTION public.protect_user_profile_role();
+
+-- ============================================================================
+-- 11. AUTOMATIC PROFILE PROVISIONING TRIGGER ON SUPABASE AUTH.USERS
+-- Always provisions role as CUSTOMER, never trusting client-supplied metadata
 -- ============================================================================
 CREATE OR REPLACE FUNCTION public.handle_new_auth_user()
 RETURNS trigger AS $$
@@ -309,7 +355,7 @@ BEGIN
         new.email,
         COALESCE(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
         COALESCE(new.phone, new.raw_user_meta_data->>'phone', ''),
-        COALESCE(new.raw_user_meta_data->>'role', 'CUSTOMER'),
+        'CUSTOMER', -- Strictly default to CUSTOMER; never trust client-provided role in signup metadata
         'ACTIVE'
     )
     ON CONFLICT (id) DO NOTHING;
@@ -322,9 +368,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger execution after insert on auth.users
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_auth_user();
 
+-- ============================================================================
+-- 12. IDEMPOTENT BACKFILL OF EXISTING AUTH.USERS
+-- ============================================================================
+INSERT INTO public.user_profiles (id, email, full_name, phone_number, role, status)
+SELECT 
+    id,
+    email,
+    COALESCE(raw_user_meta_data->>'full_name', raw_user_meta_data->>'name', split_part(email, '@', 1)),
+    COALESCE(phone, raw_user_meta_data->>'phone', ''),
+    'CUSTOMER',
+    'ACTIVE'
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.user_preferences (user_id)
+SELECT id FROM auth.users
+ON CONFLICT (user_id) DO NOTHING;

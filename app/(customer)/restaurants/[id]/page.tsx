@@ -29,7 +29,7 @@ export function generateStaticParams() {
 }
 
 async function fetchRestaurantDetail(id: string) {
-  const apiBase = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1').replace(/\/+$/, '');
+  const apiBase = ((process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || (process.env.VERCEL_URL ? 'https://' + (process.env.VERCEL_URL || 'bharatyatra.in') + '/api/v1' : 'https://bharatyatra.in/api/v1'));
   try {
     const res = await fetch(`${apiBase}/destinations/inventory/restaurants/${id}`, { cache: 'no-store' });
     if (res.ok) {

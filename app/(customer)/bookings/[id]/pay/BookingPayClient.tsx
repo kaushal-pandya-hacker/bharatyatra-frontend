@@ -31,12 +31,15 @@ export default function CustomerPaymentPage() {
 
     setLoading(true);
     setError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || '/api/v1';
 
     try {
       // 1. Fetch Booking Record
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
+      const bookingHeaders: Record<string, string> = {};
+      if (effectiveToken) bookingHeaders['Authorization'] = `Bearer ${effectiveToken}`;
       const bookingRes = await fetch(`${apiBase}/bookings/${bookingId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: bookingHeaders,
       });
       const bookingJson = await bookingRes.json();
       if (!bookingRes.ok) throw new Error(bookingJson.message || 'Failed to fetch booking.');
@@ -73,7 +76,7 @@ export default function CustomerPaymentPage() {
 
     setProcessing(true);
     setStatusNote(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '') || '/api/v1';
 
     try {
       if (!shouldSucceed) {

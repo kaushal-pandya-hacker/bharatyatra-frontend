@@ -6,8 +6,17 @@ export const getBaseUrl = (): string => {
     }
     return '/api/v1';
   }
-  const url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
-  return url.replace(/\/+$/, '');
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (envUrl && !envUrl.includes('localhost:4000')) {
+    return envUrl.replace(/\/+$/, '');
+  }
+  if (process.env.VERCEL_URL) {
+    return 'https://' + process.env.VERCEL_URL + '/api/v1';
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://bharatyatra.in/api/v1';
+  }
+  return '/api/v1';
 };
 
 export class ApiError extends Error {

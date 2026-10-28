@@ -19,14 +19,20 @@ export default function IntelligentRoadTripPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(20,26,50,0.06)]">
         <div className="h-20 w-full px-space-lg flex items-center justify-between gap-space-md">
           <div className="flex items-center gap-space-lg">
-            <Link href="/" className="flex flex-col">
-              <div className="flex items-center gap-space-xs">
-                <span className="material-symbols-outlined text-primary text-2xl">explore</span>
-                <span className="font-title-lg text-title-lg tracking-tight text-on-surface font-bold">BHARAT YATRA</span>
+            <Link href="/" className="flex items-center gap-3 group shrink-0">
+              <img
+                src="/logo.png"
+                alt="BharatYatra Logo"
+                className="h-10 w-auto object-contain transition-transform group-hover:scale-105 rounded-md"
+              />
+              <div className="flex flex-col leading-tight">
+                <span className="font-heading font-black text-slate-900 text-base tracking-tight uppercase group-hover:text-amber-600 transition-colors">
+                  BharatYatra
+                </span>
+                <span className="text-[10px] text-amber-600 font-mono font-bold tracking-wider">
+                  SOVEREIGN TRAVEL ENGINE
+                </span>
               </div>
-              <span className="font-label-caps text-label-caps tracking-wider text-on-surface-variant">
-                ભારત યાત્રા • Sovereign Gujarat Travel Engine
-              </span>
             </Link>
             <div className="hidden xl:flex items-center gap-space-sm pl-space-md">
               <div className="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-container/20 text-on-surface">
