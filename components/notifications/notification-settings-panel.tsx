@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Bell,
   Check,
@@ -47,7 +47,7 @@ export function NotificationSettingsPanel() {
   const [testStatus, setTestStatus] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setPermission(getPermissionState());
 
@@ -59,11 +59,11 @@ export function NotificationSettingsPanel() {
     setDevices(fetchedDevices);
     setPrefs(fetchedPrefs);
     setLoading(false);
-  };
+  }, [user?.id]);
 
   useEffect(() => {
     loadData();
-  }, [user]);
+  }, [loadData]);
 
   const handleTogglePref = async (key: keyof NotificationPreferences) => {
     const updatedValue = !prefs[key];
