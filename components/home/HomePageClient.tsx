@@ -217,54 +217,64 @@ export default function HomePageClient() {
           </section>
 
 
-          {/* SECTION 5: COMMAND LAUNCH FOOTER (Aerospace Grade Command Deck) */}
-          <section className="w-full bg-on-secondary-fixed text-surface py-16 sm:py-20 px-4 sm:px-6 lg:px-gutter-desktop relative overflow-hidden">
-            {/* Ambient Golden Glow behind Command Console */}
-            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-primary-container/10 blur-3xl rounded-full pointer-events-none"></div>
-            <div className="max-w-5xl mx-auto relative z-10">
-              <div className="flex flex-col items-center text-center mb-10">
+          {/* SECTION 5: AI ITINERARY GENERATOR CALLOUT */}
+          <section className="w-full bg-[#0b1c30] text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            {/* Ambient Warm Glow */}
+            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-amber-500/10 blur-3xl rounded-full pointer-events-none"></div>
+            <div className="max-w-4xl mx-auto relative z-10">
+              <div className="flex flex-col items-center text-center mb-8">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="w-2 h-2 rounded-full bg-primary-container"></span>
-                  <span className="font-coordinate-meta text-coordinate-meta text-primary-container uppercase tracking-widest">
-                    Neural Flight Deck // Session 01
+                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span className="font-mono text-xs uppercase tracking-widest text-amber-400 font-bold">
+                    AI Travel Planner
                   </span>
                 </div>
-                <h2 className="font-headline-lg text-headline-lg text-surface">Begin Autonomous Expedition</h2>
-                <p className="font-body-md text-body-md text-surface-container-high max-w-lg mt-2 font-light">
-                  State your destination, duration, and sensory aesthetic. The BharatYatra kernel will synthesize a ground-verified itinerary in seconds.
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white font-serif">
+                  Ready to Plan Your Next Journey?
+                </h2>
+                <p className="text-sm sm:text-base text-slate-300 max-w-xl mt-3 font-normal leading-relaxed">
+                  Tell us where you want to go. BharatYatra will curate a personalized, day-by-day itinerary with verified stays and transit in seconds.
                 </p>
               </div>
 
-              {/* Tactical Neural Prompt Console */}
-              <div className="bg-surface-container-highest/10 backdrop-blur-xl p-3 rounded-xl shadow-2xl flex flex-col sm:flex-row items-center gap-3">
+              {/* Search & Plan Input */}
+              <div className="bg-white/10 backdrop-blur-md p-2.5 rounded-2xl border border-white/15 shadow-2xl flex flex-col sm:flex-row items-center gap-2.5">
                 <div className="flex items-center gap-3 pl-4 w-full flex-grow">
-                  <span className="material-symbols-outlined text-primary-container text-xl">terminal</span>
+                  <span className="material-symbols-outlined text-amber-400 text-xl">search</span>
                   <input
-                    className="w-full bg-transparent text-surface placeholder-surface-container-high/60 font-body-md text-body-md focus:outline-none"
-                    placeholder="e.g. 10 days in Rajasthan with private palace access, focused on heritage architecture and slow desert journeys..."
+                    className="w-full bg-transparent text-white placeholder-slate-400 text-sm sm:text-base focus:outline-none"
+                    placeholder="e.g. 7 days in Rajasthan exploring royal forts and heritage palaces..."
                     type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSearchSubmit(e);
+                    }}
                   />
                 </div>
-                <Link href="/plan" className="w-full sm:w-auto px-6 py-3.5 bg-primary-container hover:bg-primary-fixed text-on-secondary-fixed font-headline-sm text-sm font-bold uppercase tracking-wider rounded flex items-center justify-center gap-2 flex-shrink-0 transition-all">
-                  <span>Synthesize Leg</span>
+                <Link
+                  href={searchQuery.trim() ? `/plan?q=${encodeURIComponent(searchQuery.trim())}` : '/plan'}
+                  className="w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 flex-shrink-0 transition-all shadow-md"
+                >
+                  <span>Generate Itinerary</span>
                   <span className="material-symbols-outlined text-sm">arrow_forward</span>
                 </Link>
               </div>
 
-              {/* Quick Vector Presets */}
-              <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-                <span className="font-coordinate-meta text-coordinate-meta text-outline-variant uppercase">
-                  Pre-Loaded Vectors:
+              {/* Popular Destinations */}
+              <div className="flex flex-wrap items-center justify-center gap-2.5 mt-6">
+                <span className="text-xs text-slate-400 font-medium">
+                  Popular Itineraries:
                 </span>
-                <button className="px-3 py-1 bg-surface-container-highest/15 hover:bg-surface-container-highest/30 rounded text-surface-container-high font-coordinate-meta text-coordinate-meta transition-colors">
-                  Royal Mewar &amp; Desert Forts (7D)
-                </button>
-                <button className="px-3 py-1 bg-surface-container-highest/15 hover:bg-surface-container-highest/30 rounded text-surface-container-high font-coordinate-meta text-coordinate-meta transition-colors">
-                  Silent Backwaters &amp; Spice Coast (9D)
-                </button>
-                <button className="px-3 py-1 bg-surface-container-highest/15 hover:bg-surface-container-highest/30 rounded text-surface-container-high font-coordinate-meta text-coordinate-meta transition-colors">
-                  Varanasi Ghats &amp; Buddhist Trail (5D)
-                </button>
+                <Link href="/packages/rajasthan-royal-heritage-trail" className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-slate-200 text-xs transition-colors">
+                  Royal Rajasthan Forts (7D)
+                </Link>
+                <Link href="/packages/kerala-backwaters-serenity-escape" className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-slate-200 text-xs transition-colors">
+                  Kerala Backwaters &amp; Stays (5D)
+                </Link>
+                <Link href="/packages/kashi-varanasi-spiritual-odyssey" className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-slate-200 text-xs transition-colors">
+                  Varanasi Spiritual Trail (4D)
+                </Link>
               </div>
             </div>
           </section>
