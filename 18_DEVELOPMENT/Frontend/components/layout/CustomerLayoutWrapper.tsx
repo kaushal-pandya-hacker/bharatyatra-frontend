@@ -10,7 +10,10 @@ import { AccessibilityModal } from '@/components/accessibility/AccessibilityModa
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { BookingGuardProvider } from '@/components/booking/BookingGuardProvider';
 import { DestinationSelectionProvider } from '@/lib/tourism/destination-selection-context';
-import GlobalDestinationSelectionBar from '@/components/travel/GlobalDestinationSelectionBar';
+const GlobalDestinationSelectionBar = dynamic(
+  () => import('@/components/travel/GlobalDestinationSelectionBar'),
+  { ssr: false }
+);
 import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
 
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {

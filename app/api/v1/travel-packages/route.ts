@@ -27,11 +27,18 @@ export async function GET(req: NextRequest) {
     // Merge with master catalog
     const merged = [...partnerPackages, ...ALL_INDIA_PACKAGES];
 
-    return NextResponse.json({
-      success: true,
-      count: merged.length,
-      data: merged,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        count: merged.length,
+        data: merged,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
+    );
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }

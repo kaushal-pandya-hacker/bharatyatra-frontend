@@ -41,15 +41,6 @@ export default function RestaurantsPage() {
 
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-      />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
-      />
-
       <div className="bg-[#f8f9ff] font-['Inter',sans-serif] text-[15px] text-[#0b1c30] antialiased selection:bg-[#fed65b] selection:text-[#745c00] min-h-screen">
         
         <main className="w-full pt-4 bg-[#f8f9ff] min-h-screen">

@@ -11,7 +11,20 @@ import {
   calculateProfileCompletionPercentage,
   DEFAULT_TRAVEL_PROFILE,
 } from '@/lib/profile/travel-profile';
-import { DashboardTravelMap, RouteContract } from '@/components/maps/travel-maps';
+import dynamic from 'next/dynamic';
+import type { RouteContract } from '@/components/maps/travel-maps';
+
+const DashboardTravelMap = dynamic(
+  () => import('@/components/maps/travel-maps').then(m => m.DashboardTravelMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 sm:h-80 w-full rounded-2xl bg-slate-100 border border-slate-200 animate-pulse flex items-center justify-center">
+        <span className="text-xs font-bold text-slate-500">Loading Route Map...</span>
+      </div>
+    ),
+  }
+);
 import { fetchUserTripsFromApi, TripItem } from '@/lib/trips/trip-storage';
 import { resolveCityCoordinates } from '@/lib/data/indian-cities';
 import { useDestinationSelection } from '@/lib/tourism/destination-selection-context';

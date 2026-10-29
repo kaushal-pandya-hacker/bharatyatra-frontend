@@ -15,9 +15,24 @@ import {
   Star,
   CheckCircle2
 } from 'lucide-react';
-import Gujarat100LandmarksDirectory from '@/components/travel/Gujarat100LandmarksDirectory';
+import dynamic from 'next/dynamic';
 import IndiaCascadingPlaceSelector from '@/components/travel/IndiaCascadingPlaceSelector';
-import CustomerReviewSection from '@/components/reviews/CustomerReviewSection';
+
+const Gujarat100LandmarksDirectory = dynamic(
+  () => import('@/components/travel/Gujarat100LandmarksDirectory'),
+  {
+    loading: () => (
+      <div className="w-full h-80 rounded-2xl bg-slate-50 border border-slate-200 animate-pulse flex items-center justify-center">
+        <span className="text-xs font-bold text-slate-500">Loading Gujarat Landmarks Directory...</span>
+      </div>
+    ),
+  }
+);
+
+const CustomerReviewSection = dynamic(
+  () => import('@/components/reviews/CustomerReviewSection'),
+  { ssr: false }
+);
 
 export default function ExploreClient() {
   const [radarInput, setRadarInput] = useState('');

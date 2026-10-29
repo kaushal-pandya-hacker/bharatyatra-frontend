@@ -276,9 +276,7 @@ export default function DestinationsClient() {
                       className="group relative overflow-hidden rounded-2xl border border-slate-200 hover:border-blue-600 text-left transition-all duration-300 h-40 flex flex-col justify-end p-3.5 shadow-2xs hover:shadow-lg hover:-translate-y-1 bg-white"
                     >
                       <img
-                        src={st.coverImage}
-                        alt={st.name}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        src={st.coverImage} alt={st.name} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent group-hover:from-blue-950/80 transition-colors" />
 

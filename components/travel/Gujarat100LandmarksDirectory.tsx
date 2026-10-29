@@ -333,9 +333,7 @@ export default function Gujarat100LandmarksDirectory({
                       className="relative h-40 w-full overflow-hidden cursor-pointer"
                     >
                       <img
-                        src={d.coverImage}
-                        alt={d.districtName}
-                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                        src={d.coverImage} alt={d.districtName} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
@@ -526,9 +524,7 @@ export default function Gujarat100LandmarksDirectory({
                       <div className="relative h-52 w-full overflow-hidden">
                         {item.image ? (
                           <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            src={item.image} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
                           <div className="h-full w-full bg-slate-900 flex items-center justify-center">
@@ -740,9 +736,7 @@ export default function Gujarat100LandmarksDirectory({
             {activeModalLandmark.image ? (
               <div className="relative max-h-full max-w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 flex items-center justify-center bg-black/50">
                 <img
-                  src={activeModalLandmark.image}
-                  alt={activeModalLandmark.name}
-                  className="max-h-[62vh] sm:max-h-[70vh] w-auto object-contain rounded-2xl shadow-2xl"
+                  src={activeModalLandmark.image} alt={activeModalLandmark.name} decoding="async" className="max-h-[62vh] sm:max-h-[70vh] w-auto object-contain rounded-2xl shadow-2xl"
                 />
               </div>
             ) : (

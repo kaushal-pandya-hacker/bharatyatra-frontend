@@ -12,7 +12,19 @@ import {
   calculateProfileCompletionPercentage,
 } from '@/lib/profile/travel-profile';
 import { searchCities, reverseGeocode, resolveCityCoordinates, CityItem } from '@/lib/data/indian-cities';
-import { TravelOriginMap } from '@/components/maps/travel-maps';
+import dynamic from 'next/dynamic';
+
+const TravelOriginMap = dynamic(
+  () => import('@/components/maps/travel-maps').then(m => m.TravelOriginMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 w-full rounded-2xl bg-slate-100 border border-slate-200 animate-pulse flex items-center justify-center">
+        <span className="text-xs font-bold text-slate-500">Loading Map...</span>
+      </div>
+    ),
+  }
+);
 import { NotificationSettingsPanel } from '@/components/notifications/notification-settings-panel';
 
 function ProfilePageContent() {

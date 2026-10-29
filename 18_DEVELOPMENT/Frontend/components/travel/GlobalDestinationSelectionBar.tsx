@@ -5,7 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sparkles, Trash2, X, ChevronUp, MapPin, Check, Plus, Globe, ArrowRight } from 'lucide-react';
 import { useDestinationSelection, SelectedDestination } from '@/lib/tourism/destination-selection-context';
-import AITripPersonalizationModal from '@/components/travel/AITripPersonalizationModal';
+import dynamic from 'next/dynamic';
+const AITripPersonalizationModal = dynamic(
+  () => import('@/components/travel/AITripPersonalizationModal'),
+  { ssr: false }
+);
 
 export default function GlobalDestinationSelectionBar() {
   const pathname = usePathname();

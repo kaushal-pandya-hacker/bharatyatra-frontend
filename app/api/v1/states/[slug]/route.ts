@@ -16,10 +16,17 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: stateItem,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: stateItem,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+        },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to fetch state details' },
