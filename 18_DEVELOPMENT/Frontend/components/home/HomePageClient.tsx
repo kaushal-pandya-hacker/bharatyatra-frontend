@@ -73,7 +73,76 @@ export default function HomePageClient() {
               </div>
             </div>
 
-            </section>
+            {/* Floating Spatial Intelligence Console */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
+              <div className="bg-surface-container-lowest rounded-2xl shadow-xl p-5 sm:p-8 transition-all hover:shadow-2xl border border-surface-container-high/50">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-6 border-b border-surface-container-high">
+                  <div>
+                    <span className="font-label-caps text-[10px] sm:text-xs uppercase text-tertiary font-bold tracking-widest flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">explore</span> Spatial Telemetry Command
+                    </span>
+                    <h2 className="font-headline-md text-lg sm:text-xl font-bold text-on-secondary-fixed mt-1">
+                      Your Journey Awaits // State Intent
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-2.5 bg-surface-container-low px-3 py-1.5 rounded-lg text-xs">
+                    <span className="w-2 h-2 rounded-full bg-tertiary"></span>
+                    <span className="font-coordinate-meta text-[10px] sm:text-xs text-on-surface-variant uppercase font-semibold">
+                      Neural Optimizer: Ground-Sync v2.4 Ready
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-6 items-center">
+                  {/* Parameter 1: Intent */}
+                  <div className="flex flex-col">
+                    <label className="font-coordinate-meta text-[10px] uppercase text-outline mb-1.5 font-bold">
+                      Primary Intent Vector
+                    </label>
+                    <div className="bg-surface-container px-3.5 py-2.5 rounded-xl flex items-center justify-between cursor-pointer hover:bg-surface-container-high transition-colors">
+                      <span className="font-body-md text-xs sm:text-sm font-semibold text-on-surface truncate">
+                        Royal Heritage &amp; Slow Culinary
+                      </span>
+                      <span className="material-symbols-outlined text-sm text-outline shrink-0 ml-1">expand_more</span>
+                    </div>
+                  </div>
+                  {/* Parameter 2: Temporal Window */}
+                  <div className="flex flex-col">
+                    <label className="font-coordinate-meta text-[10px] uppercase text-outline mb-1.5 font-bold">
+                      Temporal Window &amp; Climate
+                    </label>
+                    <div className="bg-surface-container px-3.5 py-2.5 rounded-xl flex items-center justify-between cursor-pointer hover:bg-surface-container-high transition-colors">
+                      <span className="font-body-md text-xs sm:text-sm font-semibold text-on-surface truncate">
+                        Nov 14 — Nov 28 // Dry Season
+                      </span>
+                      <span className="material-symbols-outlined text-sm text-outline shrink-0 ml-1">calendar_today</span>
+                    </div>
+                  </div>
+                  {/* Parameter 3: Pacing Protocol */}
+                  <div className="flex flex-col">
+                    <label className="font-coordinate-meta text-[10px] uppercase text-outline mb-1.5 font-bold">
+                      Companion Pacing
+                    </label>
+                    <div className="bg-surface-container px-3.5 py-2.5 rounded-xl flex items-center justify-between cursor-pointer hover:bg-surface-container-high transition-colors">
+                      <span className="font-body-md text-xs sm:text-sm font-semibold text-on-surface truncate">
+                        Unrushed • Deep Immersion
+                      </span>
+                      <span className="material-symbols-outlined text-sm text-outline shrink-0 ml-1">speed</span>
+                    </div>
+                  </div>
+                  {/* Action Button */}
+                  <div className="flex flex-col justify-end pt-2 sm:pt-0">
+                    <Link
+                      href="/plan"
+                      className="w-full h-11 sm:h-12 bg-primary-container hover:bg-primary-fixed text-on-secondary-fixed font-headline-sm text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                    >
+                      <span>[ INITIALIZE TRIP OS ]</span>
+                      <span className="material-symbols-outlined text-base">bolt</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* SECTION: ICONIC INDIA-LEVEL DESTINATIONS */}
           <section className="w-full py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
