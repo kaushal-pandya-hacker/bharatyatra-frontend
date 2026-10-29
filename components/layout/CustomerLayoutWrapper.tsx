@@ -10,10 +10,7 @@ import { AccessibilityProvider } from '@/lib/accessibility/accessibility-context
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { BookingGuardProvider } from '@/components/booking/BookingGuardProvider';
 import { DestinationSelectionProvider } from '@/lib/tourism/destination-selection-context';
-const GlobalDestinationSelectionBar = dynamic(
-  () => import('@/components/travel/GlobalDestinationSelectionBar'),
-  { ssr: false }
-);
+import GlobalDestinationSelectionBar from '@/components/travel/GlobalDestinationSelectionBar';
 
 const AccessibilityModal = dynamic(
   () => import('@/components/accessibility/AccessibilityModal').then((mod) => mod.AccessibilityModal),
