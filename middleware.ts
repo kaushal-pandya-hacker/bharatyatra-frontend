@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || request.nextUrl.hostname;
+
+  // Canonical apex domain redirect to www.bharatyatra.in (HTTP 308 permanent redirect)
+  if (host === 'bharatyatra.in') {
+    const targetUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, 'https://www.bharatyatra.in');
+    return NextResponse.redirect(targetUrl, 308);
+  }
+
   const { pathname } = request.nextUrl;
 
   // Clone headers for response to append security headers
@@ -20,6 +28,9 @@ export function middleware(request: NextRequest) {
     request.cookies.get('sb_auth_token')?.value ||
     request.cookies.get('sb-access-token')?.value ||
     request.cookies.get('auth_token')?.value ||
+    request.cookies.get('sb_refresh_token')?.value ||
+    request.cookies.get('sb-refresh-token')?.value ||
+    request.cookies.get('auth_refresh_token')?.value ||
     request.cookies.get('admin_token')?.value;
 
   if (!tokenFromCookie) {
@@ -33,12 +44,15 @@ export function middleware(request: NextRequest) {
 
   const hasAuthToken = Boolean(tokenFromHeader || tokenFromCookie);
 
+  // Helper for safe returnTo parameter (prevent open redirects)
+  const safeReturnTo = pathname.startsWith('/') && !pathname.startsWith('//') && !pathname.includes('://') ? pathname : '/';
+
   // 1. Admin Area Edge Guard
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const adminToken = request.cookies.get('admin_token')?.value || tokenFromCookie;
     if (!adminToken) {
       const loginUrl = new URL('/admin/login', request.url);
-      loginUrl.searchParams.set('returnTo', pathname);
+      loginUrl.searchParams.set('returnTo', safeReturnTo);
       return NextResponse.redirect(loginUrl);
     }
   }
@@ -57,7 +71,7 @@ export function middleware(request: NextRequest) {
     const isDocRequest = request.headers.get('sec-fetch-dest') === 'document';
     if (isDocRequest) {
       const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('returnTo', pathname);
+      loginUrl.searchParams.set('returnTo', safeReturnTo);
       return NextResponse.redirect(loginUrl);
     }
   }

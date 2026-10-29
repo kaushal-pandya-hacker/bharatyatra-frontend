@@ -34,8 +34,11 @@ function AuthCallbackContent() {
         }
 
         if (session && isSubscribed) {
-          setAuthSessionCookie(session.access_token);
+          setAuthSessionCookie(session.access_token, session.refresh_token);
           localStorage.setItem('auth_token', session.access_token);
+          if (session.refresh_token) {
+            localStorage.setItem('auth_refresh_token', session.refresh_token);
+          }
           const profile = mapSupabaseUserToProfile(session.user);
           localStorage.setItem('auth_user', JSON.stringify(profile));
           router.replace(destination);
@@ -43,8 +46,11 @@ function AuthCallbackContent() {
           // Listen for session detection from URL hash
           const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
             if (newSession && isSubscribed) {
-              setAuthSessionCookie(newSession.access_token);
+              setAuthSessionCookie(newSession.access_token, newSession.refresh_token);
               localStorage.setItem('auth_token', newSession.access_token);
+              if (newSession.refresh_token) {
+                localStorage.setItem('auth_refresh_token', newSession.refresh_token);
+              }
               if (newSession.user) {
                 const profile = mapSupabaseUserToProfile(newSession.user);
                 localStorage.setItem('auth_user', JSON.stringify(profile));

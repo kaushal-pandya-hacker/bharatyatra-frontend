@@ -68,16 +68,65 @@ export function extractAuthToken(req: NextRequest | Request): string | null {
 }
 
 /**
+ * Extracts the refresh token from cookies or custom headers.
+ */
+export function extractRefreshToken(req: NextRequest | Request): string | null {
+  // 1. NextRequest cookies API
+  if ('cookies' in req && typeof (req as any).cookies?.get === 'function') {
+    const cookieToken =
+      (req as any).cookies.get('sb_refresh_token')?.value ||
+      (req as any).cookies.get('sb-refresh-token')?.value ||
+      (req as any).cookies.get('auth_refresh_token')?.value;
+    if (cookieToken) return cookieToken;
+
+    if (typeof (req as any).cookies?.getAll === 'function') {
+      const allCookies = (req as any).cookies.getAll();
+      for (const c of allCookies) {
+        if (c.name.startsWith('sb-') && c.name.endsWith('-auth-token')) {
+          try {
+            const parsed = JSON.parse(decodeURIComponent(c.value));
+            const rt = parsed.refresh_token || (Array.isArray(parsed) ? parsed[1] : null);
+            if (rt) return rt;
+          } catch {}
+        }
+      }
+    }
+  }
+
+  // 2. Fallback raw cookie header parsing
+  const cookieHeader = req.headers.get('cookie');
+  if (cookieHeader) {
+    const match = cookieHeader.match(/(?:sb_refresh_token|sb-refresh-token|auth_refresh_token)=([^;]+)/);
+    if (match && match[1]) {
+      return decodeURIComponent(match[1].trim());
+    }
+
+    const sbMatch = cookieHeader.match(/sb-[a-z0-9_-]+-auth-token(?:\.d+)?=([^;]+)/);
+    if (sbMatch && sbMatch[1]) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(sbMatch[1].trim()));
+        const rt = parsed.refresh_token || (Array.isArray(parsed) ? parsed[1] : null);
+        if (rt) return rt;
+      } catch {}
+    }
+  }
+
+  return null;
+}
+
+/**
  * Cryptographically validates the caller's identity via Supabase Auth.
  * Returns the immutable authenticated user profile, or null if unauthenticated.
  */
 export async function getServerUser(req: NextRequest | Request): Promise<AuthenticatedUser | null> {
   const token = extractAuthToken(req);
-  if (!token) return null;
+  const refreshToken = extractRefreshToken(req);
+
+  if (!token && !refreshToken) return null;
 
   // Handle synthetic test tokens in test environment
   if (process.env.NODE_ENV === 'test' || process.env.TEST_MODE === 'true') {
-    if (token.startsWith('test-jwt-')) {
+    if (token && token.startsWith('test-jwt-')) {
       const parts = token.split('-');
       // format: test-jwt-<userId>-<role>
       const userId = parts[2] || 'test-user-id';
@@ -93,17 +142,36 @@ export async function getServerUser(req: NextRequest | Request): Promise<Authent
 
   try {
     const supabase = getSupabaseServerClient();
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    let activeUser: any = null;
 
-    let activeUser = user;
-    if (error || !activeUser) {
-      // Fallback: Check public supabase client
-      const pubSupabase = getSupabaseClient();
-      const { data: pubData, error: pubErr } = await pubSupabase.auth.getUser(token);
-      if (pubErr || !pubData.user) {
-        return null;
+    if (token) {
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (!error && user) {
+        activeUser = user;
+      } else {
+        const pubSupabase = getSupabaseClient();
+        const { data: pubData, error: pubErr } = await pubSupabase.auth.getUser(token);
+        if (!pubErr && pubData.user) {
+          activeUser = pubData.user;
+        }
       }
-      activeUser = pubData.user;
+    }
+
+    // If access token was expired or missing, but refresh token is available, attempt refresh
+    if (!activeUser && refreshToken) {
+      try {
+        const pubSupabase = getSupabaseClient();
+        const { data: refreshData, error: refreshErr } = await pubSupabase.auth.refreshSession({
+          refresh_token: refreshToken,
+        });
+        if (!refreshErr && refreshData?.user) {
+          activeUser = refreshData.user;
+        }
+      } catch {}
+    }
+
+    if (!activeUser) {
+      return null;
     }
 
     // Authoritative role resolution:
