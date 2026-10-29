@@ -72,8 +72,10 @@ export function Header() {
     };
   }, []);
 
+  const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
+
   // Hide global marketing header on trip command center routes (which have their own dedicated navigation)
-  if (pathname?.startsWith('/trips') && pathname !== '/trips') {
+  if (cleanPath !== '/trips' && cleanPath.startsWith('/trips/')) {
     return null;
   }
 

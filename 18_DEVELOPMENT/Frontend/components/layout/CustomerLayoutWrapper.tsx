@@ -19,8 +19,9 @@ export function CustomerLayoutWrapper({ children }: { children: React.ReactNode 
     setMounted(true);
   }, []);
   const pathname = usePathname();
-  const isAdminPath = pathname?.startsWith('/bharatyatra-ops');
-  const isTripDashboard = pathname?.startsWith('/trips/') && pathname !== '/trips';
+  const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
+  const isAdminPath = cleanPath.startsWith('/bharatyatra-ops');
+  const isTripDashboard = cleanPath !== '/trips' && cleanPath.startsWith('/trips/');
 
   if (isAdminPath) {
     return <>{children}</>;

@@ -7,13 +7,14 @@ import { Compass, MapPin, ShieldCheck, PhoneCall, Mail, Heart } from 'lucide-rea
 
 export function Footer() {
   const pathname = usePathname();
+  const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
 
   // Hide footer on admin, supplier, checkout, and trip command center routes
   if (
-    pathname?.startsWith('/admin') ||
-    pathname?.startsWith('/supplier') ||
-    pathname === '/checkout' ||
-    (pathname?.startsWith('/trips') && pathname !== '/trips')
+    cleanPath.startsWith('/admin') ||
+    cleanPath.startsWith('/supplier') ||
+    cleanPath === '/checkout' ||
+    (cleanPath !== '/trips' && cleanPath.startsWith('/trips/'))
   ) {
     return null;
   }

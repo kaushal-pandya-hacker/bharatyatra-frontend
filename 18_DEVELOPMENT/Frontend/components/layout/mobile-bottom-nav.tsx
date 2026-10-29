@@ -23,17 +23,19 @@ export function MobileBottomNav() {
     pathname?.match(/\/(buses|trains|flights|circuits)\/[^/]+/)
   );
 
+  const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
+
   if (
-    pathname?.startsWith('/admin') ||
-    pathname?.startsWith('/bharatyatra-ops') ||
-    pathname?.startsWith('/supplier') ||
-    pathname?.startsWith('/checkout') ||
-    pathname?.startsWith('/payment') ||
-    pathname?.startsWith('/login') ||
-    pathname?.startsWith('/auth') ||
-    pathname?.startsWith('/signup') ||
-    pathname?.startsWith('/register') ||
-    (pathname?.startsWith('/trips') && pathname !== '/trips') ||
+    cleanPath.startsWith('/admin') ||
+    cleanPath.startsWith('/bharatyatra-ops') ||
+    cleanPath.startsWith('/supplier') ||
+    cleanPath.startsWith('/checkout') ||
+    cleanPath.startsWith('/payment') ||
+    cleanPath.startsWith('/login') ||
+    cleanPath.startsWith('/auth') ||
+    cleanPath.startsWith('/signup') ||
+    cleanPath.startsWith('/register') ||
+    (cleanPath !== '/trips' && cleanPath.startsWith('/trips/')) ||
     isDetailBookingRoute
   ) {
     return null;
