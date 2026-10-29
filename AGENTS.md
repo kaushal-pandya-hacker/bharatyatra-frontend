@@ -9,7 +9,8 @@
 >    npm run docs:pages
 >    # or: python scripts/generate_pages_directory.py
 >    ```
-> 2. Ensure all three directory documentation artifacts are updated:
+> 2. Ensure all four directory documentation artifacts are updated:
+>    - `BharatYatra_Pages_Catalog.pdf` (Clean index with Page No. 1–126 and Type)
 >    - `BharatYatra_Pages_Directory.docx` (Official Microsoft Word / Google Docs format)
 >    - `APP_PAGES_DIRECTORY.docs` (Structured document format)
 >    - `APP_PAGES_DIRECTORY.md` (Repository markdown reference with file links)

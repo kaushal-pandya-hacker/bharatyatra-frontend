@@ -6,14 +6,17 @@ import path from 'node:path';
 describe('BharatYatra Page Directory Continuous Sync Enforcement', () => {
   const rootDir = process.cwd();
 
-  it('verifies all 3 page directory files exist and reflect the exact count of pages in app/', () => {
+  it('verifies all 4 page directory files (.docx, .docs, .md, .pdf) exist and reflect the exact count of pages in app/', () => {
     const docxPath = path.join(rootDir, 'BharatYatra_Pages_Directory.docx');
     const docsPath = path.join(rootDir, 'APP_PAGES_DIRECTORY.docs');
     const mdPath = path.join(rootDir, 'APP_PAGES_DIRECTORY.md');
+    const pdfPath = path.join(rootDir, 'BharatYatra_Pages_Catalog.pdf');
 
     assert.ok(fs.existsSync(docxPath), 'BharatYatra_Pages_Directory.docx must exist');
     assert.ok(fs.existsSync(docsPath), 'APP_PAGES_DIRECTORY.docs must exist');
     assert.ok(fs.existsSync(mdPath), 'APP_PAGES_DIRECTORY.md must exist');
+    assert.ok(fs.existsSync(pdfPath), 'BharatYatra_Pages_Catalog.pdf must exist');
+    assert.ok(fs.statSync(pdfPath).size > 1000, 'PDF must be a valid non-empty document');
 
     // Count all page files in app/
     const appDir = path.join(rootDir, 'app');

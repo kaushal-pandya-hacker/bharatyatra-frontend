@@ -388,3 +388,223 @@ md_path = 'APP_PAGES_DIRECTORY.md'
 with open(md_path, 'w', encoding='utf-8') as f:
     f.write(md_content)
 print(f'Successfully updated {md_path} ({os.path.getsize(md_path)} bytes)')
+
+
+# -------------------------------------------------------------
+# BUILD PDF CATALOG (.PDF)
+# -------------------------------------------------------------
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+
+def get_page_type(route: str):
+    if route.startswith('/admin'):
+        return 'Admin'
+    elif route.startswith('/bharatyatra-ops'):
+        return 'Operations'
+    elif route.startswith('/supplier'):
+        return 'Supplier'
+    elif route.startswith('/partner') or route.startswith('/partners'):
+        return 'Partner'
+    elif route.startswith('/payment-gateway'):
+        return 'FinTech'
+    elif route.startswith('/trips'):
+        return 'Trip Command'
+    elif route.startswith('/booking') or route in ['/cart', '/checkout', '/payment']:
+        return 'Booking & Pay'
+    elif route.startswith('/auth') or route in ['/login', '/register', '/signup', '/beta-onboarding'] or route.startswith('/onboarding'):
+        return 'Auth & Security'
+    else:
+        return 'Customer'
+
+TYPE_COLORS = {
+    'Admin': colors.HexColor('#DC2626'),
+    'Operations': colors.HexColor('#EA580C'),
+    'Supplier': colors.HexColor('#059669'),
+    'Partner': colors.HexColor('#2563EB'),
+    'FinTech': colors.HexColor('#7C3AED'),
+    'Trip Command': colors.HexColor('#0284C7'),
+    'Booking & Pay': colors.HexColor('#D97706'),
+    'Auth & Security': colors.HexColor('#475569'),
+    'Customer': colors.HexColor('#0B1C30'),
+}
+
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        super(NumberedCanvas, self).__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_decorations(num_pages)
+            super(NumberedCanvas, self).showPage()
+        super(NumberedCanvas, self).save()
+
+    def draw_page_decorations(self, page_count):
+        self.saveState()
+        self.setFont("Helvetica-Bold", 8)
+        self.setFillColor(colors.HexColor("#0B1C30"))
+        
+        if self._pageNumber > 1:
+            self.drawString(36, 806, "BHARATYATRA // PAGES & TYPE DIRECTORY")
+            self.setFont("Helvetica", 8)
+            self.setFillColor(colors.HexColor("#64748B"))
+            self.drawRightString(576, 806, f"Total: {len(pages)} Registered Pages")
+            self.setStrokeColor(colors.HexColor("#E2E8F0"))
+            self.setLineWidth(0.5)
+            self.line(36, 800, 576, 800)
+
+        self.setStrokeColor(colors.HexColor("#E2E8F0"))
+        self.setLineWidth(0.5)
+        self.line(36, 36, 576, 36)
+        
+        self.setFont("Helvetica", 8)
+        self.setFillColor(colors.HexColor("#64748B"))
+        self.drawString(36, 24, "https://www.bharatyatra.in  •  Confidential & Architecture Reference")
+        self.setFont("Helvetica-Bold", 8)
+        self.setFillColor(colors.HexColor("#0B1C30"))
+        self.drawRightString(576, 24, f"Page {self._pageNumber} of {page_count}")
+        self.restoreState()
+
+def generate_pdf(filename: str):
+    doc_pdf = SimpleDocTemplate(
+        filename,
+        pagesize=A4,
+        leftMargin=36,
+        rightMargin=36,
+        topMargin=46,
+        bottomMargin=46,
+    )
+
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        'DocTitle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=20, leading=24,
+        textColor=colors.HexColor('#0B1C30')
+    )
+    subtitle_style = ParagraphStyle(
+        'DocSubTitle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=10, leading=14,
+        textColor=colors.HexColor('#475569')
+    )
+    cell_num_style = ParagraphStyle(
+        'CellNum', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=8.5, leading=10,
+        alignment=1, textColor=colors.HexColor('#0B1C30')
+    )
+    cell_name_style = ParagraphStyle(
+        'CellName', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=8.5, leading=11,
+        textColor=colors.HexColor('#0F172A')
+    )
+    cell_route_style = ParagraphStyle(
+        'CellRoute', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=8, leading=10,
+        textColor=colors.HexColor('#D97706')
+    )
+    cell_type_style = ParagraphStyle(
+        'CellType', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=8, leading=10,
+        alignment=1, textColor=colors.HexColor('#0B1C30')
+    )
+
+    story = []
+    story.append(Paragraph("BHARAT YATRA — COMPLETE PAGES & TYPE DIRECTORY", title_style))
+    story.append(Spacer(1, 4))
+    story.append(Paragraph(f"A concise index of all <b>{len(pages)} registered Next.js App Router pages</b>, classified by operational subsystem and type (Admin, Ops, Supplier, Partner, FinTech, Customer, etc.).", subtitle_style))
+    story.append(Spacer(1, 10))
+
+    type_counts = {}
+    for r, _ in pages:
+        t = get_page_type(r)
+        type_counts[t] = type_counts.get(t, 0) + 1
+
+    summary_rows = [
+        [
+            Paragraph("<b>Type / Subsystem</b>", ParagraphStyle('H1', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, textColor=colors.white)),
+            Paragraph("<b>Page Count</b>", ParagraphStyle('H2', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, alignment=1, textColor=colors.white)),
+            Paragraph("<b>Access Level & Purpose</b>", ParagraphStyle('H3', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, textColor=colors.white)),
+        ]
+    ]
+
+    desc_map = {
+        'Customer': 'Traveler discovery feed, state guides, stays, transit & planner',
+        'Admin': 'Platform super-admin executive oversight, payments, refunds & audit',
+        'Supplier': 'B2B Hotel, fleet & restaurant inventory controllers & bookings',
+        'Operations': 'Ground fleet command, convoy telemetry & guide rosters',
+        'Partner': 'Travel agency package authoring, bookings & commissions',
+        'Booking & Pay': 'Booking checkouts, payment gateway bridges, cart & vouchers',
+        'Trip Command': 'Live waypoint radar, group expense splitter & debt ledger',
+        'Auth & Security': 'Supabase persistent authentication, OTP verify & onboarding',
+        'FinTech': 'BharatGateway™ ledger, merchant API keys & docs',
+    }
+
+    for t_name, count in sorted(type_counts.items(), key=lambda x: -x[1]):
+        summary_rows.append([
+            Paragraph(f"<b>{t_name}</b>", ParagraphStyle('TCell', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, textColor=TYPE_COLORS.get(t_name, colors.black))),
+            Paragraph(f"<b>{count} Pages</b>", ParagraphStyle('CCell', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, alignment=1)),
+            Paragraph(desc_map.get(t_name, 'Platform application subsystem'), ParagraphStyle('DCell', parent=styles['Normal'], fontName='Helvetica', fontSize=7.5, textColor=colors.HexColor('#475569'))),
+        ])
+
+    summary_table = Table(summary_rows, colWidths=[110, 80, 350])
+    summary_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0B1C30')),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E2E8F0')),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.HexColor('#F8FAFC'), colors.white]),
+    ]))
+
+    story.append(summary_table)
+    story.append(Spacer(1, 14))
+
+    main_rows = [
+        [
+            Paragraph("<b>#</b>", ParagraphStyle('TH1', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, alignment=1, textColor=colors.white)),
+            Paragraph("<b>Page Name & Purpose</b>", ParagraphStyle('TH2', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, textColor=colors.white)),
+            Paragraph("<b>Route URL</b>", ParagraphStyle('TH3', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, textColor=colors.white)),
+            Paragraph("<b>Type</b>", ParagraphStyle('TH4', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, alignment=1, textColor=colors.white)),
+        ]
+    ]
+
+    for num, (route, _) in enumerate(pages, start=1):
+        ptype = get_page_type(route)
+        name, _, _ = PAGE_METADATA.get(route, (route, 'Traveler', 'BharatYatra page'))
+        type_color = TYPE_COLORS.get(ptype, colors.HexColor('#0B1C30'))
+        type_paragraph = Paragraph(f"<font color='{type_color.hexval()}'><b>{ptype}</b></font>", cell_type_style)
+
+        main_rows.append([
+            Paragraph(str(num), cell_num_style),
+            Paragraph(name, cell_name_style),
+            Paragraph(route, cell_route_style),
+            type_paragraph,
+        ])
+
+    main_table = Table(main_rows, colWidths=[32, 230, 198, 80], repeatRows=1)
+    main_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0B1C30')),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E2E8F0')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F8FAFC')]),
+    ]))
+
+    story.append(main_table)
+    doc_pdf.build(story, canvasmaker=NumberedCanvas)
+    print(f"Successfully generated {filename} ({os.path.getsize(filename)} bytes)")
+
+generate_pdf('BharatYatra_Pages_Catalog.pdf')
