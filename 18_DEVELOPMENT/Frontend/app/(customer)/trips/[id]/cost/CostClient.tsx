@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/auth/auth-context';
+import { getSavedTrips, TripItem } from '@/lib/trips/trip-storage';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -8,7 +10,36 @@ export default function TripCostIntelligencePage({ params }: { params?: { id?: s
   const router = useRouter();
   const tripId = params?.id || '1';
 
-  const [simulatedPax, setSimulatedPax] = useState(10);
+  const { user } = useAuth();
+  const [trip, setTrip] = useState<TripItem | null>(null);
+  const [simulatedPax, setSimulatedPax] = useState(4);
+
+  useEffect(() => {
+    async function fetchTrip() {
+      try {
+        const res = await fetch(`/api/v1/trips/${tripId}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setTrip(json.data);
+            if (json.data.travelers) setSimulatedPax(json.data.travelers);
+            return;
+          }
+        }
+      } catch {}
+      const saved = getSavedTrips(user?.id);
+      const found = saved.find((t) => t.id === tripId || t.tripId === tripId);
+      if (found) {
+        setTrip(found);
+        if (found.travelers) setSimulatedPax(found.travelers);
+      }
+    }
+    fetchTrip();
+  }, [tripId, user]);
+
+  const displayTitle = trip?.title || 'Expedition Circuit';
+  const displayDest = trip?.destinationCity || trip?.destination || 'Destination';
+  const displayBudget = trip?.budgetInr || 25000;
 
   const calculateSimulatedCost = (pax: number) => {
     const fixedCost = 23200;
@@ -23,7 +54,7 @@ export default function TripCostIntelligencePage({ params }: { params?: { id?: s
 
   const shareWhatsApp = () => {
     const text = encodeURIComponent(
-      'BharatYatra • Kutch Expedition Dossier: Projected budget ₹42,500 across 10 travelers (₹4,250/person all-inclusive). Transparently verified.'
+      `BharatYatra • ${displayTitle} Dossier: Projected budget ₹${displayBudget.toLocaleString('en-IN')} across ${simulatedPax} travelers. Transparently verified.`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -53,7 +84,7 @@ export default function TripCostIntelligencePage({ params }: { params?: { id?: s
               <div className="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-container/20 text-on-surface">
                 <span className="w-2 h-2 rounded-full bg-primary-container"></span>
                 <span className="font-label-md text-label-md font-semibold">Active Expedition:</span>
-                <span className="font-body-sm text-body-sm text-on-surface font-medium">Kutch &amp; Saurashtra Circuit (10 Travelers)</span>
+                <span className="font-body-sm text-body-sm text-on-surface font-medium">{`${displayTitle} (${trip?.travelers || simulatedPax} Travelers)`}</span>
               </div>
             </div>
           </div>
@@ -167,7 +198,7 @@ export default function TripCostIntelligencePage({ params }: { params?: { id?: s
         <div className="mt-auto p-space-sm rounded-xl bg-surface-container-low">
           <div className="flex items-center gap-space-xs mb-1">
             <span className="material-symbols-outlined text-primary text-base">verified</span>
-            <span className="font-label-md text-label-md font-semibold text-on-surface">Gujarat Concierge</span>
+            <span className="font-label-md text-label-md font-semibold text-on-surface">{displayDest} Concierge</span>
           </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             Sovereign toll clearance, fuel forecasts, and road telemetry active.
@@ -190,7 +221,7 @@ export default function TripCostIntelligencePage({ params }: { params?: { id?: s
                   <span className="text-on-surface-variant font-label-md text-label-md">• ID: KF-9082-2026</span>
                 </div>
                 <h1 className="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">
-                  Trip Cost Intelligence <span className="text-primary font-normal">|</span> Kutch &amp; Saurashtra Circuit
+                  Trip Cost Intelligence <span className="text-primary font-normal">|</span> {displayTitle}
                 </h1>
                 <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
                   Authoritative financial forecasting, live FASTag debits, luxury stay split-equity, and algorithmically optimized disbursements.
