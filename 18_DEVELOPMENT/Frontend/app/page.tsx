@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import HomePageClient from '@/components/home/HomePageClient';
-import { AppGate } from '@/components/auth/AppGate';
+
 
 export const metadata: Metadata = {
   title: 'BharatYatra — India\'s #1 AI Travel & Itinerary Planner',
@@ -34,9 +34,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return (
-    <AppGate>
-      <HomePageClient />
-    </AppGate>
-  );
+  return <HomePageClient />;
 }

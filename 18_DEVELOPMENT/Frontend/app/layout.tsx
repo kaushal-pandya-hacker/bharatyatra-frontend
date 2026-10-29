@@ -125,7 +125,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
         />
       </head>
-      <body className="flex min-h-screen flex-col bg-surface text-on-surface font-body-md antialiased selection:bg-farva-gold-sahara selection:text-farva-navy-deep">
+      <body suppressHydrationWarning className="flex min-h-screen flex-col bg-surface text-on-surface font-body-md antialiased selection:bg-farva-gold-sahara selection:text-farva-navy-deep">
         <CustomerLayoutWrapper>{children}</CustomerLayoutWrapper>
       </body>
     </html>
