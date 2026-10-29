@@ -207,29 +207,40 @@ function ProfilePageContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-orange-100 selection:text-orange-900 pb-16">
-      {/* Header */}
-      <header className="w-full border-b border-slate-200 bg-white/90 backdrop-blur-md px-6 lg:px-12 py-4 flex items-center justify-between sticky top-0 z-40 shadow-xs">
-        <Link href="/" className="flex items-center gap-3">
-          <img src="/logo.png" alt="BharatYatra Logo" className="h-10 w-auto object-contain" />
-          <span className="font-black text-xl text-slate-900 tracking-tight">BharatYatra</span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className="px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-extrabold text-xs transition-all flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-lg">dashboard</span>
-            <span>Dashboard</span>
-          </Link>
-          <button
-            type="button"
-            onClick={logout}
-            className="px-4 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-extrabold text-xs transition-all cursor-pointer"
-          >
-            Sign Out
-          </button>
+      {/* Sub-Header Action Bar */}
+      <div className="w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold">
+              <span className="material-symbols-outlined text-lg">account_circle</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <Link href="/" className="hover:text-slate-900 font-medium transition-colors">
+                Home
+              </Link>
+              <span className="text-slate-300">/</span>
+              <span className="text-slate-900 font-bold">Travel Profile</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard"
+              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-extrabold text-xs transition-all flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">dashboard</span>
+              <span>Dashboard</span>
+            </Link>
+            <button
+              type="button"
+              onClick={logout}
+              className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-extrabold text-xs transition-all cursor-pointer"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Form Container */}
       <main className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
