@@ -290,4 +290,25 @@ describe('BharatYatra Group Expense Splitter & Data Isolation Test Suite', () =>
       assert.strictEqual(afterExpenses?.length, 0);
     });
   });
+
+  describe('Scenario 11: Schema Cache Missing Table Graceful Fallback', () => {
+    it('gracefully handles missing public.user_trips schema cache error without throwing 503', async () => {
+      const oldEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      process.env.TEST_MODE = 'true';
+      try {
+        const req = new NextRequest('https://www.bharatyatra.in/api/v1/trips/1/expenses', {
+          headers: { Authorization: 'Bearer ' + TOKEN_USER_A },
+        });
+        const res = await getExpensesRoute(req, { params: { id: '1' } });
+        assert.strictEqual(res.status, 200, 'Must return 200 rather than 503 database warning');
+        const json = await res.json();
+        assert.strictEqual(json.success, true);
+        assert.ok(json.data.members.length >= 1);
+        assert.strictEqual(json.data.expenses.length, 0);
+      } finally {
+        process.env.NODE_ENV = oldEnv;
+      }
+    });
+  });
 });
