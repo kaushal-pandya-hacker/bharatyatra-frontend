@@ -14,6 +14,10 @@ import GlobalDestinationSelectionBar from '@/components/travel/GlobalDestination
 import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
 
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
   const pathname = usePathname();
   const isAdminPath = pathname?.startsWith('/bharatyatra-ops');
   const isTripDashboard = pathname?.startsWith('/trips/') && pathname !== '/trips';

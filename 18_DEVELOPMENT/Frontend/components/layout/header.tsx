@@ -41,6 +41,11 @@ export function Header() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const moreDropdownRef = useRef<HTMLDivElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
@@ -271,7 +276,7 @@ export function Header() {
           <NotificationCenterDropdown />
 
           {/* User Sign In / Profile */}
-          {user ? (
+          {mounted && user ? (
             <div className="flex items-center gap-1.5 shrink-0">
               <Link
                 href="/profile"

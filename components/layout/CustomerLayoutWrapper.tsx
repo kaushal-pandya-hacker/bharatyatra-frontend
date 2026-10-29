@@ -12,17 +12,15 @@ import { BookingGuardProvider } from '@/components/booking/BookingGuardProvider'
 import { DestinationSelectionProvider } from '@/lib/tourism/destination-selection-context';
 import GlobalDestinationSelectionBar from '@/components/travel/GlobalDestinationSelectionBar';
 
-const AccessibilityModal = dynamic(
-  () => import('@/components/accessibility/AccessibilityModal').then((mod) => mod.AccessibilityModal),
-  { ssr: false }
-);
+import { AccessibilityModal } from '@/components/accessibility/AccessibilityModal';
 
-const NexiChatFloating = dynamic(
-  () => import('@/components/nexi/NexiChatFloating').then((mod) => mod.NexiChatFloating),
-  { ssr: false }
-);
+import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
 
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
   const pathname = usePathname();
   const isAdminPath = pathname?.startsWith('/bharatyatra-ops');
   const isTripDashboard = pathname?.startsWith('/trips/') && pathname !== '/trips';

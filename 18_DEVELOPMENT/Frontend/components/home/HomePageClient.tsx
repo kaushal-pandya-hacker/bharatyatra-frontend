@@ -6,10 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useAccessibility } from '@/lib/accessibility/accessibility-context';
 import dynamic from 'next/dynamic';
-const VoiceSearchModal = dynamic(
-  () => import('@/components/accessibility/VoiceSearchModal').then(mod => mod.VoiceSearchModal),
-  { ssr: false }
-);
+import { VoiceSearchModal } from '@/components/accessibility/VoiceSearchModal';
 
 export default function HomePageClient() {
   const { user, logout } = useAuth();
