@@ -90,7 +90,7 @@ function clearUserLocalCache() {
   sessionStorage.clear();
 }
 
-function mapSupabaseUserToProfile(sbUser: SupabaseUser, overrideProfile?: { fullName?: string; email?: string; avatarUrl?: string }): UserProfile {
+export function mapSupabaseUserToProfile(sbUser: SupabaseUser, overrideProfile?: { fullName?: string; email?: string; avatarUrl?: string }): UserProfile {
   const metadata = sbUser.user_metadata || {};
   const phone = sbUser.phone || metadata.phone || '';
   const email = overrideProfile?.email || sbUser.email || metadata.email || `user_${sbUser.id.substring(0, 8)}@bharatyatra.com`;
@@ -150,64 +150,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
+    // 1. Optimistic hydration from localStorage to eliminate any login-page flash
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const storedUserRaw = typeof window !== 'undefined' ? localStorage.getItem('auth_user') : null;
+    if (storedToken && storedUserRaw) {
+      try {
+        const cachedUser = JSON.parse(storedUserRaw);
+        if (cachedUser && cachedUser.id && cachedUser.email) {
+          setUser(cachedUser);
+          setToken(storedToken);
+          setAuthSessionCookie(storedToken);
+        }
+      } catch {}
+    }
+
     const initAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // 2. Try Supabase getSession()
+        let { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
-          console.error('Error restoring Supabase auth session:', error.message);
+          console.warn('Supabase getSession notification:', error.message);
+        }
+
+        // 3. If session is null, attempt session refresh with refresh token
+        if (!session) {
+          try {
+            const { data: refreshData } = await supabase.auth.refreshSession();
+            if (refreshData?.session) {
+              session = refreshData.session;
+            }
+          } catch (e) {
+            // refresh error ignored
+          }
         }
 
         if (session && session.user) {
           const userProfile = mapSupabaseUserToProfile(session.user);
           if (isMounted) {
             setToken(session.access_token);
+            setAuthSessionCookie(session.access_token);
             setUser(userProfile);
             localStorage.setItem('auth_token', session.access_token);
             localStorage.setItem('auth_user', JSON.stringify(userProfile));
 
-            // Hydrate backend profile
-            const bUser = await fetchBackendUser(session.access_token);
-            if (bUser && isMounted) {
-              setUser(bUser);
-              localStorage.setItem('auth_user', JSON.stringify(bUser));
-            }
-          }
-        } else {
-          // No active Supabase session: Check for valid existing backend session token
-          const storedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-
-          if (storedToken && storedToken !== 'demo_persistent_token') {
-            try {
-              const bUser = await fetchBackendUser(storedToken);
+            // Hydrate backend profile asynchronously
+            fetchBackendUser(session.access_token).then((bUser) => {
               if (bUser && isMounted) {
                 setUser(bUser);
-                setToken(storedToken);
                 localStorage.setItem('auth_user', JSON.stringify(bUser));
-              } else if (isMounted) {
-                setUser(null);
-                setToken(null);
-                clearUserLocalCache();
               }
-            } catch {
-              if (isMounted) {
+            }).catch(() => {});
+          }
+        } else if (storedToken && storedToken !== 'demo_persistent_token') {
+          // If Supabase session is not present, check custom/backend auth token
+          try {
+            const bUser = await fetchBackendUser(storedToken);
+            if (bUser && isMounted) {
+              setUser(bUser);
+              setToken(storedToken);
+              setAuthSessionCookie(storedToken);
+              localStorage.setItem('auth_user', JSON.stringify(bUser));
+            } else if (bUser === null && isMounted) {
+              // Only invalidate if we are certain the token is bad
+              const currentSession = await supabase.auth.getSession();
+              if (!currentSession.data.session && isMounted) {
                 setUser(null);
                 setToken(null);
                 clearUserLocalCache();
               }
             }
-          } else if (isMounted) {
-            // Unauthenticated visitor: Strict null session enforcement (zero mock user injection)
-            setUser(null);
-            setToken(null);
-            clearUserLocalCache();
+          } catch {
+            // Network error: preserve cached credentials so user stays logged in offline or during temporary blip
           }
-        }
-      } catch (err) {
-        if (isMounted) {
+        } else if (isMounted) {
+          // No stored session and no Supabase session: set unauthenticated state without wiping unrelated data
           setUser(null);
           setToken(null);
-          clearUserLocalCache();
         }
+      } catch (err) {
+        console.warn('[auth-context] Error during initAuth:', err);
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -217,11 +238,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initAuth();
 
+    // 4. Supabase auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
       if (session && session.user) {
         const userProfile = mapSupabaseUserToProfile(session.user);
         setToken(session.access_token);
+        setAuthSessionCookie(session.access_token);
         setUser(userProfile);
         localStorage.setItem('auth_token', session.access_token);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));

@@ -96,11 +96,7 @@ export async function apiFetch<T = any>(endpoint: string, options: FetchOptions 
         errorData?.error ||
         `Request failed with status ${response.status}`;
 
-      if (response.status === 401 && typeof window !== 'undefined') {
-        // Handle token clearance on 401
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
-      }
+      // Note: 401 is passed to ApiError so calling contexts and AuthProvider can handle refresh gracefully without wiping persistent session prematurely
 
       throw new ApiError(response.status, errorMessage, errorData);
     }

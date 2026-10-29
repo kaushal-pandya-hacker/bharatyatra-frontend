@@ -20,19 +20,47 @@ export function extractAuthToken(req: NextRequest | Request): string | null {
     if (token) return token;
   }
 
-  // 2. Cookie extraction
+  // 2. Cookie extraction via NextRequest cookies API
   if ('cookies' in req && typeof (req as any).cookies?.get === 'function') {
-    const cookieToken = (req as any).cookies.get('sb_auth_token')?.value ||
+    const cookieToken =
+      (req as any).cookies.get('sb_auth_token')?.value ||
       (req as any).cookies.get('sb-access-token')?.value ||
       (req as any).cookies.get('auth_token')?.value;
     if (cookieToken) return cookieToken;
+
+    if (typeof (req as any).cookies?.getAll === 'function') {
+      const allCookies = (req as any).cookies.getAll();
+      for (const c of allCookies) {
+        if (c.name.startsWith('sb-') && c.name.endsWith('-auth-token')) {
+          try {
+            const parsed = JSON.parse(decodeURIComponent(c.value));
+            const tok = parsed.access_token || (Array.isArray(parsed) ? parsed[0] : null);
+            if (tok) return tok;
+          } catch {
+            if (c.value) return c.value;
+          }
+        }
+      }
+    }
   }
 
+  // 3. Fallback raw cookie header parsing
   const cookieHeader = req.headers.get('cookie');
   if (cookieHeader) {
     const match = cookieHeader.match(/(?:sb_auth_token|sb-access-token|auth_token)=([^;]+)/);
     if (match && match[1]) {
       return decodeURIComponent(match[1].trim());
+    }
+
+    const sbMatch = cookieHeader.match(/sb-[a-z0-9_-]+-auth-token(?:.d+)?=([^;]+)/);
+    if (sbMatch && sbMatch[1]) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(sbMatch[1].trim()));
+        const tok = parsed.access_token || (Array.isArray(parsed) ? parsed[0] : null);
+        if (tok) return tok;
+      } catch {
+        return decodeURIComponent(sbMatch[1].trim());
+      }
     }
   }
 

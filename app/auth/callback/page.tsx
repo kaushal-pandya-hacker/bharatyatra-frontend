@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { setAuthSessionCookie, mapSupabaseUserToProfile } from '@/lib/auth/auth-context';
 import Link from 'next/link';
 
 function AuthCallbackContent() {
@@ -33,11 +34,21 @@ function AuthCallbackContent() {
         }
 
         if (session && isSubscribed) {
+          setAuthSessionCookie(session.access_token);
+          localStorage.setItem('auth_token', session.access_token);
+          const profile = mapSupabaseUserToProfile(session.user);
+          localStorage.setItem('auth_user', JSON.stringify(profile));
           router.replace(destination);
         } else {
           // Listen for session detection from URL hash
           const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
             if (newSession && isSubscribed) {
+              setAuthSessionCookie(newSession.access_token);
+              localStorage.setItem('auth_token', newSession.access_token);
+              if (newSession.user) {
+                const profile = mapSupabaseUserToProfile(newSession.user);
+                localStorage.setItem('auth_user', JSON.stringify(profile));
+              }
               router.replace(destination);
             }
           });

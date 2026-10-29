@@ -16,11 +16,20 @@ export function middleware(request: NextRequest) {
   // Check for presence of auth token across cookies and Authorization header
   const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
   const tokenFromHeader = authHeader?.startsWith('Bearer ') ? authHeader.substring(7).trim() : null;
-  const tokenFromCookie =
+  let tokenFromCookie =
     request.cookies.get('sb_auth_token')?.value ||
     request.cookies.get('sb-access-token')?.value ||
     request.cookies.get('auth_token')?.value ||
     request.cookies.get('admin_token')?.value;
+
+  if (!tokenFromCookie) {
+    for (const c of request.cookies.getAll()) {
+      if (c.name.startsWith('sb-') && c.name.endsWith('-auth-token')) {
+        tokenFromCookie = c.value;
+        break;
+      }
+    }
+  }
 
   const hasAuthToken = Boolean(tokenFromHeader || tokenFromCookie);
 
