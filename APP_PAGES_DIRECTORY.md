@@ -1,209 +1,201 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **123**  
-> **Last Updated:** 2026-10-26  
-> **Coverage:** 100% of all Next.js App Router pages across Traveler Experience, Admin, Ops, Partner Ecosystem, FinTech BharatGateway, and Supplier Portals.
+> **Total Registered Pages:** **126**  
+> **Framework:** Next.js 14 App Router  
+> **Production URL:** https://www.bharatyatra.in  
+> **Last Updated:** October 2026  
+> **Coverage:** 100% of all App Router routes across Traveler Experience, Admin, Ops, Partner Ecosystem, FinTech BharatGateway, and Supplier Portals.
 
 ## Table of Contents
 
-- [Admin Portal (Super-Admin & Operations) (20 pages)](#admin-portal-super-admin-operations-)
-- [Authentication, Security & Onboarding (6 pages)](#authentication-security-onboarding)
-- [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
+- [Admin Portal (Super-Admin & Operations) (21 pages)](#admin-portal-super-admin-operations)
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
-- [Bookings, Checkout & Settlement (10 pages)](#bookings-checkout-settlement)
-- [Customer Discovery, Itinerary & Travel Products (38 pages)](#customer-discovery-itinerary-travel-products)
-- [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
-- [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Trip Command Center, Splitter & Telemetry (9 pages)](#trip-command-center-splitter-telemetry)
+- [Bookings, Checkout & Settlement (10 pages)](#bookings-checkout-settlement)
+- [Authentication, Security & Onboarding (7 pages)](#authentication-security-onboarding)
+- [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
+- [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
+- [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
+- [Customer Discovery, Itinerary & Travel Products (39 pages)](#customer-discovery-itinerary-travel-products)
 
 ---
 
 ## Admin Portal (Super-Admin & Operations)
 
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **Master Admin Platform Dashboard** | `/admin` | [`app/admin/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/page.tsx) | `Super Admin / Platform Ops` |
-| **System Security & Access Audit Trails** | `/admin/audit-logs` | [`app/admin/audit-logs/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/audit-logs/page.tsx) | `Super Admin / Platform Ops` |
-| **Global Booking Oversight & Inventory Matrix** | `/admin/bookings` | [`app/admin/bookings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/bookings/page.tsx) | `Super Admin / Platform Ops` |
-| **System SMS, WhatsApp & Email Notification Dispatch** | `/admin/communications` | [`app/admin/communications/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/communications/page.tsx) | `Super Admin / Platform Ops` |
-| **Fleet, Room & Ticket Inventory Management** | `/admin/inventory` | [`app/admin/inventory/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/inventory/page.tsx) | `Super Admin / Platform Ops` |
-| **Admin Security Portal Login** | `/admin/login` | [`app/admin/login/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/login/page.tsx) | `Public` |
-| **Platform Package Oversight & Publishing** | `/admin/packages` | [`app/admin/packages/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/packages/page.tsx) | `Super Admin / Platform Ops` |
-| **Package Media Asset Manager & Cloudinary Sync** | `/admin/packages/images` | [`app/admin/packages/images/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/packages/images/page.tsx) | `Super Admin / Platform Ops` |
-| **Payment Transaction Ledger & Gateway Telemetry** | `/admin/payments` | [`app/admin/payments/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/payments/page.tsx) | `Super Admin / Platform Ops` |
-| **Refund Approvals, Chargebacks & Disputes** | `/admin/refunds` | [`app/admin/refunds/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/refunds/page.tsx) | `Super Admin / Platform Ops` |
-| **Partner & Supplier Payout Settlement Engine** | `/admin/settlements` | [`app/admin/settlements/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/settlements/page.tsx) | `Super Admin / Platform Ops` |
-| **Supplier Ecosystem Directory** | `/admin/suppliers` | [`app/admin/suppliers/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/suppliers/page.tsx) | `Super Admin / Platform Ops` |
-| **Supplier Performance & Contract Dossier** | `/admin/suppliers/[id]` | [`app/admin/suppliers/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/suppliers/%5Bid%5D/page.tsx) | `Super Admin / Platform Ops` |
-| **Tourism Board Liaison & Regulatory Reporting** | `/admin/tourism` | [`app/admin/tourism/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/tourism/page.tsx) | `Super Admin / Platform Ops` |
-| **Commission Rates, Tax Withholding & Tier Settings** | `/admin/travel-commissions` | [`app/admin/travel-commissions/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/travel-commissions/page.tsx) | `Super Admin / Platform Ops` |
-| **Travel Partner Package Approval Queue** | `/admin/travel-packages` | [`app/admin/travel-packages/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/travel-packages/page.tsx) | `Super Admin / Platform Ops` |
-| **Partner Package Verification, Pricing & Audit** | `/admin/travel-packages/[id]/review` | [`app/admin/travel-packages/[id]/review/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/travel-packages/%5Bid%5D/review/page.tsx) | `Super Admin / Platform Ops` |
-| **Partner Audit Logs & Compliance Verification** | `/admin/travel-partner-audit` | [`app/admin/travel-partner-audit/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/travel-partner-audit/page.tsx) | `Super Admin / Platform Ops` |
-| **Partner Directory, Verification & Tiers** | `/admin/travel-partners` | [`app/admin/travel-partners/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/travel-partners/page.tsx) | `Super Admin / Platform Ops` |
-| **Partner KYC, Banking & Operational Dossier** | `/admin/travel-partners/[id]` | [`app/admin/travel-partners/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/admin/travel-partners/%5Bid%5D/page.tsx) | `Super Admin / Platform Ops` |
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Master Admin Platform Executive Dashboard** | `/admin` | [`app/admin/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/page.tsx) | `Super Admin / Platform Ops` | Real-time booking volume, revenue metrics, and operator health telemetry |
+| **System Security & Access Audit Trails** | `/admin/audit-logs` | [`app/admin/audit-logs/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/audit-logs/page.tsx) | `Super Admin / Platform Ops` | Immutable ledger of administrative actions, permission escalations, and changes |
+| **Global Booking Oversight & Inventory Matrix** | `/admin/bookings` | [`app/admin/bookings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/bookings/page.tsx) | `Super Admin / Platform Ops` | All platform bookings across buses, trains, stays, and tour circuits |
+| **Notification Dispatch & Campaign Center** | `/admin/communications` | [`app/admin/communications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/communications/page.tsx) | `Super Admin / Platform Ops` | Bulk WhatsApp, SMS, and email dispatches to travelers and operators |
+| **Fleet, Room & Ticket Inventory Management** | `/admin/inventory` | [`app/admin/inventory/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/inventory/page.tsx) | `Super Admin / Platform Ops` | Real-time allocation and locks on buses, hotels, and tourist vehicles |
+| **Admin Security Portal Authentication** | `/admin/login` | [`app/admin/login/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/login/page.tsx) | `Public (Staff)` | Secure MFA login for platform engineers and system administrators |
+| **Platform Package Oversight & Publishing** | `/admin/packages` | [`app/admin/packages/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/packages/page.tsx) | `Super Admin / Platform Ops` | Catalog management for national circuits, pricing tiers, and active status |
+| **Package Media Asset & Cloudinary Manager** | `/admin/packages/images` | [`app/admin/packages/images/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/packages/images/page.tsx) | `Super Admin / Platform Ops` | High-res image CDN uploads, gallery tagging, and thumbnail optimization |
+| **Payment Transaction Ledger & Gateway Telemetry** | `/admin/payments` | [`app/admin/payments/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/payments/page.tsx) | `Super Admin / Platform Ops` | Live payment stream, captured orders, UPI intents, and refund reconciliation |
+| **Refund Approvals, Chargebacks & Disputes** | `/admin/refunds` | [`app/admin/refunds/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/refunds/page.tsx) | `Super Admin / Platform Ops` | Manual review queue for cancellation refunds and chargeback arbitration |
+| **Partner & Supplier Payout Settlement Engine** | `/admin/settlements` | [`app/admin/settlements/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/settlements/page.tsx) | `Super Admin / Platform Ops` | Net payout calculation, commission withholding, and bank transfers |
+| **Supplier Ecosystem Directory & Management** | `/admin/suppliers` | [`app/admin/suppliers/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/suppliers/page.tsx) | `Super Admin / Platform Ops` | List of onboarded hotel owners, transport fleets, and tour guides |
+| **Supplier Performance & Contract Dossier** | `/admin/suppliers/[id]` | [`app/admin/suppliers/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/suppliers/[id]/page.tsx) | `Super Admin / Platform Ops` | Individual supplier contract, KYC documents, inventory, and reviews |
+| **Tourism Board Liaison & Regulatory Reporting** | `/admin/tourism` | [`app/admin/tourism/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/tourism/page.tsx) | `Super Admin / Platform Ops` | State tourism board compliance, permit allocations, and tax reporting |
+| **Commission Rates & Tier Settings** | `/admin/travel-commissions` | [`app/admin/travel-commissions/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/travel-commissions/page.tsx) | `Super Admin / Platform Ops` | Configurable percentage rates for agencies, affiliates, and ground fleets |
+| **Travel Partner Package Approval Queue** | `/admin/travel-packages` | [`app/admin/travel-packages/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/travel-packages/page.tsx) | `Super Admin / Platform Ops` | Submission review pipeline for packages submitted by travel agencies |
+| **Partner Package Verification & Audit** | `/admin/travel-packages/[id]/review` | [`app/admin/travel-packages/[id]/review/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/travel-packages/[id]/review/page.tsx) | `Super Admin / Platform Ops` | Detailed day-by-day itinerary verification, safety, and price validation |
+| **Partner Audit Logs & Compliance Verification** | `/admin/travel-partner-audit` | [`app/admin/travel-partner-audit/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/travel-partner-audit/page.tsx) | `Super Admin / Platform Ops` | Audit records of partner tier updates, payouts, and license renewals |
+| **Partner Directory, Verification & Tiers** | `/admin/travel-partners` | [`app/admin/travel-partners/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/travel-partners/page.tsx) | `Super Admin / Platform Ops` | Gold, Silver, Platinum partner status, booking quotas, and ratings |
+| **Partner KYC, Banking & Operational Dossier** | `/admin/travel-partners/[id]` | [`app/admin/travel-partners/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/travel-partners/[id]/page.tsx) | `Super Admin / Platform Ops` | GSTIN verification, bank account details, and compliance records |
+| **Customer & Traveler Account Directory** | `/admin/users` | [`app/admin/users/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/admin/users/page.tsx) | `Super Admin / Platform Ops` | User account status, authentication logs, profile data, and roles |
 
-## Authentication, Security & Onboarding
-
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **OAuth Callback & Session Verification** | `/auth/callback` | [`app/auth/callback/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/auth/callback/page.tsx) | `Public / Traveler` |
-| **Two-Factor SMS OTP Verification** | `/auth/verify-otp` | [`app/auth/verify-otp/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/auth/verify-otp/page.tsx) | `Public / Traveler` |
-| **Traveler Phone/Email Authentication** | `/login` | [`app/(customer)/login/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/login/page.tsx) | `Public / Traveler` |
-| **AI Travel Profile & Personalization Quiz** | `/onboarding/travel-profile` | [`app/(customer)/onboarding/travel-profile/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/onboarding/travel-profile/page.tsx) | `Public / Traveler` |
-| **Customer Account Creation** | `/register` | [`app/(customer)/register/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/register/page.tsx) | `Public / Traveler` |
-| **New Voyager Registration** | `/signup` | [`app/(customer)/signup/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/signup/page.tsx) | `Public / Traveler` |
-
-## BharatGateway FinTech Suite
-
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **BharatGateway Developer & Enterprise Landing** | `/payment-gateway` | [`app/payment-gateway/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/payment-gateway/page.tsx) | `Public / Merchant` |
-| **BharatGateway Super-Admin & Reconciliation Engine** | `/payment-gateway/admin` | [`app/payment-gateway/admin/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/payment-gateway/admin/page.tsx) | `Finance Ops Admin` |
-| **Hosted Universal Payment Gateway Checkout** | `/payment-gateway/checkout/[orderId]` | [`app/payment-gateway/checkout/[orderId]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/payment-gateway/checkout/%5BorderId%5D/page.tsx) | `Public / Merchant` |
-| **BharatGateway API Reference & Integration SDK Guide** | `/payment-gateway/docs` | [`app/payment-gateway/docs/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/payment-gateway/docs/page.tsx) | `Public / Merchant` |
-| **Merchant FinTech Dashboard, API Keys & Webhooks** | `/payment-gateway/merchant` | [`app/payment-gateway/merchant/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/payment-gateway/merchant/page.tsx) | `Gateway Merchant` |
-| **FinTech Pricing, Interchange Fees & Volume Tiers** | `/payment-gateway/pricing` | [`app/payment-gateway/pricing/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/payment-gateway/pricing/page.tsx) | `Public / Merchant` |
 
 ## BharatYatra Ops Control Center
 
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **BharatYatra Operations Center Overview** | `/bharatyatra-ops` | [`app/bharatyatra-ops/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/page.tsx) | `Operations Lead` |
-| **Ops Action Log & Incident Audit History** | `/bharatyatra-ops/audit-logs` | [`app/bharatyatra-ops/audit-logs/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/audit-logs/page.tsx) | `Operations Lead` |
-| **Real-Time Booking Dispatch & Manual Overrides** | `/bharatyatra-ops/bookings` | [`app/bharatyatra-ops/bookings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/bookings/page.tsx) | `Operations Lead` |
-| **Live Fleet, Traveler & Ground Patrol Telemetry** | `/bharatyatra-ops/dashboard` | [`app/bharatyatra-ops/dashboard/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/dashboard/page.tsx) | `Operations Lead` |
-| **Operations Console Authentication** | `/bharatyatra-ops/login` | [`app/bharatyatra-ops/login/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/login/page.tsx) | `Public` |
-| **High-Priority SOS & Weather Alert Broadcaster** | `/bharatyatra-ops/notifications` | [`app/bharatyatra-ops/notifications/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/notifications/page.tsx) | `Operations Lead` |
-| **Ops Shift Management & Emergency Node Configuration** | `/bharatyatra-ops/settings` | [`app/bharatyatra-ops/settings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/settings/page.tsx) | `Operations Lead` |
-| **Active Ground Trips & Emergency Oversight** | `/bharatyatra-ops/trips` | [`app/bharatyatra-ops/trips/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/trips/page.tsx) | `Operations Lead` |
-| **Emergency Ground Node & Incident Intervention** | `/bharatyatra-ops/trips/[id]` | [`app/bharatyatra-ops/trips/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/trips/%5Bid%5D/page.tsx) | `Operations Lead` |
-| **Customer Service & User Profile Investigation** | `/bharatyatra-ops/users` | [`app/bharatyatra-ops/users/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/users/page.tsx) | `Operations Lead` |
-| **Customer Support Ticket & Booking History** | `/bharatyatra-ops/users/[id]` | [`app/bharatyatra-ops/users/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/users/%5Bid%5D/page.tsx) | `Operations Lead` |
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **BharatYatra Operations Command Hub** | `/bharatyatra-ops` | [`app/bharatyatra-ops/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/page.tsx) | `Ground Ops / Dispatch` | Live field logistics, airport/station fleet pickups, and guide dispatch |
+| **Ground Operations Activity & Event Log** | `/bharatyatra-ops/audit-logs` | [`app/bharatyatra-ops/audit-logs/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/audit-logs/page.tsx) | `Ground Ops / Dispatch` | Real-time operational events, driver assignments, and vehicle telemetry |
+| **Operations Booking Tracking & Verification** | `/bharatyatra-ops/bookings` | [`app/bharatyatra-ops/bookings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/bookings/page.tsx) | `Ground Ops / Dispatch` | Verification of traveler check-ins, transit tickets, and guide vouchers |
+| **Ground Operations KPI & Field Telemetry** | `/bharatyatra-ops/dashboard` | [`app/bharatyatra-ops/dashboard/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/dashboard/page.tsx) | `Ground Ops / Dispatch` | Active convoys, weather warnings, and roadside assistance alerts |
+| **Operations Staff Authentication Portal** | `/bharatyatra-ops/login` | [`app/bharatyatra-ops/login/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/login/page.tsx) | `Public (Ops Staff)` | Secured login for dispatch coordinators and ground fleet managers |
+| **Operational Alerts & Incident Feeds** | `/bharatyatra-ops/notifications` | [`app/bharatyatra-ops/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/notifications/page.tsx) | `Ground Ops / Dispatch` | SOS alerts, route diversions, roadblock notifications, and delay reports |
+| **Ground Operations Configuration & Rules** | `/bharatyatra-ops/settings` | [`app/bharatyatra-ops/settings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/settings/page.tsx) | `Ground Ops / Dispatch` | Pacing guidelines, buffer parameters, emergency contacts, and shifts |
+| **Live Road Trips & Convoy Monitoring** | `/bharatyatra-ops/trips` | [`app/bharatyatra-ops/trips/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/trips/page.tsx) | `Ground Ops / Dispatch` | Fleet tracking, driver contact links, and real-time waypoint radar |
+| **Convoy Telemetry & Incident Command** | `/bharatyatra-ops/trips/[id]` | [`app/bharatyatra-ops/trips/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/trips/[id]/page.tsx) | `Ground Ops / Dispatch` | Individual trip GPS coordinates, passenger roster, and vehicle diagnostics |
+| **Field Staff & Driver Directory** | `/bharatyatra-ops/users` | [`app/bharatyatra-ops/users/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/users/page.tsx) | `Ground Ops / Dispatch` | Certified drivers, licensed regional guides, and local coordinators |
+| **Field Staff Profile & Certification Dossier** | `/bharatyatra-ops/users/[id]` | [`app/bharatyatra-ops/users/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/bharatyatra-ops/users/[id]/page.tsx) | `Ground Ops / Dispatch` | Driving licenses, police verification, and safety ratings |
 
-## Bookings, Checkout & Settlement
-
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **Instant Booking Confirmation & Receipt** | `/booking/confirmation` | [`app/(customer)/booking/confirmation/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/confirmation/page.tsx) | `Public / Traveler` |
-| **Transaction Failed & Fallback Recovery Options** | `/booking/failed` | [`app/(customer)/booking/failed/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/failed/page.tsx) | `Public / Traveler` |
-| **Secure Payment Gateway Handoff Screen** | `/booking/redirect` | [`app/(customer)/booking/redirect/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/redirect/page.tsx) | `Public / Traveler` |
-| **Payment Succeeded & Sovereign Protection Engaged** | `/booking/success` | [`app/(customer)/booking/success/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/success/page.tsx) | `Public / Traveler` |
-| **Traveler Booking History & Active Vouchers** | `/bookings` | [`app/(customer)/bookings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/bookings/page.tsx) | `Public / Traveler` |
-| **Detailed Booking Voucher, QR Code & Cancel Options** | `/bookings/[id]` | [`app/(customer)/bookings/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/bookings/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Direct Booking Invoice Payment** | `/bookings/[id]/pay` | [`app/(customer)/bookings/[id]/pay/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/bookings/%5Bid%5D/pay/page.tsx) | `Public / Traveler` |
-| **Universal Travel Cart & Multi-Item Disbursal** | `/cart` | [`app/(customer)/cart/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/cart/page.tsx) | `Public / Traveler` |
-| **Expedition Checkout & Sovereign Guarantee** | `/checkout` | [`app/(customer)/checkout/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/checkout/page.tsx) | `Public / Traveler` |
-| **Unified Payment Method Selection & Checkout** | `/payment` | [`app/(customer)/payment/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/payment/page.tsx) | `Public / Traveler` |
-
-## Customer Discovery, Itinerary & Travel Products
-
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **Guided Activity, Safari & Excursion Details** | `/activities/[id]` | [`app/(customer)/activities/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/activities/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Autonomous AI Trip Generator** | `/ai-planner` | [`app/(customer)/ai-planner/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/ai-planner/page.tsx) | `Public / Traveler` |
-| **Early Access Voyager Onboarding** | `/beta-onboarding` | [`app/beta-onboarding/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/beta-onboarding/page.tsx) | `Public / Traveler` |
-| **Intercity Volvo & Electric Bus Booking** | `/buses` | [`app/(customer)/buses/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/buses/page.tsx) | `Public / Traveler` |
-| **Bus Seat Layout & Boarding Point Selection** | `/buses/[id]` | [`app/(customer)/buses/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/buses/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Cultural & Thematic Circuit Journeys** | `/circuits` | [`app/(customer)/circuits/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/circuits/page.tsx) | `Public / Traveler` |
-| **Multi-Day Circuit Overview & Route Details** | `/circuits/[id]` | [`app/(customer)/circuits/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/circuits/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Traveler Hub Dashboard & Next Expedition Overview** | `/dashboard` | [`app/(customer)/dashboard/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/dashboard/page.tsx) | `Public / Traveler` |
-| **Curated Destinations Directory** | `/destinations` | [`app/(customer)/destinations/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/destinations/page.tsx) | `Public / Traveler` |
-| **Single Destination Detail & Heritage Insights** | `/destinations/[id]` | [`app/(customer)/destinations/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/destinations/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Expenses** | `/expenses` | [`app/(customer)/expenses/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/expenses/page.tsx) | `Public / Traveler` |
-| **Cultural, Adventure & Spiritual Experiences** | `/experiences` | [`app/(customer)/experiences/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/experiences/page.tsx) | `Public / Traveler` |
-| **Single Experience Details & Slot Booking** | `/experiences/[id]` | [`app/(customer)/experiences/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/experiences/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Interactive India Destination Discovery** | `/explore` | [`app/(customer)/explore/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/explore/page.tsx) | `Public / Traveler` |
-| **User Feedback & Net Promoter Score Submission** | `/feedback` | [`app/feedback/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/feedback/page.tsx) | `Public / Traveler` |
-| **Domestic & Regional Flights Search** | `/flights` | [`app/(customer)/flights/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/flights/page.tsx) | `Public / Traveler` |
-| **Flight Booking, Fare Classes & Seat Select** | `/flights/[id]` | [`app/(customer)/flights/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/flights/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Homepage Alternative Portal** | `/home` | [`app/home/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/home/page.tsx) | `Public / Traveler` |
-| **Hotel Detail & Sovereign Room Booking** | `/hotels/[id]` | [`app/(customer)/hotels/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/hotels/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **GIS Interactive India Tourism Map** | `/map` | [`app/(customer)/map/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/map/page.tsx) | `Public / Traveler` |
-| **Saved Itineraries & Past Trips Catalog** | `/my-trips` | [`app/(customer)/my-trips/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/my-trips/page.tsx) | `Authenticated Traveler` |
-| **Travel Alerts, Flight Changes & Live Telemetry** | `/notifications` | [`app/(customer)/notifications/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/notifications/page.tsx) | `Authenticated Traveler` |
-| **Curated India Tour Packages Catalog** | `/packages` | [`app/(customer)/packages/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/packages/page.tsx) | `Public / Traveler` |
-| **Package Detail & Day-by-Day Expedition Itinerary** | `/packages/[slug]` | [`app/(customer)/packages/[slug]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/packages/%5Bslug%5D/page.tsx) | `Public / Traveler` |
-| **Page.tsx** | `/page.tsx` | [`app/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/page.tsx) | `Public / Traveler` |
-| **AI Intelligent Trip & Itinerary Planner** | `/plan` | [`app/(customer)/plan/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/plan/page.tsx) | `Public / Traveler` |
-| **Traveler Profile & Sovereign Voyager ID** | `/profile` | [`app/(customer)/profile/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/profile/page.tsx) | `Authenticated Traveler` |
-| **Traveler Communication & Notification Preferences** | `/profile/notifications` | [`app/(customer)/profile/notifications/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/profile/notifications/page.tsx) | `Authenticated Traveler` |
-| **Gastronomy & Local Dining Discovery** | `/restaurants` | [`app/(customer)/restaurants/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/restaurants/page.tsx) | `Public / Traveler` |
-| **Restaurant Details, Menus & Table Reservation** | `/restaurants/[id]` | [`app/(customer)/restaurants/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/restaurants/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Wishlist & Saved Places Collection** | `/saved` | [`app/(customer)/saved/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/saved/page.tsx) | `Authenticated Traveler` |
-| **India States & Union Territories Exploration** | `/states` | [`app/(customer)/states/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/states/page.tsx) | `Public / Traveler` |
-| **State Heritage, Culture & Circuit Guide** | `/states/[slug]` | [`app/(customer)/states/[slug]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/states/%5Bslug%5D/page.tsx) | `Public / Traveler` |
-| **State Transit Transition Screen** | `/states/loading` | [`app/(customer)/states/loading/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/states/loading/page.tsx) | `Public / Traveler` |
-| **Stays, Heritage Havelis & Boutique Hotels Directory** | `/stays` | [`app/(customer)/stays/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/stays/page.tsx) | `Public / Traveler` |
-| **Stay Details, Room Selection & Amenities** | `/stays/[id]` | [`app/(customer)/stays/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/stays/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **IRCTC Rail Booking & Train Search** | `/trains` | [`app/(customer)/trains/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trains/page.tsx) | `Public / Traveler` |
-| **Train Schedule, Coach Selection & Seat Availability** | `/trains/[id]` | [`app/(customer)/trains/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trains/%5Bid%5D/page.tsx) | `Public / Traveler` |
-
-## Supplier & Vendor Portal
-
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **Supplier Gateway Landing** | `/supplier` | [`app/supplier/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/page.tsx) | `Verified Supplier` |
-| **Activity & Guided Tour Slot Manager** | `/supplier/activities` | [`app/supplier/activities/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/activities/page.tsx) | `Verified Supplier` |
-| **Received Bookings & Traveler Arrival Verification** | `/supplier/bookings` | [`app/supplier/bookings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/bookings/page.tsx) | `Verified Supplier` |
-| **Booking Redemption & Voucher Check-in** | `/supplier/bookings/[id]` | [`app/supplier/bookings/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/bookings/%5Bid%5D/page.tsx) | `Verified Supplier` |
-| **Supplier Inventory & Booking Fulfillment Dashboard** | `/supplier/dashboard` | [`app/supplier/dashboard/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/dashboard/page.tsx) | `Verified Supplier` |
-| **Hotel Property & Room Allocation Manager** | `/supplier/hotels` | [`app/supplier/hotels/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/hotels/page.tsx) | `Verified Supplier` |
-| **Live Inventory Stock & Blackout Dates** | `/supplier/inventory` | [`app/supplier/inventory/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/inventory/page.tsx) | `Verified Supplier` |
-| **Supplier Portal Login** | `/supplier/login` | [`app/supplier/login/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/login/page.tsx) | `Public` |
-| **Supplier Net Settlement & Bank Invoices** | `/supplier/payments` | [`app/supplier/payments/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/payments/page.tsx) | `Verified Supplier` |
-| **Vendor Business Profile, GST & Banking Details** | `/supplier/profile` | [`app/supplier/profile/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/profile/page.tsx) | `Verified Supplier` |
-| **Supplier Application & Vendor Registration** | `/supplier/register` | [`app/supplier/register/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/register/page.tsx) | `Public` |
-| **Dining Table & Dining Slot Allocation** | `/supplier/restaurants` | [`app/supplier/restaurants/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/supplier/restaurants/page.tsx) | `Verified Supplier` |
-
-## Travel Partner Ecosystem
-
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **Customer Bookings for Partner Packages** | `/partner/bookings` | [`app/partner/bookings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/bookings/page.tsx) | `Verified Travel Partner` |
-| **Partner Commission Statements & Disbursals** | `/partner/commissions` | [`app/partner/commissions/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/commissions/page.tsx) | `Verified Travel Partner` |
-| **Partner Business Metrics, Bookings & Revenue** | `/partner/dashboard` | [`app/partner/dashboard/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/dashboard/page.tsx) | `Verified Travel Partner` |
-| **Partner Booking Alerts & Admin Review Feedback** | `/partner/notifications` | [`app/partner/notifications/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/notifications/page.tsx) | `Verified Travel Partner` |
-| **My Listed Tour Packages Catalog** | `/partner/packages` | [`app/partner/packages/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/packages/page.tsx) | `Verified Travel Partner` |
-| **Edit Package Details, Pricing & Availability** | `/partner/packages/[id]/edit` | [`app/partner/packages/[id]/edit/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/packages/%5Bid%5D/edit/page.tsx) | `Verified Travel Partner` |
-| **Create Tour Package (Day-by-Day Itinerary Builder)** | `/partner/packages/new` | [`app/partner/packages/new/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/packages/new/page.tsx) | `Verified Travel Partner` |
-| **Partner Agency Profile, Accreditations & Licenses** | `/partner/profile` | [`app/partner/profile/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/profile/page.tsx) | `Verified Travel Partner` |
-| **Bank Account, Tax Info (GST) & Payout Preferences** | `/partner/settings` | [`app/partner/settings/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partner/settings/page.tsx) | `Verified Travel Partner` |
-| **Partner Verification & Application Status Tracker** | `/partners/application-status` | [`app/partners/application-status/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partners/application-status/page.tsx) | `Public / Prospective Partner` |
-| **Travel Partner Application & Onboarding** | `/partners/register` | [`app/partners/register/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/partners/register/page.tsx) | `Public / Prospective Partner` |
 
 ## Trip Command Center, Splitter & Telemetry
 
-| Page Name & Purpose | Route URL | File Location | Access Level |
-| :--- | :--- | :--- | :--- |
-| **My Expeditions & Trip Portfolio** | `/trips` | [`app/(customer)/trips/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/page.tsx) | `Public / Traveler` |
-| **Trip Command Center Dashboard (Live Itinerary & Telematics)** | `/trips/[id]` | [`app/(customer)/trips/[id]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/page.tsx) | `Public / Traveler` |
-| **Expedition Item Cancellation & Refund Calculator** | `/trips/[id]/cancel/[bookingId]` | [`app/(customer)/trips/[id]/cancel/[bookingId]/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/cancel/%5BbookingId%5D/page.tsx) | `Public / Traveler` |
-| **Cost Intelligence & Expedition Budget Analytics** | `/trips/[id]/cost` | [`app/(customer)/trips/[id]/cost/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/cost/page.tsx) | `Public / Traveler` |
-| **Single Expense Log & Receipt Vault** | `/trips/[id]/expense` | [`app/(customer)/trips/[id]/expense/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/expense/page.tsx) | `Public / Traveler` |
-| **Group Expense Splitter & Settlement Ledger** | `/trips/[id]/expenses` | [`app/(customer)/trips/[id]/expenses/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/expenses/page.tsx) | `Public / Traveler` |
-| **Expense Settlement Optimizer & UPI Payouts** | `/trips/[id]/settle` | [`app/(customer)/trips/[id]/settle/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/settle/page.tsx) | `Public / Traveler` |
-| **Settlement Clearance Matrix & Summary** | `/trips/[id]/settlement` | [`app/(customer)/trips/[id]/settlement/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/%5Bid%5D/settlement/page.tsx) | `Public / Traveler` |
-| **Road Trip Vehicle Telematics & Fuel Calculator** | `/trips/road-trip` | [`app/(customer)/trips/road-trip/page.tsx`](file:///C:/Users/Pandya%20Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/road-trip/page.tsx) | `Public / Traveler` |
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **My Trips & Journey Vault (Command Hub)** | `/trips` | [`app/(customer)/trips/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/page.tsx) | `Authenticated Traveler` | Elevated trip dashboard with logo, travel telemetry, radar, and curated circuits |
+| **Trip Command Center & Live Telemetry** | `/trips/[id]` | [`app/(customer)/trips/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/page.tsx) | `Authenticated Traveler` | Real-time waypoint radar, vehicle diagnostics, itinerary nodes, and emergency SOS |
+| **Trip Item Cancellation & Refund Calculator** | `/trips/[id]/cancel/[bookingId]` | [`app/(customer)/trips/[id]/cancel/[bookingId]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/cancel/[bookingId]/page.tsx) | `Authenticated Traveler` | Cancellation policy calculation and refund breakdown to original payment method |
+| **Trip Cost Intelligence & Predictive Budget** | `/trips/[id]/cost` | [`app/(customer)/trips/[id]/cost/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/cost/page.tsx) | `Authenticated Traveler` | Category-wise expense breakdown, fuel cost predictions, and buffer safety |
+| **Trip Expense Quick Logger** | `/trips/[id]/expense` | [`app/(customer)/trips/[id]/expense/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/expense/page.tsx) | `Authenticated Traveler` | Log new fuel, toll, food, or stay expense with receipt and payer tags |
+| **Group Expense Split & Multi-Payer Wallet** | `/trips/[id]/expenses` | [`app/(customer)/trips/[id]/expenses/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/expenses/page.tsx) | `Authenticated Traveler` | Multi-payer expense ledger with minor-unit mathematical precision and balances |
+| **Debt Settlement & Payment Reconciliation** | `/trips/[id]/settle` | [`app/(customer)/trips/[id]/settle/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/settle/page.tsx) | `Authenticated Traveler` | One-click UPI payment between group members to settle outstanding shares |
+| **Final Circuit Settlement & Archive** | `/trips/[id]/settlement` | [`app/(customer)/trips/[id]/settlement/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/[id]/settlement/page.tsx) | `Authenticated Traveler` | Finalized group balance statement and audit record upon trip completion |
+| **Interactive Road Trip Navigator & Fuel Planner** | `/trips/road-trip` | [`app/(customer)/trips/road-trip/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trips/road-trip/page.tsx) | `Traveler` | Live mileage calculation, toll estimates, and verified highway dhabas |
 
-## Summary Statistics by Section
 
-| Section | Page Count | Primary Target Users |
-| :--- | :--- | :--- |
-| Admin Portal (Super-Admin & Operations) | **20** | Super Admins & Executive Staff |
-| Authentication, Security & Onboarding | **6** | All System Users |
-| BharatGateway FinTech Suite | **6** | FinTech Integrators & Merchants |
-| BharatYatra Ops Control Center | **11** | 24/7 Operations & Emergency Patrol |
-| Bookings, Checkout & Settlement | **10** | Travelers |
-| Customer Discovery, Itinerary & Travel Products | **38** | Travelers |
-| Supplier & Vendor Portal | **12** | Hotels, Activity Guides & Fleet Owners |
-| Travel Partner Ecosystem | **11** | DMC Operators & Verified Travel Partners |
-| Trip Command Center, Splitter & Telemetry | **9** | Travelers |
-| **TOTAL COMPLETE REPOSITORY PAGES** | **123** | **Entire BharatYatra Platform** |
+## Bookings, Checkout & Settlement
 
-## Route Parameters Legend
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Booking Confirmation & Printable Receipt** | `/booking/confirmation` | [`app/(customer)/booking/confirmation/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/confirmation/page.tsx) | `Authenticated Traveler` | Verified booking ID, downloadable invoice, and WhatsApp summary |
+| **Payment Failure Recovery & Assistance** | `/booking/failed` | [`app/(customer)/booking/failed/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/failed/page.tsx) | `Traveler` | Failed transaction details, retry with alternate UPI/Card, and support link |
+| **Gateway 3DS & Secure Bank Redirection** | `/booking/redirect` | [`app/(customer)/booking/redirect/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/redirect/page.tsx) | `Traveler` | Intermediate redirection bridge during banking authentication |
+| **Booking Success & Itinerary Dispatch** | `/booking/success` | [`app/(customer)/booking/success/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/booking/success/page.tsx) | `Authenticated Traveler` | Immediate access to hotel vouchers, bus tickets, and trip command center |
+| **My Bookings & Travel History** | `/bookings` | [`app/(customer)/bookings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/bookings/page.tsx) | `Authenticated Traveler` | Complete list of past and upcoming hotel, bus, flight, and tour bookings |
+| **Booking Detail, Voucher & QR Pass** | `/bookings/[id]` | [`app/(customer)/bookings/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/bookings/[id]/page.tsx) | `Authenticated Traveler` | Detailed ticket voucher, printable QR check-in code, and cancellation option |
+| **Pending Booking Checkout & Payment** | `/bookings/[id]/pay` | [`app/(customer)/bookings/[id]/pay/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/bookings/[id]/pay/page.tsx) | `Authenticated Traveler` | Complete payment for reserved or partially paid itineraries |
+| **Travel Cart & Multi-Product Checkout Drawer** | `/cart` | [`app/(customer)/cart/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/cart/page.tsx) | `Authenticated Traveler` | Bundled hotels, buses, tours, and activities ready for checkout |
+| **Unified Sovereign Checkout Terminal** | `/checkout` | [`app/(customer)/checkout/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/checkout/page.tsx) | `Authenticated Traveler` | Traveler details, GST invoice option, coupon codes, and payment options |
+| **Generic Payment Bridge Terminal** | `/payment` | [`app/(customer)/payment/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/payment/page.tsx) | `Traveler` | Fallback payment handler for external bookings and custom disbursements |
 
-- `[id]`: Dynamic entity identifier (Trip ID, Booking ID, Partner ID, Supplier ID, Restaurant ID, Stay ID, etc.)
-- `[slug]`: URL slug identifier (e.g. State slug `gujarat`, Package slug `golden-triangle-luxury-expedition`)
-- `[orderId]`: BharatGateway FinTech unique order transaction identifier
-- `[bookingId]`: Specific booking record being modified or cancelled
+
+## Authentication, Security & Onboarding
+
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **OAuth Callback & Session Verification** | `/auth/callback` | [`app/auth/callback/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/auth/callback/page.tsx) | `Public / Traveler` | Supabase OAuth token exchange, secure cookie setting, and redirection |
+| **SMS / WhatsApp One-Time Password Verification** | `/auth/verify-otp` | [`app/auth/verify-otp/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/auth/verify-otp/page.tsx) | `Public / Traveler` | Mobile phone verification and session restoration |
+| **VIP Early Access & Beta Traveler Onboarding** | `/beta-onboarding` | [`app/beta-onboarding/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/beta-onboarding/page.tsx) | `Invited Travelers` | Early access features, special coupons, and prototype feedback |
+| **Traveler Login & Authentication Portal** | `/login` | [`app/(customer)/login/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/login/page.tsx) | `Public` | Email, OTP, and social sign-in with persistent 30-day session security |
+| **Traveler Personality & Preference Setup** | `/onboarding/travel-profile` | [`app/(customer)/onboarding/travel-profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/onboarding/travel-profile/page.tsx) | `Authenticated Traveler` | Pacing, food preferences, accessibility requirements, and budget choices |
+| **New Traveler Account Registration** | `/register` | [`app/(customer)/register/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/register/page.tsx) | `Public` | Traveler registration with preferences, home city, and identity info |
+| **Traveler Quick Signup & Welcome Flow** | `/signup` | [`app/(customer)/signup/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/signup/page.tsx) | `Public` | One-click account setup with instant itinerary vault creation |
+
+
+## BharatGateway FinTech Suite
+
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **BharatGateway™ FinTech Architecture Overview** | `/payment-gateway` | [`app/payment-gateway/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/payment-gateway/page.tsx) | `Public / Developers` | Enterprise payment infrastructure, multi-bank routing, and UPI docs |
+| **BharatGateway Merchant & Transaction Terminal** | `/payment-gateway/admin` | [`app/payment-gateway/admin/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/payment-gateway/admin/page.tsx) | `FinTech Super Admin` | Double-entry ledger balances, payout settlement queues, and risk scores |
+| **Hosted Sovereign Checkout Experience** | `/payment-gateway/checkout/[orderId]` | [`app/payment-gateway/checkout/[orderId]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/payment-gateway/checkout/[orderId]/page.tsx) | `Public / Traveler` | PCI-DSS compliant payment interface for UPI, Cards, NetBanking, and Wallets |
+| **BharatGateway Developer API & SDK Docs** | `/payment-gateway/docs` | [`app/payment-gateway/docs/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/payment-gateway/docs/page.tsx) | `Public / Developers` | Webhooks, idempotent transaction creation, and SDK integration guides |
+| **Merchant Portal & API Key Management** | `/payment-gateway/merchant` | [`app/payment-gateway/merchant/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/payment-gateway/merchant/page.tsx) | `Registered Merchant` | Publishable and secret API keys, webhook signing secrets, and reports |
+| **FinTech Transaction Fees & Merchant Tiers** | `/payment-gateway/pricing` | [`app/payment-gateway/pricing/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/payment-gateway/pricing/page.tsx) | `Public / Merchants` | MDR rates for UPI (0%), RuPay Debit, Credit Cards, and net settlement |
+
+
+## Travel Partner Ecosystem
+
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Partner Agency Booking Portfolio** | `/partner/bookings` | [`app/partner/bookings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/bookings/page.tsx) | `Travel Partner` | Bookings dispatched to this specific partner with status and guest roster |
+| **Partner Commission & Payout Ledger** | `/partner/commissions` | [`app/partner/commissions/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/commissions/page.tsx) | `Travel Partner` | Earned commissions, payout dates, TDS deductions, and bank invoices |
+| **Travel Partner Command Center** | `/partner/dashboard` | [`app/partner/dashboard/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/dashboard/page.tsx) | `Travel Partner` | Monthly sales, active tours, client satisfaction score, and tier progress |
+| **Partner Updates & Booking Alerts** | `/partner/notifications` | [`app/partner/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/notifications/page.tsx) | `Travel Partner` | Instant booking notifications, cancellation alerts, and admin approvals |
+| **Partner Handcrafted Package Catalog** | `/partner/packages` | [`app/partner/packages/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/packages/page.tsx) | `Travel Partner` | Custom packages created by this agency with pricing and itineraries |
+| **Package Itinerary & Pricing Editor** | `/partner/packages/[id]/edit` | [`app/partner/packages/[id]/edit/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/packages/[id]/edit/page.tsx) | `Travel Partner` | Modify tour highlights, departure dates, hotel inclusions, and pricing |
+| **Create New Handcrafted Tour Package** | `/partner/packages/new` | [`app/partner/packages/new/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/packages/new/page.tsx) | `Travel Partner` | Draft multi-day tour package with day-by-day itinerary and photos |
+| **Partner Agency Business Profile & Branding** | `/partner/profile` | [`app/partner/profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/profile/page.tsx) | `Travel Partner` | Agency logo, description, registered address, and customer ratings |
+| **Partner Account & Banking Configuration** | `/partner/settings` | [`app/partner/settings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partner/settings/page.tsx) | `Travel Partner` | Bank account details, GST number, payout preferences, and staff logins |
+| **Partner Application Tracking Portal** | `/partners/application-status` | [`app/partners/application-status/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partners/application-status/page.tsx) | `Applicant Agency` | Track registration review status and licensing approval by BharatYatra |
+| **Travel Agency & Tour Operator Partnership Application** | `/partners/register` | [`app/partners/register/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/partners/register/page.tsx) | `Public Agencies` | Onboarding form for travel agents, ground handlers, and fleet operators |
+
+
+## Supplier & Vendor Portal
+
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Supplier Platform Overview & Dashboard** | `/supplier` | [`app/supplier/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/page.tsx) | `Registered Supplier` | Overview of properties, vehicle fleets, and daily booking requests |
+| **Activity & Excursion Inventory Management** | `/supplier/activities` | [`app/supplier/activities/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/activities/page.tsx) | `Registered Supplier` | Manage safari slots, heritage walks, river rafting, and VIP tickets |
+| **Supplier Booking Queue & Confirmations** | `/supplier/bookings` | [`app/supplier/bookings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/bookings/page.tsx) | `Registered Supplier` | Accept or reject incoming booking requests and view voucher details |
+| **Supplier Booking Voucher & Manifest** | `/supplier/bookings/[id]` | [`app/supplier/bookings/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/bookings/[id]/page.tsx) | `Registered Supplier` | Guest contact, check-in date, special requests, and payout amounts |
+| **Supplier Revenue & Occupancy Analytics** | `/supplier/dashboard` | [`app/supplier/dashboard/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/dashboard/page.tsx) | `Registered Supplier` | Weekly occupancy, vehicle utilization rates, and customer reviews |
+| **Hotel & Resort Room Inventory Controller** | `/supplier/hotels` | [`app/supplier/hotels/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/hotels/page.tsx) | `Registered Supplier` | Room categories, seasonal rates, meal plan options, and block dates |
+| **Master Real-Time Inventory Matrix** | `/supplier/inventory` | [`app/supplier/inventory/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/inventory/page.tsx) | `Registered Supplier` | Live availability calendar across all supplier accommodations and transit |
+| **Supplier Portal Authentication** | `/supplier/login` | [`app/supplier/login/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/login/page.tsx) | `Public (Suppliers)` | Supplier account access with phone OTP and email credentials |
+| **Supplier Invoices & Remittance History** | `/supplier/payments` | [`app/supplier/payments/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/payments/page.tsx) | `Registered Supplier` | Cleared payouts, pending settlements, and tax withholding certificates |
+| **Supplier Business & Facility Profile** | `/supplier/profile` | [`app/supplier/profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/profile/page.tsx) | `Registered Supplier` | Hotel amenities, fleet specs, driver languages, and property photos |
+| **New Supplier & Property Registration** | `/supplier/register` | [`app/supplier/register/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/register/page.tsx) | `Public Suppliers` | Register hotel, homestay, tempo traveller, or tourist transport fleet |
+| **Dining & Culinary Venue Management** | `/supplier/restaurants` | [`app/supplier/restaurants/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/supplier/restaurants/page.tsx) | `Registered Supplier` | Restaurant table reservations, thali menus, and dining packages |
+
+
+## Customer Discovery, Itinerary & Travel Products
+
+| Page Name & Purpose | Route URL | File Location | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **BharatYatra Sovereign Homepage & Hero Portal** | `/` | [`app/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/page.tsx) | `Public` | Main marketing hero, AI travel prompt bar, popular circuits, and state guides |
+| **Activity Details & Direct Booking** | `/activities/[id]` | [`app/(customer)/activities/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/activities/[id]/page.tsx) | `Public / Traveler` | Tour details, timing slots, inclusions, guide info, and reviews |
+| **Nexi AI Custom Itinerary Generator** | `/ai-planner` | [`app/(customer)/ai-planner/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/ai-planner/page.tsx) | `Public / Traveler` | Generate custom multi-day plans based on origin, duration, and pace |
+| **Intercity Bus Discovery & Route Finder** | `/buses` | [`app/(customer)/buses/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/buses/page.tsx) | `Public / Traveler` | GSRTC, Volvo, and luxury sleeper buses with timing and fare filters |
+| **Bus Seat Selection & Boarding Point Selector** | `/buses/[id]` | [`app/(customer)/buses/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/buses/[id]/page.tsx) | `Public / Traveler` | Interactive 2+1 and 2+2 seat layout, pickup points, and amenities |
+| **Signature Pan-Indian Travel Circuits** | `/circuits` | [`app/(customer)/circuits/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/circuits/page.tsx) | `Public / Traveler` | Handcrafted regional circuits like Royal Kutch, Coastal Gujarat, and Golden Triangle |
+| **Circuit Day-by-Day Master Itinerary** | `/circuits/[id]` | [`app/(customer)/circuits/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/circuits/[id]/page.tsx) | `Public / Traveler` | Interactive map route, daily schedule, included stays, and pricing |
+| **Traveler Personal Dashboard & Travel Vault** | `/dashboard` | [`app/(customer)/dashboard/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/dashboard/page.tsx) | `Authenticated Traveler` | Saved trips, quick booking links, loyalty points, and recent searches |
+| **Pan-India Destination Directory (36 States)** | `/destinations` | [`app/(customer)/destinations/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/destinations/page.tsx) | `Public / Traveler` | Explore top cities, spiritual anchors, hill stations, and heritage sites |
+| **Destination Comprehensive Travel Guide** | `/destinations/[id]` | [`app/(customer)/destinations/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/destinations/[id]/page.tsx) | `Public / Traveler` | Weather, best time to visit, top sights, food recommendations, and stays |
+| **Global Travel Expenses Overview** | `/expenses` | [`app/(customer)/expenses/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/expenses/page.tsx) | `Authenticated Traveler` | Cross-trip expense summaries, annual travel spend, and saved receipts |
+| **Curated Cultural & Adventure Experiences** | `/experiences` | [`app/(customer)/experiences/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/experiences/page.tsx) | `Public / Traveler` | Local craft workshops, desert safaris, culinary trails, and village tours |
+| **Experience Booking & Ticket Pass** | `/experiences/[id]` | [`app/(customer)/experiences/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/experiences/[id]/page.tsx) | `Public / Traveler` | Host profile, experience duration, meeting spot, and ticket availability |
+| **Interactive Indian Travel Explorer & AI Recommendations** | `/explore` | [`app/(customer)/explore/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/explore/page.tsx) | `Public / Traveler` | Discovery feed tailored by budget, theme (Spiritual, Adventure, Heritage), and season |
+| **User Feedback & Platform Experience Survey** | `/feedback` | [`app/feedback/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/feedback/page.tsx) | `Public / Traveler` | Platform satisfaction rating, review form, and feedback collection |
+| **Domestic Flights Discovery & Fare Comparison** | `/flights` | [`app/(customer)/flights/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/flights/page.tsx) | `Public / Traveler` | Direct flights, budget carriers, baggage allowances, and departure times |
+| **Flight Booking & Passenger Manifest** | `/flights/[id]` | [`app/(customer)/flights/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/flights/[id]/page.tsx) | `Public / Traveler` | Seat selection, meal add-ons, passenger details, and airline baggage rules |
+| **Page: /home** | `/home` | [`app/home/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/home/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /hotels/[id]** | `/hotels/[id]` | [`app/(customer)/hotels/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/hotels/[id]/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Interactive GIS Map Discovery & Route Visualizer** | `/map` | [`app/(customer)/map/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/map/page.tsx) | `Public / Traveler` | Full-screen Leaflet map displaying landmarks, stops, and highway routes |
+| **Saved Trips Alias & Vault Redirect** | `/my-trips` | [`app/(customer)/my-trips/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/my-trips/page.tsx) | `Authenticated Traveler` | Alias route seamlessly linked to the primary /trips command center |
+| **Page: /notifications** | `/notifications` | [`app/(customer)/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/notifications/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Curated Tour Packages Catalog** | `/packages` | [`app/(customer)/packages/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/packages/page.tsx) | `Public / Traveler` | Family tours, honeymoon packages, weekend getaways, and spiritual yatras |
+| **Tour Package Detail, Dates & Pricing Calculator** | `/packages/[slug]` | [`app/(customer)/packages/[slug]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/packages/[slug]/page.tsx) | `Public / Traveler` | Tiered pricing (Budget, Premium, Luxury), date calendar, and inclusions |
+| **Interactive AI Trip Planner & Route Builder** | `/plan` | [`app/(customer)/plan/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/plan/page.tsx) | `Public / Traveler` | Personalized day-by-day planner with custom destinations and instant save |
+| **Privacy Policy & Data Sovereign Governance** | `/privacy` | [`app/privacy/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/privacy/page.tsx) | `Public` | Data protection terms, cookie policies, and GDPR / DPDP compliance |
+| **Traveler Profile, Preferences & Security Settings** | `/profile` | [`app/(customer)/profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/profile/page.tsx) | `Authenticated Traveler` | Name, contact, travel ID proofs, emergency contact, and language |
+| **Traveler Notification Preferences & History** | `/profile/notifications` | [`app/(customer)/profile/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/profile/notifications/page.tsx) | `Authenticated Traveler` | WhatsApp trip updates, booking alerts, and marketing preference toggles |
+| **Curated Dining & Regional Food Guide** | `/restaurants` | [`app/(customer)/restaurants/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/restaurants/page.tsx) | `Public / Traveler` | Authentic Kathiyawadi, Gujarati thali, street food, and fine dining |
+| **Restaurant Menu, Hours & Table Booking** | `/restaurants/[id]` | [`app/(customer)/restaurants/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/restaurants/[id]/page.tsx) | `Public / Traveler` | Signature dishes, pricing for two, hygiene ratings, and table reservations |
+| **Wishlist & Saved Places Collection** | `/saved` | [`app/(customer)/saved/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/saved/page.tsx) | `Authenticated Traveler` | Bookmarked hotels, itineraries, packages, and hidden gems |
+| **All 36 States & Union Territories of India** | `/states` | [`app/(customer)/states/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/states/page.tsx) | `Public / Traveler` | Complete geographic directory of Indian states with cultural overviews |
+| **State Tourism Portal & Regional Circuits** | `/states/[slug]` | [`app/(customer)/states/[slug]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/states/[slug]/page.tsx) | `Public / Traveler` | State highlights, top districts, regional cuisine, and tourism circuits |
+| **State Tourism Skeleton Preloader** | `/states/loading` | [`app/(customer)/states/loading/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/states/loading/page.tsx) | `System / Client` | Optimized loading skeleton for fluid high-speed page transitions |
+| **Verified Accommodations, Heritage Haveli & Resorts** | `/stays` | [`app/(customer)/stays/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/stays/page.tsx) | `Public / Traveler` | Heritage hotels, tented cities, homestays, and budget guest houses |
+| **Stay Details, Room Selection & Amenities** | `/stays/[id]` | [`app/(customer)/stays/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/stays/[id]/page.tsx) | `Public / Traveler` | Photo gallery, room categories, breakfast options, and guest reviews |
+| **Terms of Service & Traveler Agreement** | `/terms` | [`app/terms/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/terms/page.tsx) | `Public` | Legal contract, cancellations, refunds, liability, and operator rules |
+| **IRCTC Train Discovery & Live Schedule** | `/trains` | [`app/(customer)/trains/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trains/page.tsx) | `Public / Traveler` | Vande Bharat, Rajdhani, and express trains with route stops and coach classes |
+| **Train Route Details, Station Stops & Fare Matrix** | `/trains/[id]` | [`app/(customer)/trains/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_4/app/(customer)/trains/[id]/page.tsx) | `Public / Traveler` | Intermediate station halt timings, distance km, and class availability |
+
