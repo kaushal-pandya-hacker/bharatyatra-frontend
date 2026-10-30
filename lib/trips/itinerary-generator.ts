@@ -104,7 +104,7 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
   }
 
   // Pricing calculation rate
-  const pricePerPaxPerDay =
+  let pricePerPaxPerDay =
     budgetTier === 'luxury' ? 13500 : budgetTier === 'balanced' ? 6000 : 2500;
 
   // 3. If NO places selected, return zero state cleanly
@@ -162,7 +162,20 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
   const estimatedTravelTime = `${Math.round(estimatedHours)} hrs total transit from ${originCity}`;
 
   // 8. Total Package Cost
-  const totalPackageCost = pricePerPaxPerDay * travelers * totalDays;
+  // 8. Calibrated Hybrid Cost Math (Room-based & vehicle-based)
+  const roomsCount = Math.max(1, Math.ceil(travelers / 2));
+  const vehiclesCount = Math.max(1, Math.ceil(travelers / 4));
+  const nightCostPerRoom = budgetTier === 'luxury' ? 12000 : budgetTier === 'balanced' ? 2600 : 1200;
+  const totalAccom = nightCostPerRoom * roomsCount * totalNights;
+  const dailyVehicleRate = budgetTier === 'luxury' ? 4500 : budgetTier === 'balanced' ? 1800 : 600;
+  const totalTransport = dailyVehicleRate * vehiclesCount * totalDays;
+  const dailyFood = budgetTier === 'luxury' ? 3000 : budgetTier === 'balanced' ? 850 : 400;
+  const totalFood = dailyFood * travelers * totalDays;
+  const totalActivities = selectedPlaces.length * 150 * travelers;
+  const preTaxSubtotal = totalAccom + totalTransport + totalFood + totalActivities;
+  const taxRate = budgetTier === 'luxury' ? 0.08 : 0.05;
+  const totalPackageCost = Math.round(preTaxSubtotal * (1 + taxRate));
+  pricePerPaxPerDay = Math.round(totalPackageCost / Math.max(1, travelers * totalDays));
 
   // 9. Generate Day-by-Day Itinerary Schedule strictly starting from originCity
   const itineraryDays: DayItinerary[] = [];

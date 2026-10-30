@@ -24,13 +24,14 @@ import {
 } from 'lucide-react';
 
 import { ProtectedRoute } from '@/lib/auth/protected-route';
+import { EndToEndBookingCoordinator } from '@/components/booking/EndToEndBookingCoordinator';
 
 function MyBookingsPageContent() {
   const { token, user } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'ALL' | 'UPCOMING' | 'PAST' | 'CANCELLED'>('ALL');
+  const [activeTab, setActiveTab] = useState<'COORDINATOR' | 'ALL' | 'UPCOMING' | 'PAST' | 'CANCELLED'>('COORDINATOR');
   const [productTypeFilter, setProductTypeFilter] = useState<string>('ALL');
 
   // Cancel Modal State
@@ -42,47 +43,23 @@ function MyBookingsPageContent() {
   const fetchBookings = async () => {
     setLoading(true);
     setError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 
     try {
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
       const headers: any = {};
-      if (token) headers.Authorization = `Bearer ${token}`;
+      if (effectiveToken) headers.Authorization = `Bearer ${effectiveToken}`;
 
-      const res = await fetch(`${apiBase}/bookings`, { headers });
+      const res = await fetch('/api/v1/bookings', { headers });
 
       if (res.ok) {
         const json = await res.json();
         setBookings(json.data || []);
       } else {
-        // Fallback demo bookings list
-        setBookings([
-          {
-            id: 'demo-booking-1',
-            bookingReference: 'CF-HTL-2026-98402',
-            bookingType: 'HOTEL',
-            inventoryType: 'HOTEL',
-            status: 'CONFIRMED',
-            startDate: '2026-10-15T00:00:00.000Z',
-            endDate: '2026-10-17T00:00:00.000Z',
-            adultCount: 2,
-            childCount: 0,
-            guestCount: 2,
-            totalAmountInr: 9600,
-            currency: 'INR',
-            inventoryTitle: 'Hyatt Regency Ahmedabad',
-            hotelDetail: {
-              supplierReference: 'HBX-REF-884012',
-              hotelName: 'Hyatt Regency Ahmedabad',
-              roomName: 'King Deluxe Room with River View',
-              boardName: 'Breakfast Included',
-              cancellationPolicy: 'Refundable up to 24h prior to check-in',
-            },
-            createdAt: new Date().toISOString(),
-          },
-        ]);
+        // Zero demo mock booking injection — clean empty state
+        setBookings([]);
       }
     } catch (err: any) {
-      setError(err.message || 'Error loading bookings.');
+      setBookings([]);
     } finally {
       setLoading(false);
     }
@@ -98,18 +75,13 @@ function MyBookingsPageContent() {
 
     setCancelling(true);
     setCancelError(null);
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-
     try {
-      const endpoint = cancelModalBooking.bookingType === 'HOTEL'
-        ? `${apiBase}/hotels/cancel/${cancelModalBooking.bookingReference || cancelModalBooking.id}`
-        : `${apiBase}/bookings/${cancelModalBooking.id}/cancel`;
-
       const headers: any = { 'Content-Type': 'application/json' };
-      if (token) headers.Authorization = `Bearer ${token}`;
+      const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
+      if (effectiveToken) headers.Authorization = `Bearer ${effectiveToken}`;
 
-      const res = await fetch(endpoint, {
-        method: 'POST',
+      const res = await fetch(`/api/v1/bookings/${cancelModalBooking.id}`, {
+        method: 'PATCH',
         headers,
         body: JSON.stringify({
           cancellationReason: cancellationReason || 'Customer requested cancellation via portal',
@@ -201,6 +173,16 @@ function MyBookingsPageContent() {
 
         {/* Status Tabs */}
         <div className="flex flex-wrap items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs">
+          <button
+            onClick={() => setActiveTab('COORDINATOR')}
+            className={`rounded-lg px-3 py-1 font-bold transition-colors ${
+              activeTab === 'COORDINATOR'
+                ? 'bg-orange-500 text-white shadow-sm'
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            AI 2.0 Coordinated Trip
+          </button>
           {(['ALL', 'UPCOMING', 'PAST', 'CANCELLED'] as const).map((tab) => (
             <button
               key={tab}
@@ -217,8 +199,10 @@ function MyBookingsPageContent() {
         </div>
       </div>
 
-      {/* Bookings List */}
-      {loading ? (
+      {/* Bookings List or AI 2.0 Coordinator */}
+      {activeTab === 'COORDINATOR' ? (
+        <EndToEndBookingCoordinator />
+      ) : loading ? (
         <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center text-slate-400 space-y-3">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-amber-500" />
           <p className="text-xs">Fetching your travel reservations...</p>

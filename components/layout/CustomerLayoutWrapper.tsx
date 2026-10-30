@@ -10,6 +10,7 @@ import { AccessibilityProvider } from '@/lib/accessibility/accessibility-context
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { BookingGuardProvider } from '@/components/booking/BookingGuardProvider';
 import { DestinationSelectionProvider } from '@/lib/tourism/destination-selection-context';
+import { NexiProvider } from '@/lib/nexi/nexi-context';
 import GlobalDestinationSelectionBar from '@/components/travel/GlobalDestinationSelectionBar';
 
 import { AccessibilityModal } from '@/components/accessibility/AccessibilityModal';
@@ -17,10 +18,6 @@ import { AccessibilityModal } from '@/components/accessibility/AccessibilityModa
 import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
 
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
   const pathname = usePathname();
   const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
   const isAdminPath = cleanPath.startsWith('/bharatyatra-ops');
@@ -36,9 +33,11 @@ export function CustomerLayoutWrapper({ children }: { children: React.ReactNode 
         <AuthProvider>
           <BookingGuardProvider>
             <DestinationSelectionProvider>
-              <main className="min-h-screen">{children}</main>
-              <AccessibilityModal />
-              <NexiChatFloating />
+              <NexiProvider>
+                <div className="min-h-screen">{children}</div>
+                <AccessibilityModal />
+                <NexiChatFloating />
+              </NexiProvider>
             </DestinationSelectionProvider>
           </BookingGuardProvider>
         </AuthProvider>
@@ -51,13 +50,15 @@ export function CustomerLayoutWrapper({ children }: { children: React.ReactNode 
       <AuthProvider>
         <BookingGuardProvider>
           <DestinationSelectionProvider>
-            <Header />
-            <main className="flex-1 pb-16 md:pb-0">{children}</main>
-            <Footer />
-            <MobileBottomNav />
-            <GlobalDestinationSelectionBar />
-            <AccessibilityModal />
-            <NexiChatFloating />
+            <NexiProvider>
+              <Header />
+              <div className="flex-1 pb-16 lg:pb-0">{children}</div>
+              <Footer />
+              <MobileBottomNav />
+              <GlobalDestinationSelectionBar />
+              <AccessibilityModal />
+              <NexiChatFloating />
+            </NexiProvider>
           </DestinationSelectionProvider>
         </BookingGuardProvider>
       </AuthProvider>

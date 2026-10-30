@@ -1,0 +1,1255 @@
+{
+  "version": "2.0-verified-baseline",
+  "auditDate": "2026-10-30",
+  "description": "BharatYatra AI 2.0 National Pricing Benchmark across 6 Core Corridors",
+  "nationalBenchmarkRoutes": [
+    {
+      "id": "BM-AMD-LADAKH",
+      "origin": "Ahmedabad",
+      "destination": "Ladakh (Leh)",
+      "distanceKm": 2450,
+      "terrain": "high-altitude-pass",
+      "altitudeMeters": 3524,
+      "recommendedDays": 8,
+      "quickDays": 6,
+      "extendedDays": 11,
+      "flightReturnEstimateInr": 14500,
+      "trainReturnEstimateInr": 4200,
+      "hotelPerRoomBudget": 2200,
+      "hotelPerRoomStandard": 3800,
+      "hotelPerRoomPremium": 6500,
+      "hotelPerRoomLuxury": 14000,
+      "localCabPerDayBudget": 3500,
+      "localCabPerDayStandard": 4200,
+      "localCabPerDayPremium": 5800,
+      "localCabPerDayLuxury": 8500,
+      "foodPerPaxPerDay": 750,
+      "tierEvaluations": {
+        "budget": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 8,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 8400,
+              "accommodation": 15400,
+              "localSightseeingCab": 28000,
+              "foodAndDining": 12000,
+              "activitiesAndPermits": 800,
+              "gstTax": 3230,
+              "totalVerifiedEstimate": 67830,
+              "perPersonCost": 33915
+            },
+            "legacyFlawedTotalInr": 56000,
+            "pricingVariance": {
+              "absoluteInflationInr": -11830,
+              "percentageInflation": "-17%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 8,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 16800,
+              "accommodation": 30800,
+              "localSightseeingCab": 28000,
+              "foodAndDining": 24000,
+              "activitiesAndPermits": 1600,
+              "gstTax": 5060,
+              "totalVerifiedEstimate": 106260,
+              "perPersonCost": 26565
+            },
+            "legacyFlawedTotalInr": 112000,
+            "pricingVariance": {
+              "absoluteInflationInr": 5740,
+              "percentageInflation": "5%"
+            }
+          }
+        ],
+        "standard": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 8,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 20800,
+              "accommodation": 26600,
+              "localSightseeingCab": 33600,
+              "foodAndDining": 12000,
+              "activitiesAndPermits": 1600,
+              "gstTax": 4730,
+              "totalVerifiedEstimate": 99330,
+              "perPersonCost": 49665
+            },
+            "legacyFlawedTotalInr": 96000,
+            "pricingVariance": {
+              "absoluteInflationInr": -3330,
+              "percentageInflation": "-3%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 8,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 41600,
+              "accommodation": 53200,
+              "localSightseeingCab": 33600,
+              "foodAndDining": 24000,
+              "activitiesAndPermits": 3200,
+              "gstTax": 7780,
+              "totalVerifiedEstimate": 163380,
+              "perPersonCost": 40845
+            },
+            "legacyFlawedTotalInr": 192000,
+            "pricingVariance": {
+              "absoluteInflationInr": 28620,
+              "percentageInflation": "18%"
+            }
+          }
+        ],
+        "premium": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 8,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 29000,
+              "accommodation": 45500,
+              "localSightseeingCab": 46400,
+              "foodAndDining": 12000,
+              "activitiesAndPermits": 3000,
+              "gstTax": 6795,
+              "totalVerifiedEstimate": 142695,
+              "perPersonCost": 71348
+            },
+            "legacyFlawedTotalInr": 152000,
+            "pricingVariance": {
+              "absoluteInflationInr": 9305,
+              "percentageInflation": "7%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 8,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 58000,
+              "accommodation": 91000,
+              "localSightseeingCab": 46400,
+              "foodAndDining": 24000,
+              "activitiesAndPermits": 6000,
+              "gstTax": 11270,
+              "totalVerifiedEstimate": 236670,
+              "perPersonCost": 59168
+            },
+            "legacyFlawedTotalInr": 304000,
+            "pricingVariance": {
+              "absoluteInflationInr": 67330,
+              "percentageInflation": "28%"
+            }
+          }
+        ],
+        "luxury": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 8,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 52200,
+              "accommodation": 98000,
+              "localSightseeingCab": 68000,
+              "foodAndDining": 12000,
+              "activitiesAndPermits": 5000,
+              "gstTax": 11760,
+              "totalVerifiedEstimate": 246960,
+              "perPersonCost": 123480
+            },
+            "legacyFlawedTotalInr": 216000,
+            "pricingVariance": {
+              "absoluteInflationInr": -30960,
+              "percentageInflation": "-13%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 8,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 104400,
+              "accommodation": 196000,
+              "localSightseeingCab": 68000,
+              "foodAndDining": 24000,
+              "activitiesAndPermits": 10000,
+              "gstTax": 20120,
+              "totalVerifiedEstimate": 422520,
+              "perPersonCost": 105630
+            },
+            "legacyFlawedTotalInr": 432000,
+            "pricingVariance": {
+              "absoluteInflationInr": 9480,
+              "percentageInflation": "2%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "BM-AMD-GOA",
+      "origin": "Ahmedabad",
+      "destination": "Goa",
+      "distanceKm": 1100,
+      "terrain": "coastal",
+      "altitudeMeters": 10,
+      "recommendedDays": 5,
+      "quickDays": 3,
+      "extendedDays": 7,
+      "flightReturnEstimateInr": 7500,
+      "trainReturnEstimateInr": 2100,
+      "hotelPerRoomBudget": 1500,
+      "hotelPerRoomStandard": 3200,
+      "hotelPerRoomPremium": 5500,
+      "hotelPerRoomLuxury": 12500,
+      "localCabPerDayBudget": 1800,
+      "localCabPerDayStandard": 2400,
+      "localCabPerDayPremium": 3800,
+      "localCabPerDayLuxury": 6000,
+      "foodPerPaxPerDay": 650,
+      "tierEvaluations": {
+        "budget": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 5,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 4200,
+              "accommodation": 6000,
+              "localSightseeingCab": 9000,
+              "foodAndDining": 6500,
+              "activitiesAndPermits": 800,
+              "gstTax": 1325,
+              "totalVerifiedEstimate": 27825,
+              "perPersonCost": 13913
+            },
+            "legacyFlawedTotalInr": 35000,
+            "pricingVariance": {
+              "absoluteInflationInr": 7175,
+              "percentageInflation": "26%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 5,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 8400,
+              "accommodation": 12000,
+              "localSightseeingCab": 9000,
+              "foodAndDining": 13000,
+              "activitiesAndPermits": 1600,
+              "gstTax": 2200,
+              "totalVerifiedEstimate": 46200,
+              "perPersonCost": 11550
+            },
+            "legacyFlawedTotalInr": 70000,
+            "pricingVariance": {
+              "absoluteInflationInr": 23800,
+              "percentageInflation": "52%"
+            }
+          }
+        ],
+        "standard": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 5,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 10650,
+              "accommodation": 12800,
+              "localSightseeingCab": 12000,
+              "foodAndDining": 6500,
+              "activitiesAndPermits": 1600,
+              "gstTax": 2178,
+              "totalVerifiedEstimate": 45728,
+              "perPersonCost": 22864
+            },
+            "legacyFlawedTotalInr": 60000,
+            "pricingVariance": {
+              "absoluteInflationInr": 14272,
+              "percentageInflation": "31%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 5,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 21300,
+              "accommodation": 25600,
+              "localSightseeingCab": 12000,
+              "foodAndDining": 13000,
+              "activitiesAndPermits": 3200,
+              "gstTax": 3755,
+              "totalVerifiedEstimate": 78855,
+              "perPersonCost": 19714
+            },
+            "legacyFlawedTotalInr": 120000,
+            "pricingVariance": {
+              "absoluteInflationInr": 41145,
+              "percentageInflation": "52%"
+            }
+          }
+        ],
+        "premium": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 5,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 15000,
+              "accommodation": 22000,
+              "localSightseeingCab": 19000,
+              "foodAndDining": 6500,
+              "activitiesAndPermits": 3000,
+              "gstTax": 3275,
+              "totalVerifiedEstimate": 68775,
+              "perPersonCost": 34388
+            },
+            "legacyFlawedTotalInr": 95000,
+            "pricingVariance": {
+              "absoluteInflationInr": 26225,
+              "percentageInflation": "38%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 5,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 30000,
+              "accommodation": 44000,
+              "localSightseeingCab": 19000,
+              "foodAndDining": 13000,
+              "activitiesAndPermits": 6000,
+              "gstTax": 5600,
+              "totalVerifiedEstimate": 117600,
+              "perPersonCost": 29400
+            },
+            "legacyFlawedTotalInr": 190000,
+            "pricingVariance": {
+              "absoluteInflationInr": 72400,
+              "percentageInflation": "62%"
+            }
+          }
+        ],
+        "luxury": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 5,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 27000,
+              "accommodation": 50000,
+              "localSightseeingCab": 30000,
+              "foodAndDining": 6500,
+              "activitiesAndPermits": 5000,
+              "gstTax": 5925,
+              "totalVerifiedEstimate": 124425,
+              "perPersonCost": 62213
+            },
+            "legacyFlawedTotalInr": 135000,
+            "pricingVariance": {
+              "absoluteInflationInr": 10575,
+              "percentageInflation": "8%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 5,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 54000,
+              "accommodation": 100000,
+              "localSightseeingCab": 30000,
+              "foodAndDining": 13000,
+              "activitiesAndPermits": 10000,
+              "gstTax": 10350,
+              "totalVerifiedEstimate": 217350,
+              "perPersonCost": 54338
+            },
+            "legacyFlawedTotalInr": 270000,
+            "pricingVariance": {
+              "absoluteInflationInr": 52650,
+              "percentageInflation": "24%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "BM-DEL-KERALA",
+      "origin": "Delhi",
+      "destination": "Kerala (Kochi/Munnar)",
+      "distanceKm": 2650,
+      "terrain": "coastal",
+      "altitudeMeters": 1500,
+      "recommendedDays": 7,
+      "quickDays": 5,
+      "extendedDays": 10,
+      "flightReturnEstimateInr": 11500,
+      "trainReturnEstimateInr": 3200,
+      "hotelPerRoomBudget": 1800,
+      "hotelPerRoomStandard": 3400,
+      "hotelPerRoomPremium": 6000,
+      "hotelPerRoomLuxury": 15000,
+      "localCabPerDayBudget": 2200,
+      "localCabPerDayStandard": 2800,
+      "localCabPerDayPremium": 4200,
+      "localCabPerDayLuxury": 7000,
+      "foodPerPaxPerDay": 600,
+      "tierEvaluations": {
+        "budget": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 6400,
+              "accommodation": 10800,
+              "localSightseeingCab": 15400,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 800,
+              "gstTax": 2090,
+              "totalVerifiedEstimate": 43890,
+              "perPersonCost": 21945
+            },
+            "legacyFlawedTotalInr": 49000,
+            "pricingVariance": {
+              "absoluteInflationInr": 5110,
+              "percentageInflation": "12%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 12800,
+              "accommodation": 21600,
+              "localSightseeingCab": 15400,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 1600,
+              "gstTax": 3410,
+              "totalVerifiedEstimate": 71610,
+              "perPersonCost": 17903
+            },
+            "legacyFlawedTotalInr": 98000,
+            "pricingVariance": {
+              "absoluteInflationInr": 26390,
+              "percentageInflation": "37%"
+            }
+          }
+        ],
+        "standard": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 16300,
+              "accommodation": 20400,
+              "localSightseeingCab": 19600,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 1600,
+              "gstTax": 3315,
+              "totalVerifiedEstimate": 69615,
+              "perPersonCost": 34808
+            },
+            "legacyFlawedTotalInr": 84000,
+            "pricingVariance": {
+              "absoluteInflationInr": 14385,
+              "percentageInflation": "21%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 32600,
+              "accommodation": 40800,
+              "localSightseeingCab": 19600,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 3200,
+              "gstTax": 5650,
+              "totalVerifiedEstimate": 118650,
+              "perPersonCost": 29663
+            },
+            "legacyFlawedTotalInr": 168000,
+            "pricingVariance": {
+              "absoluteInflationInr": 49350,
+              "percentageInflation": "42%"
+            }
+          }
+        ],
+        "premium": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 23000,
+              "accommodation": 36000,
+              "localSightseeingCab": 29400,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 3000,
+              "gstTax": 4990,
+              "totalVerifiedEstimate": 104790,
+              "perPersonCost": 52395
+            },
+            "legacyFlawedTotalInr": 133000,
+            "pricingVariance": {
+              "absoluteInflationInr": 28210,
+              "percentageInflation": "27%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 46000,
+              "accommodation": 72000,
+              "localSightseeingCab": 29400,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 6000,
+              "gstTax": 8510,
+              "totalVerifiedEstimate": 178710,
+              "perPersonCost": 44678
+            },
+            "legacyFlawedTotalInr": 266000,
+            "pricingVariance": {
+              "absoluteInflationInr": 87290,
+              "percentageInflation": "49%"
+            }
+          }
+        ],
+        "luxury": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 41400,
+              "accommodation": 90000,
+              "localSightseeingCab": 49000,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 5000,
+              "gstTax": 9690,
+              "totalVerifiedEstimate": 203490,
+              "perPersonCost": 101745
+            },
+            "legacyFlawedTotalInr": 189000,
+            "pricingVariance": {
+              "absoluteInflationInr": -14490,
+              "percentageInflation": "-7%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 82800,
+              "accommodation": 180000,
+              "localSightseeingCab": 49000,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 10000,
+              "gstTax": 16930,
+              "totalVerifiedEstimate": 355530,
+              "perPersonCost": 88883
+            },
+            "legacyFlawedTotalInr": 378000,
+            "pricingVariance": {
+              "absoluteInflationInr": 22470,
+              "percentageInflation": "6%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "BM-BOM-MEGHALAYA",
+      "origin": "Mumbai",
+      "destination": "Meghalaya (Shillong)",
+      "distanceKm": 2800,
+      "terrain": "hills",
+      "altitudeMeters": 1525,
+      "recommendedDays": 7,
+      "quickDays": 5,
+      "extendedDays": 9,
+      "flightReturnEstimateInr": 13500,
+      "trainReturnEstimateInr": 3600,
+      "hotelPerRoomBudget": 2000,
+      "hotelPerRoomStandard": 3500,
+      "hotelPerRoomPremium": 6200,
+      "hotelPerRoomLuxury": 13000,
+      "localCabPerDayBudget": 2800,
+      "localCabPerDayStandard": 3400,
+      "localCabPerDayPremium": 4800,
+      "localCabPerDayLuxury": 7500,
+      "foodPerPaxPerDay": 650,
+      "tierEvaluations": {
+        "budget": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 7200,
+              "accommodation": 12000,
+              "localSightseeingCab": 19600,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 800,
+              "gstTax": 2435,
+              "totalVerifiedEstimate": 51135,
+              "perPersonCost": 25568
+            },
+            "legacyFlawedTotalInr": 49000,
+            "pricingVariance": {
+              "absoluteInflationInr": -2135,
+              "percentageInflation": "-4%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 14400,
+              "accommodation": 24000,
+              "localSightseeingCab": 19600,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 1600,
+              "gstTax": 3890,
+              "totalVerifiedEstimate": 81690,
+              "perPersonCost": 20423
+            },
+            "legacyFlawedTotalInr": 98000,
+            "pricingVariance": {
+              "absoluteInflationInr": 16310,
+              "percentageInflation": "20%"
+            }
+          }
+        ],
+        "standard": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 18900,
+              "accommodation": 21000,
+              "localSightseeingCab": 23800,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 1600,
+              "gstTax": 3720,
+              "totalVerifiedEstimate": 78120,
+              "perPersonCost": 39060
+            },
+            "legacyFlawedTotalInr": 84000,
+            "pricingVariance": {
+              "absoluteInflationInr": 5880,
+              "percentageInflation": "8%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 37800,
+              "accommodation": 42000,
+              "localSightseeingCab": 23800,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 3200,
+              "gstTax": 6250,
+              "totalVerifiedEstimate": 131250,
+              "perPersonCost": 32813
+            },
+            "legacyFlawedTotalInr": 168000,
+            "pricingVariance": {
+              "absoluteInflationInr": 36750,
+              "percentageInflation": "28%"
+            }
+          }
+        ],
+        "premium": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 27000,
+              "accommodation": 37200,
+              "localSightseeingCab": 33600,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 3000,
+              "gstTax": 5495,
+              "totalVerifiedEstimate": 115395,
+              "perPersonCost": 57698
+            },
+            "legacyFlawedTotalInr": 133000,
+            "pricingVariance": {
+              "absoluteInflationInr": 17605,
+              "percentageInflation": "15%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 54000,
+              "accommodation": 74400,
+              "localSightseeingCab": 33600,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 6000,
+              "gstTax": 9310,
+              "totalVerifiedEstimate": 195510,
+              "perPersonCost": 48878
+            },
+            "legacyFlawedTotalInr": 266000,
+            "pricingVariance": {
+              "absoluteInflationInr": 70490,
+              "percentageInflation": "36%"
+            }
+          }
+        ],
+        "luxury": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 48600,
+              "accommodation": 78000,
+              "localSightseeingCab": 52500,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 5000,
+              "gstTax": 9660,
+              "totalVerifiedEstimate": 202860,
+              "perPersonCost": 101430
+            },
+            "legacyFlawedTotalInr": 189000,
+            "pricingVariance": {
+              "absoluteInflationInr": -13860,
+              "percentageInflation": "-7%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 97200,
+              "accommodation": 156000,
+              "localSightseeingCab": 52500,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 10000,
+              "gstTax": 16695,
+              "totalVerifiedEstimate": 350595,
+              "perPersonCost": 87649
+            },
+            "legacyFlawedTotalInr": 378000,
+            "pricingVariance": {
+              "absoluteInflationInr": 27405,
+              "percentageInflation": "8%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "BM-BLR-RAJASTHAN",
+      "origin": "Bengaluru",
+      "destination": "Rajasthan (Jaipur/Udaipur)",
+      "distanceKm": 1950,
+      "terrain": "plains",
+      "altitudeMeters": 430,
+      "recommendedDays": 6,
+      "quickDays": 4,
+      "extendedDays": 8,
+      "flightReturnEstimateInr": 9500,
+      "trainReturnEstimateInr": 2800,
+      "hotelPerRoomBudget": 1600,
+      "hotelPerRoomStandard": 3200,
+      "hotelPerRoomPremium": 5800,
+      "hotelPerRoomLuxury": 16000,
+      "localCabPerDayBudget": 2000,
+      "localCabPerDayStandard": 2600,
+      "localCabPerDayPremium": 4000,
+      "localCabPerDayLuxury": 7000,
+      "foodPerPaxPerDay": 700,
+      "tierEvaluations": {
+        "budget": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 6,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 5600,
+              "accommodation": 8000,
+              "localSightseeingCab": 12000,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 800,
+              "gstTax": 1740,
+              "totalVerifiedEstimate": 36540,
+              "perPersonCost": 18270
+            },
+            "legacyFlawedTotalInr": 42000,
+            "pricingVariance": {
+              "absoluteInflationInr": 5460,
+              "percentageInflation": "15%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 6,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 11200,
+              "accommodation": 16000,
+              "localSightseeingCab": 12000,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 1600,
+              "gstTax": 2880,
+              "totalVerifiedEstimate": 60480,
+              "perPersonCost": 15120
+            },
+            "legacyFlawedTotalInr": 84000,
+            "pricingVariance": {
+              "absoluteInflationInr": 23520,
+              "percentageInflation": "39%"
+            }
+          }
+        ],
+        "standard": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 6,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 13700,
+              "accommodation": 16000,
+              "localSightseeingCab": 15600,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 1600,
+              "gstTax": 2765,
+              "totalVerifiedEstimate": 58065,
+              "perPersonCost": 29033
+            },
+            "legacyFlawedTotalInr": 72000,
+            "pricingVariance": {
+              "absoluteInflationInr": 13935,
+              "percentageInflation": "24%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 6,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 27400,
+              "accommodation": 32000,
+              "localSightseeingCab": 15600,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 3200,
+              "gstTax": 4750,
+              "totalVerifiedEstimate": 99750,
+              "perPersonCost": 24938
+            },
+            "legacyFlawedTotalInr": 144000,
+            "pricingVariance": {
+              "absoluteInflationInr": 44250,
+              "percentageInflation": "44%"
+            }
+          }
+        ],
+        "premium": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 6,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 19000,
+              "accommodation": 29000,
+              "localSightseeingCab": 24000,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 3000,
+              "gstTax": 4170,
+              "totalVerifiedEstimate": 87570,
+              "perPersonCost": 43785
+            },
+            "legacyFlawedTotalInr": 114000,
+            "pricingVariance": {
+              "absoluteInflationInr": 26430,
+              "percentageInflation": "30%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 6,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 38000,
+              "accommodation": 58000,
+              "localSightseeingCab": 24000,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 6000,
+              "gstTax": 7140,
+              "totalVerifiedEstimate": 149940,
+              "perPersonCost": 37485
+            },
+            "legacyFlawedTotalInr": 228000,
+            "pricingVariance": {
+              "absoluteInflationInr": 78060,
+              "percentageInflation": "52%"
+            }
+          }
+        ],
+        "luxury": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 6,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 34200,
+              "accommodation": 80000,
+              "localSightseeingCab": 42000,
+              "foodAndDining": 8400,
+              "activitiesAndPermits": 5000,
+              "gstTax": 8480,
+              "totalVerifiedEstimate": 178080,
+              "perPersonCost": 89040
+            },
+            "legacyFlawedTotalInr": 162000,
+            "pricingVariance": {
+              "absoluteInflationInr": -16080,
+              "percentageInflation": "-9%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 6,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 68400,
+              "accommodation": 160000,
+              "localSightseeingCab": 42000,
+              "foodAndDining": 16800,
+              "activitiesAndPermits": 10000,
+              "gstTax": 14860,
+              "totalVerifiedEstimate": 312060,
+              "perPersonCost": 78015
+            },
+            "legacyFlawedTotalInr": 324000,
+            "pricingVariance": {
+              "absoluteInflationInr": 11940,
+              "percentageInflation": "4%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "BM-MAA-HIMACHAL",
+      "origin": "Chennai",
+      "destination": "Himachal Pradesh (Manali)",
+      "distanceKm": 2600,
+      "terrain": "hills",
+      "altitudeMeters": 2050,
+      "recommendedDays": 7,
+      "quickDays": 5,
+      "extendedDays": 9,
+      "flightReturnEstimateInr": 13000,
+      "trainReturnEstimateInr": 3400,
+      "hotelPerRoomBudget": 1800,
+      "hotelPerRoomStandard": 3200,
+      "hotelPerRoomPremium": 5500,
+      "hotelPerRoomLuxury": 13500,
+      "localCabPerDayBudget": 2500,
+      "localCabPerDayStandard": 3200,
+      "localCabPerDayPremium": 4600,
+      "localCabPerDayLuxury": 7500,
+      "foodPerPaxPerDay": 650,
+      "tierEvaluations": {
+        "budget": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 6800,
+              "accommodation": 10800,
+              "localSightseeingCab": 17500,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 800,
+              "gstTax": 2250,
+              "totalVerifiedEstimate": 47250,
+              "perPersonCost": 23625
+            },
+            "legacyFlawedTotalInr": 49000,
+            "pricingVariance": {
+              "absoluteInflationInr": 1750,
+              "percentageInflation": "4%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Train (Sleeper/3AC)",
+            "itemizedCostsInr": {
+              "intercityTransit": 13600,
+              "accommodation": 21600,
+              "localSightseeingCab": 17500,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 1600,
+              "gstTax": 3625,
+              "totalVerifiedEstimate": 76125,
+              "perPersonCost": 19031
+            },
+            "legacyFlawedTotalInr": 98000,
+            "pricingVariance": {
+              "absoluteInflationInr": 21875,
+              "percentageInflation": "29%"
+            }
+          }
+        ],
+        "standard": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 18100,
+              "accommodation": 19200,
+              "localSightseeingCab": 22400,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 1600,
+              "gstTax": 3520,
+              "totalVerifiedEstimate": 73920,
+              "perPersonCost": 36960
+            },
+            "legacyFlawedTotalInr": 84000,
+            "pricingVariance": {
+              "absoluteInflationInr": 10080,
+              "percentageInflation": "14%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Train 2AC or Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 36200,
+              "accommodation": 38400,
+              "localSightseeingCab": 22400,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 3200,
+              "gstTax": 5920,
+              "totalVerifiedEstimate": 124320,
+              "perPersonCost": 31080
+            },
+            "legacyFlawedTotalInr": 168000,
+            "pricingVariance": {
+              "absoluteInflationInr": 43680,
+              "percentageInflation": "35%"
+            }
+          }
+        ],
+        "premium": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 26000,
+              "accommodation": 33000,
+              "localSightseeingCab": 32200,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 3000,
+              "gstTax": 5165,
+              "totalVerifiedEstimate": 108465,
+              "perPersonCost": 54233
+            },
+            "legacyFlawedTotalInr": 133000,
+            "pricingVariance": {
+              "absoluteInflationInr": 24535,
+              "percentageInflation": "23%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Economy Non-Stop Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 52000,
+              "accommodation": 66000,
+              "localSightseeingCab": 32200,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 6000,
+              "gstTax": 8720,
+              "totalVerifiedEstimate": 183120,
+              "perPersonCost": 45780
+            },
+            "legacyFlawedTotalInr": 266000,
+            "pricingVariance": {
+              "absoluteInflationInr": 82880,
+              "percentageInflation": "45%"
+            }
+          }
+        ],
+        "luxury": [
+          {
+            "group": "Couple",
+            "pax": 2,
+            "rooms": 1,
+            "durationDays": 7,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 46800,
+              "accommodation": 81000,
+              "localSightseeingCab": 52500,
+              "foodAndDining": 9100,
+              "activitiesAndPermits": 5000,
+              "gstTax": 9720,
+              "totalVerifiedEstimate": 204120,
+              "perPersonCost": 102060
+            },
+            "legacyFlawedTotalInr": 189000,
+            "pricingVariance": {
+              "absoluteInflationInr": -15120,
+              "percentageInflation": "-7%"
+            }
+          },
+          {
+            "group": "Family",
+            "pax": 4,
+            "rooms": 2,
+            "durationDays": 7,
+            "transitMode": "Business / Premium Economy Flight",
+            "itemizedCostsInr": {
+              "intercityTransit": 93600,
+              "accommodation": 162000,
+              "localSightseeingCab": 52500,
+              "foodAndDining": 18200,
+              "activitiesAndPermits": 10000,
+              "gstTax": 16815,
+              "totalVerifiedEstimate": 353115,
+              "perPersonCost": 88279
+            },
+            "legacyFlawedTotalInr": 378000,
+            "pricingVariance": {
+              "absoluteInflationInr": 24885,
+              "percentageInflation": "7%"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

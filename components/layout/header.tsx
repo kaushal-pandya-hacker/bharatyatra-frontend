@@ -25,13 +25,17 @@ import {
   Menu, 
   X,
   Globe,
-  Check
+  Check,
+  Headset,
+  ShoppingBag
 } from 'lucide-react';
+import { useNexi } from '@/lib/nexi/nexi-context';
 
 export function Header() {
   const { user, logout } = useAuth();
   const { openSettings, language, setLanguage, t } = useAccessibility();
   const pathname = usePathname();
+  const { isOpen: isNexiOpen, toggleNexi } = useNexi();
 
   const [moreOpen, setMoreOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -111,6 +115,7 @@ export function Header() {
     { label: t.nav.flights, href: '/flights', icon: Plane, desc: 'Domestic & international flights' },
     { label: t.nav.dining, href: '/restaurants', icon: UtensilsCrossed, desc: 'Top restaurants & local food' },
     { label: t.nav.experiences, href: '/experiences', icon: Mountain, desc: 'Guided tours & adventures' },
+    { label: t.nav.cart, href: '/cart', icon: ShoppingBag, desc: 'View bookings cart' },
     { label: 'Map Discovery', href: '/map', icon: Map, desc: 'Interactive map navigation' },
   ];
 
@@ -132,6 +137,7 @@ export function Header() {
     { label: t.nav.flights, href: '/flights', icon: Plane, desc: 'Domestic & international flights' },
     { label: t.nav.dining, href: '/restaurants', icon: UtensilsCrossed, desc: 'Top restaurants & local food' },
     { label: t.nav.experiences, href: '/experiences', icon: Mountain, desc: 'Guided tours & adventures' },
+    { label: t.nav.cart, href: '/cart', icon: ShoppingBag, desc: 'View bookings cart' },
     { label: 'Map Discovery', href: '/map', icon: Map, desc: 'Interactive map navigation' },
   ];
 
@@ -228,6 +234,21 @@ export function Header() {
               </div>
             )}
           </div>
+          {/* Desktop Help Navigation Item (>= 1024px) */}
+          <button
+            type="button"
+            onClick={toggleNexi}
+            aria-label="Open NEXI AI Travel Help"
+            aria-expanded={isNexiOpen}
+            className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl transition-all text-xs font-bold whitespace-nowrap border shrink-0 cursor-pointer ${
+              isNexiOpen
+                ? 'bg-amber-500/15 text-amber-900 border-amber-400 font-extrabold shadow-2xs ring-2 ring-amber-400/30'
+                : 'text-slate-700 hover:text-slate-900 bg-slate-50/80 hover:bg-slate-100 border-slate-200/80'
+            }`}
+          >
+            <Headset className={`h-3.5 w-3.5 shrink-0 ${isNexiOpen ? 'text-amber-600 stroke-[2.5px]' : 'text-slate-500'}`} />
+            <span>Help</span>
+          </button>
         </nav>
 
         {/* Right: Quick Actions & User Profile */}

@@ -1,6 +1,7 @@
 /**
- * BharatYatra AI Trip Planning Master Service Orchestrator
- * Integrates Intent Parsing, Route Optimization, Budgeting, Seasonal Intelligence & Quality Validation.
+ * BharatYatra AI 2.0 — Trip Planning Master Service Orchestrator
+ * Integrates Intent Parsing, India-wide Geo Resolution, Smart Duration Engine,
+ * Route Optimization, Hybrid Pricing Engine, Seasonal Intelligence & Quality Validation.
  */
 
 import { TripPlanningRequest, TripPlanningResponse } from './types';
@@ -13,14 +14,21 @@ import { evaluateSeasonalSuitability } from './seasonal-intelligence';
 import { validateTripPlan } from './trip-validator';
 import { scorePlanQuality } from './quality-scorer';
 import { generateBookingRequirements } from './booking-requirements';
+import { resolveOriginCoordinates, INDIA_DESTINATIONS_REGISTRY, findDestinationInfo } from './india-geo-registry';
+import { calculateIntelligentDurations } from './duration-engine';
+import { computeHybridTripPricing } from './hybrid-pricing-engine';
+import { convertRequestToPreferenceProfile, TripPreferenceProfile } from './universal-preference-profile';
 
 export async function generateMasterTripPlan(
   request: TripPlanningRequest
 ): Promise<TripPlanningResponse> {
+  const activeProfile: TripPreferenceProfile =
+    request.preferenceProfile || convertRequestToPreferenceProfile(request);
+
   // 1. Parse Natural Language or Structured Intent
   const intent = parseTripIntent(request);
 
-  // If request is impossible (e.g. 0 days, impossible route), return graceful error response
+  // If request is impossible (e.g. 0 days, negative budget), return graceful error response
   if (intent.isImpossibleRequest) {
     return {
       success: false,
@@ -65,46 +73,82 @@ export async function generateMasterTripPlan(
     };
   }
 
-  // 2. Fetch Destination Intelligence Nodes
+  // 2. Intelligent Trip Duration Analysis (Smart Duration Recommendation)
+  const primaryDest = intent.targetDestinations[0] || 'Destination';
+  const durationRec = calculateIntelligentDurations(
+    intent.originCity,
+    primaryDest,
+    intent.pace,
+    request.durationDays
+  );
+
+  // If user did NOT supply explicit duration, adopt AI Recommended duration dynamically
+  if (!request.durationDays && durationRec.options?.recommended) {
+    intent.durationDays = durationRec.options.recommended.totalDays;
+  }
+
+  // 3. Resolve Dynamic Geographic Origin Coordinates
+  const originCoords = resolveOriginCoordinates(intent.originCity);
+
+  // 4. Fetch Destination Intelligence Nodes across all 36 States/UTs
   const candidateNodes = getDestinationsForTarget(intent.targetDestinations, intent.originCity);
 
-  // 3. Optimize Geographical Route Sequence
-  const originCoords = { lat: 23.0225, lng: 72.5714 }; // Default Ahmedabad origin coords
+  // 5. Optimize Geographical Route Sequence (Spatial Clustering & Nearest-Neighbor)
   const routePlan = optimizeRouteSequence(intent.originCity, originCoords, candidateNodes, intent.interests);
 
-  // 4. Generate Daily Itineraries
+  // 6. Generate Altitude-Aware Daily Itineraries
   let days = generateDailyItineraries(routePlan.orderedNodes, intent);
 
-  // 5. Calculate Budget
-  const budget = calculateTripBudget(days, { adults: intent.travelersCount, seniors: intent.seniorCount, children: intent.childCount }, intent.travelStyle, intent.budgetInr);
+  // 7. Calculate Budget (Calibrated Itemized Budget)
+  const budget = calculateTripBudget(
+    days,
+    { adults: intent.travelersCount, seniors: intent.seniorCount, children: intent.childCount },
+    intent.travelStyle,
+    intent.budgetInr
+  );
 
-  // 6. Evaluate Seasonal Suitability
+  // 8. Compute Hybrid Pricing Breakdown across 4 Distinct Tiers
+  const destInfo = findDestinationInfo(primaryDest);
+  const effectiveDistance = routePlan.totalDistanceKm > 0 ? routePlan.totalDistanceKm : durationRec.totalDistanceKm;
+  
+  const hybridPricing = computeHybridTripPricing({
+    originCity: intent.originCity,
+    destinationCity: primaryDest,
+    destInfo,
+    distanceKm: effectiveDistance,
+    travelersCount: intent.travelersCount,
+    durationDays: intent.durationDays,
+    preferredTransport: request.transportPreference?.[0] as any,
+    preferredTier: intent.travelStyle as any,
+    userBudgetInr: intent.budgetInr,
+  });
+
+  // 9. Evaluate Seasonal Suitability
   const seasonal = evaluateSeasonalSuitability(intent.targetDestinations, request.startDate);
 
-  // 7. Validate Constraints
+  // 10. Validate Constraints
   const validation = validateTripPlan(days, budget, intent, routePlan.orderedNodes);
 
-  // 8. Score Plan Quality
+  // 11. Score Plan Quality
   let quality = scorePlanQuality(days, budget, intent, routePlan.routeScore, validation);
 
   // Self-Healing Quality Loop: If overall score < 85, auto-improve before returning
   if (quality.overallScore < 85) {
-    // Trim extra activity buffers to improve feasibility
     days = days.map(d => ({
       ...d,
-      evening: d.evening.slice(0, 1), // Keep top priority evening activity
+      evening: d.evening.slice(0, 1),
     }));
     quality = scorePlanQuality(days, budget, intent, Math.min(100, routePlan.routeScore + 5), validation);
   }
 
-  // 9. Generate Booking Requirements Specs
+  // 12. Generate Booking Requirements Specs
   const bookingRequirements = generateBookingRequirements(days, intent);
 
   const title = `${intent.originCity} to ${intent.targetDestinations.join(' & ')} ${intent.durationDays}-Day Circuit`;
 
   return {
     success: true,
-    message: 'AI Trip Plan generated and validated successfully.',
+    message: 'AI Trip Plan generated and validated successfully with BharatYatra AI 2.0 intelligence.',
     requestIntent: intent,
     trip: {
       title,
@@ -116,12 +160,15 @@ export async function generateMasterTripPlan(
       endDate: request.endDate,
       days,
       routeOverview: routePlan.routeSummary,
-      totalDistanceKm: routePlan.totalDistanceKm,
+      totalDistanceKm: effectiveDistance,
     },
     budget,
     quality,
-    warnings: [...seasonal.warnings, ...validation.warnings],
+    warnings: [...durationRec.validationAlerts, ...seasonal.warnings, ...validation.warnings],
     bookingRequirements,
     isEstimateOnly: true,
+    durationRecommendations: durationRec,
+    hybridPricing,
+    preferenceProfile: activeProfile,
   };
 }

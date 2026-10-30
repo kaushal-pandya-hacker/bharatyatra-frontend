@@ -140,6 +140,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${outfit.variable} ${inter.variable} ${hankenGrotesk.variable} ${spaceMono.variable}`}
     >
       <head>

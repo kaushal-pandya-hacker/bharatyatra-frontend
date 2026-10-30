@@ -24,6 +24,7 @@ export interface BudgetSpec {
 
 export interface TripPlanningRequest {
   naturalPrompt?: string; // Natural language input (English, Gujarati, Hinglish, Conversational)
+  preferenceProfile?: import('./universal-preference-profile').TripPreferenceProfile;
   origin?: LocationSpec;
   destinations?: Array<{
     city?: string;
@@ -227,4 +228,7 @@ export interface TripPlanningResponse {
   warnings: string[];
   bookingRequirements: BookingRequirement[];
   isEstimateOnly: boolean;
+  durationRecommendations?: import('./duration-engine').DurationRecommendationResult;
+  hybridPricing?: import('./hybrid-pricing-engine').HybridPricingResult;
+  preferenceProfile?: import('./universal-preference-profile').TripPreferenceProfile;
 }

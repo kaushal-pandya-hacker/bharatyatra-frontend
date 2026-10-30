@@ -7,6 +7,7 @@ import {
   Calendar, ShieldCheck, Lock, AlertCircle, ArrowRight, RefreshCw, CheckCircle2
 } from 'lucide-react';
 import { sendNexiChatMessage, NexiChatResponse } from '@/lib/nexi-api';
+import { useNexi } from '@/lib/nexi/nexi-context';
 
 interface ChatMessage {
   id: string;
@@ -19,8 +20,8 @@ interface ChatMessage {
 export function NexiChatFloating() {
   const router = useRouter();
   const pathname = usePathname();
+  const { isOpen, closeNexi, pendingPrompt, clearPendingPrompt } = useNexi();
 
-  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [conversationId, setConversationId] = useState<string | undefined>(undefined);
@@ -48,6 +49,14 @@ export function NexiChatFloating() {
       ]);
     }
   }, [isOpen, messages.length]);
+
+  // Handle pendingPrompt if sent when opening Nexi
+  useEffect(() => {
+    if (isOpen && pendingPrompt) {
+      handleSendMessage(pendingPrompt);
+      clearPendingPrompt();
+    }
+  }, [isOpen, pendingPrompt]);
 
   useEffect(() => {
     if (isOpen) {
@@ -101,7 +110,7 @@ export function NexiChatFloating() {
         } else {
           router.push('/my-trips');
         }
-        setIsOpen(false);
+        closeNexi();
         break;
 
       case 'OPEN_BOOKING':
@@ -110,12 +119,12 @@ export function NexiChatFloating() {
         } else {
           router.push('/bookings');
         }
-        setIsOpen(false);
+        closeNexi();
         break;
 
       case 'OPEN_PROFILE':
         router.push('/profile');
-        setIsOpen(false);
+        closeNexi();
         break;
 
       case 'OPEN_PLANNER':
@@ -125,12 +134,12 @@ export function NexiChatFloating() {
         if (action.payload?.origin) queryParams.set('origin', action.payload.origin);
         const qStr = queryParams.toString() ? `?${queryParams.toString()}` : '';
         router.push(`/plan${qStr}`);
-        setIsOpen(false);
+        closeNexi();
         break;
 
       case 'OPEN_PAYMENT_PAGE':
         router.push('/checkout');
-        setIsOpen(false);
+        closeNexi();
         break;
 
       case 'CONFIRM_PROFILE_UPDATE':
@@ -146,12 +155,12 @@ export function NexiChatFloating() {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' && isOpen) {
-        setIsOpen(false);
+        closeNexi();
       }
     }
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, closeNexi]);
 
   // Hide on admin routes completely
   if (pathname?.startsWith('/bharatyatra-ops')) {
@@ -160,25 +169,7 @@ export function NexiChatFloating() {
 
   return (
     <>
-      {/* Floating Trigger Button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 flex items-center gap-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black px-4 py-3.5 rounded-full shadow-2xl shadow-amber-500/30 border border-amber-300/40 transition-all duration-300 hover:scale-105 group cursor-pointer"
-          aria-label="Open NEXI AI Travel Assistant"
-        >
-          <div className="relative flex items-center justify-center">
-            <Bot className="w-6 h-6 text-slate-950 transition-transform group-hover:rotate-12" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-900 border-2 border-amber-400 rounded-full animate-ping" />
-          </div>
-          <div className="flex flex-col text-left leading-none">
-            <span className="text-xs font-black tracking-wider uppercase">NEXI AI</span>
-            <span className="text-[10px] font-semibold text-slate-900/80">24/7 Travel Assistant</span>
-          </div>
-        </button>
-      )}
-
-      {/* Floating Chat Modal Panel */}
+      {/* Floating Chat Modal Panel (Opened globally via Header or Footer Help) */}
       {isOpen && (
         <div className="fixed bottom-0 right-0 md:bottom-6 md:right-6 z-50 w-full md:w-[420px] h-[100dvh] md:h-[620px] bg-slate-950 border border-slate-800 rounded-none md:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Panel Header */}
@@ -200,15 +191,15 @@ export function NexiChatFloating() {
 
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                onClick={closeNexi}
+                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
                 aria-label="Minimize NEXI"
               >
                 <Minimize2 className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                onClick={closeNexi}
+                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
                 aria-label="Close NEXI"
               >
                 <X className="w-4 h-4" />
@@ -290,37 +281,37 @@ export function NexiChatFloating() {
           <div className="px-4 py-2 bg-slate-900/60 border-t border-slate-800/80 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-[11px]">
             <button
               onClick={() => handleSendMessage('Plan my next trip')}
-              className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-lg whitespace-nowrap border border-amber-500/30 transition-colors font-semibold"
+              className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-lg whitespace-nowrap border border-amber-500/30 transition-colors font-semibold cursor-pointer"
             >
               ✨ Plan My Next Trip
             </button>
             <button
               onClick={() => handleSendMessage('What is on my itinerary today?')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors"
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors cursor-pointer"
             >
               📍 Today&apos;s Itinerary
             </button>
             <button
               onClick={() => handleSendMessage('Show my booking details')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors"
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors cursor-pointer"
             >
               🏨 Booking Details
             </button>
             <button
               onClick={() => handleSendMessage('Dwarka ma shu jovu?')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors"
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors cursor-pointer"
             >
               ગુજરાતી: દ્વારકા
             </button>
             <button
               onClick={() => handleSendMessage('Dwarka me kya dekhe?')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors"
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors cursor-pointer"
             >
               हिंदी: द्वारका
             </button>
             <button
               onClick={() => handleSendMessage('What should I pack?')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors"
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg whitespace-nowrap border border-slate-700 transition-colors cursor-pointer"
             >
               🎒 Packing List
             </button>

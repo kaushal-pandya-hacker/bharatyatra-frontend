@@ -1,0 +1,531 @@
+<USER_REQUEST>
+# BHARATYATRA AI 2.0 — PHASE 3
+# INDIA GEOGRAPHY & DESTINATION INTELLIGENCE ENGINE
+
+## ROLE
+
+Act as a Principal Geospatial AI Architect, Indian Tourism Domain Expert, GIS Engineer, Travel Data Engineer and Senior Backend Developer.
+
+Your mission is to upgrade BharatYatra's existing India-wide geographical and destination intelligence system into a comprehensive, accurate and scalable India Travel Knowledge Engine.
+
+The system must understand Indian geography, destinations, regional relationships, travel distances, route connectivity and practical tourism information.
+
+IMPORTANT:
+
+Use the Phase 1 audit findings and Phase 2 Universal Trip Preferences Engine.
+
+Preserve existing working destination indexing, knowledge retrieval, database structures and travel integrations wherever possible.
+
+Do not create a separate disconnected destination database.
+
+==================================================
+1. INDIA-WIDE GEOGRAPHICAL COVERAGE
+==================================================
+
+Cover all 28 Indian States and all 8 Union Territories.
+
+States:
+
+1. Andhra Pradesh
+2. Arunachal Pradesh
+3. Assam
+4. Bihar
+5. Chhattisgarh
+6. Goa
+7. Gujarat
+8. Haryana
+9. Himachal Pradesh
+10. Jharkhand
+11. Karnataka
+12. Kerala
+13. Madhya Pradesh
+14. Maharashtra
+15. Manipur
+16. Meghalaya
+17. Mizoram
+18. Nagaland
+19. Odisha
+20. Punjab
+21. Rajasthan
+22. Sikkim
+23. Tamil Nadu
+24. Telangana
+25. Tripura
+26. Uttar Pradesh
+27. Uttarakhand
+28. West Bengal
+
+Union Territories:
+
+1. Andaman and Nicobar Islands
+2. Chandigarh
+3. Dadra and Nagar Haveli and Daman and Diu
+4. Delhi
+5. Jammu and Kashmir
+6. Ladakh
+7. Lakshadweep
+8. Puducherry
+
+Build structured regional coverage.
+
+Do not assume all destinations are equally accessible or connected.
+
+==================================================
+2. DESTINATION KNOWLEDGE DATABASE
+==================================================
+
+Create or extend a structured destination knowledge system.
+
+Each destination should support:
+
+- Unique destination ID.
+- Official destination name.
+- Alternative names.
+- State or UT.
+- District where applicable.
+- Latitude.
+- Longitude.
+- Destination category.
+- Regional classification.
+- Nearby attractions.
+- Nearby towns and cities.
+- Nearby railway stations.
+- Nearby airports.
+- Nearby bus terminals where data exists.
+- Accommodation information.
+- Recommended visit duration.
+- Seasonal suitability.
+- Accessibility.
+- Local transportation.
+- Travel restrictions.
+- Permit requirements.
+- Data source.
+- Verification status.
+- Last updated timestamp.
+
+Support destination types:
+
+- Cities.
+- Towns.
+- Villages.
+- Hill stations.
+- Beaches.
+- Mountains.
+- Heritage sites.
+- Religious destinations.
+- National parks.
+- Wildlife sanctuaries.
+- Adventure locations.
+- Islands.
+- Remote destinations.
+- Tourist circuits.
+
+Avoid duplicate destinations with different spellings.
+
+==================================================
+3. GEOGRAPHICAL RELATIONSHIP ENGINE
+==================================================
+
+Build relationships between destinations.
+
+Examples:
+
+- Nearby destinations.
+- Destinations in the same region.
+- Connected tourism circuits.
+- Nearby transport hubs.
+- Destinations that can reasonably be visited together.
+- Destinations requiring separate transport.
+- Destinations separated by difficult terrain.
+
+The engine must distinguish between:
+
+Geographical proximity and practical travel connectivity.
+
+Two destinations may be geographically close but require a long journey because of mountain roads, river crossings or limited transport.
+
+Do not use straight-line distance as a substitute for actual travel distance.
+
+==================================================
+4. DISTANCE AND ROUTE INTELLIGENCE
+==================================================
+
+Implement reliable route-aware distance calculation.
+
+Use available routing providers, map services or verified geographic datasets.
+
+Support:
+
+- Road distance.
+- Rail connectivity where data exists.
+- Flight connectivity where data exists.
+- Walking distance where appropriate.
+- Ferry connectivity where applicable.
+- Multi-modal journeys.
+
+For every route, distinguish:
+
+- Straight-line distance.
+- Actual route distance.
+- Estimated travel duration.
+- Transport mode.
+- Route source.
+- Data freshness.
+
+Never invent route distances or travel durations.
+
+If actual route data is unavailable, clearly identify the limitation.
+
+==================================================
+5. TRANSPORT HUB INTELLIGENCE
+==================================================
+
+Create relationships between destinations and transport hubs.
+
+Include:
+
+- Airports.
+- Railway stations.
+- Major bus terminals.
+- Ferry terminals.
+- Major road connections.
+
+Determine the most practical arrival and departure hubs.
+
+Example:
+
+Ahmedabad → Ladakh.
+
+The AI should investigate suitable arrival airports and onward transport options rather than assuming a direct road journey is the best choice.
+
+Consider route availability and actual schedules in later booking integrations.
+
+==================================================
+6. INDIAN TOURISM CIRCUIT INTELLIGENCE
+==================================================
+
+Support intelligent multi-destination circuits.
+
+Examples:
+
+GUJARAT:
+Ahmedabad → Dwarka → Somnath → Gir → Diu.
+
+RAJASTHAN:
+Jaipur → Jodhpur → Jaisalmer → Udaipur.
+
+HIMALAYAN:
+Shimla → Manali → Kullu.
+
+LADAKH:
+Leh → Nubra Valley → Pangong region → Leh.
+
+KERALA:
+Kochi → Munnar → Thekkady → Alleppey.
+
+NORTHEAST:
+Guwahati → Shillong → Cherrapunji.
+
+These are example circuits, not mandatory fixed routes.
+
+Verify geographical feasibility, seasonal access, transport availability and route continuity before recommending them.
+
+Allow the AI to generate new circuits dynamically.
+
+==================================================
+7. DESTINATION SEASONAL INTELLIGENCE
+==================================================
+
+Store and retrieve seasonal travel information.
+
+Consider:
+
+- Monsoon.
+- Summer.
+- Winter.
+- Snowfall periods.
+- Heat conditions.
+- Wildlife seasons.
+- Festival periods.
+- Road accessibility.
+- Ferry availability.
+- Mountain pass conditions.
+- Regional weather patterns.
+
+Do not assume a destination is accessible throughout the year.
+
+Use reliable current sources for time-sensitive conditions.
+
+Separate long-term seasonal guidance from live weather and road-status information.
+
+==================================================
+8. REGIONAL COST CONTEXT
+==================================================
+
+Prepare geographic context for the future pricing engine.
+
+Support destination-specific reference information for:
+
+- Accommodation.
+- Food.
+- Local transport.
+- Activities.
+- Entry fees.
+- Permits.
+
+Do not invent prices during geographic data ingestion.
+
+Every reference price must have source, validity and verification information.
+
+==================================================
+9. DESTINATION DISCOVERY AND RECOMMENDATIONS
+==================================================
+
+The AI should recommend destinations based on:
+
+- Starting location.
+- Travel duration.
+- Budget.
+- Season.
+- Interests.
+- Transport preferences.
+- Travel pace.
+- Accessibility.
+- Nearby destinations.
+
+Example:
+
+A traveller from Ahmedabad has 5 days and a limited budget.
+
+The system should identify realistic nearby destinations and circuits instead of recommending distant destinations with impractical travel schedules.
+
+A traveller from Delhi with 12 days may receive different regional recommendations.
+
+Do not introduce regional bias.
+
+==================================================
+10. ALL-INDIA SEARCH AND RETRIEVAL
+==================================================
+
+Improve destination retrieval.
+
+Requirements:
+
+- Exact destination matching.
+- Alternative spelling matching.
+- Regional matching.
+- State and UT filtering.
+- Nearby destination retrieval.
+- Multi-destination retrieval.
+- Category-based discovery.
+- Semantic destination search.
+- Geographic proximity search.
+
+Use structured database queries for exact geographical facts.
+
+Use AI for contextual recommendations and explanations.
+
+Do not depend exclusively on LLM knowledge for coordinates, distances or transport schedules.
+
+==================================================
+11. DATA SOURCE AND VERIFICATION ARCHITECTURE
+==================================================
+
+Use reliable sources wherever possible:
+
+- Government tourism departments.
+- Official destination authorities.
+- Official transport providers.
+- Verified geographic datasets.
+- Trusted routing providers.
+- Official protected-area and permit information.
+
+For each important data item maintain:
+
+- Source.
+- Verification status.
+- Last updated.
+- Confidence.
+- Expiration or refresh policy where appropriate.
+
+Do not treat scraped or AI-generated information as verified official data.
+
+==================================================
+12. INTEGRATION WITH UNIVERSAL TRIP PREFERENCES
+==================================================
+
+Connect the Geography Engine to the Phase 2 centralized preference profile.
+
+It must consume:
+
+- Origin.
+- Destination.
+- Duration.
+- Dates.
+- Transport preference.
+- Budget.
+- Interests.
+- Travel pace.
+- Accessibility.
+- Included and excluded destinations.
+
+When a user changes the destination, retrieve the relevant geographical knowledge.
+
+When the user changes travel dates, retrieve relevant seasonal information.
+
+When the user changes duration, identify geographically practical destination combinations.
+
+Preserve unrelated preferences.
+
+==================================================
+13. DATA QUALITY MANAGEMENT
+==================================================
+
+Implement:
+
+- Duplicate detection.
+- Coordinate validation.
+- State and UT mapping validation.
+- Destination name normalization.
+- Missing-data detection.
+- Relationship validation.
+- Stale-data identification.
+- Source attribution.
+- Incremental indexing.
+- Safe database migrations.
+
+Do not delete existing destination records without verified reconciliation.
+
+==================================================
+14. PERFORMANCE AND SCALABILITY
+==================================================
+
+Optimize:
+
+- Destination retrieval.
+- Geographic queries.
+- Spatial indexing.
+- Caching.
+- Database indexing.
+- Regional data loading.
+- Search performance.
+- API response times.
+
+Use suitable geospatial database capabilities if supported by the existing architecture.
+
+Avoid loading the entire destination database into memory for every request.
+
+==================================================
+15. TESTING AND VALIDATION
+==================================================
+
+Create tests covering all 36 States/UTs.
+
+Test:
+
+- State and UT classification.
+- Destination coordinates.
+- Nearby destination retrieval.
+- Route connectivity.
+- Distance accuracy.
+- Multi-state circuits.
+- Seasonal restrictions.
+- Transport hub relationships.
+- Alternative destination names.
+- Geographic retrieval.
+- Regional fairness.
+- Existing destination compatibility.
+
+Specific journeys:
+
+- Ahmedabad → Ladakh.
+- Ahmedabad → Goa.
+- Delhi → Kerala.
+- Mumbai → Meghalaya.
+- Bengaluru → Rajasthan.
+- Chennai → Himachal Pradesh.
+
+Include remote and geographically challenging destinations.
+
+Use verified route evidence for accuracy comparisons.
+
+Do not claim a route is validated merely because its endpoints exist in the database.
+
+==================================================
+16. REQUIRED DELIVERABLES
+==================================================
+
+Create:
+
+1. BHARATYATRA_INDIA_GEOGRAPHY_ARCHITECTURE.md
+2. BHARATYATRA_DESTINATION_DATA_SCHEMA.md
+3. BHARATYATRA_GEOGRAPHICAL_RELATIONSHIPS.md
+4. BHARATYATRA_ROUTE_INTELLIGENCE_REPORT.md
+5. BHARATYATRA_SEASONAL_ACCESSIBILITY_REPORT.md
+6. BHARATYATRA_INDIA_COVERAGE_REPORT.md
+7. BHARATYATRA_PHASE3_TEST_REPORT.md
+
+Include:
+
+- Files created.
+- Files modified.
+- Database changes.
+- Data sources.
+- Destination coverage.
+- Missing information.
+- Validation results.
+- Performance results.
+- Known limitations.
+
+==================================================
+17. STRICT DEVELOPMENT RULES
+==================================================
+
+- Inspect the existing Phase 1 and Phase 2 implementations.
+- Extend existing destination infrastructure.
+- Preserve all working integrations.
+- Do not hardcode travel distances.
+- Do not invent transport schedules.
+- Do not fabricate seasonal accessibility.
+- Do not create fake destination records to inflate coverage.
+- Do not introduce regional bias.
+- Do not delete existing data without reconciliation.
+- Do not replace verified facts with AI guesses.
+- Do not compromise existing production functionality.
+
+==================================================
+FINAL ACCEPTANCE CRITERIA
+==================================================
+
+The Geography Engine must:
+
+1. Cover all 28 States and 8 UTs.
+2. Support structured destination knowledge.
+3. Understand geographical relationships.
+4. Distinguish proximity from actual connectivity.
+5. Support multi-destination circuits.
+6. Identify practical transport hubs.
+7. Provide reliable route and distance information where available.
+8. Understand seasonal travel constraints.
+9. Integrate with Universal Trip Preferences.
+10. Pass geographical and data-quality tests.
+
+BEGIN WITH THE PHASE 1 AUDIT AND PHASE 2 ARCHITECTURE.
+
+Implement Phase 3 in the actual BharatYatra production codebase.
+
+Do not begin Phase 4 until Phase 3 acceptance criteria have been tested and documented.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-10-30T09:38:42+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\Pandya Kaushal\Desktop\BhartYatra_5\18_DEVELOPMENT\Frontend\lib\nexi\nexi-context.tsx (LANGUAGE_UNSPECIFIED)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\Pandya Kaushal\Desktop\BhartYatra_5\scratch\snap-test.js (LANGUAGE_UNSPECIFIED)
+- c:\Users\Pandya Kaushal\Desktop\BhartYatra_5\scratch\snap-test-expenses.js (LANGUAGE_UNSPECIFIED)
+- c:\Users\Pandya Kaushal\Desktop\BhartYatra_5\scratch\debug-chrome.js (LANGUAGE_UNSPECIFIED)
+- c:\Users\Pandya Kaushal\Desktop\BhartYatra_5\scratch\check-buttons.js (LANGUAGE_UNSPECIFIED)
+- c:\Users\Pandya Kaushal\Desktop\BhartYatra_5\lib\nexi\nexi-context.tsx (LANGUAGE_UNSPECIFIED)
+</ADDITIONAL_METADATA>

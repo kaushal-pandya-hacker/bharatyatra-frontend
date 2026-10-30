@@ -24,13 +24,14 @@ import {
 } from 'lucide-react';
 
 import { ProtectedRoute } from '@/lib/auth/protected-route';
+import { EndToEndBookingCoordinator } from '@/components/booking/EndToEndBookingCoordinator';
 
 function MyBookingsPageContent() {
   const { token, user } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'ALL' | 'UPCOMING' | 'PAST' | 'CANCELLED'>('ALL');
+  const [activeTab, setActiveTab] = useState<'COORDINATOR' | 'ALL' | 'UPCOMING' | 'PAST' | 'CANCELLED'>('COORDINATOR');
   const [productTypeFilter, setProductTypeFilter] = useState<string>('ALL');
 
   // Cancel Modal State
@@ -172,6 +173,16 @@ function MyBookingsPageContent() {
 
         {/* Status Tabs */}
         <div className="flex flex-wrap items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs">
+          <button
+            onClick={() => setActiveTab('COORDINATOR')}
+            className={`rounded-lg px-3 py-1 font-bold transition-colors ${
+              activeTab === 'COORDINATOR'
+                ? 'bg-orange-500 text-white shadow-sm'
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            AI 2.0 Coordinated Trip
+          </button>
           {(['ALL', 'UPCOMING', 'PAST', 'CANCELLED'] as const).map((tab) => (
             <button
               key={tab}
@@ -188,8 +199,10 @@ function MyBookingsPageContent() {
         </div>
       </div>
 
-      {/* Bookings List */}
-      {loading ? (
+      {/* Bookings List or AI 2.0 Coordinator */}
+      {activeTab === 'COORDINATOR' ? (
+        <EndToEndBookingCoordinator />
+      ) : loading ? (
         <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center text-slate-400 space-y-3">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-amber-500" />
           <p className="text-xs">Fetching your travel reservations...</p>

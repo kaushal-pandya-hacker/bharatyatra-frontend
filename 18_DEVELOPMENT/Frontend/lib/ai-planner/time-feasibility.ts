@@ -92,9 +92,12 @@ export function createTravelSegment(
   const durationMinutes = Math.round((dist / speedKmH) * 60) + fixedBufferMinutes;
   
   // Estimated cost
-  let estimatedCostInr = Math.round(dist * 14); // ₹14/km for cab
-  if (mode === 'flight') estimatedCostInr = Math.max(3500, Math.round(dist * 6));
-  else if (mode === 'train') estimatedCostInr = Math.max(400, Math.round(dist * 2));
+  let estimatedCostInr = Math.round(Math.min(dist * 13, 3500 + dist * 9));
+  if (mode === 'flight') estimatedCostInr = Math.max(3800, Math.round(Math.min(dist * 4.2, 9800)));
+  else if (mode === 'train') estimatedCostInr = Math.max(350, Math.round(dist * 1.4));
+  else if (mode === 'bus') estimatedCostInr = Math.max(300, Math.round(dist * 1.1));
+
+
 
   return {
     from: fromName,

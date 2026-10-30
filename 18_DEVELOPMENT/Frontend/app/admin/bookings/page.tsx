@@ -1,3 +1,4 @@
+import { BookingOperationsDashboard } from '@/components/admin/BookingOperationsDashboard';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ export default function AdminBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'OPERATIONS' | 'TABLE'>('OPERATIONS');
 
   useEffect(() => {
     fetchBookings();
@@ -53,7 +55,34 @@ export default function AdminBookingsPage() {
             Monitor real-time customer reservations, supplier confirmation statuses, and resolve partial failures.
           </p>
         </div>
+        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+          <button
+            onClick={() => setViewMode('OPERATIONS')}
+            className={`px-4 py-2 rounded-lg font-bold text-xs transition ${
+              viewMode === 'OPERATIONS'
+                ? 'bg-[#0A1128] text-white shadow'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            AI 2.0 Supplier Operations
+          </button>
+          <button
+            onClick={() => setViewMode('TABLE')}
+            className={`px-4 py-2 rounded-lg font-bold text-xs transition ${
+              viewMode === 'TABLE'
+                ? 'bg-[#0A1128] text-white shadow'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Bookings Ledger Table
+          </button>
+        </div>
       </div>
+
+      {viewMode === 'OPERATIONS' ? (
+        <BookingOperationsDashboard />
+      ) : (
+        <>
 
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-4">
@@ -157,6 +186,8 @@ export default function AdminBookingsPage() {
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }
