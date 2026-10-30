@@ -1,6 +1,6 @@
-import { BookingOperationsDashboard } from '@/components/admin/BookingOperationsDashboard';
 'use client';
 
+import { BookingOperationsDashboard } from '@/components/admin/BookingOperationsDashboard';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
