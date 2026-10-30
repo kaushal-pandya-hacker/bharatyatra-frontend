@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const paceParam = (searchParams.get('pace') || 'balanced').toLowerCase();
     const pace = paceParam === 'relaxed' ? 'relaxed' : paceParam === 'active' || paceParam === 'fast-paced' ? 'fast-paced' : 'balanced';
     const startDate = searchParams.get('startDate') || undefined;
-    const isPure = searchParams.get('pure') === 'true' || searchParams.get('includePricing') === 'false';
+    const isPure = searchParams.get('includePricing') !== 'true';
 
     const profile = createDefaultPreferenceProfile({
       origin: originCity,
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
           if (body.pace) profile.pace.style = body.pace;
         }
 
-        if (body.includePricing === false || body.pure === true) {
+        if (body.includePricing !== true) {
           const purePlan = PureItineraryService.generatePureItinerary({
             origin: { city: profile.identity.origin, country: 'India' },
             destinations: [{ state: profile.identity.destination }],

@@ -202,6 +202,89 @@ export async function generateMasterTripPlan(
   // 2. STEP 1: Pure AI Travel Intelligence (No Financial Calculations)
   const pureItinerary: PureItineraryResult = PureItineraryService.generatePureItinerary(request);
 
+  // If client requested Plan Only (zero pricing calculations), return pure travel intelligence directly
+  if (request.planOnly) {
+    return {
+      success: true,
+      message: 'AI Trip Plan generated successfully with pure travel intelligence (Plan Only, zero pricing calculations).',
+      requestIntent: intent,
+      trip: {
+        title: pureItinerary.title,
+        origin: pureItinerary.origin,
+        destinations: pureItinerary.destinations,
+        durationDays: pureItinerary.durationDays,
+        travelersCount: pureItinerary.travelersCount,
+        startDate: pureItinerary.startDate,
+        endDate: pureItinerary.endDate,
+        days: pureItinerary.days.map((pureDay) => ({
+          day: pureDay.day,
+          date: pureDay.date,
+          location: pureDay.location,
+          state: pureDay.state,
+          dayType: pureDay.dayType as any,
+          morning: pureDay.morning.map((a) => ({ ...a, estimatedCostInr: 0 })),
+          afternoon: pureDay.afternoon.map((a) => ({ ...a, estimatedCostInr: 0 })),
+          evening: pureDay.evening.map((a) => ({ ...a, estimatedCostInr: 0 })),
+          meals: pureDay.meals as any,
+          travelSegments: pureDay.travelSegments as any,
+          accommodation: pureDay.accommodation
+            ? {
+                hotelName: pureDay.accommodation.hotelName,
+                city: pureDay.accommodation.city,
+                category: pureDay.accommodation.category,
+                starRating: pureDay.accommodation.starRating,
+                nights: pureDay.accommodation.nights,
+                estimatedCostPerNightInr: 0,
+                totalCostInr: 0,
+                reason: pureDay.accommodation.reason,
+              }
+            : undefined,
+          estimatedDailyCostInr: 0,
+          daySummary: pureDay.daySummary,
+          decisionExplanation: pureDay.decisionExplanation,
+        })),
+        routeOverview: pureItinerary.routeOverview,
+        totalDistanceKm: pureItinerary.totalDistanceKm,
+      },
+      budget: {
+        transportation: 0,
+        accommodation: 0,
+        food: 0,
+        activities: 0,
+        localTransport: 0,
+        miscellaneous: 0,
+        totalEstimatedInr: 0,
+        isWithinBudget: true,
+        tradeoffSuggestions: ['Pure travel itinerary generated without financial estimations.'],
+      },
+      quality: {
+        geographicScore: pureItinerary.geographicScore,
+        timeFeasibilityScore: pureItinerary.timeFeasibilityScore,
+        budgetScore: 100,
+        personalizationScore: 95,
+        seasonalScore: pureItinerary.seasonalScore,
+        transportScore: 92,
+        bookingReadinessScore: 95,
+        overallScore: Math.round(
+          (pureItinerary.geographicScore +
+            pureItinerary.timeFeasibilityScore +
+            pureItinerary.seasonalScore +
+            95 +
+            92 +
+            95) /
+            6
+        ),
+        passesQualityBar: true,
+      },
+      warnings: [...pureItinerary.warnings],
+      bookingRequirements: [],
+      isEstimateOnly: false,
+      durationRecommendations: pureItinerary.durationRecommendations,
+      preferenceProfile: activeProfile,
+      itinerary: pureItinerary,
+    };
+  }
+
   // 3. STEP 2: Independent Deterministic Pricing Calculation
   const primaryDest = pureItinerary.destinations[0] || 'Destination';
   const pricingResult: PricingEngineResult = PricingEngine.calculateItineraryPricing(

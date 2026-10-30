@@ -350,9 +350,9 @@ export function DynamicItineraryPlanner({
             </span>
           </div>
           <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800">
-            <span className="text-slate-500 dark:text-slate-400 block mb-0.5">Recommended Tier</span>
-            <span className="text-base font-bold text-primary uppercase">
-              {currentVersion.pricing.recommendedTier} (₹{currentVersion.pricing.tiers[currentVersion.pricing.recommendedTier]?.totalGroupCost.toLocaleString('en-IN')})
+            <span className="text-slate-500 dark:text-slate-400 block mb-0.5">Travel Style</span>
+            <span className="text-base font-bold text-primary capitalize">
+              {plan.preferenceProfile?.pace?.style || 'Balanced'} Pace
             </span>
           </div>
         </div>

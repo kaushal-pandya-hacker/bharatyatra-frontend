@@ -590,6 +590,7 @@ export class DynamicItineraryEngine {
     preferenceProfile: TripPreferenceProfile;
     startDate?: string;
     naturalPrompt?: string;
+    skipPricing?: boolean;
   }): ItineraryMasterPlan {
     const { preferenceProfile, startDate, naturalPrompt } = params;
 
@@ -701,34 +702,47 @@ export class DynamicItineraryEngine {
       preferenceProfile,
     });
 
-    // Step 14 & 15: Component-Level Hybrid Pricing (Phase 5/6 integration)
-    const hybridPricing = computeHybridTripPricing({
-      originCity,
-      destinationCity: destName,
-      distanceKm: totalCircuitDistanceKm,
-      travelers: {
-        adults: travelersComp.adults || 2,
-        seniors: travelersComp.seniors || 0,
-        children: travelersComp.children || 0,
-        infants: travelersComp.infants || 0,
-      },
-      durationDays: totalDays,
-      travelMonth,
-      preferredTransport: preferenceProfile.transport.preferredTransport as any,
-      preferredTier: preferenceProfile.budget.pricingCategory as any,
-      userBudgetInr: preferenceProfile.budget.totalBudget,
-    });
+    // Step 14 & 15: Component-Level Hybrid Pricing (Optional, decoupled)
+    const hybridPricing: HybridPricingEvaluation = params.skipPricing
+      ? ({
+          originCity,
+          destinationCity: destName,
+          selectedTransportMode: recommendedRoute.primaryMode as any,
+          recommendedTier: 'standard',
+          tiers: {} as any,
+          priceProvenance: { liveCount: 0, referenceCount: 0, estimatedCount: 0, liveCoveragePercent: 0, confidenceScore: 100 },
+          budgetAnalysis: { fitsBudget: true, deficitAmount: 0, surplusAmount: 0, tradeoffSuggestions: ['Financial calculations decoupled from itinerary.'] },
+          packageAlternatives: [],
+        } as any)
+      : computeHybridTripPricing({
+          originCity,
+          destinationCity: destName,
+          distanceKm: totalCircuitDistanceKm,
+          travelers: {
+            adults: travelersComp.adults || 2,
+            seniors: travelersComp.seniors || 0,
+            children: travelersComp.children || 0,
+            infants: travelersComp.infants || 0,
+          },
+          durationDays: totalDays,
+          travelMonth,
+          preferredTransport: preferenceProfile.transport.preferredTransport as any,
+          preferredTier: preferenceProfile.budget.pricingCategory as any,
+          userBudgetInr: preferenceProfile.budget.totalBudget,
+        });
 
     // Step 16 & 17: Deterministic Validation Layer
     const validation = this.validateItineraryPlan(days, preferenceProfile, hybridPricing);
 
     // Step 18: Generate Human Explanations
     const paceDesc = pace === 'relaxed' ? '1-2' : (pace === 'fast-paced' || pace === 'sightseeing-focused') ? '3-4' : '2-3';
-    const totalGroupCost = hybridPricing.tiers[hybridPricing.recommendedTier]?.totalGroupCost || 0;
+    const totalGroupCost = hybridPricing?.tiers?.[hybridPricing.recommendedTier]?.totalGroupCost || 0;
     const explanations = {
       paceReasoning: `Allocated ~${paceDesc} activities per day conforming to ${pace} travel style without excessive transit fatigue.`,
       routeReasoning: `Outbound and return transit powered by Phase 7 Multimodal Route Engine (${recommendedRoute.modeSummary}). Travel distance: ${totalCircuitDistanceKm} km.`,
-      pricingReasoning: `Transparent 4-tier cost model based on Phase 5/6 calibrated Indian tariffs. Total estimated budget: ₹${totalGroupCost.toLocaleString('en-IN')}.`,
+      pricingReasoning: params.skipPricing
+        ? 'Financial calculation decoupled from itinerary intelligence.'
+        : `Transparent 4-tier cost model based on Phase 5/6 calibrated Indian tariffs. Total estimated budget: ₹${totalGroupCost.toLocaleString('en-IN')}.`,
       seasonalNotice: (isHighAltitude || altitudeMeters >= 2800)
         ? `Mandatory High-Altitude Acclimatization Protocol Active: Destination elevation (${altitudeMeters}m) exceeds 2,800m. Day 1 afternoon/evening and Day 2 morning are strictly reserved for rest and hydration to mitigate Acute Mountain Sickness (AMS).`
         : routeOpt.feasibility.acclimatizationNotice || (routeOpt.feasibility.warnings.length > 0 ? routeOpt.feasibility.warnings[0] : undefined),

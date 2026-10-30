@@ -48,6 +48,7 @@ export interface TripPlanningRequest {
   avoid?: string[];
   specialRequirements?: string[];
   bookingRequired?: boolean;
+  planOnly?: boolean;
 }
 
 export interface ParsedIntent {
