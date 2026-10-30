@@ -1,8 +1,10 @@
 /**
- * BharatYatra AI 2.0 — Dynamic Itinerary Planning API (v1)
- * REST endpoints for generating intelligent day-by-day itineraries,
- * dynamic slot customization (add, remove, replace), pace alterations,
- * day regenerations, and audit-logged version restorations.
+ * BharatYatra AI 2.0 — Dynamic & Pure AI Itinerary Planning API (v1)
+ * REST endpoints for generating intelligent day-by-day itineraries:
+ * - Pure AI travel intelligence (zero financial calculations)
+ * - Dynamic slot customization (add, remove, replace activities)
+ * - Pace alterations & altitude-safe day regenerations
+ * - Audit-logged version restorations
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,6 +17,7 @@ import {
   createDefaultPreferenceProfile,
   TripPreferenceProfile,
 } from '@/lib/ai-planner/universal-preference-profile';
+import { PureItineraryService } from '@/lib/ai-planner/pure-itinerary-service';
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,6 +28,7 @@ export async function GET(req: NextRequest) {
     const paceParam = (searchParams.get('pace') || 'balanced').toLowerCase();
     const pace = paceParam === 'relaxed' ? 'relaxed' : paceParam === 'active' || paceParam === 'fast-paced' ? 'fast-paced' : 'balanced';
     const startDate = searchParams.get('startDate') || undefined;
+    const isPure = searchParams.get('pure') === 'true' || searchParams.get('includePricing') === 'false';
 
     const profile = createDefaultPreferenceProfile({
       origin: originCity,
@@ -33,6 +37,33 @@ export async function GET(req: NextRequest) {
       tripDurationDays: isNaN(durationDays) ? 4 : durationDays,
     });
     profile.pace.style = pace;
+
+    if (isPure) {
+      const purePlan = PureItineraryService.generatePureItinerary({
+        origin: { city: originCity, country: 'India' },
+        destinations: [{ state: destinationQuery }],
+        durationDays: isNaN(durationDays) ? 4 : durationDays,
+        travelers: { adults: 2 },
+        travelStyle: 'balanced',
+        pace: pace as any,
+        startDate,
+        preferenceProfile: profile,
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          isPureItinerary: true,
+          data: purePlan,
+        },
+        {
+          status: 200,
+          headers: {
+            'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600',
+          },
+        }
+      );
+    }
 
     const plan = dynamicItineraryEngine.generateItinerary({
       preferenceProfile: profile,
@@ -68,6 +99,37 @@ export async function POST(req: NextRequest) {
     const action = body.action || 'generate';
 
     switch (action) {
+      case 'generate_pure': {
+        let profile = body.preferenceProfile as TripPreferenceProfile | undefined;
+        const origin = body.origin || body.originCity || profile?.identity?.origin || 'Ahmedabad';
+        const destination = body.destination || body.destinationCity || profile?.identity?.destination || 'Dwarka';
+        const durationDays = body.durationDays || body.duration || profile?.identity?.tripDurationDays || 4;
+        const pace = body.pace || profile?.pace?.style || 'balanced';
+
+        if (!profile) {
+          profile = createDefaultPreferenceProfile({
+            origin,
+            destination,
+            destinationList: [destination],
+            tripDurationDays: durationDays,
+          });
+          profile.pace.style = pace;
+        }
+
+        const purePlan = PureItineraryService.generatePureItinerary({
+          origin: { city: origin, country: 'India' },
+          destinations: [{ state: destination }],
+          durationDays,
+          travelers: { adults: profile.identity.travelerComposition.adults || 2 },
+          travelStyle: (profile.budget.pricingCategory === 'standard' ? 'balanced' : profile.budget.pricingCategory) as any,
+          pace: pace as any,
+          startDate: body.startDate,
+          preferenceProfile: profile,
+        });
+
+        return NextResponse.json({ success: true, isPureItinerary: true, data: purePlan }, { status: 200 });
+      }
+
       case 'generate': {
         let profile = body.preferenceProfile as TripPreferenceProfile | undefined;
         if (!profile) {
@@ -81,6 +143,21 @@ export async function POST(req: NextRequest) {
             tripDurationDays: durationDays,
           });
           if (body.pace) profile.pace.style = body.pace;
+        }
+
+        if (body.includePricing === false || body.pure === true) {
+          const purePlan = PureItineraryService.generatePureItinerary({
+            origin: { city: profile.identity.origin, country: 'India' },
+            destinations: [{ state: profile.identity.destination }],
+            durationDays: profile.identity.tripDurationDays,
+            travelers: { adults: profile.identity.travelerComposition.adults || 2 },
+            travelStyle: profile.budget.pricingCategory as any,
+            pace: profile.pace.style as any,
+            startDate: body.startDate,
+            preferenceProfile: profile,
+          });
+
+          return NextResponse.json({ success: true, isPureItinerary: true, data: purePlan }, { status: 200 });
         }
 
         const plan = dynamicItineraryEngine.generateItinerary({

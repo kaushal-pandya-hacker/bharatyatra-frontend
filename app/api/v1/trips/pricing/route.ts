@@ -1,7 +1,8 @@
 /**
  * BharatYatra AI 2.0 — Hybrid Travel Pricing & Cost Optimization API
  * REST endpoints for evaluating multi-source pricing, four-tier cost breakdowns,
- * transparent itemized cost provenance, and Universal Trip Preference synchronization.
+ * transparent itemized cost provenance, independent deterministic pricing calculation,
+ * and fast budget-change recalculations without touching itineraries.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,6 +12,7 @@ import {
   HybridPricingInput,
 } from '@/lib/ai-planner/hybrid-pricing-engine';
 import { TripPreferenceProfile } from '@/lib/ai-planner/universal-preference-profile';
+import { PricingEngine, ItineraryPricingInput, PricingEngineResult } from '@/lib/ai-planner/pricing-engine';
 
 export async function GET(req: NextRequest) {
   try {
@@ -75,22 +77,75 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { profile, selectedTier, liveSupplierData } = body;
+    const action = body.action;
 
+    // Fast budget change recalculation without touching itinerary
+    if (action === 'recalculate_budget') {
+      const { existingPricing, newBudgetInr, newTier } = body as {
+        existingPricing: PricingEngineResult;
+        newBudgetInr: number;
+        newTier?: any;
+      };
+
+      if (!existingPricing) {
+        return NextResponse.json(
+          { success: false, error: 'existingPricing is required for recalculate_budget action.' },
+          { status: 400 }
+        );
+      }
+
+      const updatedPricing = PricingEngine.recalculateOnBudgetChange(
+        existingPricing,
+        newBudgetInr,
+        newTier
+      );
+
+      return NextResponse.json({
+        success: true,
+        action: 'recalculate_budget',
+        data: updatedPricing,
+      });
+    }
+
+    // Direct independent deterministic pricing engine calculation
+    if (action === 'calculate_deterministic' || body.itinerary) {
+      const input: ItineraryPricingInput = {
+        originCity: body.originCity || body.origin || 'Ahmedabad',
+        destinationCity: body.destinationCity || body.destination || 'Dwarka',
+        destinations: body.destinations,
+        travelersCount: body.travelersCount || 2,
+        durationDays: body.durationDays || 4,
+        preferredTransport: body.preferredTransport,
+        preferredTier: body.preferredTier || 'standard',
+        userBudgetInr: body.userBudgetInr,
+        pureItinerary: body.itinerary,
+        liveSupplierData: body.liveSupplierData,
+      };
+
+      const result = PricingEngine.calculateItineraryPricing(input, body.profile);
+      return NextResponse.json({
+        success: true,
+        action: 'calculate_deterministic',
+        data: result,
+      });
+    }
+
+    // Standard profile-synchronized hybrid pricing
+    const { profile, selectedTier, liveSupplierData } = body;
     if (!profile) {
       return NextResponse.json(
-        { success: false, error: 'profile is required in request body' },
+        { success: false, error: 'profile or valid action is required in request body' },
         { status: 400 }
       );
     }
 
-    // Evaluate pricing based on profile state
     const evaluation = computeHybridTripPricing({
       originCity: profile.identity.origin,
       destinationCity: profile.identity.destination,
-      destinations: profile.identity.destinationList && profile.identity.destinationList.length > 0
-        ? profile.identity.destinationList
-        : [profile.identity.destination],
+      destinations:
+        profile.identity.destinationList && profile.identity.destinationList.length > 0
+          ? profile.identity.destinationList
+          : [profile.identity.destination],
       travelers: profile.identity.travelerComposition,
       durationDays: profile.identity.tripDurationDays,
       preferredTransport: profile.transport.preferredTransport as any,
@@ -121,4 +176,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

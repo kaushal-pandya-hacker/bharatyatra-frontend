@@ -231,4 +231,6 @@ export interface TripPlanningResponse {
   durationRecommendations?: import('./duration-engine').DurationRecommendationResult;
   hybridPricing?: import('./hybrid-pricing-engine').HybridPricingResult;
   preferenceProfile?: import('./universal-preference-profile').TripPreferenceProfile;
+  itinerary?: import('./pure-itinerary-service').PureItineraryResult;
+  pricing?: import('./pricing-engine').PricingEngineResult;
 }
