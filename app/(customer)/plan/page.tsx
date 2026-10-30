@@ -561,6 +561,13 @@ function PlanPageContent() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              href="/ai-planner"
+              className="text-xs font-bold text-emerald-300 bg-emerald-950/80 hover:bg-emerald-900 px-3.5 py-1.5 rounded-xl border border-emerald-700/60 transition-all flex items-center gap-1.5"
+            >
+              <span>✨ Smart Duration Engine</span>
+              <span>→</span>
+            </Link>
             <span className="text-xs font-bold text-slate-300 bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-700">
               📍 {blueprint.selectedPlaces.length} Places Selected
             </span>

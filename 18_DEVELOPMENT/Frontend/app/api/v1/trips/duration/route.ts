@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   calculateIntelligentDuration,
+  calculateDualTripDuration,
   syncDurationWithPreferences,
   DurationEngineInput,
 } from '@/lib/ai-planner/duration-calculation-engine';
@@ -47,10 +48,14 @@ export async function GET(req: NextRequest) {
     };
 
     const result = calculateIntelligentDuration(input);
+    const dualRecommendation = calculateDualTripDuration(input);
 
     return NextResponse.json({
       success: true,
-      data: result,
+      data: {
+        ...result,
+        dualRecommendation,
+      },
     });
   } catch (err: any) {
     console.error('Error in Duration GET API:', err);
