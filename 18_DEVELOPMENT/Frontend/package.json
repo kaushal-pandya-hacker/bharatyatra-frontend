@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "sync:state-images": "node ../Scripts/sync_state_images.js && node ../Scripts/build_state_folder_catalog.js",
-    "validate:package-images": "node ../Scripts/validate-package-images.js"
+    "test": "npx tsx --test __tests__/*.test.ts",
+    "docs:pages": "python scripts/generate_pages_directory.py"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
@@ -20,16 +20,20 @@
     "next": "14.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.12",
+    "@types/pg": "^8.23.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
+    "pg": "^8.23.1",
     "postcss": "^8.4.40",
+    "puppeteer-core": "^25.16.0",
     "tailwindcss": "^3.4.7",
     "typescript": "^5.5.4"
   }
