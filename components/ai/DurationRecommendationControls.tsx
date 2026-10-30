@@ -278,10 +278,8 @@ export function DurationRecommendationControls({
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
-                  <span className="text-slate-400">Est. Cost</span>
-                  <span className="font-semibold text-amber-400">
-                    {formatCurrency(quickTier.estimatedCostRangeInr.min)} – {formatCurrency(quickTier.estimatedCostRangeInr.max)}
-                  </span>
+                  <span className="text-slate-400">Focus</span>
+                  <span className="font-semibold text-amber-400">Essential Highlights</span>
                 </div>
               </div>
 
@@ -348,10 +346,8 @@ export function DurationRecommendationControls({
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
-                  <span className="text-slate-400">Est. Cost</span>
-                  <span className="font-semibold text-amber-400">
-                    {formatCurrency(recTier.estimatedCostRangeInr.min)} – {formatCurrency(recTier.estimatedCostRangeInr.max)}
-                  </span>
+                  <span className="text-slate-400">Focus</span>
+                  <span className="font-semibold text-emerald-400">Balanced Sightseeing</span>
                 </div>
               </div>
 
@@ -412,10 +408,8 @@ export function DurationRecommendationControls({
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
-                  <span className="text-slate-400">Est. Cost</span>
-                  <span className="font-semibold text-amber-400">
-                    {formatCurrency(extTier.estimatedCostRangeInr.min)} – {formatCurrency(extTier.estimatedCostRangeInr.max)}
-                  </span>
+                  <span className="text-slate-400">Focus</span>
+                  <span className="font-semibold text-sky-400">In-Depth Immersion</span>
                 </div>
               </div>
 

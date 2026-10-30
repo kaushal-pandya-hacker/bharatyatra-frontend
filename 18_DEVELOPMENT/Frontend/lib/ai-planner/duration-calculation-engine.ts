@@ -290,10 +290,7 @@ export function calculateIntelligentDuration(input: DurationEngineInput): Intell
     keyHighlights: resolvedDestinations[0].aliases.slice(0, 3),
     travelIntensity: 'high',
     primaryTransportMode: transitInfo.recommendedMode,
-    estimatedCostRangeInr: {
-      min: Math.round((transitInfo.roundTripCostPerPax + quickNights * 2200) * (budgetCat === 'budget' ? 0.8 : 1.0)),
-      max: Math.round((transitInfo.roundTripCostPerPax + quickNights * 3800) * (budgetCat === 'luxury' ? 2.2 : 1.2)),
-    },
+    estimatedCostRangeInr: { min: 0, max: 0 },
     tradeoffsAndCompromises: hasHighAltitude
       ? `Compressed schedule. Strictly adheres to mandatory 48-hour acclimatization in ${primaryDest.canonicalName}; omits remote passes to avoid medical risks.`
       : `High-tempo schedule covering primary landmarks. Minimal rest buffer and early morning departures required.`,
@@ -346,10 +343,7 @@ export function calculateIntelligentDuration(input: DurationEngineInput): Intell
     keyHighlights: resolvedDestinations.flatMap(d => d.aliases).slice(0, 6),
     travelIntensity: 'balanced',
     primaryTransportMode: transitInfo.recommendedMode,
-    estimatedCostRangeInr: {
-      min: Math.round((transitInfo.roundTripCostPerPax + recNights * 2500) * (budgetCat === 'budget' ? 0.8 : 1.0)),
-      max: Math.round((transitInfo.roundTripCostPerPax + recNights * 4500) * (budgetCat === 'luxury' ? 2.2 : 1.2)),
-    },
+    estimatedCostRangeInr: { min: 0, max: 0 },
     tradeoffsAndCompromises: `Optimal equilibrium between sightseeing depth, comfortable travel hours (< 5 hours/day), and relaxing evening leisure.`,
     feasibilityRating: 'FEASIBLE',
     explanation: `Evidence-based ideal duration for ${originCity} to ${destinationNames.join(' -> ')}. Provides adequate time for all primary landmarks and scenic transit.`,
@@ -395,10 +389,7 @@ export function calculateIntelligentDuration(input: DurationEngineInput): Intell
     keyHighlights: resolvedDestinations.flatMap(d => d.aliases).slice(0, 10),
     travelIntensity: 'relaxed',
     primaryTransportMode: transitInfo.recommendedMode,
-    estimatedCostRangeInr: {
-      min: Math.round((transitInfo.roundTripCostPerPax + extNights * 2500) * (budgetCat === 'budget' ? 0.8 : 1.0)),
-      max: Math.round((transitInfo.roundTripCostPerPax + extNights * 5000) * (budgetCat === 'luxury' ? 2.5 : 1.3)),
-    },
+    estimatedCostRangeInr: { min: 0, max: 0 },
     tradeoffsAndCompromises: `Unhurried pace allowing deep cultural immersion, village walks, local culinary explorations, and ample rest intervals without fatigue.`,
     feasibilityRating: 'FEASIBLE',
     explanation: `Comprehensive itinerary including off-the-beaten-path experiences and contingency buffers for weather or mountain pass delays.`,

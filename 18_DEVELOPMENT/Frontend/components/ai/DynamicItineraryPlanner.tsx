@@ -439,7 +439,7 @@ export function DynamicItineraryPlanner({
                 <div className="text-slate-600 dark:text-slate-400 space-y-0.5">
                   {activeDay.mealPlan?.map((m, idx) => (
                     <div key={idx}>
-                      <strong>{m.mealType}:</strong> {m.recommendedCuisine} {m.suggestedVenue ? `(${m.suggestedVenue})` : ''} - ₹{m.estimatedCostInr}
+                      <strong>{m.mealType}:</strong> {m.recommendedCuisine} {m.suggestedVenue ? `(${m.suggestedVenue})` : ''}
                     </div>
                   ))}
                 </div>
@@ -514,11 +514,7 @@ export function DynamicItineraryPlanner({
                             <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 font-medium">
                               {act.durationMinutes} mins
                             </span>
-                            {act.estimatedCostInr !== undefined && (
-                              <span className="text-[11px] text-slate-500 font-mono">
-                                {act.estimatedCostInr === 0 ? 'Free Entry' : `₹${act.estimatedCostInr} fee`}
-                              </span>
-                            )}
+
                           </div>
 
                           {act.reason && (
@@ -626,7 +622,7 @@ export function DynamicItineraryPlanner({
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500">
-                      {attr.category} • Entry: {attr.entryFeeInr === 0 ? 'Free' : `₹${attr.entryFeeInr}`}
+                      {attr.category}
                     </p>
                   </div>
                 ))

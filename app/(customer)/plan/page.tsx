@@ -519,7 +519,7 @@ function PlanPageContent() {
       travellerCount: paxCount,
       crewType,
       selectedTier,
-      budgetInr: blueprint.totalPackageCost,
+      budgetInr: 0,
       status: 'UPCOMING',
       rawStatus: 'SAVED',
       version: 1,
@@ -822,9 +822,9 @@ function PlanPageContent() {
                     onChange={(e) => setSelectedTier(e.target.value as any)}
                     className="bg-slate-50 border border-slate-300 px-3 py-2 rounded-xl text-xs font-medium text-slate-800"
                   >
-                    <option value="budget">Budget Explorer (₹2,500/day)</option>
-                    <option value="balanced">Balanced Comfort (₹6,000/day)</option>
-                    <option value="luxury">Sovereign Luxury (₹13,500/day)</option>
+                    <option value="budget">Budget Explorer (Essential & Hostels)</option>
+                    <option value="balanced">Balanced Comfort (3-Star & Heritage)</option>
+                    <option value="luxury">Sovereign Luxury (5-Star & Resorts)</option>
                   </select>
                 </div>
               </div>
@@ -906,19 +906,20 @@ function PlanPageContent() {
                       ))}
                     </div>
 
-                    {/* Price & Booking Footer */}
+                    {/* Itinerary Schedule & Journey Summary (100% Price-Free) */}
                     <div className="pt-4 border-t border-slate-200 flex flex-col gap-4">
-                      <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-between">
+                      <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-between border border-slate-100">
                         <div>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase">Estimated Total Cost</span>
-                          <div className="text-lg font-black text-slate-900">
-                            ₹{blueprint.totalPackageCost.toLocaleString('en-IN')}
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Itinerary Duration</span>
+                          <div className="text-base font-black text-slate-900 flex items-center gap-1.5">
+                            <span>{blueprint.totalDays} Days</span>
+                            <span className="text-xs font-normal text-slate-500">({Math.max(1, blueprint.totalDays - 1)} Nights)</span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className="text-[10px] text-slate-500">{paxCount} Guests ({blueprint.totalDays} Days)</span>
-                          <div className="text-xs font-bold text-amber-700">
-                            ₹{blueprint.pricePerPaxPerDay.toLocaleString('en-IN')} / person / day
+                          <span className="text-[10px] text-slate-500 font-medium block">Travel Group</span>
+                          <div className="text-xs font-bold text-emerald-700">
+                            {paxCount} Guests • {crewType.split('(')[0].trim()}
                           </div>
                         </div>
                       </div>

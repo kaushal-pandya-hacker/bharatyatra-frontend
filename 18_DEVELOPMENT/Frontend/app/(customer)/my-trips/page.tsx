@@ -340,12 +340,21 @@ function MyTripsContent() {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-slate-200 pt-4 lg:pt-0 lg:pl-6">
-                <div className="text-left sm:text-right w-full sm:w-auto">
-                  <span className="text-[10px] text-slate-500 block uppercase font-bold">Total Estimated Cost</span>
-                  <span className="text-2xl font-black text-slate-900">
-                    ₹{activeTrip.budgetInr.toLocaleString('en-IN')}
-                  </span>
-                </div>
+                {activeTrip.budgetInr && activeTrip.budgetInr > 0 ? (
+                  <div className="text-left sm:text-right w-full sm:w-auto">
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold">Trip Budget</span>
+                    <span className="text-2xl font-black text-slate-900">
+                      ₹{activeTrip.budgetInr.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-left sm:text-right w-full sm:w-auto">
+                    <span className="text-[10px] text-emerald-600 block uppercase font-bold">Trip Format</span>
+                    <span className="text-sm font-bold text-slate-700">
+                      AI Route Plan
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <Link
