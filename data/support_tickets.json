@@ -1,5 +1,28 @@
 [
   {
+    "id": "tkt-1793546235461",
+    "ticketNumber": "BY-TKT-0002",
+    "customerName": "Kaushal Pandya",
+    "customerEmail": "pandyakaushal294@gmail.com",
+    "category": "GENERAL",
+    "subject": "[Tour Package Booking] Enquiry #BY-ENQ-20261101-001-AF93",
+    "description": "Need customized Gujarat tour with White Rann resort and Dwarka darshan.",
+    "priority": "MEDIUM",
+    "assignedStaff": "Support Operations Concierge",
+    "status": "OPEN",
+    "createdAt": "2026-11-01T15:17:15.461Z",
+    "updatedAt": "2026-11-01T15:17:15.461Z",
+    "messages": [
+      {
+        "id": "msg-1793546235461",
+        "sender": "CUSTOMER",
+        "senderName": "Kaushal Pandya",
+        "message": "Phone: +91 96242 82521\n\nNeed customized Gujarat tour with White Rann resort and Dwarka darshan.",
+        "timestamp": "2026-11-01T15:17:15.461Z"
+      }
+    ]
+  },
+  {
     "id": "tkt-1793545603239",
     "ticketNumber": "BY-TKT-0001",
     "customerName": "Kaushal Pandya",

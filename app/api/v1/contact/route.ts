@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { enquiryStore } from '@/lib/enquiries/enquiry-store';
 import { sendEnquiryEmailNotifications } from '@/lib/notifications/email-service';
 import { sendEnquiryWhatsAppNotification } from '@/lib/notifications/whatsapp-service';
+import { notificationStore } from '@/lib/notifications/notification-store';
 
 // In-memory rate limiting map (IP -> timestamps)
 const rateLimitMap = new Map<string, number[]>();
@@ -105,7 +106,29 @@ export async function POST(req: NextRequest) {
       whatsappStatus: whatsappResult.status,
     });
 
-    // 7. Return exact success response
+    // 7. Create In-App Admin Notification for live alert in Admin Control Center
+    try {
+      await notificationStore.createNotification({
+        recipientEmail: 'admin@bharatyatra.com',
+        title: `New Website Enquiry #${enquiry.enquiryReference}`,
+        message: `${enquiry.fullName} (${enquiry.email}): "${enquiry.message}"`,
+        category: 'support',
+        type: 'action',
+        deepLink: '/admin/enquiries',
+        metadata: {
+          enquiryId: enquiry.id,
+          enquiryReference: enquiry.enquiryReference,
+          fullName: enquiry.fullName,
+          email: enquiry.email,
+          phone: enquiry.phone,
+          inquiryType: enquiry.inquiryType,
+        },
+      });
+    } catch {
+      // Non-fatal
+    }
+
+    // 8. Return exact success response
     return NextResponse.json({
       success: true,
       message: 'Thank you for contacting BharatYatra! Your enquiry has been successfully submitted. Our support team will get back to you soon.',

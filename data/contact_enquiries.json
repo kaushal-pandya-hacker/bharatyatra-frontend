@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "50e084af-bfec-41e4-a3ca-09eba63df3c6",
+    "enquiryReference": "BY-ENQ-20261101-001-AF93",
+    "fullName": "Kaushal Pandya",
+    "email": "pandyakaushal294@gmail.com",
+    "phone": "+91 96242 82521",
+    "inquiryType": "Tour Package Booking",
+    "message": "Need customized Gujarat tour with White Rann resort and Dwarka darshan.",
+    "status": "NEW",
+    "priority": "NORMAL",
+    "source": "WEBSITE",
+    "createdAt": "2026-11-01T15:17:14.683Z",
+    "updatedAt": "2026-11-01T15:17:14.683Z",
+    "emailNotificationStatus": "NOT_CONFIGURED",
+    "whatsappNotificationStatus": "NOT_CONFIGURED"
+  }
+]

@@ -34,6 +34,7 @@ import {
   X,
   CheckCircle2,
 } from 'lucide-react';
+import { AdminNotificationDropdown } from '@/components/admin/AdminNotificationDropdown';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [platformHealth, setPlatformHealth] = useState<'OPERATIONAL' | 'DEGRADED' | 'CHECKING'>('CHECKING');
+  const [badgeCounts, setBadgeCounts] = useState({ newEnquiries: 0, openTickets: 0 });
 
   // Normalize pathname to prevent trailing slash mismatches
   const cleanPath = pathname?.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
@@ -226,6 +228,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       }`}
                     />
                     <span className="truncate">{item.label}</span>
+                    {item.href === '/admin/enquiries' && badgeCounts.newEnquiries > 0 && (
+                      <span className="ml-auto px-1.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px] shadow-xs">
+                        {badgeCounts.newEnquiries}
+                      </span>
+                    )}
+                    {item.href === '/admin/support' && badgeCounts.openTickets > 0 && (
+                      <span className="ml-auto px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold text-[10px]">
+                        {badgeCounts.openTickets}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -274,6 +286,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
+            <AdminNotificationDropdown onCountsUpdate={setBadgeCounts} />
             {platformHealth === 'OPERATIONAL' && (
               <span className="text-[11px] sm:text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-xs">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Platform Operational
@@ -323,6 +336,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       >
                         <Icon className="w-4 h-4 shrink-0 text-amber-600" />
                         <span>{item.label}</span>
+                        {item.href === '/admin/enquiries' && badgeCounts.newEnquiries > 0 && (
+                          <span className="ml-auto px-1.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">
+                            {badgeCounts.newEnquiries}
+                          </span>
+                        )}
+                        {item.href === '/admin/support' && badgeCounts.openTickets > 0 && (
+                          <span className="ml-auto px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold text-[10px]">
+                            {badgeCounts.openTickets}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}
