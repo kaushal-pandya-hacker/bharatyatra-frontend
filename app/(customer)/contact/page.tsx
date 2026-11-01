@@ -13,6 +13,7 @@ import {
   MessageSquare,
   ArrowLeft,
   Sparkles,
+  Instagram,
 } from 'lucide-react';
 import { SMART_QR_CONFIG } from '@/lib/config/smart-qr-config';
 import { AshokaChakraIcon } from '@/components/qr/AshokaChakraIcon';
@@ -174,6 +175,29 @@ export default function ContactUsPage() {
                 >
                   {SMART_QR_CONFIG.contact.supportEmail}
                 </a>
+              </div>
+            </div>
+
+            {/* Official Instagram Card */}
+            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-200/50 flex items-center justify-center text-pink-600">
+                <Instagram className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                  Official Instagram
+                </span>
+                <a
+                  href={SMART_QR_CONFIG.social.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-bold text-[#102B4E] hover:text-pink-600 transition-colors block mt-0.5 break-all"
+                >
+                  {SMART_QR_CONFIG.social.instagramHandle}
+                </a>
+                <p className="text-xs text-slate-500 mt-1">
+                  Destination stories, travel inspiration &amp; official announcements.
+                </p>
               </div>
             </div>
 

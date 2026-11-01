@@ -68,7 +68,7 @@ export interface SmartQrConfig {
 }
 
 const PRODUCTION_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.bharatyatra.in';
-const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/bharatyatra/';
+const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/bharat.yatra29?rpxt=MXJnMnQ2NG9sa2duYg==';
 
 export const SMART_QR_CONFIG: SmartQrConfig = {
   brand: {
@@ -140,7 +140,7 @@ export const SMART_QR_CONFIG: SmartQrConfig = {
       isExternal: true,
       iconName: 'Instagram',
       themeColor: 'saffron',
-      badgeText: '@bharatyatra',
+      badgeText: '@bharat.yatra29',
       analyticsEvent: 'qr_follow_instagram_click',
     },
     {
@@ -181,7 +181,7 @@ export const SMART_QR_CONFIG: SmartQrConfig = {
 
   social: {
     instagramUrl: INSTAGRAM_URL,
-    instagramHandle: '@bharatyatra',
+    instagramHandle: '@bharat.yatra29',
     twitterHandle: '@bharatyatra',
   },
 
