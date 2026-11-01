@@ -28,8 +28,10 @@ pages.sort(key=lambda x: x[0])
 PAGE_METADATA = {
     # Home & Global
     '/': ('BharatYatra Sovereign Homepage & Hero Portal', 'Public', 'Main marketing hero, AI travel prompt bar, popular circuits, and state guides'),
+    '/contact': ('BharatYatra Official Direct Contact & Support Center', 'Public', 'Direct phone, WhatsApp, email channels and traveler inquiry form'),
     '/feedback': ('User Feedback & Platform Experience Survey', 'Public / Traveler', 'Platform satisfaction rating, review form, and feedback collection'),
     '/privacy': ('Privacy Policy & Data Sovereign Governance', 'Public', 'Data protection terms, cookie policies, and GDPR / DPDP compliance'),
+    '/qr': ('BharatYatra Smart QR Official Landing Portal', 'Public', 'Tricolour smart landing page for official business cards and marketing materials with six primary actions'),
     '/terms': ('Terms of Service & Traveler Agreement', 'Public', 'Legal contract, cancellations, refunds, liability, and operator rules'),
 
     # Admin Portal (app/admin)
@@ -244,7 +246,7 @@ r_subtitle.font.color.rgb = RGBColor(230, 108, 0) # Amber / Saffron
 
 p_meta = doc.add_paragraph()
 p_meta.paragraph_format.space_after = Pt(14)
-r_meta = p_meta.add_run('Production Platform: https://www.bharatyatra.in\nTotal Registered Pages: 126 Pages | Framework: Next.js 14 App Router\nCoverage: 100% Comprehensive Coverage across Traveler, Admin, Ops, Partner & FinTech Portals')
+r_meta = p_meta.add_run(f'Production Platform: https://www.bharatyatra.in\nTotal Registered Pages: {len(pages)} Pages | Framework: Next.js 14 App Router\nCoverage: 100% Comprehensive Coverage across Traveler, Admin, Ops, Partner & FinTech Portals')
 r_meta.font.size = Pt(9.5)
 r_meta.font.color.rgb = RGBColor(100, 116, 139)
 
@@ -352,7 +354,7 @@ print(f'Successfully generated {docx_path} ({os.path.getsize(docx_path)} bytes)'
 def build_markdown_document():
     lines = []
     lines.append('# BharatYatra — Complete Pages & Routes Directory\n')
-    lines.append('> **Total Registered Pages:** **126**  ')
+    lines.append(f'> **Total Registered Pages:** **{len(pages)}**  ')
     lines.append('> **Framework:** Next.js 14 App Router  ')
     lines.append('> **Production URL:** https://www.bharatyatra.in  ')
     lines.append('> **Last Updated:** October 2026  ')

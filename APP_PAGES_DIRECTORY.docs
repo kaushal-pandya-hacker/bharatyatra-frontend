@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **126**  
+> **Total Registered Pages:** **140**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -16,7 +16,7 @@
 - [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
 - [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
-- [Customer Discovery, Itinerary & Travel Products (39 pages)](#customer-discovery-itinerary-travel-products)
+- [Customer Discovery, Itinerary & Travel Products (41 pages)](#customer-discovery-itinerary-travel-products)
 
 ---
 
@@ -178,6 +178,7 @@
 | **Bus Seat Selection & Boarding Point Selector** | `/buses/[id]` | [`app/(customer)/buses/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/buses/[id]/page.tsx) | `Public / Traveler` | Interactive 2+1 and 2+2 seat layout, pickup points, and amenities |
 | **Signature Pan-Indian Travel Circuits** | `/circuits` | [`app/(customer)/circuits/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/circuits/page.tsx) | `Public / Traveler` | Handcrafted regional circuits like Royal Kutch, Coastal Gujarat, and Golden Triangle |
 | **Circuit Day-by-Day Master Itinerary** | `/circuits/[id]` | [`app/(customer)/circuits/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/circuits/[id]/page.tsx) | `Public / Traveler` | Interactive map route, daily schedule, included stays, and pricing |
+| **BharatYatra Official Direct Contact & Support Center** | `/contact` | [`app/(customer)/contact/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/contact/page.tsx) | `Public` | Direct phone, WhatsApp, email channels and traveler inquiry form |
 | **Traveler Personal Dashboard & Travel Vault** | `/dashboard` | [`app/(customer)/dashboard/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/dashboard/page.tsx) | `Authenticated Traveler` | Saved trips, quick booking links, loyalty points, and recent searches |
 | **Pan-India Destination Directory (36 States)** | `/destinations` | [`app/(customer)/destinations/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/destinations/page.tsx) | `Public / Traveler` | Explore top cities, spiritual anchors, hill stations, and heritage sites |
 | **Destination Comprehensive Travel Guide** | `/destinations/[id]` | [`app/(customer)/destinations/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/destinations/[id]/page.tsx) | `Public / Traveler` | Weather, best time to visit, top sights, food recommendations, and stays |
@@ -199,6 +200,7 @@
 | **Privacy Policy & Data Sovereign Governance** | `/privacy` | [`app/privacy/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/privacy/page.tsx) | `Public` | Data protection terms, cookie policies, and GDPR / DPDP compliance |
 | **Traveler Profile, Preferences & Security Settings** | `/profile` | [`app/(customer)/profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/profile/page.tsx) | `Authenticated Traveler` | Name, contact, travel ID proofs, emergency contact, and language |
 | **Traveler Notification Preferences & History** | `/profile/notifications` | [`app/(customer)/profile/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/profile/notifications/page.tsx) | `Authenticated Traveler` | WhatsApp trip updates, booking alerts, and marketing preference toggles |
+| **BharatYatra Smart QR Official Landing Portal** | `/qr` | [`app/(customer)/qr/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/qr/page.tsx) | `Public` | Tricolour smart landing page for official business cards and marketing materials with six primary actions |
 | **Curated Dining & Regional Food Guide** | `/restaurants` | [`app/(customer)/restaurants/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/restaurants/page.tsx) | `Public / Traveler` | Authentic Kathiyawadi, Gujarati thali, street food, and fine dining |
 | **Restaurant Menu, Hours & Table Booking** | `/restaurants/[id]` | [`app/(customer)/restaurants/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/restaurants/[id]/page.tsx) | `Public / Traveler` | Signature dishes, pricing for two, hygiene ratings, and table reservations |
 | **Wishlist & Saved Places Collection** | `/saved` | [`app/(customer)/saved/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/saved/page.tsx) | `Authenticated Traveler` | Bookmarked hotels, itineraries, packages, and hidden gems |

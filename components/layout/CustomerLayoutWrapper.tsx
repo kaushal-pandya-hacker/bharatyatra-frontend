@@ -22,9 +22,28 @@ export function CustomerLayoutWrapper({ children }: { children: React.ReactNode 
   const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
   const isAdminPath = cleanPath.startsWith('/bharatyatra-ops');
   const isTripDashboard = cleanPath !== '/trips' && cleanPath.startsWith('/trips/');
+  const isQrLanding = cleanPath === '/qr' || cleanPath.startsWith('/qr/');
 
   if (isAdminPath) {
     return <>{children}</>;
+  }
+
+  if (isQrLanding) {
+    return (
+      <AccessibilityProvider>
+        <AuthProvider>
+          <BookingGuardProvider>
+            <DestinationSelectionProvider>
+              <NexiProvider>
+                <div className="min-h-screen bg-slate-50 text-slate-900">{children}</div>
+                <AccessibilityModal />
+                <NexiChatFloating />
+              </NexiProvider>
+            </DestinationSelectionProvider>
+          </BookingGuardProvider>
+        </AuthProvider>
+      </AccessibilityProvider>
+    );
   }
 
   if (isTripDashboard) {
