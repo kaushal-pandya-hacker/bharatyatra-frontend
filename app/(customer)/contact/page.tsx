@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import {
   Phone,
   Mail,
@@ -11,7 +10,6 @@ import {
   CheckCircle2,
   Send,
   MessageSquare,
-  ArrowLeft,
   Sparkles,
   Instagram,
 } from 'lucide-react';
@@ -64,27 +62,7 @@ export default function ContactUsPage() {
     <div className="min-h-screen bg-slate-50 text-[#102B4E] selection:bg-[#FF9933]/20 py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-4xl mx-auto space-y-8">
         
-        {/* Navigation Bar */}
-        <div className="flex items-center justify-between">
-          <Link
-            href="/qr"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-[#102B4E] transition-colors py-2 px-3 rounded-xl bg-white border border-slate-200 shadow-2xs"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to Smart Portal</span>
-          </Link>
 
-          <Link href="/" className="flex items-center gap-2 group">
-            <img
-              src="/logo.png"
-              alt="BharatYatra Logo"
-              className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-            />
-            <span className="text-sm font-extrabold tracking-tight text-[#102B4E] uppercase">
-              BHARAT YATRA
-            </span>
-          </Link>
-        </div>
 
         {/* Page Header */}
         <header className="text-center space-y-3 pt-2">
