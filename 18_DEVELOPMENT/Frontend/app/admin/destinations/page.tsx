@@ -174,6 +174,20 @@ export default function AdminDestinationsPage() {
       {/* Destination Grid */}
       {loading ? (
         <div className="p-12 text-center text-xs font-semibold text-slate-500">Loading destination circuits...</div>
+      ) : destinations.length === 0 ? (
+        <div className="p-12 text-center bg-white border border-slate-200 rounded-2xl shadow-xs">
+          <Compass className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <div className="text-sm font-bold text-slate-700">No Custom Admin Destinations Created Yet</div>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            The AI Trip Planner references the 126 verified knowledge base entities (lib/data/destinations.ts). Custom CMS destinations created here will be indexed alongside the verified catalog.
+          </p>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="mt-4 px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer"
+          >
+            Create First Destination
+          </button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {destinations.map((d) => (

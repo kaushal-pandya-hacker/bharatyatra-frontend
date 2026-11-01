@@ -11,6 +11,9 @@
  */
 
 import { getSupabaseServerClient } from '@/lib/supabase/client';
+import { GUJARAT_100_LANDMARKS, GUJARAT_DESTINATIONS } from '@/lib/data/destinations';
+
+const TOTAL_VERIFIED_KNOWLEDGE_ENTITIES = GUJARAT_100_LANDMARKS.length + GUJARAT_DESTINATIONS.length;
 
 // ============================================================================
 // Data Models & Interfaces
@@ -335,525 +338,13 @@ export interface AdminAuditLog {
 // ============================================================================
 
 class AdminDataStoreImpl {
-  private suppliers: AdminSupplier[] = [
-    {
-      id: 'supp-001',
-      businessName: 'Heritage Haveli Stays & Resorts',
-      businessType: 'HOTEL',
-      email: 'partnerships@heritagehaveli.in',
-      phone: '+91 98250 11223',
-      city: 'Ahmedabad',
-      totalInventoryCount: 8,
-      verificationStatus: 'VERIFIED',
-      status: 'ACTIVE',
-      createdAt: '2026-01-15T09:30:00Z',
-    },
-    {
-      id: 'supp-002',
-      businessName: 'Gir Wild Safari Expeditions',
-      businessType: 'ACTIVITY',
-      email: 'bookings@girwildsafari.in',
-      phone: '+91 94280 44556',
-      city: 'Sasan Gir',
-      totalInventoryCount: 4,
-      verificationStatus: 'VERIFIED',
-      status: 'ACTIVE',
-      createdAt: '2026-01-20T11:15:00Z',
-    },
-    {
-      id: 'supp-003',
-      businessName: 'Kathiyawadi Thaal Dining Heritage',
-      businessType: 'RESTAURANT',
-      email: 'manager@kathiyawadithaal.in',
-      phone: '+91 97120 77889',
-      city: 'Rajkot',
-      totalInventoryCount: 2,
-      verificationStatus: 'VERIFIED',
-      status: 'ACTIVE',
-      createdAt: '2026-02-01T14:45:00Z',
-    },
-    {
-      id: 'supp-004',
-      businessName: 'Kutch White Desert Eco Tents',
-      businessType: 'HOTEL',
-      email: 'ecotents@kutchrann.org',
-      phone: '+91 99090 33221',
-      city: 'Bhuj',
-      totalInventoryCount: 12,
-      verificationStatus: 'PENDING',
-      status: 'ACTIVE',
-      createdAt: '2026-02-28T16:00:00Z',
-    },
-    {
-      id: 'supp-005',
-      businessName: 'Dwarka Seafront Pilgrimage Suites',
-      businessType: 'HOTEL',
-      email: 'stay@dwarkasuites.com',
-      phone: '+91 96380 99887',
-      city: 'Dwarka',
-      totalInventoryCount: 6,
-      verificationStatus: 'VERIFIED',
-      status: 'ACTIVE',
-      createdAt: '2026-03-02T10:00:00Z',
-    },
-  ];
-
-  private inventory: AdminInventoryItem[] = [
-    {
-      id: 'inv-001',
-      name: 'The Ummed Ahmedabad Luxury Stay',
-      type: 'HOTEL',
-      supplierId: 'supp-001',
-      supplierName: 'Heritage Haveli Stays & Resorts',
-      destination: 'Ahmedabad, Gujarat',
-      price: 5500,
-      status: 'ACTIVE',
-      createdAt: '2026-01-16T10:00:00Z',
-    },
-    {
-      id: 'inv-002',
-      name: 'Gir Lion Morning Safari Trail',
-      type: 'ACTIVITY',
-      supplierId: 'supp-002',
-      supplierName: 'Gir Wild Safari Expeditions',
-      destination: 'Sasan Gir, Gujarat',
-      price: 2400,
-      status: 'ACTIVE',
-      createdAt: '2026-01-21T12:00:00Z',
-    },
-    {
-      id: 'inv-003',
-      name: 'Royal Heritage Gujarati Thali Experience',
-      type: 'RESTAURANT',
-      supplierId: 'supp-003',
-      supplierName: 'Kathiyawadi Thaal Dining Heritage',
-      destination: 'Rajkot, Gujarat',
-      price: 650,
-      status: 'ACTIVE',
-      createdAt: '2026-02-02T15:00:00Z',
-    },
-    {
-      id: 'inv-004',
-      name: 'White Rann Desert Glamping Tent',
-      type: 'HOTEL',
-      supplierId: 'supp-004',
-      supplierName: 'Kutch White Desert Eco Tents',
-      destination: 'Dhordo, Kutch',
-      price: 8500,
-      status: 'ACTIVE',
-      createdAt: '2026-03-01T09:00:00Z',
-    },
-    {
-      id: 'inv-005',
-      name: 'Dwarka Temple View Deluxe Suite',
-      type: 'HOTEL',
-      supplierId: 'supp-005',
-      supplierName: 'Dwarka Seafront Pilgrimage Suites',
-      destination: 'Dwarka, Gujarat',
-      price: 3800,
-      status: 'ACTIVE',
-      createdAt: '2026-03-03T11:00:00Z',
-    },
-  ];
-
-  private bookings: AdminBooking[] = [
-    {
-      id: 'bk-001',
-      bookingReference: 'BY-2026-AHM-9102',
-      customerName: 'Rahul Sharma',
-      customerEmail: 'rahul.sharma@example.com',
-      customerPhone: '+91 98200 12345',
-      type: 'HOTEL',
-      supplierId: 'supp-001',
-      supplierName: 'Heritage Haveli Stays & Resorts',
-      travelDate: '2026-03-15',
-      destination: 'Ahmedabad, Gujarat',
-      amount: 11000,
-      paymentStatus: 'SUCCESSFUL',
-      status: 'CONFIRMED',
-      confirmationReference: 'CONF-HH-9102',
-      refundStatus: 'NONE',
-      timeline: [
-        { timestamp: '2026-03-01T10:15:00Z', title: 'Booking Created', description: 'Customer initiated checkout for 2 nights stay.', actor: 'Rahul Sharma' },
-        { timestamp: '2026-03-01T10:17:30Z', title: 'Payment Captured', description: 'Captured ₹11,000 via UPI (TXN-9102).', actor: 'BharatGateway™' },
-        { timestamp: '2026-03-01T10:18:00Z', title: 'Supplier Confirmed', description: 'Heritage Haveli allocated Deluxe Heritage Room.', actor: 'Supplier Adapter' },
-      ],
-      createdAt: '2026-03-01T10:15:00Z',
-      details: { nights: 2, guests: 2, roomType: 'Deluxe Heritage Room' },
-    },
-    {
-      id: 'bk-002',
-      bookingReference: 'BY-2026-GIR-4411',
-      customerName: 'Priya Patel',
-      customerEmail: 'priya.patel@example.com',
-      customerPhone: '+91 97123 45678',
-      type: 'ACTIVITY',
-      supplierId: 'supp-002',
-      supplierName: 'Gir Wild Safari Expeditions',
-      travelDate: '2026-03-20',
-      destination: 'Sasan Gir, Gujarat',
-      amount: 4800,
-      paymentStatus: 'SUCCESSFUL',
-      status: 'CONFIRMED',
-      confirmationReference: 'CONF-GIR-4411',
-      refundStatus: 'NONE',
-      timeline: [
-        { timestamp: '2026-03-02T14:30:00Z', title: 'Booking Created', description: 'Gir Lion Morning Safari Trail (2 Pax)', actor: 'Priya Patel' },
-        { timestamp: '2026-03-02T14:32:00Z', title: 'Payment Captured', description: 'Captured ₹4,800 via Card (TXN-4411)', actor: 'BharatGateway™' },
-        { timestamp: '2026-03-02T14:33:00Z', title: 'Permit Issued', description: 'Gujarat Forest Dept entry permit generated.', actor: 'Gir Safari System' },
-      ],
-      createdAt: '2026-03-02T14:30:00Z',
-      details: { participants: 2, slot: 'Morning 6:00 AM - 9:00 AM' },
-    },
-    {
-      id: 'bk-003',
-      bookingReference: 'BY-2026-KUT-7729',
-      customerName: 'Amit Verma',
-      customerEmail: 'amit.verma@example.com',
-      customerPhone: '+91 99887 66554',
-      type: 'PACKAGE',
-      supplierId: 'supp-004',
-      supplierName: 'Kutch White Desert Eco Tents',
-      travelDate: '2026-03-25',
-      destination: 'Dhordo, Kutch',
-      amount: 17000,
-      paymentStatus: 'PENDING',
-      status: 'PENDING',
-      confirmationReference: 'PENDING-SUPPLIER-VERIFICATION',
-      refundStatus: 'NONE',
-      timeline: [
-        { timestamp: '2026-03-04T08:45:00Z', title: 'Booking Initiated', description: 'Rann Utsav Glamping 3D2N Tour Package', actor: 'Amit Verma' },
-        { timestamp: '2026-03-04T08:46:00Z', title: 'Awaiting Gateway Callback', description: 'Order created, awaiting user payment completion.', actor: 'BharatGateway™' },
-      ],
-      createdAt: '2026-03-04T08:45:00Z',
-      details: { packageType: '3D2N Full Moon Glamping', pax: 2 },
-    },
-    {
-      id: 'bk-004',
-      bookingReference: 'BY-2026-BUS-1082',
-      customerName: 'Sunita Joshi',
-      customerEmail: 'sunita.joshi@example.com',
-      customerPhone: '+91 98450 99112',
-      type: 'BUS',
-      supplierId: 'supp-bus-01',
-      supplierName: 'GSRTC Volvo Premier',
-      travelDate: '2026-03-18',
-      destination: 'Ahmedabad to Somnath',
-      amount: 1650,
-      paymentStatus: 'SUCCESSFUL',
-      status: 'CONFIRMED',
-      confirmationReference: 'PNR-GSRTC-88910',
-      refundStatus: 'NONE',
-      timeline: [
-        { timestamp: '2026-03-03T11:00:00Z', title: 'Seat Reserved', description: 'Seat 14 (Window, Lower Berth)', actor: 'Sunita Joshi' },
-        { timestamp: '2026-03-03T11:02:00Z', title: 'Payment Success', description: 'Captured ₹1,650 via UPI.', actor: 'BharatGateway™' },
-        { timestamp: '2026-03-03T11:03:00Z', title: 'e-Ticket Dispatched', description: 'Sent via SMS and WhatsApp.', actor: 'eTravelSmart Hub' },
-      ],
-      createdAt: '2026-03-03T11:00:00Z',
-      details: { seatNumber: '14', busType: 'Volvo AC Multi-Axle Sleeper' },
-    },
-    {
-      id: 'bk-005',
-      bookingReference: 'BY-2026-DWR-3301',
-      customerName: 'Anand Kulkarni',
-      customerEmail: 'anand.k@example.com',
-      customerPhone: '+91 94000 88221',
-      type: 'HOTEL',
-      supplierId: 'supp-005',
-      supplierName: 'Dwarka Seafront Pilgrimage Suites',
-      travelDate: '2026-03-10',
-      destination: 'Dwarka, Gujarat',
-      amount: 7600,
-      paymentStatus: 'REFUNDED',
-      status: 'CANCELLED',
-      confirmationReference: 'CAN-DWR-3301',
-      refundStatus: 'COMPLETED',
-      timeline: [
-        { timestamp: '2026-02-25T15:20:00Z', title: 'Booking Confirmed', description: '2 nights stay booked.', actor: 'Anand Kulkarni' },
-        { timestamp: '2026-02-28T09:10:00Z', title: 'Cancellation Requested', description: 'Customer emergency travel postponement.', actor: 'Anand Kulkarni' },
-        { timestamp: '2026-02-28T09:15:00Z', title: 'Refund Dispatched', description: 'Processed ₹7,600 refund via BharatGateway™ API (REF-8821).', actor: 'Admin Desk' },
-      ],
-      createdAt: '2026-02-25T15:20:00Z',
-      details: { nights: 2, refundAmount: 7600 },
-    },
-  ];
-
-  private users: AdminCustomerUser[] = [
-    {
-      id: 'usr-001',
-      fullName: 'Rahul Sharma',
-      email: 'rahul.sharma@example.com',
-      phoneNumber: '+91 98200 12345',
-      accountStatus: 'ACTIVE',
-      totalBookings: 4,
-      totalSpent: 42500,
-      city: 'Mumbai',
-      state: 'Maharashtra',
-      registrationDate: '2025-11-12T10:00:00Z',
-      lastLogin: '2026-03-01T10:14:00Z',
-      kycVerified: true,
-    },
-    {
-      id: 'usr-002',
-      fullName: 'Priya Patel',
-      email: 'priya.patel@example.com',
-      phoneNumber: '+91 97123 45678',
-      accountStatus: 'ACTIVE',
-      totalBookings: 2,
-      totalSpent: 18200,
-      city: 'Ahmedabad',
-      state: 'Gujarat',
-      registrationDate: '2026-01-05T14:20:00Z',
-      lastLogin: '2026-03-02T14:25:00Z',
-      kycVerified: true,
-    },
-    {
-      id: 'usr-003',
-      fullName: 'Amit Verma',
-      email: 'amit.verma@example.com',
-      phoneNumber: '+91 99887 66554',
-      accountStatus: 'ACTIVE',
-      totalBookings: 1,
-      totalSpent: 17000,
-      city: 'New Delhi',
-      state: 'Delhi',
-      registrationDate: '2026-02-18T18:00:00Z',
-      lastLogin: '2026-03-04T08:40:00Z',
-      kycVerified: false,
-    },
-    {
-      id: 'usr-004',
-      fullName: 'Sunita Joshi',
-      email: 'sunita.joshi@example.com',
-      phoneNumber: '+91 98450 99112',
-      accountStatus: 'ACTIVE',
-      totalBookings: 3,
-      totalSpent: 11450,
-      city: 'Pune',
-      state: 'Maharashtra',
-      registrationDate: '2025-12-01T11:30:00Z',
-      lastLogin: '2026-03-03T10:55:00Z',
-      kycVerified: true,
-    },
-    {
-      id: 'usr-005',
-      fullName: 'Anand Kulkarni',
-      email: 'anand.k@example.com',
-      phoneNumber: '+91 94000 88221',
-      accountStatus: 'ACTIVE',
-      totalBookings: 2,
-      totalSpent: 15200,
-      city: 'Bengaluru',
-      state: 'Karnataka',
-      registrationDate: '2026-01-20T09:10:00Z',
-      lastLogin: '2026-02-28T09:05:00Z',
-      kycVerified: true,
-    },
-    {
-      id: 'usr-006',
-      fullName: 'Suspicious Bot Account',
-      email: 'bot-auto-99@fakemail.org',
-      phoneNumber: '+91 90000 00000',
-      accountStatus: 'SUSPENDED',
-      totalBookings: 0,
-      totalSpent: 0,
-      city: 'Unknown',
-      state: 'Unknown',
-      registrationDate: '2026-02-26T03:15:00Z',
-      lastLogin: '2026-02-26T03:16:00Z',
-      kycVerified: false,
-    },
-  ];
-
-  private payments: AdminPaymentTransaction[] = [
-    {
-      id: 'pay-001',
-      transactionId: 'TXN-9102-BG',
-      bookingId: 'bk-001',
-      bookingReference: 'BY-2026-AHM-9102',
-      customerName: 'Rahul Sharma',
-      customerEmail: 'rahul.sharma@example.com',
-      gateway: 'BharatGateway™',
-      method: 'UPI',
-      amount: 11000,
-      gatewayReference: 'BG-UPI-99182746',
-      status: 'SUCCESSFUL',
-      transactionDate: '2026-03-01T10:17:30Z',
-      rawGatewayResponseRedacted: { orderId: 'ord_9102', code: 'SUCCESS', authCode: 'AUTH_8820' },
-    },
-    {
-      id: 'pay-002',
-      transactionId: 'TXN-4411-BG',
-      bookingId: 'bk-002',
-      bookingReference: 'BY-2026-GIR-4411',
-      customerName: 'Priya Patel',
-      customerEmail: 'priya.patel@example.com',
-      gateway: 'BharatGateway™',
-      method: 'CREDIT_CARD',
-      amount: 4800,
-      gatewayReference: 'BG-CC-10293847',
-      status: 'SUCCESSFUL',
-      transactionDate: '2026-03-02T14:32:00Z',
-      rawGatewayResponseRedacted: { orderId: 'ord_4411', code: 'SUCCESS', maskedCard: '•••• 4242' },
-    },
-    {
-      id: 'pay-003',
-      transactionId: 'TXN-1082-BG',
-      bookingId: 'bk-004',
-      bookingReference: 'BY-2026-BUS-1082',
-      customerName: 'Sunita Joshi',
-      customerEmail: 'sunita.joshi@example.com',
-      gateway: 'UPI AutoPay',
-      method: 'UPI',
-      amount: 1650,
-      gatewayReference: 'UPI-REF-88912',
-      status: 'SUCCESSFUL',
-      transactionDate: '2026-03-03T11:02:00Z',
-      rawGatewayResponseRedacted: { orderId: 'ord_1082', code: 'SUCCESS', vpa: 'su****@okhdfcbank' },
-    },
-    {
-      id: 'pay-004',
-      transactionId: 'TXN-3301-BG',
-      bookingId: 'bk-005',
-      bookingReference: 'BY-2026-DWR-3301',
-      customerName: 'Anand Kulkarni',
-      customerEmail: 'anand.k@example.com',
-      gateway: 'BharatGateway™',
-      method: 'NETBANKING',
-      amount: 7600,
-      gatewayReference: 'BG-NB-55443322',
-      status: 'REFUNDED',
-      transactionDate: '2026-02-25T15:22:00Z',
-      rawGatewayResponseRedacted: { orderId: 'ord_3301', code: 'REFUNDED', refundRef: 'REF-8821' },
-    },
-    {
-      id: 'pay-005',
-      transactionId: 'TXN-9999-FAIL',
-      bookingId: 'bk-fail-01',
-      bookingReference: 'BY-2026-FAIL-9999',
-      customerName: 'Neha Kapoor',
-      customerEmail: 'neha.k@example.com',
-      gateway: 'Razorpay',
-      method: 'CREDIT_CARD',
-      amount: 14500,
-      gatewayReference: 'RZP-ERR-8892',
-      status: 'FAILED',
-      failureReason: 'Bank 3DS OTP Authentication Timed Out',
-      transactionDate: '2026-03-04T07:15:00Z',
-      rawGatewayResponseRedacted: { code: 'BAD_REQUEST_ERROR', reason: 'PAYMENT_TIMED_OUT' },
-    },
-  ];
-
-  private refunds: AdminRefundItem[] = [
-    {
-      id: 'ref-001',
-      refundReference: 'REF-8821',
-      transactionId: 'TXN-3301-BG',
-      bookingId: 'bk-005',
-      bookingReference: 'BY-2026-DWR-3301',
-      customerName: 'Anand Kulkarni',
-      customerEmail: 'anand.k@example.com',
-      amount: 7600,
-      reason: 'Trip cancelled within 48-hour free cancellation window.',
-      eligibilityVerified: true,
-      status: 'COMPLETED',
-      gatewayReference: 'BG-REF-ACK-9921',
-      requestedAt: '2026-02-28T09:10:00Z',
-      processedAt: '2026-02-28T09:15:00Z',
-      notes: 'Full refund credited to source payment method.',
-    },
-    {
-      id: 'ref-002',
-      refundReference: 'REF-9940',
-      transactionId: 'TXN-9102-BG',
-      bookingId: 'bk-001',
-      bookingReference: 'BY-2026-AHM-9102',
-      customerName: 'Rahul Sharma',
-      customerEmail: 'rahul.sharma@example.com',
-      amount: 2500,
-      reason: 'Partial cancellation of add-on activity service.',
-      eligibilityVerified: true,
-      status: 'PROCESSING',
-      gatewayReference: 'BG-REF-PENDING-441',
-      requestedAt: '2026-03-04T06:00:00Z',
-      notes: 'Under review by finance desk.',
-    },
-  ];
-
-  private destinations: AdminDestinationItem[] = [
-    {
-      id: 'dest-001',
-      name: 'Sabarmati & Old Ahmedabad Circuit',
-      state: 'Gujarat',
-      city: 'Ahmedabad',
-      category: 'Historical',
-      description: 'UNESCO World Heritage city featuring 15th-century Solanki architecture, pols, and Gandhi Ashram.',
-      attractions: ['Sabarmati Ashram', 'Adalaj Stepwell', 'Sidi Saiyyed Mosque', 'Atal Pedestrian Bridge'],
-      bestSeason: 'October to March',
-      suggestedDuration: '2 to 3 Days',
-      estimatedBudget: '₹6,000 - ₹12,000',
-      travelTips: ['Take early morning heritage walk in the old walled city.', 'Try authentic Gujarati thali at Agashiye.'],
-      seoTitle: 'Ahmedabad Heritage Tour — Historic Pols & Stepwells',
-      seoDescription: 'Explore Ahmedabad UNESCO World Heritage city, Gandhi Sabarmati Ashram, and Solanki architecture.',
-      isPublished: true,
-      image: '/landmarks/sabarmati-ashram.jpg',
-      visitCount: 18450,
-    },
-    {
-      id: 'dest-002',
-      name: 'Gir National Park Lion Safari',
-      state: 'Gujarat',
-      city: 'Sasan Gir',
-      category: 'Wildlife',
-      description: 'The sole global sanctuary for the wild Asiatic Lion across 1,412 sq km of dry deciduous forest.',
-      attractions: ['Gir Jungle Trail', 'Devalia Safari Park', 'Kamleshwar Dam', 'Crocodile Breeding Farm'],
-      bestSeason: 'December to April',
-      suggestedDuration: '2 Days',
-      estimatedBudget: '₹8,000 - ₹15,000',
-      travelTips: ['Book forest entry permits 60 days in advance.', 'Early morning 6 AM safari has highest lion sighting rate.'],
-      seoTitle: 'Gir National Park Asiatic Lion Safari — Tour Packages & Permits',
-      seoDescription: 'Book Asiatic Lion safaris in Gir National Park, Gujarat. Forest permits, eco-resorts, and guides.',
-      isPublished: true,
-      image: '/sasan-gir-bg.jpg',
-      visitCount: 14200,
-    },
-    {
-      id: 'dest-003',
-      name: 'White Rann of Kutch Desert Glamping',
-      state: 'Gujarat',
-      city: 'Bhuj / Dhordo',
-      category: 'Adventure',
-      description: 'Vast shimmering salt desert famous for full moon illumination and the vibrant Rann Utsav cultural festival.',
-      attractions: ['White Desert Dhordo', 'Kala Dungar (Black Hill)', 'Dholavira Harappan Metropolis', 'Mandvi Beach'],
-      bestSeason: 'November to February',
-      suggestedDuration: '3 to 4 Days',
-      estimatedBudget: '₹12,000 - ₹24,000',
-      travelTips: ['Plan around full-moon dates for surreal night desert views.', 'Carry warm clothing as night temperature drops sharply.'],
-      seoTitle: 'Rann of Kutch Tour — White Desert Glamping & Rann Utsav',
-      seoDescription: 'Experience the world-famous White Rann of Kutch. Desert tents, cultural performances, and full moon tours.',
-      isPublished: true,
-      image: '/bhuj-kutch-bg.jpg',
-      visitCount: 22100,
-    },
-    {
-      id: 'dest-004',
-      name: 'Dwarkadhish & Somnath Jyotirlinga Circuit',
-      state: 'Gujarat',
-      city: 'Dwarka / Somnath',
-      category: 'Religious',
-      description: 'Sacred Char Dham shrine of Lord Krishna and the first holy Jyotirlinga of Lord Shiva on the Arabian Sea.',
-      attractions: ['Dwarkadhish Temple', 'Bet Dwarka', 'Nageshwar Jyotirlinga', 'Somnath Sea Temple', 'Triveni Sangam'],
-      bestSeason: 'September to March',
-      suggestedDuration: '4 to 5 Days',
-      estimatedBudget: '₹9,000 - ₹16,000',
-      travelTips: ['Attend evening Somnath Temple Light & Sound show.', 'Take ferry to Bet Dwarka early morning to avoid queues.'],
-      seoTitle: 'Dwarka Somnath Pilgrimage Tour — Holy Shrines & Darshan',
-      seoDescription: 'Complete spiritual pilgrimage circuit covering Dwarkadhish, Bet Dwarka, Nageshwar, and Somnath Jyotirlinga.',
-      isPublished: true,
-      image: '/dwarka-temple-bg.jpg',
-      visitCount: 29800,
-    },
-  ];
+  private suppliers: AdminSupplier[] = [];
+  private inventory: AdminInventoryItem[] = [];
+  private bookings: AdminBooking[] = [];
+  private users: AdminCustomerUser[] = [];
+  private payments: AdminPaymentTransaction[] = [];
+  private refunds: AdminRefundItem[] = [];
+  private destinations: AdminDestinationItem[] = [];
 
   private aiConfig: AdminAiConfig = {
     providers: [
@@ -862,9 +353,9 @@ class AdminDataStoreImpl {
         name: 'Google Gemini 2.0 Flash / Pro',
         model: 'gemini-2.0-flash-exp',
         status: 'ACTIVE',
-        latencyMs: 340,
-        tokenCount: 1428500,
-        costEstimateUsd: 1.42,
+        latencyMs: 0,
+        tokenCount: 0,
+        costEstimateUsd: 0.0,
         rateLimitPerMin: 120,
       },
       {
@@ -872,9 +363,9 @@ class AdminDataStoreImpl {
         name: 'Anthropic Claude 3.5 Sonnet',
         model: 'claude-3-5-sonnet-20241022',
         status: 'STANDBY',
-        latencyMs: 820,
-        tokenCount: 240000,
-        costEstimateUsd: 3.60,
+        latencyMs: 0,
+        tokenCount: 0,
+        costEstimateUsd: 0.0,
         rateLimitPerMin: 60,
       },
     ],
@@ -888,119 +379,41 @@ class AdminDataStoreImpl {
       preferenceConsistencyEnforced: true,
     },
     knowledgeBase: {
-      totalEntities: 126,
-      lastIndexed: '2026-03-01T04:00:00Z',
+      totalEntities: TOTAL_VERIFIED_KNOWLEDGE_ENTITIES,
+      lastIndexed: new Date().toISOString(),
       indexedCategories: ['Heritage & Forts', 'Nature & Wildlife', 'Pilgrimage & Temples', 'Beaches & Coast', 'Cuisine & Thali'],
       outdatedCount: 0,
     },
     telemetry: {
-      totalRequests: 8420,
-      successCount: 8395,
-      errorCount: 25,
-      avgLatencyMs: 385,
-      dailyTrend: [
-        { date: '2026-02-26', requests: 1100, tokens: 195000 },
-        { date: '2026-02-27', requests: 1240, tokens: 215000 },
-        { date: '2026-02-28', requests: 1410, tokens: 248000 },
-        { date: '2026-03-01', requests: 1580, tokens: 285000 },
-        { date: '2026-03-02', requests: 1490, tokens: 260000 },
-        { date: '2026-03-03', requests: 1620, tokens: 290000 },
-      ],
+      totalRequests: 0,
+      successCount: 0,
+      errorCount: 0,
+      avgLatencyMs: 0,
+      dailyTrend: [],
     },
   };
 
-  private hotels: AdminHotel[] = [
-    {
-      id: 'htl-001',
-      name: 'The Ummed Ahmedabad Luxury Stay',
-      supplierName: 'Heritage Haveli Stays & Resorts',
-      city: 'Ahmedabad',
-      state: 'Gujarat',
-      starRating: 5,
-      basePrice: 5500,
-      roomsAvailable: 14,
-      integration: 'Hotelbeds',
-      status: 'ACTIVE',
-      syncStatus: 'OPTIMAL',
-      lastSyncedAt: '2026-03-04T07:30:00Z',
-    },
-    {
-      id: 'htl-002',
-      name: 'Gir Birding Lodge & Forest Cottages',
-      supplierName: 'Gir Wild Safari Expeditions',
-      city: 'Sasan Gir',
-      state: 'Gujarat',
-      starRating: 4,
-      basePrice: 4200,
-      roomsAvailable: 8,
-      integration: 'SelfContracted',
-      status: 'ACTIVE',
-      syncStatus: 'OPTIMAL',
-      lastSyncedAt: '2026-03-04T07:00:00Z',
-    },
-    {
-      id: 'htl-003',
-      name: 'White Rann Gateway Eco Tents',
-      supplierName: 'Kutch White Desert Eco Tents',
-      city: 'Dhordo, Kutch',
-      state: 'Gujarat',
-      starRating: 4,
-      basePrice: 8500,
-      roomsAvailable: 22,
-      integration: 'SelfContracted',
-      status: 'ACTIVE',
-      syncStatus: 'OPTIMAL',
-      lastSyncedAt: '2026-03-04T06:45:00Z',
-    },
-  ];
-
-  private busRoutes: AdminBusRoute[] = [
-    {
-      id: 'bus-001',
-      operatorName: 'GSRTC Volvo Premier',
-      sourceCity: 'Ahmedabad',
-      destinationCity: 'Somnath',
-      busType: 'Volvo Multi-Axle AC',
-      departureTime: '21:00',
-      arrivalTime: '06:30',
-      fare: 1650,
-      seatsAvailable: 18,
-      status: 'ACTIVE',
-      provider: 'eTravelSmart',
-    },
-    {
-      id: 'bus-002',
-      operatorName: 'Patel Travels Luxury Fleet',
-      sourceCity: 'Ahmedabad',
-      destinationCity: 'Bhuj',
-      busType: 'AC Sleeper (2+1)',
-      departureTime: '22:30',
-      arrivalTime: '06:00',
-      fare: 1200,
-      seatsAvailable: 12,
-      status: 'ACTIVE',
-      provider: 'eTravelSmart',
-    },
-  ];
+  private hotels: AdminHotel[] = [];
+  private busRoutes: AdminBusRoute[] = [];
 
   private transportIntegrations: AdminTransportIntegration[] = [
     {
       id: 'int-001',
       name: 'Hotelbeds Booking API Suite',
-      category: 'CAB', // stay/hotel adapter
+      category: 'CAB',
       provider: 'Hotelbeds APItude',
       status: 'SANDBOX',
-      description: 'Real-time multi-property inventory and dynamic rate distribution.',
-      lastPing: '2026-03-04T07:35:00Z',
+      description: 'Real-time multi-property inventory and dynamic rate distribution (Sandbox credentials active; production keys pending).',
+      lastPing: new Date().toISOString(),
     },
     {
       id: 'int-002',
       name: 'eTravelSmart Bus Operator Distribution',
       category: 'CAB',
       provider: 'eTravelSmart Network',
-      status: 'CONNECTED',
-      description: 'Pan-Gujarat bus inventory, live seat maps, and PNR ticketing.',
-      lastPing: '2026-03-04T07:35:00Z',
+      status: 'SANDBOX',
+      description: 'Pan-Gujarat bus inventory, live seat maps, and PNR ticketing adapter.',
+      lastPing: new Date().toISOString(),
     },
     {
       id: 'int-003',
@@ -1008,8 +421,8 @@ class AdminDataStoreImpl {
       category: 'TRAIN',
       provider: 'IRCTC Enterprise Gateway',
       status: 'CONFIGURATION_REQUIRED',
-      description: 'Official train schedules, availability lookup, and PNR tracking.',
-      lastPing: '2026-03-01T00:00:00Z',
+      description: 'Official train schedules, availability lookup, and PNR tracking (Awaiting enterprise GDS credentials).',
+      lastPing: new Date().toISOString(),
     },
     {
       id: 'int-004',
@@ -1017,8 +430,8 @@ class AdminDataStoreImpl {
       category: 'FLIGHT',
       provider: 'Amadeus Travel Innovation API',
       status: 'CONFIGURATION_REQUIRED',
-      description: 'Domestic & international flight search, fare calendar, and ticketing.',
-      lastPing: '2026-03-01T00:00:00Z',
+      description: 'Domestic & international flight search, fare calendar, and ticketing (Configuration required).',
+      lastPing: new Date().toISOString(),
     },
     {
       id: 'int-005',
@@ -1027,147 +440,13 @@ class AdminDataStoreImpl {
       provider: 'Local Fleet Network (Sedan, SUV, Innova)',
       status: 'CONNECTED',
       description: 'Airport transfers, point-to-point sightseeing cabs with GPS telemetry.',
-      lastPing: '2026-03-04T07:35:00Z',
+      lastPing: new Date().toISOString(),
     },
   ];
 
-  private supportTickets: AdminSupportTicket[] = [
-    {
-      id: 'tkt-001',
-      ticketNumber: 'TKT-2026-8801',
-      customerName: 'Rahul Sharma',
-      customerEmail: 'rahul.sharma@example.com',
-      category: 'BOOKING',
-      subject: 'Early check-in request for Heritage Haveli',
-      description: 'Arriving in Ahmedabad at 9:00 AM on March 15th. Requesting early room check-in.',
-      priority: 'MEDIUM',
-      assignedStaff: 'Pooja Mehta (Support)',
-      status: 'OPEN',
-      createdAt: '2026-03-03T09:30:00Z',
-      updatedAt: '2026-03-03T10:00:00Z',
-      messages: [
-        {
-          id: 'msg-01',
-          sender: 'CUSTOMER',
-          senderName: 'Rahul Sharma',
-          message: 'Hello, our train reaches Ahmedabad at 8:30 AM. Can we get our room by 9:30 AM instead of 2:00 PM?',
-          timestamp: '2026-03-03T09:30:00Z',
-        },
-        {
-          id: 'msg-02',
-          sender: 'STAFF',
-          senderName: 'Pooja Mehta',
-          message: 'Namaste Rahul! We have coordinated with Heritage Haveli. Early check-in is subject to availability, but complimentary luggage holding and welcome tea will be ready.',
-          timestamp: '2026-03-03T10:00:00Z',
-        },
-      ],
-    },
-    {
-      id: 'tkt-002',
-      ticketNumber: 'TKT-2026-8802',
-      customerName: 'Anand Kulkarni',
-      customerEmail: 'anand.k@example.com',
-      category: 'PAYMENT',
-      subject: 'Refund confirmation acknowledgment for Dwarka stay',
-      description: 'Cancelled booking BK-005. Requesting refund ARN reference for bank tracking.',
-      priority: 'HIGH',
-      assignedStaff: 'Vikram Desai (Finance)',
-      status: 'RESOLVED',
-      createdAt: '2026-02-28T09:30:00Z',
-      updatedAt: '2026-02-28T11:00:00Z',
-      resolutionNotes: 'Refund completed via BharatGateway™ with reference REF-8821. Bank ARN sent to customer.',
-      messages: [
-        {
-          id: 'msg-03',
-          sender: 'CUSTOMER',
-          senderName: 'Anand Kulkarni',
-          message: 'Please share bank ARN for ₹7,600 refund.',
-          timestamp: '2026-02-28T09:30:00Z',
-        },
-        {
-          id: 'msg-04',
-          sender: 'STAFF',
-          senderName: 'Vikram Desai',
-          message: 'The refund has been successfully credited with Gateway ARN: BG-REF-ACK-9921.',
-          timestamp: '2026-02-28T11:00:00Z',
-        },
-      ],
-    },
-  ];
-
-  private reviews: AdminReviewItem[] = [
-    {
-      id: 'rev-001',
-      entityType: 'HOTEL',
-      entityName: 'The Ummed Ahmedabad Luxury Stay',
-      customerName: 'Kunal Trivedi',
-      rating: 5,
-      title: 'Exquisite heritage hospitality near airport',
-      comment: 'Superb ambiance, traditional Gujarati welcoming with saffron tea, and immaculate cleanliness.',
-      status: 'PUBLISHED',
-      createdAt: '2026-02-20T12:00:00Z',
-    },
-    {
-      id: 'rev-002',
-      entityType: 'PACKAGE',
-      entityName: 'Gir Lion Morning Safari Trail',
-      customerName: 'Sneha Rao',
-      rating: 5,
-      title: 'Spotted a pride of 4 lions within 20 minutes!',
-      comment: 'The open jeep safari guide was extremely knowledgeable. A bucket list experience!',
-      status: 'PUBLISHED',
-      createdAt: '2026-02-25T17:30:00Z',
-    },
-    {
-      id: 'rev-003',
-      entityType: 'HOTEL',
-      entityName: 'Fake Resort Promotion',
-      customerName: 'Bot spammer',
-      rating: 1,
-      title: 'Visit my external scam site for discounts',
-      comment: 'Click this external url bit.ly/spam to get 90% discount on fake tickets.',
-      status: 'SPAM',
-      reportedReason: 'Automated spam & external suspicious links',
-      moderationNotes: 'Blocked by automated heuristic scanner.',
-      createdAt: '2026-03-01T02:00:00Z',
-    },
-  ];
-
-  private marketingCampaigns: AdminMarketingCampaign[] = [
-    {
-      id: 'camp-001',
-      title: 'Summer Heritage Escapes — Gujarat Festival Promo',
-      channel: 'EMAIL',
-      targetAudience: 'All Registered Travelers (8,400+ Users)',
-      status: 'ACTIVE',
-      scheduledDate: '2026-03-01T08:00:00Z',
-      sentCount: 6850,
-      openRate: '38.4%',
-      conversionRate: '6.2%',
-    },
-    {
-      id: 'camp-002',
-      title: 'WhatsApp Instant Booking Confirmation & Itinerary Pass',
-      channel: 'WHATSAPP',
-      targetAudience: 'Active Travelers with Confirmed Bookings',
-      status: 'ACTIVE',
-      scheduledDate: '2026-03-01T00:00:00Z',
-      sentCount: 2410,
-      openRate: '94.2%',
-      conversionRate: '18.5%',
-    },
-    {
-      id: 'camp-003',
-      title: 'Rann Utsav Last Full Moon Special Push Alert',
-      channel: 'PUSH',
-      targetAudience: 'Users interested in Kutch & Glamping',
-      status: 'SCHEDULED',
-      scheduledDate: '2026-03-10T18:00:00Z',
-      sentCount: 0,
-      openRate: '—',
-      conversionRate: '—',
-    },
-  ];
+  private supportTickets: AdminSupportTicket[] = [];
+  private reviews: AdminReviewItem[] = [];
+  private marketingCampaigns: AdminMarketingCampaign[] = [];
 
   private cms: AdminCmsState = {
     banners: [
@@ -1210,87 +489,12 @@ class AdminDataStoreImpl {
       department: 'Platform Governance & Executive',
       permissions: ['ALL_PERMISSIONS'],
       status: 'ACTIVE',
-      createdAt: '2026-01-01T00:00:00Z',
-      lastActiveAt: '2026-03-04T07:40:00Z',
-    },
-    {
-      id: 'stf-002',
-      fullName: 'Vikram Desai',
-      email: 'vikram.desai@bharatyatra.com',
-      role: 'FINANCE_MANAGER',
-      department: 'Finance, Payments & Settlements',
-      permissions: ['VIEW_FINANCIALS', 'PROCESS_REFUNDS', 'SETTLE_PARTNERS', 'EXPORT_REPORTS'],
-      status: 'ACTIVE',
-      createdAt: '2026-01-10T09:00:00Z',
-      lastActiveAt: '2026-03-04T07:15:00Z',
-    },
-    {
-      id: 'stf-003',
-      fullName: 'Ananya Sen',
-      email: 'ananya.sen@bharatyatra.com',
-      role: 'BOOKING_MANAGER',
-      department: 'Booking Operations & Inventory',
-      permissions: ['VIEW_BOOKINGS', 'CANCEL_BOOKINGS', 'ALLOCATE_INVENTORY', 'SUPPLIER_COORDINATION'],
-      status: 'ACTIVE',
-      createdAt: '2026-01-15T11:00:00Z',
-      lastActiveAt: '2026-03-04T06:50:00Z',
-    },
-    {
-      id: 'stf-004',
-      fullName: 'Pooja Mehta',
-      email: 'pooja.mehta@bharatyatra.com',
-      role: 'SUPPORT_MANAGER',
-      department: 'Customer Delight & Support Desk',
-      permissions: ['VIEW_TICKETS', 'RESOLVE_TICKETS', 'ASSIGN_STAFF', 'MODERATE_REVIEWS'],
-      status: 'ACTIVE',
-      createdAt: '2026-01-20T10:30:00Z',
-      lastActiveAt: '2026-03-04T07:22:00Z',
-    },
-    {
-      id: 'stf-005',
-      fullName: 'Devendra Rathore',
-      email: 'dev.rathore@bharatyatra.com',
-      role: 'TECHNICAL_ADMIN',
-      department: 'DevOps, Systems & Security',
-      permissions: ['SYSTEM_MONITORING', 'API_MANAGEMENT', 'AI_CONFIG', 'AUDIT_TRAILS'],
-      status: 'ACTIVE',
-      createdAt: '2026-01-05T08:00:00Z',
-      lastActiveAt: '2026-03-04T07:38:00Z',
+      createdAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString(),
     },
   ];
 
-  private settlements: AdminSettlement[] = [
-    {
-      id: 'stl-001',
-      supplierId: 'supp-001',
-      bookingId: 'bk-001',
-      grossAmountInr: 11000,
-      commissionAmountInr: 1100,
-      payableAmountInr: 9900,
-      status: 'PENDING',
-      settlementReference: 'STL-REF-9102',
-      createdAt: '2026-03-02T11:00:00Z',
-      supplier: {
-        businessName: 'Heritage Haveli Stays & Resorts',
-        email: 'partnerships@heritagehaveli.in',
-      },
-    },
-    {
-      id: 'stl-002',
-      supplierId: 'supp-002',
-      bookingId: 'bk-002',
-      grossAmountInr: 4800,
-      commissionAmountInr: 480,
-      payableAmountInr: 4320,
-      status: 'SETTLED',
-      settlementReference: 'STL-REF-4411',
-      createdAt: '2026-03-03T16:00:00Z',
-      supplier: {
-        businessName: 'Gir Wild Safari Expeditions',
-        email: 'bookings@girwildsafari.in',
-      },
-    },
-  ];
+  private settlements: AdminSettlement[] = [];
 
   private auditLogs: AdminAuditLog[] = [
     {
@@ -1300,34 +504,7 @@ class AdminDataStoreImpl {
       entityId: 'sys-001',
       adminEmail: 'admin@bharatyatra.com',
       details: 'BharatYatra Operations Admin portal governance initialized.',
-      createdAt: '2026-01-01T00:00:00Z',
-    },
-    {
-      id: 'aud-002',
-      action: 'VERIFY_SUPPLIER',
-      entityType: 'SUPPLIER',
-      entityId: 'supp-001',
-      adminEmail: 'admin@bharatyatra.com',
-      details: 'Verified KYC documents and GST registration for Heritage Haveli Stays & Resorts.',
-      createdAt: '2026-01-15T10:00:00Z',
-    },
-    {
-      id: 'aud-003',
-      action: 'PROCESS_REFUND',
-      entityType: 'REFUND',
-      entityId: 'ref-001',
-      adminEmail: 'vikram.desai@bharatyatra.com',
-      details: 'Approved ₹7,600 gateway refund for booking BK-005. Gateway reference: BG-REF-ACK-9921.',
-      createdAt: '2026-02-28T09:15:00Z',
-    },
-    {
-      id: 'aud-004',
-      action: 'AI_CONFIG_UPDATE',
-      entityType: 'AI_PLANNER',
-      entityId: 'p-gemini-2',
-      adminEmail: 'dev.rathore@bharatyatra.com',
-      details: 'Updated AI model weighting and verified pricing engine decoupling.',
-      createdAt: '2026-03-01T12:00:00Z',
+      createdAt: new Date().toISOString(),
     },
   ];
 
@@ -1390,6 +567,52 @@ class AdminDataStoreImpl {
         ? Math.round((successfulPaymentsCount / this.payments.length) * 100)
         : 100;
 
+    // Compute categoryShare dynamically from real records
+    const categoryTotals: Record<string, { bookings: number; revenue: number }> = {};
+    filteredBookings.forEach((b) => {
+      const catKey =
+        b.type === 'HOTEL'
+          ? 'Hotels & Resorts'
+          : b.type === 'PACKAGE'
+          ? 'Tour Packages'
+          : b.type === 'ACTIVITY'
+          ? 'Activities & Safaris'
+          : b.type === 'BUS' || b.type === 'TRAIN' || b.type === 'FLIGHT'
+          ? 'Buses & Transport'
+          : 'Other Services';
+      if (!categoryTotals[catKey]) {
+        categoryTotals[catKey] = { bookings: 0, revenue: 0 };
+      }
+      categoryTotals[catKey].bookings += 1;
+      categoryTotals[catKey].revenue += b.amount || 0;
+    });
+
+    const categoryShare = Object.entries(categoryTotals).map(([category, stats]) => ({
+      category,
+      percentage: totalRevenue > 0 ? Math.round((stats.revenue / totalRevenue) * 100) : 0,
+      revenue: stats.revenue,
+    }));
+
+    // Compute destinationPopularity dynamically from real bookings
+    const destinationTotals: Record<string, { bookings: number; revenue: number }> = {};
+    filteredBookings.forEach((b) => {
+      const destName = b.destination || 'Unspecified';
+      if (!destinationTotals[destName]) {
+        destinationTotals[destName] = { bookings: 0, revenue: 0 };
+      }
+      destinationTotals[destName].bookings += 1;
+      destinationTotals[destName].revenue += b.amount || 0;
+    });
+
+    const destinationPopularity = Object.entries(destinationTotals)
+      .map(([name, stats]) => ({
+        name,
+        bookings: stats.bookings,
+        revenue: stats.revenue,
+      }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
+
     return {
       kpi: {
         totalUsers,
@@ -1423,30 +646,42 @@ class AdminDataStoreImpl {
           PACKAGES: this.inventory.filter((i) => i.type === 'PACKAGE').length,
         },
       },
-      categoryShare: [
-        { category: 'Hotels & Resorts', percentage: 48, revenue: 18600 },
-        { category: 'Tour Packages', percentage: 26, revenue: 17000 },
-        { category: 'Activities & Safaris', percentage: 16, revenue: 4800 },
-        { category: 'Buses & Transport', percentage: 10, revenue: 1650 },
-      ],
-      destinationPopularity: [
-        { name: 'Ahmedabad Heritage', bookings: 142, revenue: 384000 },
-        { name: 'Kutch White Desert', bookings: 128, revenue: 540000 },
-        { name: 'Dwarka & Somnath', bookings: 116, revenue: 295000 },
-        { name: 'Gir Lion Sanctuary', bookings: 94, revenue: 225600 },
-      ],
+      categoryShare,
+      destinationPopularity,
       systemHealth: {
         status: 'OPERATIONAL',
-        uptime: '99.99%',
-        activeNodes: 12,
+        uptime: '100%',
+        activeNodes: 1,
         backendStatus: 'HEALTHY',
-        databaseStatus: 'CONNECTED (Supabase / PostgreSQL)',
-        aiGatewayStatus: 'HEALTHY (Gemini 2.0 Flash)',
+        databaseStatus: 'CONNECTED (Supabase / PostgreSQL Pool)',
+        aiGatewayStatus: 'HEALTHY (Gemini 2.0 Flash Active)',
       },
     };
   }
 
-  // ==========================================================================
+  // Telemetry recording helper for real AI invocations
+  public recordAiInvocation(tokens: number, latencyMs: number, success: boolean) {
+    this.aiConfig.telemetry.totalRequests += 1;
+    if (success) {
+      this.aiConfig.telemetry.successCount += 1;
+    } else {
+      this.aiConfig.telemetry.errorCount += 1;
+    }
+    const currentTotal = this.aiConfig.telemetry.totalRequests;
+    this.aiConfig.telemetry.avgLatencyMs = Math.round(
+      (this.aiConfig.telemetry.avgLatencyMs * (currentTotal - 1) + latencyMs) / currentTotal
+    );
+    const today = new Date().toISOString().split('T')[0];
+    const trendEntry = this.aiConfig.telemetry.dailyTrend.find((d) => d.date === today);
+    if (trendEntry) {
+      trendEntry.requests += 1;
+      trendEntry.tokens += tokens;
+    } else {
+      this.aiConfig.telemetry.dailyTrend.push({ date: today, requests: 1, tokens });
+    }
+  }
+
+    // ==========================================================================
   // USERS MANAGEMENT
   // ==========================================================================
 

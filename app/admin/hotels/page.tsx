@@ -85,9 +85,9 @@ export default function AdminHotelsPage() {
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GDS Provider</span>
             <h3 className="font-bold text-slate-900 text-sm">Hotelbeds APItude Booking Suite</h3>
-            <div className="text-xs text-slate-500">Hourly Delta Rate Synchronization Active</div>
+            <div className="text-xs text-slate-500">Live multi-property inventory &amp; rate parity adapter</div>
             <div className="text-[11px] text-slate-400 pt-2">
-              Last Sync: {supplierStatus?.hotelbeds?.lastSync ? new Date(supplierStatus.hotelbeds.lastSync).toLocaleTimeString() : 'Recent'}
+              Status: Sandbox Mode (Configuration Required for Live GDS Production Keys)
             </div>
           </div>
           <span className="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-[10px] font-bold">
@@ -100,11 +100,11 @@ export default function AdminHotelsPage() {
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Direct Contracts</span>
             <h3 className="font-bold text-slate-900 text-sm">Direct Heritage &amp; Eco-Resorts Network</h3>
-            <div className="text-xs text-slate-500">18 verified Gujarat luxury &amp; pilgrimage properties</div>
+            <div className="text-xs text-slate-500">{filtered.length} properties connected</div>
             <div className="text-[11px] text-slate-400 pt-2">Live Availability Lock Enforced</div>
           </div>
           <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-bold">
-            LIVE_VERIFIED
+            {filtered.length > 0 ? 'LIVE_VERIFIED' : '0 CONNECTED'}
           </span>
         </div>
       </div>

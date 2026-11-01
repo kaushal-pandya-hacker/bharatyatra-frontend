@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminUser } from '@/lib/auth/server-auth';
 import { adminDataStore } from '@/lib/admin/admin-store';
+import { partnerService } from '@/lib/partners/partner-service';
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,7 +13,28 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const data = adminDataStore.getInventory({ type, status, search });
+    let data = adminDataStore.getInventory({ type, status, search });
+
+    if (data.length === 0) {
+      try {
+        const pkgs = await partnerService.getPackages();
+        if (pkgs && Array.isArray(pkgs) && pkgs.length > 0) {
+          data = pkgs.map((p) => ({
+            id: p.id,
+            name: p.title,
+            type: 'PACKAGE' as const,
+            supplierId: p.agencyId,
+            supplierName: p.agencyName || 'Registered Partner',
+            destination: p.destinations?.join(', ') || p.stateOrRegion || 'India',
+            price: p.basePrice || 0,
+            status: p.publicationStatus === 'PUBLISHED' ? 'ACTIVE' : 'INACTIVE',
+            createdAt: p.createdAt,
+          }));
+        }
+      } catch {
+        // Table missing or empty -> remains genuine []
+      }
+    }
 
     return NextResponse.json({
       success: true,

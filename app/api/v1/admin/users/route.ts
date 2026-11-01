@@ -24,15 +24,12 @@ export async function GET(req: NextRequest) {
 
     try {
       const result = await UserDataStore.getAdminUsers({ search, role, status, limit, offset });
-      if (result && Array.isArray(result.users) && result.users.length > 0) {
+      if (result && Array.isArray(result.users)) {
         users = result.users;
         total = result.total;
       }
     } catch {
-      // Graceful fallback to admin store
-    }
-
-    if (users.length === 0) {
+      // Graceful query on admin store
       users = adminDataStore.getUsers({ search, status });
       total = users.length;
     }

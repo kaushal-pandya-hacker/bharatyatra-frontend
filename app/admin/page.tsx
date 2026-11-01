@@ -273,23 +273,29 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="space-y-3">
-            {categoryShare.map((cat: any) => (
-              <div key={cat.category} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-slate-800">{cat.category}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-500">₹{cat.revenue?.toLocaleString()}</span>
-                    <span className="text-amber-600 font-extrabold">{cat.percentage}%</span>
+            {categoryShare.length === 0 ? (
+              <div className="py-8 text-center text-xs text-slate-400 font-medium">
+                No booking transactions recorded yet. Real-time category share will appear as bookings are confirmed.
+              </div>
+            ) : (
+              categoryShare.map((cat: any) => (
+                <div key={cat.category} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span className="text-slate-800">{cat.category}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500">₹{cat.revenue?.toLocaleString()}</span>
+                      <span className="text-amber-600 font-extrabold">{cat.percentage}%</span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${cat.percentage}%` }}
+                    />
                   </div>
                 </div>
-                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all duration-500"
-                    style={{ width: `${cat.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -306,18 +312,24 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="divide-y divide-slate-100">
-            {destinationPopularity.map((dest: any, idx: number) => (
-              <div key={dest.name} className="py-2.5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-3">
-                  <span className="w-5 text-slate-400 font-bold">{idx + 1}.</span>
-                  <span className="font-bold text-slate-900">{dest.name}</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-slate-500">{dest.bookings} Bookings</span>
-                  <span className="font-extrabold text-slate-900">₹{dest.revenue?.toLocaleString()}</span>
-                </div>
+            {destinationPopularity.length === 0 ? (
+              <div className="py-8 text-center text-xs text-slate-400 font-medium">
+                No destination bookings recorded yet. Top circuits will dynamically rank here as users book journeys.
               </div>
-            ))}
+            ) : (
+              destinationPopularity.map((dest: any, idx: number) => (
+                <div key={dest.name} className="py-2.5 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-3">
+                    <span className="w-5 text-slate-400 font-bold">{idx + 1}.</span>
+                    <span className="font-bold text-slate-900">{dest.name}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-slate-500">{dest.bookings} Bookings</span>
+                    <span className="font-extrabold text-slate-900">₹{dest.revenue?.toLocaleString()}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

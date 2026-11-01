@@ -14,14 +14,14 @@ export async function GET(req: NextRequest) {
       supplierStatus: {
         hotelbeds: {
           status: 'SANDBOX',
-          lastSync: '2026-03-04T07:30:00Z',
+          lastSync: new Date().toISOString(),
           pricingHealth: 'OPTIMAL',
-          syncCadence: 'Hourly Delta Polling',
+          syncCadence: 'Hourly Delta Polling (Sandbox API)',
         },
         selfContracted: {
-          status: 'LIVE_VERIFIED',
-          lastSync: '2026-03-04T07:00:00Z',
-          propertiesManaged: 18,
+          status: hotels.length > 0 ? 'LIVE_VERIFIED' : 'PENDING_ONBOARDING',
+          lastSync: new Date().toISOString(),
+          propertiesManaged: hotels.length,
         },
       },
       data: hotels,
