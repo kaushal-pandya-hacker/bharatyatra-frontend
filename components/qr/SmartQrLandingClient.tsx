@@ -154,6 +154,7 @@ export function SmartQrLandingClient() {
           titleColor: 'text-[#102B4E] group-hover:text-[#E1306C]',
           badgeText: '📸 @bharat.yatra29',
         };
+      case 'become-travel-partner':
       case 'become-a-travel-partner':
         return {
           cardBg: 'bg-gradient-to-r from-[#F6F7FA] via-white to-[#EEF2F6]',
