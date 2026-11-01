@@ -138,3 +138,4 @@ export async function dispatchInquiryNotifications(inquiry: InquiryPayload): Pro
     status: 'RECORDED_AND_ROUTED',
   };
 }
+
