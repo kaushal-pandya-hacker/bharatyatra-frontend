@@ -1080,6 +1080,54 @@ class AdminDataStoreImpl {
   // SUPPORT TICKETS
   // ==========================================================================
 
+  public createSupportTicket(ticketInput: {
+    customerName: string;
+    customerEmail: string;
+    phone?: string;
+    category?: AdminSupportTicket['category'];
+    subject: string;
+    description: string;
+    priority?: AdminSupportTicket['priority'];
+  }): AdminSupportTicket {
+    const id = `tkt-${Date.now()}`;
+    const count = this.supportTickets.length + 1;
+    const ticketNumber = `BY-TKT-${String(count).padStart(4, '0')}`;
+    const newTicket: AdminSupportTicket = {
+      id,
+      ticketNumber,
+      customerName: ticketInput.customerName.trim(),
+      customerEmail: ticketInput.customerEmail.trim().toLowerCase(),
+      category: ticketInput.category || 'GENERAL',
+      subject: ticketInput.subject.trim(),
+      description: ticketInput.description.trim(),
+      priority: ticketInput.priority || 'MEDIUM',
+      assignedStaff: 'Support Operations Concierge',
+      status: 'OPEN',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      messages: [
+        {
+          id: `msg-${Date.now()}`,
+          sender: 'CUSTOMER',
+          senderName: ticketInput.customerName.trim(),
+          message: ticketInput.phone
+            ? `Phone: ${ticketInput.phone.trim()}\n\n${ticketInput.description.trim()}`
+            : ticketInput.description.trim(),
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    };
+    this.supportTickets.unshift(newTicket);
+    this.addAuditLog({
+      action: 'SUPPORT_TICKET_CREATED',
+      entityType: 'SUPPORT_TICKET',
+      entityId: id,
+      adminEmail: 'customer-portal@bharatyatra.in',
+      details: `Inquiry from ${newTicket.customerName} (${newTicket.customerEmail}): ${newTicket.subject}`,
+    });
+    return newTicket;
+  }
+
   public getSupportTickets(filters?: { status?: string; priority?: string; search?: string }): AdminSupportTicket[] {
     let list = [...this.supportTickets];
     if (filters?.status && filters.status !== 'ALL') {

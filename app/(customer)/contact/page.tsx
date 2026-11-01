@@ -26,36 +26,39 @@ export default function ContactUsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{
+    ticketNumber?: string;
+    whatsAppUrl?: string;
+    emailRecipients?: string[];
+  } | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
-      // Push non-blocking inquiry event to analytics / backend
-      await fetch('/api/v1/analytics/events', {
+      const res = await fetch('/api/v1/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          eventType: 'customer_contact_inquiry_submitted',
-          timestamp: new Date().toISOString(),
-          properties: {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            subject: formData.subject,
-            messageLength: formData.message.length,
-          },
-        }),
+        body: JSON.stringify(formData),
       });
-    } catch {
-      // Continue even if network glitch occurs
-    }
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setSubmissionResult(json.data);
+        setIsSubmitted(true);
+      } else {
+        setSubmitError(json.message || 'Failed to submit inquiry. Please try again.');
+      }
+    } catch {
+      setSubmitError('Unable to connect to the server. Please try calling or messaging on WhatsApp directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -195,22 +198,47 @@ export default function ContactUsPage() {
           {/* Interactive Inquiry Form (3 Cols) */}
           <div className="md:col-span-3 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm">
             {isSubmitted ? (
-              <div className="text-center py-10 space-y-4">
+              <div className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 bg-[#E8F5E9] text-[#138808] rounded-full mx-auto flex items-center justify-center shadow-inner">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
-                <h3 className="text-xl font-bold text-[#102B4E]">Inquiry Received</h3>
-                <p className="text-sm text-slate-600 max-w-sm mx-auto">
-                  Thank you, <strong>{formData.name}</strong>. Your message has been routed to our direct customer concierge team. We will reach out shortly.
+                <div>
+                  <span className="inline-block px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 text-xs font-black rounded-full uppercase tracking-wider mb-2">
+                    Ticket #{submissionResult?.ticketNumber || 'BY-TKT-REGISTERED'}
+                  </span>
+                  <h3 className="text-xl font-bold text-[#102B4E]">Inquiry Successfully Logged!</h3>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong>{formData.name}</strong>. Your inquiry has been routed to our <strong>Admin Operations Desk</strong> and dispatched to our email alerts.
                 </p>
-                <div className="pt-2">
+
+                {/* Instant WhatsApp Action */}
+                {submissionResult?.whatsAppUrl && (
+                  <div className="pt-2">
+                    <a
+                      href={submissionResult.whatsAppUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-[0.99]"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Chat on WhatsApp Directly (+91 96242 82521)</span>
+                    </a>
+                    <p className="text-[11px] text-slate-500 mt-1.5">
+                      Click to open pre-filled inquiry directly on WhatsApp for instant 15-minute response.
+                    </p>
+                  </div>
+                )}
+
+                <div className="pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => {
                       setIsSubmitted(false);
+                      setSubmissionResult(null);
                       setFormData({ name: '', email: '', phone: '', subject: 'GENERAL_INQUIRY', message: '' });
                     }}
-                    className="text-xs font-bold text-[#FF7700] hover:underline"
+                    className="text-xs font-bold text-[#102B4E] hover:text-[#FF7700] underline"
                   >
                     Send Another Inquiry
                   </button>
@@ -218,6 +246,11 @@ export default function ContactUsPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {submitError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold">
+                    {submitError}
+                  </div>
+                )}
                 <div>
                   <h2 className="text-lg font-bold text-[#102B4E]">Send an Instant Message</h2>
                   <p className="text-xs text-slate-500 mt-0.5">
