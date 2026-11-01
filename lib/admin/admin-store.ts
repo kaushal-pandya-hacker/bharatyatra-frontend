@@ -852,6 +852,62 @@ class AdminDataStoreImpl {
     return list.sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
   }
 
+  public getFinanceSummary() {
+    const allPayments = this.payments;
+    const paidPayments = allPayments.filter(
+      (p) => p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID'
+    );
+    const failedPayments = allPayments.filter((p) => p.status === 'FAILED');
+    const refundedPayments = allPayments.filter(
+      (p) => p.status === 'REFUNDED' || p.status === 'PARTIALLY_REFUNDED'
+    );
+
+    const totalPaidBookings = paidPayments.length;
+    const failedPaymentsCount = failedPayments.length;
+    const refundedPaymentsCount = refundedPayments.length;
+
+    // Gross Booking Volume (GBV)
+    const grossBookingValueInr = paidPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+
+    // Settlements & Commissions
+    const settlements = this.settlements;
+    const platformCommissionInr =
+      settlements.length > 0
+        ? settlements.reduce((sum, s) => sum + Number(s.commissionAmountInr || 0), 0)
+        : Number((grossBookingValueInr * 0.10).toFixed(2));
+
+    const netSupplierPayableInr =
+      settlements.length > 0
+        ? settlements.reduce((sum, s) => sum + Number(s.payableAmountInr || 0), 0)
+        : Number((grossBookingValueInr * 0.90).toFixed(2));
+
+    const completedRefunds = this.refunds.filter((r) => r.status === 'COMPLETED');
+    const totalRefundsInr = completedRefunds.reduce((sum, r) => sum + Number(r.amount || 0), 0);
+
+    const pendingSettlements = settlements.filter((s) => s.status === 'PENDING');
+    const pendingSettlementsInr = pendingSettlements.reduce(
+      (sum, s) => sum + Number(s.payableAmountInr || 0),
+      0
+    );
+
+    const netPlatformRevenueInr = Number((platformCommissionInr - totalRefundsInr).toFixed(2));
+
+    return {
+      totalPaidBookings,
+      successfulPaymentsCount: totalPaidBookings,
+      failedPaymentsCount,
+      refundedPaymentsCount,
+      grossBookingValueInr: Number(grossBookingValueInr.toFixed(2)),
+      gbvInr: Number(grossBookingValueInr.toFixed(2)),
+      platformCommissionInr: Number(platformCommissionInr.toFixed(2)),
+      netSupplierPayableInr: Number(netSupplierPayableInr.toFixed(2)),
+      totalRefundsInr: Number(totalRefundsInr.toFixed(2)),
+      pendingSettlementsInr: Number(pendingSettlementsInr.toFixed(2)),
+      netPlatformRevenueInr,
+      settlementsCount: settlements.length,
+    };
+  }
+
   // ==========================================================================
   // REFUNDS
   // ==========================================================================
