@@ -49,3 +49,4 @@ for (const rel of filesToUpdate) {
   fs.writeFileSync(fullPath, content, 'utf8');
   console.log('Successfully updated:', rel);
 }
+

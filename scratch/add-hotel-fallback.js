@@ -80,3 +80,4 @@ hotelFiles.forEach((file) => {
     console.log('Added fallback to:', file);
   }
 });
+

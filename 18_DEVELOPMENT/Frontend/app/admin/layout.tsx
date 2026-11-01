@@ -11,8 +11,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Normalize path to handle Next.js trailingSlash: true (/admin/login or /admin/login/)
+  const cleanPath = (pathname || '').replace(/\/+$/, '') || '/';
+  const isLoginPage = cleanPath === '/admin/login';
+
   useEffect(() => {
-    if (pathname === '/admin/login') {
+    if (isLoginPage) {
       setLoading(false);
       return;
     }
@@ -30,9 +34,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       } catch (e) {}
     }
     setLoading(false);
-  }, [pathname, router]);
+  }, [cleanPath, isLoginPage, router]);
 
-  if (pathname === '/admin/login') {
+  if (isLoginPage) {
     return <>{children}</>;
   }
 
@@ -52,6 +56,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { label: 'Dashboard', href: '/admin', icon: '📊' },
+    { label: 'User Management', href: '/admin/users', icon: '👥' },
+    { label: 'Travel Partners', href: '/admin/travel-partners', icon: '🤝' },
+    { label: 'Travel Packages', href: '/admin/travel-packages', icon: '🎒' },
+    { label: 'Partner Commissions', href: '/admin/travel-commissions', icon: '💰' },
+    { label: 'Partner Audit Log', href: '/admin/travel-partner-audit', icon: '🛡️' },
     { label: 'Suppliers', href: '/admin/suppliers', icon: '🏢' },
     { label: 'Inventory Moderation', href: '/admin/inventory', icon: '🏨' },
     { label: 'Bookings Directory', href: '/admin/bookings', icon: '📑' },

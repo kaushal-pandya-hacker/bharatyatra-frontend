@@ -171,6 +171,9 @@ class InMemoryUserDataStore {
     return updated;
   }
 
+  
+
+
   // --- TRIPS ---
   public async getTrips(userId: string): Promise<UserTripRecord[]> {
     return Array.from(this.trips.values())
@@ -729,7 +732,55 @@ export class UserDataStore {
     }
   }
 
-  // --- TRIPS ---
+  public static async upsertProfile(userId: string, data: Partial<UserProfileRecord>): Promise<UserProfileRecord> {
+    if (simulateDatabaseFailure) {
+      throw new DatabasePersistenceError('Simulated database write failure.');
+    }
+    try {
+      const supabase = getSupabaseServerClient();
+      const payload: any = {
+        id: userId,
+        updated_at: new Date().toISOString(),
+      };
+      if (data.fullName !== undefined) payload.full_name = data.fullName;
+      if (data.phoneNumber !== undefined) payload.phone_number = data.phoneNumber;
+      if (data.avatarUrl !== undefined) payload.avatar_url = data.avatarUrl;
+      if (data.email !== undefined) payload.email = data.email;
+      if (data.role !== undefined) payload.role = data.role;
+      if (data.status !== undefined) payload.status = data.status;
+
+      const { data: upserted, error } = await supabase
+        .from('user_profiles')
+        .upsert(payload, { onConflict: 'id' })
+        .select()
+        .single();
+
+      if (!error && upserted) {
+        return {
+          id: upserted.id,
+          email: upserted.email,
+          fullName: upserted.full_name || data.fullName || '',
+          phoneNumber: upserted.phone_number || data.phoneNumber || '',
+          avatarUrl: upserted.avatar_url || data.avatarUrl || '',
+          role: upserted.role || data.role || 'CUSTOMER',
+          status: upserted.status || 'ACTIVE',
+          isPhoneVerified: upserted.is_phone_verified || false,
+          createdAt: upserted.created_at || new Date().toISOString(),
+          updatedAt: upserted.updated_at || new Date().toISOString(),
+        };
+      }
+      if (error) {
+        if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
+        console.warn('Database upsertProfile notice:', error.message);
+      }
+    } catch (err: any) {
+      if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
+      console.warn('Database upsertProfile exception:', err?.message);
+    }
+    return inMemoryStore.updateProfile(userId, data);
+  }
+
+    // --- TRIPS ---
   public static async getUserTrips(userId: string): Promise<UserTripRecord[]> {
     if (simulateDatabaseFailure) {
       throw new DatabasePersistenceError('Simulated database read failure.');

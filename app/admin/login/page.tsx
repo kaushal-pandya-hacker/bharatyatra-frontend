@@ -30,6 +30,10 @@ export default function AdminLoginPage() {
       const token = json.data.token;
       localStorage.setItem('admin_token', token);
       localStorage.setItem('admin_user', JSON.stringify(json.data.user));
+      if (typeof document !== 'undefined') {
+        const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+        document.cookie = `admin_token=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Max-Age=86400${isSecure ? "; Secure" : ""}`;
+      }
       router.push('/admin');
     } catch (err: any) {
       setError(err.message || 'Failed to authenticate admin');

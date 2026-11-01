@@ -235,8 +235,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isPhoneVerified: u.isPhoneVerified,
         };
       }
-    } catch (e) {
-      // Backend lookup failed or unauthenticated
+    } catch (e: any) {
+      // If unauthorized, clean stale tokens from storage
+      if (e?.status === 401 || e?.status === 403) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+        }
+      }
     }
     return null;
   };
