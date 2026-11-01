@@ -150,3 +150,102 @@ export async function sendEnquiryEmailNotifications(
   };
 }
 
+export interface SupportReplyEmailPayload {
+  ticketNumber: string;
+  customerName: string;
+  customerEmail: string;
+  subject: string;
+  replyMessage: string;
+  senderName: string;
+}
+
+export async function sendSupportReplyEmail(
+  payload: SupportReplyEmailPayload
+): Promise<EmailDeliveryResult> {
+  const emailSubject = `Reply from BharatYatra Support: Ticket #${payload.ticketNumber}`;
+  const recipients = [payload.customerEmail];
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+      <div style="border-bottom: 2px solid #102B4E; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: bold; letter-spacing: 1.5px; color: #d97706; text-transform: uppercase;">BharatYatra Customer Support</span>
+        <h2 style="color: #102B4E; margin: 4px 0 0 0; font-size: 20px;">Support Desk Response</h2>
+        <p style="font-size: 13px; color: #64748b; margin: 4px 0 0 0;">Ticket: <strong>#${payload.ticketNumber}</strong> • ${payload.subject}</p>
+      </div>
+
+      <p style="font-size: 14px; color: #334155; margin-bottom: 12px;">
+        Dear <strong>${payload.customerName}</strong>,
+      </p>
+
+      <p style="font-size: 14px; color: #334155; margin-bottom: 16px;">
+        Our operations support team has responded to your inquiry:
+      </p>
+
+      <div style="background-color: #fefce8; border: 1px solid #fef08a; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+        <span style="font-size: 11px; font-weight: bold; color: #92400e; text-transform: uppercase; display: block; margin-bottom: 6px;">
+          ${payload.senderName} wrote:
+        </span>
+        <p style="font-size: 14px; color: #1e293b; line-height: 1.6; margin: 0; white-space: pre-wrap;">${payload.replyMessage}</p>
+      </div>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="https://bharatyatra.in/notifications" style="display: inline-block; padding: 12px 28px; background-color: #102B4E; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; border-radius: 10px;">
+          View Notifications on BharatYatra
+        </a>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+      <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
+        Need instant help? Reach our WhatsApp Concierge at <a href="https://wa.me/919624282521" style="color: #2563eb;">+91 96242 82521</a> or reply to this email.
+      </p>
+    </div>
+  `;
+
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM || 'BharatYatra Support <care@bharatyatra.in>',
+          to: recipients,
+          subject: emailSubject,
+          html,
+        }),
+      });
+      if (res.ok) return { status: 'SENT', recipients };
+      return { status: 'FAILED', recipients, error: await res.text() };
+    } catch (err: any) {
+      return { status: 'FAILED', recipients, error: err?.message };
+    }
+  }
+
+  if (process.env.SENDGRID_API_KEY) {
+    try {
+      const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: recipients.map((email) => ({ email })) }],
+          from: { email: process.env.EMAIL_FROM || 'care@bharatyatra.in', name: 'BharatYatra Support' },
+          subject: emailSubject,
+          content: [{ type: 'text/html', value: html }],
+        }),
+      });
+      if (res.ok) return { status: 'SENT', recipients };
+      return { status: 'FAILED', recipients, error: await res.text() };
+    } catch (err: any) {
+      return { status: 'FAILED', recipients, error: err?.message };
+    }
+  }
+
+  console.log(`[EmailService] Neither RESEND_API_KEY nor SENDGRID_API_KEY configured. Staff reply marked NOT_CONFIGURED.`);
+  return { status: 'NOT_CONFIGURED', recipients };
+}
+

@@ -53,6 +53,18 @@ export default function ContactUsPage() {
       if (res.ok && json.success) {
         setSubmissionResult(json.data);
         setIsSubmitted(true);
+        if (typeof window !== 'undefined') {
+          try {
+            const cleanEmail = formData.email.trim().toLowerCase();
+            localStorage.setItem('by_user_email', cleanEmail);
+            localStorage.setItem('by_last_enquiry_email', cleanEmail);
+            if (json.data?.enquiryReference) {
+              localStorage.setItem('by_last_enquiry_ref', json.data.enquiryReference);
+            }
+          } catch {
+            // Storage quota or private browsing fallback
+          }
+        }
       } else {
         setSubmitError(json.message || 'Failed to submit inquiry. Please try again.');
       }

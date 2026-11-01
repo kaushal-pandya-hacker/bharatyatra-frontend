@@ -10,6 +10,8 @@
  * Phase 7: Platform & Security Operations (CMS, APIs, System Monitoring, Audit Logs, Staff RBAC)
  */
 
+import fs from 'fs';
+import path from 'path';
 import { getSupabaseServerClient } from '@/lib/supabase/client';
 import { GUJARAT_100_LANDMARKS, GUJARAT_DESTINATIONS } from '@/lib/data/destinations';
 
@@ -247,6 +249,7 @@ export interface AdminSupportTicket {
   ticketNumber: string;
   customerName: string;
   customerEmail: string;
+  phone?: string;
   category: 'BOOKING' | 'PAYMENT' | 'CANCELLATION' | 'AI_PLANNER' | 'HOTEL' | 'GENERAL';
   subject: string;
   description: string;
@@ -445,6 +448,76 @@ class AdminDataStoreImpl {
   ];
 
   private supportTickets: AdminSupportTicket[] = [];
+  private supportTicketsLoaded = false;
+  private readonly TICKETS_FILE = path.join(process.cwd(), 'data', 'support_tickets.json');
+
+  private ensureSupportTicketsLoaded(): void {
+    if (this.supportTicketsLoaded) return;
+    try {
+      if (fs.existsSync(this.TICKETS_FILE)) {
+        const raw = fs.readFileSync(this.TICKETS_FILE, 'utf8');
+        const list = JSON.parse(raw);
+        if (Array.isArray(list) && list.length > 0) {
+          this.supportTickets = list;
+          this.supportTicketsLoaded = true;
+          return;
+        }
+      }
+
+      // Fallback: load any existing inquiries from contact_enquiries.json
+      const enqFile = path.join(process.cwd(), 'data', 'contact_enquiries.json');
+      if (fs.existsSync(enqFile)) {
+        const raw = fs.readFileSync(enqFile, 'utf8');
+        const list = JSON.parse(raw);
+        if (Array.isArray(list)) {
+          list.forEach((enq: any, idx: number) => {
+            const ticketNumber = `BY-TKT-${String(idx + 1).padStart(4, '0')}`;
+            if (!this.supportTickets.some((t) => t.ticketNumber === ticketNumber || t.id === enq.id)) {
+              this.supportTickets.push({
+                id: enq.id,
+                ticketNumber,
+                customerName: enq.fullName,
+                customerEmail: enq.email,
+                phone: enq.phone,
+                category: 'GENERAL',
+                subject: `[${enq.inquiryType}] Enquiry #${enq.enquiryReference}`,
+                description: enq.message,
+                status: enq.status === 'RESOLVED' ? 'RESOLVED' : 'OPEN',
+                priority: enq.priority || 'MEDIUM',
+                assignedStaff: 'Support Operations Concierge',
+                messages: [
+                  {
+                    id: `msg-${Date.now()}-${idx}`,
+                    sender: 'CUSTOMER',
+                    senderName: enq.fullName,
+                    message: enq.phone ? `Phone: ${enq.phone}\n\n${enq.message}` : enq.message,
+                    timestamp: enq.createdAt || new Date().toISOString(),
+                  },
+                ],
+                createdAt: enq.createdAt || new Date().toISOString(),
+                updatedAt: enq.updatedAt || new Date().toISOString(),
+              });
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.error('[AdminStore] Error loading support tickets from disk:', e);
+    }
+    this.supportTicketsLoaded = true;
+  }
+
+  private persistSupportTickets(): void {
+    try {
+      const dir = path.dirname(this.TICKETS_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(this.TICKETS_FILE, JSON.stringify(this.supportTickets, null, 2), 'utf8');
+    } catch (e) {
+      console.error('[AdminStore] Error persisting support tickets:', e);
+    }
+  }
   private reviews: AdminReviewItem[] = [];
   private marketingCampaigns: AdminMarketingCampaign[] = [];
 
@@ -1089,6 +1162,7 @@ class AdminDataStoreImpl {
     description: string;
     priority?: AdminSupportTicket['priority'];
   }): AdminSupportTicket {
+    this.ensureSupportTicketsLoaded();
     const id = `tkt-${Date.now()}`;
     const count = this.supportTickets.length + 1;
     const ticketNumber = `BY-TKT-${String(count).padStart(4, '0')}`;
@@ -1118,6 +1192,7 @@ class AdminDataStoreImpl {
       ],
     };
     this.supportTickets.unshift(newTicket);
+    this.persistSupportTickets();
     this.addAuditLog({
       action: 'SUPPORT_TICKET_CREATED',
       entityType: 'SUPPORT_TICKET',
@@ -1129,6 +1204,7 @@ class AdminDataStoreImpl {
   }
 
   public getSupportTickets(filters?: { status?: string; priority?: string; search?: string }): AdminSupportTicket[] {
+    this.ensureSupportTicketsLoaded();
     let list = [...this.supportTickets];
     if (filters?.status && filters.status !== 'ALL') {
       list = list.filter((t) => t.status === filters.status);
@@ -1149,6 +1225,7 @@ class AdminDataStoreImpl {
   }
 
   public addSupportReply(ticketId: string, message: string, senderName: string, adminEmail: string): AdminSupportTicket | null {
+    this.ensureSupportTicketsLoaded();
     const ticket = this.supportTickets.find((t) => t.id === ticketId || t.ticketNumber === ticketId);
     if (!ticket) return null;
 
@@ -1160,6 +1237,7 @@ class AdminDataStoreImpl {
       timestamp: new Date().toISOString(),
     });
     ticket.updatedAt = new Date().toISOString();
+    this.persistSupportTickets();
 
     this.addAuditLog({
       action: 'SUPPORT_TICKET_REPLY',
@@ -1178,12 +1256,14 @@ class AdminDataStoreImpl {
     resolutionNotes?: string,
     adminEmail = 'admin@bharatyatra.com'
   ): AdminSupportTicket | null {
+    this.ensureSupportTicketsLoaded();
     const ticket = this.supportTickets.find((t) => t.id === ticketId || t.ticketNumber === ticketId);
     if (!ticket) return null;
 
     ticket.status = status;
     if (resolutionNotes) ticket.resolutionNotes = resolutionNotes;
     ticket.updatedAt = new Date().toISOString();
+    this.persistSupportTickets();
 
     this.addAuditLog({
       action: `TICKET_STATUS_${status}`,

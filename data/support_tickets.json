@@ -1,0 +1,32 @@
+[
+  {
+    "id": "tkt-1793545603239",
+    "ticketNumber": "BY-TKT-0001",
+    "customerName": "Kaushal Pandya",
+    "customerEmail": "pandyakaushal294@gmail.com",
+    "category": "GENERAL",
+    "subject": "[GENERAL_INQUIRY] Enquiry #BY-ENQ-20261101-002-DOE6",
+    "description": "Hi",
+    "priority": "MEDIUM",
+    "assignedStaff": "Support Operations Concierge",
+    "status": "OPEN",
+    "createdAt": "2026-11-01T15:06:43.239Z",
+    "updatedAt": "2026-11-01T15:06:43.240Z",
+    "messages": [
+      {
+        "id": "msg-1793545603239",
+        "sender": "CUSTOMER",
+        "senderName": "Kaushal Pandya",
+        "message": "Phone: +919624282521\n\nHi",
+        "timestamp": "2026-11-01T15:06:43.239Z"
+      },
+      {
+        "id": "msg-1793545603240",
+        "sender": "STAFF",
+        "senderName": "Operations Support Lead",
+        "message": "hi",
+        "timestamp": "2026-11-01T15:06:43.240Z"
+      }
+    ]
+  }
+]

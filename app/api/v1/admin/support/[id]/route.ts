@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminUser } from '@/lib/auth/server-auth';
 import { adminDataStore } from '@/lib/admin/admin-store';
+import { sendSupportReplyEmail } from '@/lib/notifications/email-service';
+import { notificationStore } from '@/lib/notifications/notification-store';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -17,7 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const updated = adminDataStore.addSupportReply(
       params.id,
       message,
-      senderName || auth.user.fullName || 'Support Desk',
+      senderName || auth.user.fullName || 'Operations Support Lead',
       auth.user.email
     );
 
@@ -25,10 +27,42 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       return NextResponse.json({ success: false, message: 'Ticket not found.' }, { status: 404 });
     }
 
+    // 1. Dispatch Email to customer
+    const emailResult = await sendSupportReplyEmail({
+      ticketNumber: updated.ticketNumber,
+      customerName: updated.customerName,
+      customerEmail: updated.customerEmail,
+      subject: updated.subject,
+      replyMessage: message,
+      senderName: senderName || auth.user.fullName || 'Operations Support Lead',
+    });
+
+    // 2. Create in-app customer notification for the client website
+    const notif = await notificationStore.createNotification({
+      recipientEmail: updated.customerEmail,
+      recipientPhone: updated.phone,
+      title: `Reply from BharatYatra Support (#${updated.ticketNumber})`,
+      message: `${senderName || 'Operations Support Lead'}: "${message}"`,
+      category: 'support',
+      type: 'action',
+      deepLink: '/notifications',
+      metadata: {
+        ticketId: updated.id,
+        ticketNumber: updated.ticketNumber,
+        subject: updated.subject,
+        replyMessage: message,
+        senderName: senderName || 'Operations Support Lead',
+      },
+    });
+
     return NextResponse.json({
       success: true,
-      message: 'Support reply added.',
+      message: 'Support reply added. Customer notified via email and in-app alert.',
       data: updated,
+      notification: {
+        emailStatus: emailResult.status,
+        inAppNotificationId: notif.id,
+      },
     });
   } catch (err: any) {
     return NextResponse.json(
@@ -55,6 +89,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ success: false, message: 'Ticket not found.' }, { status: 404 });
     }
 
+    // Notify customer of ticket status update
+    await notificationStore.createNotification({
+      recipientEmail: updated.customerEmail,
+      recipientPhone: updated.phone,
+      title: `Support Ticket #${updated.ticketNumber}: ${status}`,
+      message: resolutionNotes
+        ? `Status updated to ${status}. Notes: ${resolutionNotes}`
+        : `Your support ticket #${updated.ticketNumber} has been updated to ${status}.`,
+      category: 'support',
+      type: 'action',
+      deepLink: '/notifications',
+      metadata: {
+        ticketId: updated.id,
+        ticketNumber: updated.ticketNumber,
+        status,
+        resolutionNotes,
+      },
+    });
+
     return NextResponse.json({
       success: true,
       message: `Ticket status updated to ${status}.`,
@@ -67,4 +120,3 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     );
   }
 }
-

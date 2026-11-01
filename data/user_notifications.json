@@ -1,0 +1,17 @@
+[
+  {
+    "id": "19da1d4f-cd95-46c6-a5af-a5b964b6684c",
+    "recipientEmail": "pandyakaushal294@gmail.com",
+    "title": "Reply from BharatYatra Support (#BY-TKT-0001)",
+    "message": "Operations Support Lead: \"hi\"",
+    "category": "support",
+    "type": "action",
+    "deepLink": "/notifications",
+    "readAt": null,
+    "createdAt": "2026-11-01T15:06:43.241Z",
+    "metadata": {
+      "ticketNumber": "BY-TKT-0001",
+      "replyMessage": "hi"
+    }
+  }
+]
