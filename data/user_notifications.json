@@ -31,5 +31,23 @@
       "email": "pandyakaushal294@gmail.com",
       "phone": "+91 96242 82521"
     }
+  },
+  {
+    "id": "0fec97bd-4417-4e46-b7e8-270a436581af",
+    "recipientEmail": "admin@bharatyatra.com",
+    "title": "Customer Reply on Ticket #BY-TKT-0001",
+    "message": "Kaushal Pandya: \"Thank you for replying! Can you share the pricing for 4 adults?\"",
+    "category": "support",
+    "type": "action",
+    "deepLink": "/admin/support",
+    "readAt": null,
+    "createdAt": "2026-11-01T15:24:04.330Z",
+    "metadata": {
+      "ticketId": "tkt-1793545603239",
+      "ticketNumber": "BY-TKT-0001",
+      "customerName": "Kaushal Pandya",
+      "customerEmail": "pandyakaushal294@gmail.com",
+      "replyMessage": "Thank you for replying! Can you share the pricing for 4 adults?"
+    }
   }
 ]

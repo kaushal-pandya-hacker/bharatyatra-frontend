@@ -97,7 +97,7 @@ export function NotificationCenterDropdown() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const markAsRead = async (id: string, deepLink?: string) => {
+  const markAsRead = async (id: string, deepLink?: string, title?: string) => {
     try {
       await fetch(`${API_BASE}/notifications/${id}/read`, { method: 'PATCH' });
       setNotifications((prev) =>
@@ -108,9 +108,14 @@ export function NotificationCenterDropdown() {
       console.error('[NotificationCenter] Read error:', e);
     }
 
-    if (deepLink) {
-      setIsOpen(false);
+    setIsOpen(false);
+    const ticketMatch = title?.match(/BY-TKT-\d+/)?.[0];
+    if (ticketMatch) {
+      router.push(`/notifications?ticket=${ticketMatch}`);
+    } else if (deepLink) {
       router.push(deepLink);
+    } else {
+      router.push('/notifications');
     }
   };
 
@@ -237,7 +242,7 @@ export function NotificationCenterDropdown() {
               filteredNotifications.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => markAsRead(item.id, item.deepLink)}
+                  onClick={() => markAsRead(item.id, item.deepLink, item.title)}
                   className={`p-3.5 hover:bg-slate-50 transition-colors cursor-pointer flex items-start gap-3 relative ${
                     !item.readAt ? 'bg-amber-50/40' : ''
                   }`}

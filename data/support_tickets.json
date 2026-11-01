@@ -34,7 +34,7 @@
     "assignedStaff": "Support Operations Concierge",
     "status": "OPEN",
     "createdAt": "2026-11-01T15:06:43.239Z",
-    "updatedAt": "2026-11-01T15:06:43.240Z",
+    "updatedAt": "2026-11-01T15:24:04.328Z",
     "messages": [
       {
         "id": "msg-1793545603239",
@@ -49,6 +49,13 @@
         "senderName": "Operations Support Lead",
         "message": "hi",
         "timestamp": "2026-11-01T15:06:43.240Z"
+      },
+      {
+        "id": "msg-1793546644328",
+        "sender": "CUSTOMER",
+        "senderName": "Kaushal Pandya",
+        "message": "Thank you for replying! Can you share the pricing for 4 adults?",
+        "timestamp": "2026-11-01T15:24:04.328Z"
       }
     ]
   }

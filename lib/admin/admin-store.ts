@@ -1224,6 +1224,49 @@ class AdminDataStoreImpl {
     return list.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }
 
+  public getTicketByIdOrNumber(identifier: string): AdminSupportTicket | null {
+    this.ensureSupportTicketsLoaded();
+    const clean = identifier.trim().toLowerCase();
+    return (
+      this.supportTickets.find(
+        (t) =>
+          t.id.toLowerCase() === clean ||
+          t.ticketNumber.toLowerCase() === clean ||
+          (t.subject && t.subject.toLowerCase().includes(clean))
+      ) || null
+    );
+  }
+
+  public addCustomerReply(ticketId: string, message: string, senderName?: string): AdminSupportTicket | null {
+    this.ensureSupportTicketsLoaded();
+    const clean = ticketId.trim().toLowerCase();
+    const ticket = this.supportTickets.find(
+      (t) => t.id.toLowerCase() === clean || t.ticketNumber.toLowerCase() === clean
+    );
+    if (!ticket) return null;
+
+    ticket.messages.push({
+      id: `msg-${Date.now()}`,
+      sender: 'CUSTOMER',
+      senderName: senderName || ticket.customerName || 'Customer',
+      message: message.trim(),
+      timestamp: new Date().toISOString(),
+    });
+    ticket.status = 'OPEN';
+    ticket.updatedAt = new Date().toISOString();
+    this.persistSupportTickets();
+
+    this.addAuditLog({
+      action: 'CUSTOMER_TICKET_REPLY',
+      entityType: 'SUPPORT_TICKET',
+      entityId: ticket.id,
+      adminEmail: ticket.customerEmail,
+      details: `Customer ${ticket.customerName} replied to ticket ${ticket.ticketNumber}`,
+    });
+
+    return ticket;
+  }
+
   public addSupportReply(ticketId: string, message: string, senderName: string, adminEmail: string): AdminSupportTicket | null {
     this.ensureSupportTicketsLoaded();
     const ticket = this.supportTickets.find((t) => t.id === ticketId || t.ticketNumber === ticketId);

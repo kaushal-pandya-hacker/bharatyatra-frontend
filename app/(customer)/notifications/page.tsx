@@ -9,12 +9,16 @@ import {
   MessageSquare,
   Hotel,
   Calendar,
-  Compass,
   CreditCard,
   Sparkles,
   ArrowRight,
   Inbox,
   RefreshCw,
+  X,
+  Send,
+  User,
+  Headphones,
+  CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -30,6 +34,25 @@ export interface InAppNotification {
   metadata?: Record<string, any>;
 }
 
+interface SupportTicketMessage {
+  id: string;
+  sender: 'CUSTOMER' | 'STAFF';
+  senderName: string;
+  message: string;
+  timestamp: string;
+}
+
+interface SupportTicketData {
+  id: string;
+  ticketNumber: string;
+  customerName: string;
+  customerEmail: string;
+  subject: string;
+  status: string;
+  priority: string;
+  messages: SupportTicketMessage[];
+}
+
 export default function NotificationsPage() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
@@ -37,9 +60,16 @@ export default function NotificationsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Active Support Conversation Modal State
+  const [activeTicket, setActiveTicket] = useState<SupportTicketData | null>(null);
+  const [ticketModalOpen, setTicketModalOpen] = useState<boolean>(false);
+  const [loadingTicket, setLoadingTicket] = useState<boolean>(false);
+  const [replyMessage, setReplyMessage] = useState<string>('');
+  const [sendingReply, setSendingReply] = useState<boolean>(false);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setTimeout(() => setToastMessage(null), 3200);
   };
 
   const fetchNotifications = useCallback(async () => {
@@ -113,6 +143,126 @@ export default function NotificationsPage() {
     }
   };
 
+  const openSupportThread = async (notif: InAppNotification) => {
+    if (notif.id && notif.id !== 'url-param') {
+      markAsRead(notif.id);
+    }
+
+    const ticketIdOrNumber =
+      notif.metadata?.ticketId ||
+      notif.metadata?.ticketNumber ||
+      notif.title.match(/BY-TKT-\d+/)?.[0] ||
+      'BY-TKT-0001';
+
+    setLoadingTicket(true);
+    setTicketModalOpen(true);
+
+    try {
+      const res = await fetch(`/api/v1/support/tickets/${encodeURIComponent(ticketIdOrNumber)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          setActiveTicket(json.data);
+          return;
+        }
+      }
+
+      // Graceful fallback with available notification content
+      setActiveTicket({
+        id: ticketIdOrNumber,
+        ticketNumber: notif.metadata?.ticketNumber || notif.title.match(/BY-TKT-\d+/)?.[0] || 'BY-TKT-0001',
+        customerName: user?.fullName || 'Traveler',
+        customerEmail: user?.email || '',
+        subject: notif.metadata?.subject || notif.title,
+        status: notif.metadata?.status || 'OPEN',
+        priority: 'NORMAL',
+        messages: [
+          {
+            id: 'staff-msg-fallback',
+            sender: 'STAFF',
+            senderName: notif.metadata?.senderName || 'Operations Support Lead',
+            message: notif.message,
+            timestamp: notif.createdAt,
+          },
+        ],
+      });
+    } catch {
+      // Offline fallback
+    } finally {
+      setLoadingTicket(false);
+    }
+  };
+
+  const handleSendCustomerReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replyMessage.trim() || !activeTicket) return;
+
+    setSendingReply(true);
+    try {
+      const ticketRef = activeTicket.id || activeTicket.ticketNumber;
+      const res = await fetch(`/api/v1/support/tickets/${encodeURIComponent(ticketRef)}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: replyMessage.trim(),
+          senderName: user?.fullName || activeTicket.customerName || 'Traveler',
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          setActiveTicket(json.data);
+        } else {
+          setActiveTicket((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  messages: [
+                    ...prev.messages,
+                    {
+                      id: `msg-${Date.now()}`,
+                      sender: 'CUSTOMER',
+                      senderName: user?.fullName || prev.customerName || 'You',
+                      message: replyMessage.trim(),
+                      timestamp: new Date().toISOString(),
+                    },
+                  ],
+                }
+              : null
+          );
+        }
+        setReplyMessage('');
+        showToast('Reply delivered to BharatYatra Support operations');
+      } else {
+        showToast('Error sending message. Please reach WhatsApp concierge.');
+      }
+    } catch {
+      showToast('Connection error. Please try again or chat on WhatsApp.');
+    } finally {
+      setSendingReply(false);
+    }
+  };
+
+  // Auto-open ticket if specified in URL query
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const ticketParam = params.get('ticket');
+      if (ticketParam) {
+        openSupportThread({
+          id: 'url-param',
+          type: 'support',
+          category: 'support',
+          title: `Support Ticket #${ticketParam}`,
+          message: '',
+          createdAt: new Date().toISOString(),
+          metadata: { ticketNumber: ticketParam, ticketId: ticketParam },
+        });
+      }
+    }
+  }, []);
+
   const unreadCount = notifications.filter((n) => !n.readAt).length;
 
   const filteredNotifications = notifications.filter((item) => {
@@ -158,6 +308,130 @@ export default function NotificationsPage() {
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold animate-in fade-in slide-in-from-bottom-2">
           <span>✓</span>
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Interactive Support Conversation Modal */}
+      {ticketModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white w-full max-w-2xl rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+                  <Headphones className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-extrabold text-[#102B4E]">
+                      Support Conversation
+                    </h3>
+                    <span className="font-mono text-xs font-black px-2 py-0.5 rounded-md bg-amber-100 text-amber-900">
+                      #{activeTicket?.ticketNumber || 'TICKET'}
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 uppercase">
+                      {activeTicket?.status || 'OPEN'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 truncate max-w-sm mt-0.5">
+                    {activeTicket?.subject || 'BharatYatra Operations Support Request'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setTicketModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer transition"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body: Conversation Thread */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-slate-50/40">
+              {loadingTicket ? (
+                <div className="py-16 text-center text-xs font-semibold text-slate-400 animate-pulse">
+                  Loading conversation history...
+                </div>
+              ) : (activeTicket?.messages || []).length === 0 ? (
+                <div className="py-16 text-center text-xs text-slate-400">
+                  No previous messages in this conversation.
+                </div>
+              ) : (
+                activeTicket?.messages.map((m) => {
+                  const isStaff = m.sender === 'STAFF';
+                  return (
+                    <div
+                      key={m.id}
+                      className={`flex items-start gap-3 ${isStaff ? 'justify-start' : 'justify-end'}`}
+                    >
+                      {isStaff && (
+                        <div className="w-8 h-8 rounded-xl bg-amber-100 border border-amber-300/60 flex items-center justify-center text-amber-800 shrink-0 mt-0.5 shadow-2xs">
+                          <Headphones className="w-4 h-4" />
+                        </div>
+                      )}
+                      <div
+                        className={`max-w-[85%] sm:max-w-md p-4 rounded-2xl text-xs space-y-1.5 shadow-xs ${
+                          isStaff
+                            ? 'bg-amber-50/80 border border-amber-200 text-slate-800'
+                            : 'bg-[#102B4E] text-white border border-[#102B4E]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3 text-[11px] font-bold">
+                          <span className={isStaff ? 'text-amber-900' : 'text-amber-400'}>
+                            {m.senderName} {isStaff ? '(Staff)' : '(You)'}
+                          </span>
+                          <span className={`text-[10px] font-normal ${isStaff ? 'text-slate-400' : 'text-slate-300'}`}>
+                            {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className={`leading-relaxed whitespace-pre-wrap ${isStaff ? 'text-slate-800' : 'text-slate-100'}`}>
+                          {m.message}
+                        </p>
+                      </div>
+                      {!isStaff && (
+                        <div className="w-8 h-8 rounded-xl bg-slate-200 flex items-center justify-center text-slate-700 shrink-0 mt-0.5 shadow-2xs">
+                          <User className="w-4 h-4" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Modal Footer: Customer Reply Box */}
+            <form onSubmit={handleSendCustomerReply} className="p-4 bg-white border-t border-slate-200 space-y-3">
+              <div className="space-y-1">
+                <textarea
+                  rows={2}
+                  required
+                  value={replyMessage}
+                  onChange={(e) => setReplyMessage(e.target.value)}
+                  placeholder="Type your reply to customer support..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                />
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <a
+                  href="https://wa.me/919624282521"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                >
+                  <span>Chat on WhatsApp (+91 96242 82521)</span>
+                </a>
+                <button
+                  type="submit"
+                  disabled={sendingReply || !replyMessage.trim()}
+                  className="px-4 py-2 bg-[#102B4E] hover:bg-blue-950 disabled:bg-slate-300 text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{sendingReply ? 'Sending...' : 'Send Message'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -258,6 +532,12 @@ export default function NotificationsPage() {
           ) : (
             filteredNotifications.map((notif) => {
               const isUnread = !notif.readAt;
+              const isSupport =
+                notif.category?.toLowerCase() === 'support' ||
+                notif.type?.toLowerCase() === 'support' ||
+                notif.title.includes('BY-TKT') ||
+                Boolean(notif.metadata?.ticketNumber || notif.metadata?.ticketId);
+
               return (
                 <div
                   key={notif.id}
@@ -267,7 +547,10 @@ export default function NotificationsPage() {
                       : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                  <div
+                    onClick={() => isSupport && openSupportThread(notif)}
+                    className={`flex items-start gap-3.5 flex-1 min-w-0 ${isSupport ? 'cursor-pointer' : ''}`}
+                  >
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 shrink-0 mt-0.5">
                       {getCategoryIcon(notif.category, notif.type)}
                     </div>
@@ -303,14 +586,26 @@ export default function NotificationsPage() {
                         Mark Read
                       </button>
                     )}
-                    {notif.deepLink && (
-                      <Link
-                        href={notif.deepLink}
-                        className="px-3.5 py-1.5 rounded-lg bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1"
+
+                    {isSupport ? (
+                      <button
+                        onClick={() => openSupportThread(notif)}
+                        className="px-3.5 py-1.5 rounded-lg bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                        type="button"
                       >
-                        <span>View</span>
+                        <span>View &amp; Reply</span>
                         <ArrowRight className="w-3 h-3" />
-                      </Link>
+                      </button>
+                    ) : (
+                      notif.deepLink && (
+                        <Link
+                          href={notif.deepLink}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1"
+                        >
+                          <span>View</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      )
                     )}
                   </div>
                 </div>
