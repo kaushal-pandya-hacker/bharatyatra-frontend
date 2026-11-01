@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminUser } from '@/lib/auth/server-auth';
+import { adminDataStore } from '@/lib/admin/admin-store';
 
 /**
  * GET /api/v1/admin/dashboard
- * Returns real-time administrative operational metrics and marketplace health data.
+ * Returns real-time administrative operational metrics and marketplace health data with date filtering.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -12,31 +13,10 @@ export async function GET(req: NextRequest) {
       return auth.response;
     }
 
-    const data = {
-      suppliers: {
-        total: 42,
-        verified: 38,
-        pending: 4,
-        suspended: 0,
-      },
-      inventory: {
-        totalListings: 184,
-        active: 162,
-        inactive: 12,
-        pendingReview: 10,
-        breakdown: {
-          HOTELS: 68,
-          BUSES: 42,
-          PACKAGES: 48,
-          ACTIVITIES: 26,
-        },
-      },
-      systemHealth: {
-        status: 'OPERATIONAL',
-        uptime: '99.98%',
-        activeNodes: 12,
-      },
-    };
+    const { searchParams } = new URL(req.url);
+    const dateRange = searchParams.get('range') || 'all';
+
+    const data = adminDataStore.getDashboardMetrics(dateRange);
 
     return NextResponse.json({
       success: true,

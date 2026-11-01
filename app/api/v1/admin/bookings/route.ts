@@ -9,8 +9,10 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status') || undefined;
+    const type = searchParams.get('type') || undefined;
+    const search = searchParams.get('search') || undefined;
 
-    const data = adminDataStore.getBookings(status);
+    const data = adminDataStore.getBookings({ status, type, search });
 
     return NextResponse.json({
       success: true,
@@ -24,4 +26,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

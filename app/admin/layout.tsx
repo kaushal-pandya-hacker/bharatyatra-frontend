@@ -5,17 +5,29 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard,
+  CalendarCheck,
   Users,
   Handshake,
   Package,
-  BadgePercent,
-  ShieldCheck,
   Building2,
   Boxes,
-  CalendarCheck,
+  Compass,
   CreditCard,
+  RotateCcw,
+  BadgePercent,
   Landmark,
-  ScrollText,
+  FileSpreadsheet,
+  Sparkles,
+  Hotel,
+  Bus,
+  PlaneTakeoff,
+  Headphones,
+  Star,
+  Megaphone,
+  Layers,
+  Activity,
+  ShieldCheck,
+  UserCheck,
   LogOut,
   Menu,
   X,
@@ -29,18 +41,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Normalize path to handle Next.js trailingSlash: true (/admin/login or /admin/login/)
-  const cleanPath = (pathname || '').replace(/\/+$/, '') || '/';
-  const isLoginPage = cleanPath === '/admin/login';
+  // Normalize pathname to prevent trailing slash mismatches
+  const cleanPath = pathname?.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
 
   useEffect(() => {
-    if (isLoginPage) {
-      setLoading(false);
-      return;
-    }
-
+    // Check administrative authorization
     const token = localStorage.getItem('admin_token');
     const userStr = localStorage.getItem('admin_user');
+
     if (!token) {
       router.push('/admin/login');
       return;
@@ -49,21 +57,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (userStr) {
       try {
         setAdminUser(JSON.parse(userStr));
-      } catch (e) {}
+      } catch (e) {
+        console.error('Failed to parse admin_user profile from storage', e);
+      }
+    } else {
+      setAdminUser({
+        fullName: 'Super Operations Admin',
+        email: 'admin@bharatyatra.com',
+        role: 'SUPER_ADMIN',
+      });
     }
-    setLoading(false);
-  }, [cleanPath, isLoginPage, router]);
 
-  if (isLoginPage) {
-    return <>{children}</>;
-  }
+    setLoading(false);
+  }, [router]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-600 font-medium">
         <div className="flex flex-col items-center gap-3">
           <img src="/logo.png" alt="BharatYatra Logo" className="h-12 w-auto animate-pulse" />
-          <span className="text-sm font-semibold text-slate-700">Loading Admin Operations Portal...</span>
+          <span className="text-sm font-semibold text-slate-700">Loading BharatYatra Operations Portal...</span>
         </div>
       </div>
     );
@@ -78,26 +91,73 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/admin/login');
   };
 
-  const navItems = [
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { label: 'User Management', href: '/admin/users', icon: Users },
-    { label: 'Travel Partners', href: '/admin/travel-partners', icon: Handshake },
-    { label: 'Travel Packages', href: '/admin/travel-packages', icon: Package },
-    { label: 'Partner Commissions', href: '/admin/travel-commissions', icon: BadgePercent },
-    { label: 'Partner Audit Log', href: '/admin/travel-partner-audit', icon: ShieldCheck },
-    { label: 'Suppliers', href: '/admin/suppliers', icon: Building2 },
-    { label: 'Inventory Moderation', href: '/admin/inventory', icon: Boxes },
-    { label: 'Bookings Directory', href: '/admin/bookings', icon: CalendarCheck },
-    { label: 'Payments & Financials', href: '/admin/payments', icon: CreditCard },
-    { label: 'Supplier Settlements', href: '/admin/settlements', icon: Landmark },
-    { label: 'Audit Logs', href: '/admin/audit-logs', icon: ScrollText },
+  const navSections = [
+    {
+      title: 'Core Operations',
+      items: [
+        { label: 'Overview Dashboard', href: '/admin', icon: LayoutDashboard },
+        { label: 'Bookings Directory', href: '/admin/bookings', icon: CalendarCheck },
+        { label: 'User Management', href: '/admin/users', icon: Users },
+      ],
+    },
+    {
+      title: 'Travel Marketplace',
+      items: [
+        { label: 'Travel Partners', href: '/admin/travel-partners', icon: Handshake },
+        { label: 'Tour Packages', href: '/admin/travel-packages', icon: Package },
+        { label: 'Suppliers Directory', href: '/admin/suppliers', icon: Building2 },
+        { label: 'Inventory Moderation', href: '/admin/inventory', icon: Boxes },
+        { label: 'Destinations CMS', href: '/admin/destinations', icon: Compass },
+      ],
+    },
+    {
+      title: 'Financials & Accounts',
+      items: [
+        { label: 'Payments & Transactions', href: '/admin/payments', icon: CreditCard },
+        { label: 'Refund Operations', href: '/admin/refunds', icon: RotateCcw },
+        { label: 'Partner Commissions', href: '/admin/travel-commissions', icon: BadgePercent },
+        { label: 'Supplier Settlements', href: '/admin/settlements', icon: Landmark },
+        { label: 'Financial Reports', href: '/admin/financial-reports', icon: FileSpreadsheet },
+      ],
+    },
+    {
+      title: 'AI Travel Planner',
+      items: [
+        { label: 'AI Engine & Rules', href: '/admin/ai-planner', icon: Sparkles },
+      ],
+    },
+    {
+      title: 'Stays & Transportation',
+      items: [
+        { label: 'Hotels & Accommodations', href: '/admin/hotels', icon: Hotel },
+        { label: 'Bus & Transit Fleet', href: '/admin/buses', icon: Bus },
+        { label: 'Transport Integrations', href: '/admin/transportation', icon: PlaneTakeoff },
+      ],
+    },
+    {
+      title: 'Customer Experience',
+      items: [
+        { label: 'Support Desk Tickets', href: '/admin/support', icon: Headphones },
+        { label: 'Reviews Moderation', href: '/admin/reviews', icon: Star },
+        { label: 'Marketing & Campaigns', href: '/admin/marketing', icon: Megaphone },
+      ],
+    },
+    {
+      title: 'Governance & Platform',
+      items: [
+        { label: 'Website CMS & Banners', href: '/admin/cms', icon: Layers },
+        { label: 'System Monitoring', href: '/admin/system', icon: Activity },
+        { label: 'Staff & RBAC Roles', href: '/admin/staff', icon: UserCheck },
+        { label: 'Security Audit Logs', href: '/admin/audit-logs', icon: ShieldCheck },
+      ],
+    },
   ];
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Sidebar Navigation (Desktop) - White Theme */}
-      <aside className="w-64 border-r border-slate-200 bg-white text-slate-800 flex flex-col justify-between hidden md:flex shrink-0 shadow-xs">
-        <div className="p-5 space-y-6">
+      <aside className="w-64 border-r border-slate-200 bg-white text-slate-800 flex flex-col justify-between hidden md:flex shrink-0 shadow-xs h-screen sticky top-0">
+        <div className="p-4 border-b border-slate-100 shrink-0">
           {/* Official BharatYatra Brand Header */}
           <Link href="/admin" className="flex items-center gap-3 group">
             <img
@@ -114,42 +174,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </span>
             </div>
           </Link>
+        </div>
 
-          <nav className="space-y-1">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">
-              Governance
-            </div>
-            {navItems.map((item) => {
-              const isActive =
-                cleanPath === item.href || (item.href !== '/admin' && cleanPath.startsWith(item.href));
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
-                      ? 'bg-amber-500/10 text-amber-700 border border-amber-500/30 shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                  }`}
-                >
-                  <Icon
-                    className={`w-4 h-4 shrink-0 transition-colors ${
-                      isActive ? 'text-amber-600' : 'text-slate-400'
+        {/* Scrollable Navigation Sections */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+          {navSections.map((sec) => (
+            <div key={sec.title} className="space-y-1">
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-3 mb-1.5">
+                {sec.title}
+              </div>
+              {sec.items.map((item) => {
+                const isActive =
+                  cleanPath === item.href || (item.href !== '/admin' && cleanPath.startsWith(item.href));
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                      isActive
+                        ? 'bg-amber-500/10 text-amber-700 border border-amber-500/30 shadow-xs'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                     }`}
-                  />
-                  <span className="truncate">{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+                  >
+                    <Icon
+                      className={`w-4 h-4 shrink-0 transition-colors ${
+                        isActive ? 'text-amber-600' : 'text-slate-400'
+                      }`}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </div>
 
         {/* Footer Admin User Badge & Logout */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50/80 flex items-center justify-between">
+        <div className="p-4 border-t border-slate-200 bg-slate-50/80 flex items-center justify-between shrink-0">
           <div className="truncate pr-2">
             <div className="text-xs font-bold text-slate-900 truncate">
-              {adminUser?.fullName || 'Platform Operations Admin'}
+              {adminUser?.fullName || 'Super Operations Admin'}
             </div>
             <div className="text-[11px] text-slate-500 truncate">
               {adminUser?.email || 'admin@bharatyatra.com'}
@@ -194,32 +259,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Mobile Navigation Drawer - White Theme */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white text-slate-900 p-4 border-b border-slate-200 space-y-2 shadow-lg animate-in slide-in-from-top duration-150">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-1">
+          <div className="md:hidden bg-white text-slate-900 p-4 border-b border-slate-200 space-y-4 shadow-lg animate-in slide-in-from-top duration-150 max-h-[85vh] overflow-y-auto">
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">
               Admin Governance Navigation
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              {navItems.map((item) => {
-                const isActive =
-                  cleanPath === item.href || (item.href !== '/admin' && cleanPath.startsWith(item.href));
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      isActive
-                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 shrink-0 text-amber-600" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
+            {navSections.map((sec) => (
+              <div key={sec.title} className="space-y-1">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
+                  {sec.title}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  {sec.items.map((item) => {
+                    const isActive =
+                      cleanPath === item.href || (item.href !== '/admin' && cleanPath.startsWith(item.href));
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                          isActive
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0 text-amber-600" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
             <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
               <span className="text-xs text-slate-500 font-medium">
                 {adminUser?.email || 'admin@bharatyatra.com'}
@@ -234,7 +306,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         )}
 
-        <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">{children}</div>
+        {/* Child Pages Container */}
+        <div className="p-4 sm:p-6 lg:p-8 flex-1">
+          {children}
+        </div>
       </main>
     </div>
   );
