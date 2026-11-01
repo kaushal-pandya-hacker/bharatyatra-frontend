@@ -132,7 +132,7 @@ function DashboardContent() {
       travellerCount: profile.typicalTravelers || 2,
       crewType: 'Traveler Crew',
       selectedTier: 'balanced',
-      budgetInr: 25000,
+      budgetInr: (profile as any)?.budgetInr || null,
       status: 'PLANNING',
       rawStatus: 'DRAFT',
       version: 1,

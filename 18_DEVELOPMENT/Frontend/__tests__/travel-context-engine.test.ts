@@ -125,9 +125,11 @@ describe('Travel Context Engine & End-to-End Personalization Acceptance Test Sui
     assert.ok(resultA.itineraryDays[0].badge.includes('AHMEDABAD'));
     assert.ok(resultB.itineraryDays[0].badge.includes('MUMBAI'));
 
-    // 3. Cost check (Budget vs Luxury)
-    assert.ok(resultB.pricePerPaxPerDay > resultA.pricePerPaxPerDay);
-    assert.notStrictEqual(resultA.totalPackageCost, resultB.totalPackageCost);
+    // 3. AI Itinerary generator produces pure travel intelligence without calculating pricing
+    assert.strictEqual(resultA.totalPackageCost, undefined);
+    assert.strictEqual(resultA.pricePerPaxPerDay, undefined);
+    assert.strictEqual(resultB.totalPackageCost, undefined);
+    assert.strictEqual(resultB.pricePerPaxPerDay, undefined);
   });
 
   it('4. Booking Context inherits TripContext (origin, destination, dates, travelers) with explicit user confirmation flag', () => {

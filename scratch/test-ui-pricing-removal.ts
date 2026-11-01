@@ -24,7 +24,7 @@ assert(!planPage.includes('Estimated Total Cost'), 'app/(customer)/plan/page.tsx
 assert(!planPage.includes('blueprint.totalPackageCost'), 'app/(customer)/plan/page.tsx: No "blueprint.totalPackageCost"');
 assert(!planPage.includes('blueprint.pricePerPaxPerDay'), 'app/(customer)/plan/page.tsx: No "blueprint.pricePerPaxPerDay"');
 assert(!planPage.includes('₹2,500/day'), 'app/(customer)/plan/page.tsx: No "₹2,500/day" in tier dropdown');
-assert(planPage.includes('budgetInr: 0'), 'app/(customer)/plan/page.tsx: Saves trip with budgetInr: 0 (pure plan)');
+assert(!planPage.includes('budgetInr: 0'), 'app/(customer)/plan/page.tsx: Does not hardcode budgetInr: 0');
 assert(planPage.includes('Itinerary Duration'), 'app/(customer)/plan/page.tsx: Renders price-free Itinerary Duration');
 
 // 2. Check 18_DEVELOPMENT/Frontend/app/(customer)/plan/page.tsx
@@ -39,8 +39,8 @@ const blueprint = generateItineraryBlueprint({
   selectedTier: 'balanced',
   originCity: 'Ahmedabad',
 });
-assert(blueprint.totalPackageCost === 0, `itinerary-generator: totalPackageCost is 0 (actual: ${blueprint.totalPackageCost})`);
-assert(blueprint.pricePerPaxPerDay === 0, `itinerary-generator: pricePerPaxPerDay is 0 (actual: ${blueprint.pricePerPaxPerDay})`);
+assert(blueprint.totalPackageCost === undefined, `itinerary-generator: totalPackageCost is undefined (actual: ${blueprint.totalPackageCost})`);
+assert(blueprint.pricePerPaxPerDay === undefined, `itinerary-generator: pricePerPaxPerDay is undefined (actual: ${blueprint.pricePerPaxPerDay})`);
 
 // 4. Check DurationRecommendationControls.tsx
 const durControls = fs.readFileSync('components/ai/DurationRecommendationControls.tsx', 'utf8');

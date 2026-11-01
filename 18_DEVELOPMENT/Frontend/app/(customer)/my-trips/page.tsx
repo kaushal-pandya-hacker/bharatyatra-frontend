@@ -442,9 +442,18 @@ function MyTripsContent() {
 
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                       <div>
-                        <span className="text-[10px] text-slate-500 block uppercase font-bold">Total Fare</span>
-                        <span className="text-base font-black text-slate-900">₹{t.budgetInr.toLocaleString('en-IN')}</span>
-                      </div>
+                      {t.budgetInr && t.budgetInr > 0 ? (
+                        <>
+                          <span className="text-[10px] text-slate-500 block uppercase font-bold">Budget Preference</span>
+                          <span className="text-base font-black text-slate-900">₹{t.budgetInr.toLocaleString('en-IN')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-[10px] text-emerald-600 block uppercase font-bold">Trip Format</span>
+                          <span className="text-xs font-bold text-slate-800">AI Route Plan</span>
+                        </>
+                      )}
+                    </div>
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/plan?destination=${encodeURIComponent(t.destination)}`}

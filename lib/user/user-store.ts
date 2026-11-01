@@ -32,7 +32,7 @@ export interface UserTripRecord {
   endDate?: string;
   durationDays: number;
   travelers: number;
-  budgetInr: number;
+  budgetInr?: number | null;
   status: string;
   routeJson?: any;
   itineraryJson?: any;
@@ -207,7 +207,7 @@ class InMemoryUserDataStore {
       endDate: trip.endDate,
       durationDays: trip.durationDays || 4,
       travelers: trip.travelers || 2,
-      budgetInr: trip.budgetInr || 25000,
+      budgetInr: trip.budgetInr != null && trip.budgetInr > 0 ? trip.budgetInr : null,
       status: trip.status || 'SAVED',
       routeJson: trip.routeJson || {},
       itineraryJson: trip.itineraryJson || {},
@@ -759,7 +759,7 @@ export class UserDataStore {
           endDate: t.end_date,
           durationDays: t.duration_days,
           travelers: t.travelers,
-          budgetInr: Number(t.budget_inr || 0),
+          budgetInr: t.budget_inr != null && Number(t.budget_inr) > 0 ? Number(t.budget_inr) : null,
           status: t.status,
           routeJson: t.route_json,
           itineraryJson: t.itinerary_json,
@@ -811,7 +811,7 @@ export class UserDataStore {
           endDate: data.end_date,
           durationDays: data.duration_days,
           travelers: data.travelers,
-          budgetInr: Number(data.budget_inr || 0),
+          budgetInr: data.budget_inr != null && Number(data.budget_inr) > 0 ? Number(data.budget_inr) : null,
           status: data.status,
           routeJson: data.route_json,
           itineraryJson: data.itinerary_json,
@@ -849,7 +849,7 @@ export class UserDataStore {
         end_date: trip.endDate,
         duration_days: trip.durationDays || 4,
         travelers: trip.travelers || 2,
-        budget_inr: trip.budgetInr || 25000,
+        budget_inr: trip.budgetInr != null && trip.budgetInr > 0 ? trip.budgetInr : null,
         status: trip.status || 'SAVED',
         route_json: trip.routeJson || {},
         itinerary_json: trip.itineraryJson || {},
@@ -880,7 +880,7 @@ export class UserDataStore {
           endDate: data.end_date,
           durationDays: data.duration_days,
           travelers: data.travelers,
-          budgetInr: Number(data.budget_inr || 0),
+          budgetInr: data.budget_inr != null && Number(data.budget_inr) > 0 ? Number(data.budget_inr) : null,
           status: data.status,
           routeJson: data.route_json,
           itineraryJson: data.itinerary_json,

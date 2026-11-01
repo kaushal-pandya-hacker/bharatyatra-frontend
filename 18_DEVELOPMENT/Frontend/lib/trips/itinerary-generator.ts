@@ -42,8 +42,8 @@ export interface PlanningResult {
   selectedPlaces: LandmarkItem[];
   routeSequence: string[];
   itineraryDays: DayItinerary[];
-  totalPackageCost: number;
-  pricePerPaxPerDay: number;
+  totalPackageCost?: number;
+  pricePerPaxPerDay?: number;
   estimatedTravelTime: string;
   originCity: string;
   destinationCity: string;
@@ -103,9 +103,6 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
     });
   }
 
-  // Pure Itinerary Planning (No pricing)
-  let pricePerPaxPerDay = 0;
-
   // 3. If NO places selected, return zero state cleanly
   if (selectedPlaces.length === 0) {
     return {
@@ -118,8 +115,6 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
       selectedPlaces: [],
       routeSequence: [originCity],
       itineraryDays: [],
-      totalPackageCost: 0,
-      pricePerPaxPerDay,
       estimatedTravelTime: '0 hrs',
       originCity,
       destinationCity: params.destinationCity || 'Destination',
@@ -159,10 +154,6 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
   const routeSequence = [originCity, ...uniqueDistricts];
   const estimatedHours = (uniqueDistricts.length) * 2.5 + selectedPlaces.length * 1.5;
   const estimatedTravelTime = `${Math.round(estimatedHours)} hrs total transit from ${originCity}`;
-
-  // 8. Pure Travel Planning (100% Price-Free Itinerary Intelligence)
-  const totalPackageCost = 0;
-  pricePerPaxPerDay = 0;
 
   // 9. Generate Day-by-Day Itinerary Schedule strictly starting from originCity
   const itineraryDays: DayItinerary[] = [];
@@ -245,8 +236,6 @@ export function generateItineraryBlueprint(params: PlanningParams): PlanningResu
     selectedPlaces,
     routeSequence,
     itineraryDays,
-    totalPackageCost,
-    pricePerPaxPerDay,
     estimatedTravelTime,
     originCity,
     destinationCity,

@@ -31,7 +31,7 @@ export interface TripItem {
   travellerCount?: number;
   crewType?: string;
   selectedTier?: 'budget' | 'balanced' | 'luxury';
-  budgetInr: number;
+  budgetInr?: number | null;
   status: CanonicalTripStatus;
   rawStatus?: string;
   version?: number;
@@ -164,7 +164,7 @@ export async function fetchUserTripsFromApi(token?: string, userId?: string): Pr
         durationDays: t.durationDays || 4,
         travelers: t.travelers || t.travellerCount || 2,
         travellerCount: t.travelers || t.travellerCount || 2,
-        budgetInr: t.budgetInr || 25000,
+        budgetInr: t.budgetInr != null && !isNaN(Number(t.budgetInr)) && Number(t.budgetInr) > 0 ? Number(t.budgetInr) : (t.budgetInr === null ? null : undefined),
         status: resolveClientTripStatus(t),
         rawStatus: t.rawStatus || t.status,
         version: t.version || 1,
@@ -202,7 +202,7 @@ export async function saveTripToApi(tripData: Partial<TripItem>, token?: string)
     durationDays: tripData.durationDays || 4,
     travelers: tripData.travelers || tripData.travellerCount || 2,
     travellerCount: tripData.travelers || tripData.travellerCount || 2,
-    budgetInr: tripData.budgetInr || 25000,
+    budgetInr: tripData.budgetInr != null && !isNaN(Number(tripData.budgetInr)) && Number(tripData.budgetInr) > 0 ? Number(tripData.budgetInr) : (tripData.budgetInr === null ? null : null),
     status: resolveClientTripStatus(tripData as any),
     rawStatus: tripData.status || 'SAVED',
     version: tripData.version || 1,

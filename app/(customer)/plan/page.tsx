@@ -519,7 +519,7 @@ function PlanPageContent() {
       travellerCount: paxCount,
       crewType,
       selectedTier,
-      budgetInr: 0,
+      budgetInr: (searchParams?.get("budgetInr") || searchParams?.get("budget")) ? Number(searchParams.get("budgetInr") || searchParams.get("budget")) : ((userProfile as any)?.budgetInr || null),
       status: 'UPCOMING',
       rawStatus: 'SAVED',
       version: 1,

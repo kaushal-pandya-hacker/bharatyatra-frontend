@@ -382,7 +382,11 @@ function MyTripsContent() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Wallet className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                        <span className="font-bold text-emerald-700">₹{(trip.budgetInr || 25000).toLocaleString('en-IN')}</span>
+                        {trip.budgetInr && trip.budgetInr > 0 ? (
+                          <span className="font-bold text-emerald-700">₹{trip.budgetInr.toLocaleString('en-IN')}</span>
+                        ) : (
+                          <span className="font-semibold text-slate-500 text-xs">Custom Route</span>
+                        )}
                       </div>
                     </div>
                   </div>
