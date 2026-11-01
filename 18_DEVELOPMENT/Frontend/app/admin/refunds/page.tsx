@@ -2,73 +2,48 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import {
+  RotateCcw,
+  Search,
+  Filter,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  AlertCircle,
+  RefreshCw,
+  Eye,
+  Check,
+  X,
+  CreditCard,
+  ShieldAlert,
+} from 'lucide-react';
 
 export interface AdminRefundRecord {
   id: string;
-  orderId: string;
-  bookingId?: string;
+  refundReference: string;
+  transactionId: string;
+  bookingId: string;
+  bookingReference: string;
   customerName: string;
   customerEmail: string;
-  productName: string;
-  supplier: string;
-  amountInr: number;
-  approvedAmountInr?: number;
-  status: 'REQUESTED' | 'PROCESSING' | 'APPROVED' | 'COMPLETED' | 'FAILED' | 'MANUAL_REVIEW';
+  amount: number;
   reason: string;
-  createdAt: string;
+  eligibilityVerified: boolean;
+  status: 'REQUESTED' | 'APPROVED' | 'PROCESSING' | 'COMPLETED' | 'REJECTED';
+  gatewayReference?: string;
+  requestedAt: string;
+  processedAt?: string;
+  notes?: string;
 }
 
 export default function AdminRefundsPage() {
   const [refunds, setRefunds] = useState<AdminRefundRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedRefund, setSelectedRefund] = useState<AdminRefundRecord | null>(null);
-
-  // Sample data fallback if API unpopulated
-  const defaultSampleRefunds: AdminRefundRecord[] = [
-    {
-      id: 'rfnd-901',
-      orderId: 'CF-ORD-20260918-1204',
-      bookingId: 'bk-act-99',
-      customerName: 'Kaushal Patel',
-      customerEmail: 'kaushal@farvavoyager.in',
-      productName: 'Scuba Diving Tour Dwarka',
-      supplier: 'Dwarka Scuba Expeditions',
-      amountInr: 1400,
-      approvedAmountInr: 1400,
-      status: 'MANUAL_REVIEW',
-      reason: 'Supplier slot unavailable during orchestration failure',
-      createdAt: '2026-09-18T19:15:00Z',
-    },
-    {
-      id: 'rfnd-882',
-      orderId: 'CF-ORD-20260918-0911',
-      bookingId: 'bk-hotel-44',
-      customerName: 'Pooja Shah',
-      customerEmail: 'pooja.shah@gmail.com',
-      productName: 'Hyatt Regency Ahmedabad',
-      supplier: 'Hotelbeds',
-      amountInr: 6510,
-      approvedAmountInr: 6510,
-      status: 'PROCESSING',
-      reason: 'Customer initiated hotel cancellation',
-      createdAt: '2026-09-18T18:30:00Z',
-    },
-    {
-      id: 'rfnd-760',
-      orderId: 'CF-ORD-20260917-4401',
-      bookingId: 'bk-flight-12',
-      customerName: 'Aarav Mehta',
-      customerEmail: 'aarav.m@gmail.com',
-      productName: 'Indigo Air AMD → DEL',
-      supplier: 'TBO Air',
-      amountInr: 5200,
-      approvedAmountInr: 5200,
-      status: 'COMPLETED',
-      reason: 'Flight schedule modification cancellation',
-      createdAt: '2026-09-17T14:20:00Z',
-    },
-  ];
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     fetchRefunds();
@@ -76,198 +51,351 @@ export default function AdminRefundsPage() {
 
   const fetchRefunds = async () => {
     setLoading(true);
+    setFeedback(null);
     try {
-      const url = filterStatus === 'ALL' ? '/api/v1/admin/refunds' : `/api/v1/admin/refunds?status=${filterStatus}`;
-      const res = await fetch(url);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+      let url = '/api/v1/admin/refunds?';
+      if (filterStatus !== 'ALL') url += `status=${filterStatus}&`;
+      if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}&`;
+
+      const res = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (res.ok) {
-        const data = await res.json();
-        if (data.refunds && data.refunds.length > 0) {
-          setRefunds(data.refunds);
+        const json = await res.json();
+        if (json && Array.isArray(json.data)) {
+          setRefunds(json.data);
         } else {
-          setRefunds(defaultSampleRefunds);
+          setRefunds([]);
         }
       } else {
-        setRefunds(defaultSampleRefunds);
+        setRefunds([]);
       }
-    } catch (e) {
-      setRefunds(defaultSampleRefunds);
+    } catch (e: any) {
+      console.error('Failed to load refunds:', e);
+      setRefunds([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAction = (refundId: string, action: 'APPROVE' | 'RETRY' | 'RESOLVE') => {
-    alert(`Refund ${refundId}: Action '${action}' performed successfully by Admin.`);
-    setRefunds((prev) =>
-      prev.map((r) => (r.id === refundId ? { ...r, status: 'COMPLETED' } : r)),
-    );
-  };
-
-  const filteredRefunds =
-    filterStatus === 'ALL'
-      ? refunds
-      : refunds.filter((r) => r.status === filterStatus);
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'MANUAL_REVIEW':
-        return 'bg-rose-950 text-rose-300 border-rose-800';
-      case 'PROCESSING':
-      case 'REQUESTED':
-        return 'bg-amber-950 text-amber-300 border-amber-800';
-      case 'COMPLETED':
-        return 'bg-emerald-950 text-emerald-300 border-emerald-800';
-      default:
-        return 'bg-gray-800 text-gray-300 border-gray-700';
+  const handleAction = async (refundId: string, action: 'APPROVE' | 'REJECT', notes = '') => {
+    setActionLoading(true);
+    setFeedback(null);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`/api/v1/admin/refunds/${refundId}/process`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action, notes: notes || `Admin ${action.toLowerCase()}ed refund request` }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFeedback({
+          type: 'success',
+          message: data.message || `Refund ${action === 'APPROVE' ? 'approved' : 'rejected'} successfully.`,
+        });
+        fetchRefunds();
+        if (selectedRefund && selectedRefund.id === refundId) {
+          setSelectedRefund(data.data);
+        }
+      } else {
+        setFeedback({ type: 'error', message: data.message || 'Failed to process refund.' });
+      }
+    } catch (e: any) {
+      setFeedback({ type: 'error', message: e.message || 'Error processing refund.' });
+    } finally {
+      setActionLoading(false);
     }
   };
 
+  const filteredRefunds = refunds.filter((r) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (r.refundReference || '').toLowerCase().includes(q) ||
+      (r.bookingReference || '').toLowerCase().includes(q) ||
+      (r.customerName || '').toLowerCase().includes(q) ||
+      (r.customerEmail || '').toLowerCase().includes(q) ||
+      (r.reason || '').toLowerCase().includes(q)
+    );
+  });
+
   return (
-    <div className="min-h-screen bg-[#070D18] text-gray-100 font-sans p-6">
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+    <div className="space-y-6 max-w-7xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <span>🛡️</span> Admin Refund Queue & Manual Review Workspace
+          <div className="flex items-center gap-2 text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">
+            <span>Financial Operations</span>
+            <span>•</span>
+            <span>BharatGateway™ Dispute &amp; Settlement</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black font-heading text-slate-900 tracking-tight">
+            Refunds &amp; Cancellation Desk
           </h1>
-          <p className="text-xs text-gray-400 mt-1">
-            BharatYatra Post-Booking Operations & Financial Reconciliation
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Audit cancellation claims, verify gatekeeper eligibility, and dispatch automated or manual refunds.
           </p>
         </div>
-        <Link
-          href="/admin"
-          className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-gray-300 border border-gray-700 transition"
+
+        <button
+          onClick={fetchRefunds}
+          className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-2 shadow-xs"
         >
-          ← Admin Portal Home
-        </Link>
+          <RefreshCw className="w-3.5 h-3.5 text-slate-500" /> Refresh Queue
+        </button>
       </div>
 
-      {/* FILTER TABS */}
-      <div className="flex gap-2 mb-6 border-b border-gray-800 pb-3">
-        {['ALL', 'MANUAL_REVIEW', 'REQUESTED', 'PROCESSING', 'COMPLETED'].map((st) => (
-          <button
-            key={st}
-            onClick={() => setFilterStatus(st)}
-            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition ${
-              filterStatus === st
-                ? 'bg-[#FF6500] text-white'
-                : 'bg-gray-900 text-gray-400 hover:text-white'
-            }`}
-          >
-            {st.replace('_', ' ')}
+      {feedback && (
+        <div
+          className={`p-4 rounded-xl text-xs font-semibold flex items-center justify-between border ${
+            feedback.type === 'success'
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              : 'bg-rose-50 text-rose-800 border-rose-200'
+          }`}
+        >
+          <span>{feedback.message}</span>
+          <button onClick={() => setFeedback(null)} className="font-bold cursor-pointer">
+            ✕
           </button>
-        ))}
+        </div>
+      )}
+
+      {/* Filter Tabs & Search Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        {/* Status Filters */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+          {[
+            { id: 'ALL', label: 'All Refunds' },
+            { id: 'REQUESTED', label: 'Requested' },
+            { id: 'PROCESSING', label: 'Processing' },
+            { id: 'APPROVED', label: 'Approved' },
+            { id: 'COMPLETED', label: 'Completed' },
+            { id: 'REJECTED', label: 'Rejected' },
+          ].map((st) => (
+            <button
+              key={st.id}
+              onClick={() => setFilterStatus(st.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+                filterStatus === st.id
+                  ? 'bg-amber-500 text-slate-950 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              {st.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div className="relative w-full md:w-72">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+          <input
+            type="text"
+            placeholder="Search ref, customer, booking..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-4 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+          />
+        </div>
       </div>
 
-      {/* REFUNDS TABLE */}
-      <div className="bg-[#0B1528] rounded-2xl border border-gray-800 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-900/80 text-xs text-gray-400 border-b border-gray-800 uppercase tracking-wider">
-              <th className="p-4">Refund ID</th>
-              <th className="p-4">Order Ref</th>
-              <th className="p-4">Customer</th>
-              <th className="p-4">Product / Supplier</th>
-              <th className="p-4">Amount</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800 text-sm">
-            {loading ? (
-              <tr>
-                <td colSpan={7} className="p-8 text-center text-gray-400">
-                  Loading refund records...
-                </td>
-              </tr>
-            ) : filteredRefunds.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="p-8 text-center text-gray-400">
-                  No refund records found.
-                </td>
-              </tr>
-            ) : (
-              filteredRefunds.map((r) => (
-                <tr key={r.id} className="hover:bg-gray-900/40 transition">
-                  <td className="p-4 font-mono text-xs text-gray-300">{r.id}</td>
-                  <td className="p-4 font-semibold text-white">{r.orderId}</td>
-                  <td className="p-4">
-                    <div className="font-medium text-white">{r.customerName}</div>
-                    <div className="text-xs text-gray-400">{r.customerEmail}</div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-white font-medium">{r.productName}</div>
-                    <div className="text-xs text-gray-400">{r.supplier}</div>
-                  </td>
-                  <td className="p-4 font-extrabold text-white">
-                    ₹{r.amountInr.toLocaleString('en-IN')} INR
-                  </td>
-                  <td className="p-4">
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded-full border font-bold ${getStatusBadge(
-                        r.status,
-                      )}`}
-                    >
-                      {r.status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-right space-x-2">
-                    {r.status === 'MANUAL_REVIEW' && (
-                      <button
-                        onClick={() => handleAction(r.id, 'RESOLVE')}
-                        className="px-3 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition"
-                      >
-                        Resolve
-                      </button>
-                    )}
-                    {r.status === 'PROCESSING' && (
-                      <button
-                        onClick={() => handleAction(r.id, 'APPROVE')}
-                        className="px-3 py-1 rounded-lg bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold transition"
-                      >
-                        Approve Refund
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setSelectedRefund(r)}
-                      className="px-3 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium border border-gray-700 transition"
-                    >
-                      Details
-                    </button>
-                  </td>
+      {/* Refunds Table */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center text-xs font-semibold text-slate-500 flex items-center justify-center gap-2">
+            <RefreshCw className="w-4 h-4 animate-spin text-amber-500" />
+            <span>Loading refund records from gateway ledger...</span>
+          </div>
+        ) : filteredRefunds.length === 0 ? (
+          <div className="p-12 text-center bg-white">
+            <RotateCcw className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+            <div className="text-sm font-bold text-slate-800">No Refund Requests in Queue</div>
+            <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+              Real customer refund and cancellation transactions will appear here automatically when processed through BharatGateway™.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                <tr>
+                  <th className="p-4">Refund &amp; Booking Ref</th>
+                  <th className="p-4">Customer</th>
+                  <th className="p-4">Refund Amount</th>
+                  <th className="p-4">Reason / Notes</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {filteredRefunds.map((r) => (
+                  <tr key={r.id || r.refundReference} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="p-4">
+                      <div className="font-mono font-bold text-slate-900">{r.refundReference}</div>
+                      <div className="text-[11px] text-slate-500 font-mono">Booking: {r.bookingReference}</div>
+                      <div className="text-[10px] text-slate-400">
+                        {r.requestedAt ? new Date(r.requestedAt).toLocaleDateString() : 'Recent'}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="font-bold text-slate-900">{r.customerName}</div>
+                      <div className="text-[11px] text-slate-500">{r.customerEmail}</div>
+                    </td>
+                    <td className="p-4 font-black text-slate-900 text-sm">
+                      ₹{Number(r.amount || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td className="p-4 max-w-xs">
+                      <p className="text-slate-700 text-xs line-clamp-1">{r.reason || 'Customer cancellation'}</p>
+                      {r.eligibilityVerified && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 mt-0.5">
+                          ✓ Eligibility Verified
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      {r.status === 'COMPLETED' && (
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold inline-flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" /> COMPLETED
+                        </span>
+                      )}
+                      {r.status === 'APPROVED' && (
+                        <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-blue-600" /> APPROVED
+                        </span>
+                      )}
+                      {r.status === 'PROCESSING' && (
+                        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold inline-flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-amber-600" /> PROCESSING
+                        </span>
+                      )}
+                      {r.status === 'REQUESTED' && (
+                        <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold inline-flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-slate-500" /> REQUESTED
+                        </span>
+                      )}
+                      {r.status === 'REJECTED' && (
+                        <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold inline-flex items-center gap-1">
+                          <XCircle className="w-3 h-3 text-rose-600" /> REJECTED
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right space-x-2">
+                      {(r.status === 'REQUESTED' || r.status === 'PROCESSING') && (
+                        <>
+                          <button
+                            onClick={() => handleAction(r.id, 'APPROVE')}
+                            disabled={actionLoading}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs cursor-pointer inline-flex items-center gap-1 shadow-xs disabled:opacity-50"
+                          >
+                            <Check className="w-3 h-3" /> Approve
+                          </button>
+                          <button
+                            onClick={() => handleAction(r.id, 'REJECT')}
+                            disabled={actionLoading}
+                            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-xs cursor-pointer inline-flex items-center gap-1 border border-rose-200 disabled:opacity-50"
+                          >
+                            <X className="w-3 h-3" /> Reject
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => setSelectedRefund(r)}
+                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer inline-flex items-center gap-1"
+                      >
+                        <Eye className="w-3 h-3" /> Details
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* DETAIL MODAL */}
+      {/* Details Modal - Clean White Theme */}
       {selectedRefund && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0B1528] rounded-2xl border border-gray-800 max-w-lg w-full p-6 space-y-4 text-sm">
-            <div className="flex justify-between items-center border-b border-gray-800 pb-3">
-              <h3 className="text-lg font-bold text-white">Refund Inspection</h3>
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-5 animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 font-heading">Refund Audit &amp; Settlement</h3>
+                <span className="text-xs font-mono text-slate-500">{selectedRefund.refundReference}</span>
+              </div>
               <button
                 onClick={() => setSelectedRefund(null)}
-                className="text-gray-400 hover:text-white"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-2 text-gray-300">
-              <p><span className="text-gray-400">Refund ID:</span> {selectedRefund.id}</p>
-              <p><span className="text-gray-400">Order Ref:</span> {selectedRefund.orderId}</p>
-              <p><span className="text-gray-400">Customer:</span> {selectedRefund.customerName} ({selectedRefund.customerEmail})</p>
-              <p><span className="text-gray-400">Product:</span> {selectedRefund.productName}</p>
-              <p><span className="text-gray-400">Supplier:</span> {selectedRefund.supplier}</p>
-              <p><span className="text-gray-400">Reason:</span> {selectedRefund.reason}</p>
-              <p><span className="text-gray-400">Amount:</span> ₹{selectedRefund.amountInr} INR</p>
+
+            <div className="space-y-3 text-xs text-slate-700">
+              <div className="flex justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Customer:</span>
+                <span className="font-bold text-slate-900">
+                  {selectedRefund.customerName} ({selectedRefund.customerEmail})
+                </span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Booking Reference:</span>
+                <span className="font-mono font-bold text-slate-900">{selectedRefund.bookingReference}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Transaction ID:</span>
+                <span className="font-mono text-slate-700">{selectedRefund.transactionId}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Refund Amount:</span>
+                <span className="font-black text-slate-900 text-sm">
+                  ₹{Number(selectedRefund.amount || 0).toLocaleString('en-IN')}
+                </span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Reason for Cancellation:</span>
+                <span className="font-medium text-slate-800 max-w-[260px] text-right">{selectedRefund.reason}</span>
+              </div>
+              {selectedRefund.gatewayReference && (
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-slate-500 font-medium">Gateway ARN Reference:</span>
+                  <span className="font-mono text-emerald-700 font-bold">{selectedRefund.gatewayReference}</span>
+                </div>
+              )}
+              {selectedRefund.notes && (
+                <div className="p-3 bg-slate-50 rounded-xl text-slate-600 text-xs mt-2 border border-slate-100">
+                  <span className="font-bold text-slate-700 block mb-0.5">Audit Desk Notes:</span>
+                  {selectedRefund.notes}
+                </div>
+              )}
             </div>
-            <div className="pt-4 flex justify-end">
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+              {(selectedRefund.status === 'REQUESTED' || selectedRefund.status === 'PROCESSING') && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleAction(selectedRefund.id, 'APPROVE')}
+                    disabled={actionLoading}
+                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition cursor-pointer shadow-xs disabled:opacity-50"
+                  >
+                    Approve Refund
+                  </button>
+                  <button
+                    onClick={() => handleAction(selectedRefund.id, 'REJECT')}
+                    disabled={actionLoading}
+                    className="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl text-xs transition cursor-pointer border border-rose-200 disabled:opacity-50"
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
               <button
                 onClick={() => setSelectedRefund(null)}
-                className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-bold text-white"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition ml-auto"
               >
                 Close
               </button>

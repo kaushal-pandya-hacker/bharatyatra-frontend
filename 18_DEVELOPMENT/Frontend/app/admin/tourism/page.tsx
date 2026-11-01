@@ -272,22 +272,27 @@ export default function AdminTourismManagementPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto text-white space-y-8">
+    <div className="space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A3656] pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
-          <div className="flex items-center space-x-2 mb-1">
-            <span className="text-xs font-bold bg-amber-400 text-[#0A1128] px-2.5 py-0.5 rounded uppercase tracking-wider">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">
               CMS Admin
             </span>
-            <span className="text-xs text-gray-400 font-mono">BharatYatra Master Tourism Management</span>
+            <span className="text-xs text-slate-400 font-mono">• BharatYatra Master Tourism Management</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-white">India Tourism Master CMS</h1>
+          <h1 className="text-2xl sm:text-3xl font-black font-heading text-slate-900 tracking-tight">
+            India Tourism Master CMS
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Hierarchical state, city, and tourist place management across all 28 states &amp; 8 UTs.
+          </p>
         </div>
 
         <button
           onClick={handleBatchImport}
-          className="bg-amber-400 hover:bg-amber-300 text-[#0A1128] font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-2 text-sm transition"
+          className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-xs flex items-center gap-2 text-xs transition cursor-pointer"
         >
           <Upload className="w-4 h-4" />
           <span>Run Pan-India Master Import</span>
@@ -295,22 +300,22 @@ export default function AdminTourismManagementPage() {
       </div>
 
       {importStatus && (
-        <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-sm font-semibold flex items-center space-x-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{importStatus}</span>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border-[#2A3656]">
+      <div className="flex space-x-2 border-b border-slate-200">
         {(['DESTINATIONS', 'STATES', 'DISTRICTS', 'CITIES', 'IMPORT'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition ${
+            className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer ${
               activeTab === tab
-                ? 'border-amber-400 text-amber-400'
-                : 'border-transparent text-gray-400 hover:text-white'
+                ? 'border-amber-500 text-amber-600 font-black'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             {tab}
@@ -320,39 +325,39 @@ export default function AdminTourismManagementPage() {
 
       {/* Hierarchical State -> City -> Place Form */}
       {activeTab === 'DESTINATIONS' && (
-        <div className="bg-[#141A32] p-8 rounded-2xl border border-[#2A3656] space-y-6">
-          <div className="flex items-center justify-between border-b border-[#2A3656] pb-4">
-            <h2 className="text-xl font-bold text-white flex items-center space-x-2">
-              <Plus className="w-5 h-5 text-amber-400" />
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Plus className="w-4 h-4 text-amber-500" />
               <span>Hierarchical Destination Setup (State → City → Place)</span>
             </h2>
-            <div className="flex items-center space-x-2 text-xs text-amber-400 font-mono bg-amber-400/10 px-3 py-1 rounded border border-amber-400/30">
-              <Navigation className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 text-xs text-amber-700 font-mono bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
+              <Navigation className="w-3.5 h-3.5 text-amber-600" />
               <span>{destForm.state} → {destForm.city} → {destForm.name || 'Select Place'}</span>
             </div>
           </div>
 
           {/* Visual Step Indicator */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#0A1128] p-4 rounded-xl border border-[#2A3656]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div className="flex items-center space-x-3">
-              <span className="w-7 h-7 rounded-full bg-amber-400 text-[#0A1128] font-bold text-xs flex items-center justify-center">1</span>
+              <span className="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center">1</span>
               <div>
-                <span className="text-xs font-bold text-white block">Step 1: State / UT</span>
-                <span className="text-[11px] text-amber-400 font-medium">{destForm.state}</span>
+                <span className="text-xs font-bold text-slate-900 block">Step 1: State / UT</span>
+                <span className="text-[11px] text-amber-700 font-semibold">{destForm.state}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-3 border-t sm:border-t-0 sm:border-l border-[#2A3656] pt-3 sm:pt-0 sm:pl-3">
-              <span className="w-7 h-7 rounded-full bg-amber-400 text-[#0A1128] font-bold text-xs flex items-center justify-center">2</span>
+            <div className="flex items-center space-x-3 border-t sm:border-t-0 sm:border-l border-slate-200 pt-3 sm:pt-0 sm:pl-3">
+              <span className="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center">2</span>
               <div>
-                <span className="text-xs font-bold text-white block">Step 2: City / Town</span>
-                <span className="text-[11px] text-amber-400 font-medium">{destForm.city}</span>
+                <span className="text-xs font-bold text-slate-900 block">Step 2: City / Town</span>
+                <span className="text-[11px] text-amber-700 font-semibold">{destForm.city}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-3 border-t sm:border-t-0 sm:border-l border-[#2A3656] pt-3 sm:pt-0 sm:pl-3">
-              <span className="w-7 h-7 rounded-full bg-amber-400 text-[#0A1128] font-bold text-xs flex items-center justify-center">3</span>
+            <div className="flex items-center space-x-3 border-t sm:border-t-0 sm:border-l border-slate-200 pt-3 sm:pt-0 sm:pl-3">
+              <span className="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center">3</span>
               <div>
-                <span className="text-xs font-bold text-white block">Step 3: Tourist Place</span>
-                <span className="text-[11px] text-amber-400 font-medium truncate max-w-[150px]">{destForm.name || 'Enter Place'}</span>
+                <span className="text-xs font-bold text-slate-900 block">Step 3: Tourist Place</span>
+                <span className="text-[11px] text-amber-700 font-semibold truncate max-w-[150px]">{destForm.name || 'Enter Place'}</span>
               </div>
             </div>
           </div>
@@ -360,14 +365,14 @@ export default function AdminTourismManagementPage() {
           <form onSubmit={handleCreateDestination} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Step 1: State Selection */}
             <div>
-              <label className="text-xs font-semibold text-gray-300 block mb-2 flex items-center space-x-1.5">
-                <Globe className="w-4 h-4 text-amber-400" />
+              <label className="text-xs font-bold text-slate-700 block mb-2 flex items-center space-x-1.5">
+                <Globe className="w-4 h-4 text-amber-500" />
                 <span>1. Select State / UT</span>
               </label>
               <select
                 value={destForm.state}
                 onChange={(e) => handleStateChange(e.target.value)}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 font-medium"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               >
                 {Object.keys(STATE_CITIES_MAP).map((st) => (
                   <option key={st} value={st}>{st}</option>
@@ -377,14 +382,14 @@ export default function AdminTourismManagementPage() {
 
             {/* Step 2: Dependent City Selection */}
             <div>
-              <label className="text-xs font-semibold text-gray-300 block mb-2 flex items-center space-x-1.5">
-                <Building2 className="w-4 h-4 text-amber-400" />
+              <label className="text-xs font-bold text-slate-700 block mb-2 flex items-center space-x-1.5">
+                <Building2 className="w-4 h-4 text-amber-500" />
                 <span>2. Select City / Town (Filtered for {destForm.state})</span>
               </label>
               <select
                 value={destForm.city}
                 onChange={(e) => handleCityChange(e.target.value)}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 font-medium"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               >
                 {availableCities.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -394,14 +399,14 @@ export default function AdminTourismManagementPage() {
 
             {/* Step 3A: Famous Place Preset Selection */}
             <div>
-              <label className="text-xs font-semibold text-gray-300 block mb-2 flex items-center space-x-1.5">
-                <MapPin className="w-4 h-4 text-amber-400" />
+              <label className="text-xs font-bold text-slate-700 block mb-2 flex items-center space-x-1.5">
+                <MapPin className="w-4 h-4 text-amber-500" />
                 <span>3. Select Famous Place (or Choose Custom)</span>
               </label>
               <select
                 value={destForm.placePreset}
                 onChange={(e) => handlePlacePresetChange(e.target.value)}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 font-medium"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               >
                 {availablePlaces.map((pl) => (
                   <option key={pl} value={pl}>{pl}</option>
@@ -412,7 +417,7 @@ export default function AdminTourismManagementPage() {
 
             {/* Step 3B: Destination / Place Name Input */}
             <div>
-              <label className="text-xs font-semibold text-gray-300 block mb-2">
+              <label className="text-xs font-bold text-slate-700 block mb-2">
                 Place / Destination Name
               </label>
               <input
@@ -427,16 +432,16 @@ export default function AdminTourismManagementPage() {
                     slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
                   })
                 }
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-300 block mb-2">Category</label>
+              <label className="text-xs font-bold text-slate-700 block mb-2">Category</label>
               <select
                 value={destForm.category}
                 onChange={(e) => setDestForm({ ...destForm, category: e.target.value })}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               >
                 <option value="Nature">Nature</option>
                 <option value="Heritage">Heritage</option>
@@ -449,11 +454,11 @@ export default function AdminTourismManagementPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-300 block mb-2">Publication Status</label>
+              <label className="text-xs font-bold text-slate-700 block mb-2">Publication Status</label>
               <select
                 value={destForm.status}
                 onChange={(e) => setDestForm({ ...destForm, status: e.target.value })}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               >
                 <option value="PUBLISHED">PUBLISHED</option>
                 <option value="DRAFT">DRAFT</option>
@@ -462,57 +467,57 @@ export default function AdminTourismManagementPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="text-xs font-semibold text-gray-300 block mb-2">Primary Image URL</label>
+              <label className="text-xs font-bold text-slate-700 block mb-2">Primary Image URL</label>
               <input
                 type="url"
                 required
                 placeholder="https://images.unsplash.com/..."
                 value={destForm.primaryImageUrl}
                 onChange={(e) => setDestForm({ ...destForm, primaryImageUrl: e.target.value })}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="text-xs font-semibold text-gray-300 block mb-2">Description</label>
+              <label className="text-xs font-bold text-slate-700 block mb-2">Description</label>
               <textarea
                 rows={3}
                 required
                 placeholder="Detailed place description..."
                 value={destForm.description}
                 onChange={(e) => setDestForm({ ...destForm, description: e.target.value })}
-                className="w-full bg-[#0A1128] border border-[#2A3656] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-medium"
               />
             </div>
 
             <div className="sm:col-span-2 flex items-center space-x-6">
-              <label className="flex items-center space-x-2 text-xs font-semibold text-gray-300 cursor-pointer">
+              <label className="flex items-center space-x-2 text-xs font-bold text-slate-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={destForm.isUNESCO}
                   onChange={(e) => setDestForm({ ...destForm, isUNESCO: e.target.checked })}
-                  className="rounded border-[#2A3656] text-amber-400 focus:ring-0"
+                  className="rounded border-slate-300 text-amber-500 focus:ring-0"
                 />
                 <span>UNESCO World Heritage Site</span>
               </label>
 
-              <label className="flex items-center space-x-2 text-xs font-semibold text-gray-300 cursor-pointer">
+              <label className="flex items-center space-x-2 text-xs font-bold text-slate-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={destForm.permitRequired}
                   onChange={(e) => setDestForm({ ...destForm, permitRequired: e.target.checked })}
-                  className="rounded border-[#2A3656] text-amber-400 focus:ring-0"
+                  className="rounded border-slate-300 text-amber-500 focus:ring-0"
                 />
                 <span>Requires Special Permit (e.g. Inner Line Permit)</span>
               </label>
             </div>
 
-            <div className="sm:col-span-2 pt-4 border-t border-[#2A3656]">
+            <div className="sm:col-span-2 pt-4 border-t border-slate-100">
               <button
                 type="submit"
-                className="bg-amber-400 hover:bg-amber-300 text-[#0A1128] font-bold px-6 py-3 rounded-xl shadow transition text-sm flex items-center space-x-2"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl shadow-xs transition text-xs flex items-center space-x-2 cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 text-amber-400" />
                 <span>Save Destination ({destForm.state} → {destForm.city} → {destForm.name})</span>
               </button>
             </div>
@@ -522,22 +527,22 @@ export default function AdminTourismManagementPage() {
 
       {/* Batch Import Tab */}
       {activeTab === 'IMPORT' && (
-        <div className="bg-[#141A32] p-8 rounded-2xl border border-[#2A3656] space-y-6">
-          <h2 className="text-xl font-bold text-white flex items-center space-x-2">
-            <Upload className="w-5 h-5 text-amber-400" />
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+          <h2 className="text-lg font-bold text-slate-900 flex items-center space-x-2">
+            <Upload className="w-4 h-4 text-amber-500" />
             <span>JSON / CSV Master Data Import</span>
           </h2>
-          <p className="text-xs text-gray-300">
+          <p className="text-xs text-slate-500">
             Upload or execute batch ingestion for India tourism records. Automatically validates coordinates, generates clean slugs, and maps State → City → Place.
           </p>
 
-          <div className="border-2 border-dashed border-[#2A3656] p-12 rounded-2xl text-center hover:border-amber-400/50 transition">
-            <Globe className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-            <p className="text-sm font-bold text-white mb-1">Click to run automated import pipeline</p>
-            <p className="text-xs text-gray-400 mb-6">Target: 08_TRAVEL_DATA/India/india_master_data.json</p>
+          <div className="border-2 border-dashed border-slate-200 bg-slate-50 p-12 rounded-2xl text-center hover:border-amber-400 transition">
+            <Globe className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+            <p className="text-sm font-bold text-slate-900 mb-1">Click to run automated import pipeline</p>
+            <p className="text-xs text-slate-400 mb-6 font-mono">Target: 08_TRAVEL_DATA/India/india_master_data.json</p>
             <button
               onClick={handleBatchImport}
-              className="bg-amber-400 hover:bg-amber-300 text-[#0A1128] font-bold px-6 py-3 rounded-xl transition text-sm shadow-xl"
+              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-3 rounded-xl transition text-xs shadow-xs cursor-pointer"
             >
               Start Master Data Ingestion
             </button>

@@ -130,12 +130,12 @@ export default function AdminPackagesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
           <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">BharatYatra Platform Admin</span>
-          <h1 className="text-3xl font-extrabold text-[#0A1128]">India Travel Packages Manager</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900">India Travel Packages Manager</h1>
           <p className="text-xs text-slate-500 mt-1">Manage, edit, publish/unpublish, duplicate, and import nationwide travel package catalog.</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-6 py-3 bg-[#0A1128] hover:bg-[#141A32] text-[#FED65B] font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all"
+          className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-xs transition-all cursor-pointer"
         >
           + Add New Package
         </button>
@@ -161,7 +161,7 @@ export default function AdminPackagesPage() {
               <tbody className="divide-y divide-slate-100 font-medium">
                 {packages.map(pkg => (
                   <tr key={pkg.id || pkg.slug} className="hover:bg-slate-50/50">
-                    <td className="p-4 font-bold text-[#0A1128]">
+                    <td className="p-4 font-bold text-slate-900">
                       <div>{pkg.title}</div>
                       <span className="text-[10px] text-slate-400 font-mono">{pkg.slug}</span>
                     </td>
@@ -207,7 +207,7 @@ export default function AdminPackagesPage() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto text-xs space-y-4">
             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-              <h3 className="text-lg font-bold text-[#0A1128]">Create New Package</h3>
+              <h3 className="text-lg font-bold text-slate-900">Create New Package</h3>
               <button onClick={() => setShowCreateModal(false)} className="text-slate-400 font-bold text-lg">✕</button>
             </div>
 
@@ -295,7 +295,7 @@ export default function AdminPackagesPage() {
 
               <button
                 type="submit"
-                className="w-full py-4 bg-[#0A1128] text-[#FED65B] font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg"
+                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-xs transition-all cursor-pointer"
               >
                 Publish Package
               </button>

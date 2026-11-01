@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { Mail, MessageSquare, Bell, Smartphone, RefreshCw, CheckCircle2, AlertTriangle, ArrowLeft } from 'lucide-react';
 
 interface CommunicationHealthStatus {
   status: string;
@@ -59,17 +60,19 @@ export default function AdminCommunicationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-10 space-y-8">
+    <div className="space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-amber-500 uppercase tracking-widest mb-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">
             <span>Admin Control Panel</span>
             <span>•</span>
             <span>Messaging Infrastructure</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-white">Communication System Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl sm:text-3xl font-black font-heading text-slate-900 tracking-tight">
+            Communication System Dashboard
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Monitor Email, WhatsApp, In-App and Push notification delivery pipelines and retries.
           </p>
         </div>
@@ -79,90 +82,104 @@ export default function AdminCommunicationsPage() {
             type="button"
             onClick={handleRetryFailed}
             disabled={retrying || failedQueue.length === 0}
-            className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-sm transition shadow-lg shadow-amber-500/10 flex items-center gap-2"
+            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-2 shadow-xs"
           >
+            <RefreshCw className={`w-3.5 h-3.5 ${retrying ? 'animate-spin' : ''}`} />
             {retrying ? 'Retrying Queue...' : `Retry Failed Queue (${failedQueue.length})`}
           </button>
           <Link
             href="/admin"
-            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl text-sm transition border border-slate-700"
+            className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition border border-slate-200 shadow-xs flex items-center gap-1.5"
           >
-            ← Admin Dashboard
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Admin Dashboard</span>
           </Link>
         </div>
       </div>
 
       {retrySuccess && (
-        <div className="p-4 bg-emerald-950/60 border border-emerald-500/50 rounded-xl text-emerald-300 text-sm flex items-center justify-between">
-          <span>✓ {retrySuccess}</span>
-          <span className="text-xs text-emerald-400 font-mono">200 OK</span>
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-semibold flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            {retrySuccess}
+          </span>
+          <span className="text-xs text-emerald-700 font-mono">200 OK</span>
         </div>
       )}
 
       {/* System Health Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Overall Status</div>
-          <div className="text-2xl font-bold text-emerald-400 flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Overall Status</div>
+          <div className="text-2xl font-black text-emerald-600 flex items-center gap-2">
             <span className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></span>
             {health.status}
           </div>
-          <div className="text-xs text-slate-500">All communication queues operational</div>
+          <div className="text-xs text-slate-400">All communication queues operational</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Email Provider</div>
-          <div className="text-base font-bold text-slate-200 truncate">{health.emailProvider}</div>
-          <div className="text-xs text-amber-400">Graceful Sandbox Fallback Ready</div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-amber-500" />
+            <span>Active Email Provider</span>
+          </div>
+          <div className="text-sm font-bold text-slate-900 truncate">{health.emailProvider}</div>
+          <div className="text-xs text-amber-600 font-medium">Graceful Sandbox Fallback Ready</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active WhatsApp Provider</div>
-          <div className="text-base font-bold text-slate-200 truncate">{health.whatsappProvider}</div>
-          <div className="text-xs text-emerald-400">Deep-Link URL Generator Active</div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Active WhatsApp Provider</span>
+          </div>
+          <div className="text-sm font-bold text-slate-900 truncate">{health.whatsappProvider}</div>
+          <div className="text-xs text-emerald-600 font-medium">Deep-Link URL Generator Active</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">In-App Notification Hub</div>
-          <div className="text-2xl font-bold text-white">ONLINE</div>
-          <div className="text-xs text-slate-500">WebSockets & REST polling active</div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Bell className="w-3.5 h-3.5 text-blue-500" />
+            <span>In-App Notification Hub</span>
+          </div>
+          <div className="text-2xl font-black text-slate-900">ONLINE</div>
+          <div className="text-xs text-slate-400">WebSockets &amp; REST polling active</div>
         </div>
       </div>
 
       {/* Delivery Metrics Table */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-          <h2 className="text-lg font-bold text-white">Channel Delivery Performance</h2>
-          <span className="text-xs text-slate-400">Real-time telemetry</span>
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <h2 className="text-base font-bold text-slate-900">Channel Delivery Performance</h2>
+          <span className="text-xs text-slate-400 font-medium">Real-time telemetry</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 uppercase text-xs tracking-wider">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider border-b border-slate-200">
               <tr>
-                <th className="p-3.5 rounded-l-xl">Channel</th>
-                <th className="p-3.5">Provider Registry</th>
-                <th className="p-3.5">Total Dispatched</th>
-                <th className="p-3.5">Delivered</th>
-                <th className="p-3.5">Failed</th>
-                <th className="p-3.5 rounded-r-xl">Success Rate</th>
+                <th className="p-3.5 font-bold">Channel</th>
+                <th className="p-3.5 font-bold">Provider Registry</th>
+                <th className="p-3.5 font-bold">Total Dispatched</th>
+                <th className="p-3.5 font-bold">Delivered</th>
+                <th className="p-3.5 font-bold">Failed</th>
+                <th className="p-3.5 font-bold">Success Rate</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100">
               {metrics.map((m) => (
-                <tr key={m.channel} className="hover:bg-slate-800/40">
-                  <td className="p-3.5 font-bold text-white flex items-center gap-2">
-                    {m.channel === 'EMAIL' && '📧'}
-                    {m.channel === 'WHATSAPP' && '💬'}
-                    {m.channel === 'IN_APP' && '🔔'}
-                    {m.channel === 'PUSH' && '📱'}
+                <tr key={m.channel} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="p-3.5 font-bold text-slate-900 flex items-center gap-2">
+                    {m.channel === 'EMAIL' && <Mail className="w-4 h-4 text-amber-500" />}
+                    {m.channel === 'WHATSAPP' && <MessageSquare className="w-4 h-4 text-emerald-500" />}
+                    {m.channel === 'IN_APP' && <Bell className="w-4 h-4 text-blue-500" />}
+                    {m.channel === 'PUSH' && <Smartphone className="w-4 h-4 text-purple-500" />}
                     {m.channel}
                   </td>
-                  <td className="p-3.5 text-xs text-slate-400 font-mono">{m.provider}</td>
-                  <td className="p-3.5 font-mono">{m.totalSent.toLocaleString()}</td>
-                  <td className="p-3.5 font-mono text-emerald-400">{m.delivered.toLocaleString()}</td>
-                  <td className="p-3.5 font-mono text-rose-400">{m.failed}</td>
-                  <td className="p-3.5 font-mono font-bold text-amber-400">{m.successRate}</td>
+                  <td className="p-3.5 font-mono text-slate-500">{m.provider}</td>
+                  <td className="p-3.5 font-mono font-bold text-slate-900">{m.totalSent.toLocaleString()}</td>
+                  <td className="p-3.5 font-mono text-emerald-600 font-semibold">{m.delivered.toLocaleString()}</td>
+                  <td className="p-3.5 font-mono text-rose-600 font-semibold">{m.failed}</td>
+                  <td className="p-3.5 font-mono font-bold text-amber-600">{m.successRate}</td>
                 </tr>
               ))}
             </tbody>
@@ -171,19 +188,19 @@ export default function AdminCommunicationsPage() {
       </div>
 
       {/* Failed Retry Queue Section */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div>
-            <h2 className="text-lg font-bold text-white">Failed Deliveries Queue</h2>
+            <h2 className="text-base font-bold text-slate-900">Failed Deliveries Queue</h2>
             <p className="text-xs text-slate-400">Items slated for automatic retry via exponential backoff</p>
           </div>
-          <span className="px-3 py-1 bg-rose-950 text-rose-300 border border-rose-800 text-xs rounded-full font-mono">
+          <span className="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs rounded-full font-mono font-bold">
             {failedQueue.length} Pending Retries
           </span>
         </div>
 
         {failedQueue.length === 0 ? (
-          <div className="text-center py-12 text-slate-500 text-sm">
+          <div className="text-center py-12 text-slate-400 text-xs font-semibold">
             ✓ No failed delivery attempts in queue. All channels clear!
           </div>
         ) : (
@@ -191,17 +208,17 @@ export default function AdminCommunicationsPage() {
             {failedQueue.map((item) => (
               <div
                 key={item.id}
-                className="p-4 bg-slate-950/70 border border-slate-800 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs font-bold">
-                    <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded border border-rose-500/30">
+                    <span className="px-2 py-0.5 bg-rose-100 text-rose-700 rounded border border-rose-200">
                       {item.channel}
                     </span>
-                    <span className="text-white">{item.recipient}</span>
-                    <span className="text-slate-500">• Template: {item.template}</span>
+                    <span className="text-slate-900">{item.recipient}</span>
+                    <span className="text-slate-400 font-normal">• Template: {item.template}</span>
                   </div>
-                  <div className="text-xs text-rose-300/80 font-mono">Error: {item.error}</div>
+                  <div className="text-xs text-rose-600 font-mono">Error: {item.error}</div>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -209,7 +226,7 @@ export default function AdminCommunicationsPage() {
                   <button
                     type="button"
                     onClick={handleRetryFailed}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg transition"
+                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition cursor-pointer shadow-xs"
                   >
                     Retry Now
                   </button>
