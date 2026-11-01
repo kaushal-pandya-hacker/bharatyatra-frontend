@@ -1,81 +1,131 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDataStore } from '@/lib/admin/admin-store';
-import { dispatchInquiryNotifications } from '@/lib/notifications/inquiry-notification';
+import { enquiryStore } from '@/lib/enquiries/enquiry-store';
+import { sendEnquiryEmailNotifications } from '@/lib/notifications/email-service';
+import { sendEnquiryWhatsAppNotification } from '@/lib/notifications/whatsapp-service';
+
+// In-memory rate limiting map (IP -> timestamps)
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const windowMs = 10 * 60 * 1000; // 10 minutes
+  const maxAttempts = 6;
+
+  const timestamps = rateLimitMap.get(ip) || [];
+  const validTimestamps = timestamps.filter((t) => now - t < windowMs);
+
+  if (validTimestamps.length >= maxAttempts) {
+    return false;
+  }
+
+  validTimestamps.push(now);
+  rateLimitMap.set(ip, validTimestamps);
+  return true;
+}
 
 export async function POST(req: NextRequest) {
   try {
+    // 1. IP & Rate Limiting Check
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Too many submissions from this connection. Please wait a few minutes before submitting another enquiry.',
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { name, email, phone, subject, message } = body;
 
+    // 2. Server-side validation
     if (!name || typeof name !== 'string' || !name.trim()) {
       return NextResponse.json(
-        { success: false, message: 'Full name is required.' },
+        { success: false, message: 'Please provide your full name.' },
         { status: 400 }
       );
     }
 
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
       return NextResponse.json(
-        { success: false, message: 'A valid email address is required.' },
+        { success: false, message: 'Please provide a valid email address.' },
         { status: 400 }
       );
     }
 
     if (!message || typeof message !== 'string' || !message.trim()) {
       return NextResponse.json(
-        { success: false, message: 'Message content is required.' },
+        { success: false, message: 'Please enter your message or trip details.' },
         { status: 400 }
       );
     }
 
-    // Map form subject to ticket category
-    let category: 'GENERAL' | 'AI_PLANNER' | 'BOOKING' | 'PAYMENT' | 'CANCELLATION' | 'HOTEL' = 'GENERAL';
-    const sub = (subject || '').toUpperCase();
-    if (sub.includes('AI_TRIP')) category = 'AI_PLANNER';
-    else if (sub.includes('PACKAGE') || sub.includes('TOUR')) category = 'BOOKING';
-    else if (sub.includes('HOTEL')) category = 'HOTEL';
-    else if (sub.includes('PAYMENT')) category = 'PAYMENT';
-
-    // 1. Create ticket directly in Admin Store (visible in /admin/support/ & /admin/)
-    const ticket = adminDataStore.createSupportTicket({
-      customerName: name.trim(),
-      customerEmail: email.trim(),
+    // 3. Save enquiry to database & persistent store
+    const userAgent = req.headers.get('user-agent') || undefined;
+    const enquiry = await enquiryStore.createEnquiry({
+      fullName: name.trim(),
+      email: email.trim(),
       phone: phone?.trim(),
-      category,
-      subject: subject || 'General Customer Inquiry',
-      description: message.trim(),
-      priority: 'MEDIUM',
+      inquiryType: subject || 'General Inquiry',
+      message: message.trim(),
+      ipAddress: ip,
+      userAgent,
     });
 
-    // 2. Dispatch notifications (Email to admin emails + generate WhatsApp route)
-    const notificationResult = await dispatchInquiryNotifications({
-      ticketNumber: ticket.ticketNumber,
-      name: ticket.customerName,
-      email: ticket.customerEmail,
-      phone: phone?.trim(),
-      subject: ticket.subject,
-      message: ticket.description,
-      createdAt: ticket.createdAt,
+    // 4. Trigger Email Notification (Admin & Submitter)
+    const emailResult = await sendEnquiryEmailNotifications({
+      enquiryId: enquiry.id,
+      enquiryReference: enquiry.enquiryReference,
+      fullName: enquiry.fullName,
+      email: enquiry.email,
+      phone: enquiry.phone,
+      inquiryType: enquiry.inquiryType,
+      message: enquiry.message,
+      submittedAt: enquiry.createdAt,
     });
 
+    // 5. Trigger WhatsApp Notification (Admin & Direct Concierge)
+    const whatsappResult = await sendEnquiryWhatsAppNotification({
+      enquiryId: enquiry.id,
+      enquiryReference: enquiry.enquiryReference,
+      fullName: enquiry.fullName,
+      email: enquiry.email,
+      phone: enquiry.phone,
+      inquiryType: enquiry.inquiryType,
+      message: enquiry.message,
+      submittedAt: enquiry.createdAt,
+    });
+
+    // 6. Update notification statuses in the database
+    enquiryStore.updateNotificationStatuses(enquiry.id, {
+      emailStatus: emailResult.status,
+      whatsappStatus: whatsappResult.status,
+    });
+
+    // 7. Return exact success response
     return NextResponse.json({
       success: true,
-      message: 'Your inquiry has been received and routed to our Operations Support Desk.',
+      message: 'Thank you for contacting BharatYatra! Your enquiry has been successfully submitted. Our support team will get back to you soon.',
       data: {
-        ticketId: ticket.id,
-        ticketNumber: ticket.ticketNumber,
-        category: ticket.category,
-        whatsAppUrl: notificationResult.whatsAppUrl,
-        whatsAppPhone: notificationResult.whatsAppPhone,
-        emailRecipients: notificationResult.emailRecipients,
+        id: enquiry.id,
+        enquiryReference: enquiry.enquiryReference,
+        status: enquiry.status,
+        emailNotificationStatus: emailResult.status,
+        whatsappNotificationStatus: whatsappResult.status,
+        whatsAppDirectUrl: whatsappResult.whatsAppDirectUrl,
       },
     });
   } catch (error: any) {
-    console.error('Contact inquiry submission failed:', error);
+    console.error('[ContactAPI] Error handling contact submission:', error);
     return NextResponse.json(
-      { success: false, message: error?.message || 'Failed to submit inquiry.' },
+      {
+        success: false,
+        message: 'A technical error occurred while saving your enquiry. Please reach our direct hotline or WhatsApp.',
+      },
       { status: 500 }
     );
   }
 }
-

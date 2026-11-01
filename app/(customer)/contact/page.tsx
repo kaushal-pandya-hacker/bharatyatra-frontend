@@ -27,9 +27,11 @@ export default function ContactUsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<{
-    ticketNumber?: string;
-    whatsAppUrl?: string;
-    emailRecipients?: string[];
+    id?: string;
+    enquiryReference?: string;
+    whatsAppDirectUrl?: string;
+    emailNotificationStatus?: string;
+    whatsappNotificationStatus?: string;
   } | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -203,20 +205,20 @@ export default function ContactUsPage() {
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
                 <div>
-                  <span className="inline-block px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 text-xs font-black rounded-full uppercase tracking-wider mb-2">
-                    Ticket #{submissionResult?.ticketNumber || 'BY-TKT-REGISTERED'}
+                  <span className="inline-block px-3.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 text-xs font-mono font-black rounded-full uppercase tracking-wider mb-2">
+                    Enquiry Reference: #{submissionResult?.enquiryReference || 'BY-ENQ-RECORDED'}
                   </span>
-                  <h3 className="text-xl font-bold text-[#102B4E]">Inquiry Successfully Logged!</h3>
+                  <h3 className="text-xl font-bold text-[#102B4E]">Enquiry Successfully Submitted</h3>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                  Thank you, <strong>{formData.name}</strong>. Your inquiry has been routed to our <strong>Admin Operations Desk</strong> and dispatched to our email alerts.
+                  Thank you for contacting BharatYatra! Your enquiry has been successfully submitted. Our support team will get back to you soon.
                 </p>
 
                 {/* Instant WhatsApp Action */}
-                {submissionResult?.whatsAppUrl && (
+                {submissionResult?.whatsAppDirectUrl && (
                   <div className="pt-2">
                     <a
-                      href={submissionResult.whatsAppUrl}
+                      href={submissionResult.whatsAppDirectUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs uppercase tracking-wider shadow-md transition-all active:scale-[0.99]"
@@ -225,7 +227,7 @@ export default function ContactUsPage() {
                       <span>Chat on WhatsApp Directly (+91 96242 82521)</span>
                     </a>
                     <p className="text-[11px] text-slate-500 mt-1.5">
-                      Click to open pre-filled inquiry directly on WhatsApp for instant 15-minute response.
+                      Click to open pre-filled enquiry directly on WhatsApp for instant 15-minute response.
                     </p>
                   </div>
                 )}

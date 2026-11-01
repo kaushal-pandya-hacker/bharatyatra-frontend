@@ -22,6 +22,7 @@ import {
   Bus,
   PlaneTakeoff,
   Headphones,
+  Inbox,
   Star,
   Megaphone,
   Layers,
@@ -158,6 +159,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       title: 'Customer Experience',
       items: [
+        { label: 'Website Enquiries', href: '/admin/enquiries', icon: Inbox },
         { label: 'Support Desk Tickets', href: '/admin/support', icon: Headphones },
         { label: 'Reviews Moderation', href: '/admin/reviews', icon: Star },
         { label: 'Marketing & Campaigns', href: '/admin/marketing', icon: Megaphone },

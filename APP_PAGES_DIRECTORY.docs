@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **152**  
+> **Total Registered Pages:** **153**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -8,7 +8,7 @@
 
 ## Table of Contents
 
-- [Admin Portal (Super-Admin & Operations) (33 pages)](#admin-portal-super-admin-operations)
+- [Admin Portal (Super-Admin & Operations) (34 pages)](#admin-portal-super-admin-operations)
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
 - [Trip Command Center, Splitter & Telemetry (9 pages)](#trip-command-center-splitter-telemetry)
 - [Bookings, Checkout & Settlement (11 pages)](#bookings-checkout-settlement)
@@ -32,6 +32,7 @@
 | **Page: /admin/cms** | `/admin/cms` | [`app/admin/cms/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/cms/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Notification Dispatch & Campaign Center** | `/admin/communications` | [`app/admin/communications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/communications/page.tsx) | `Super Admin / Platform Ops` | Bulk WhatsApp, SMS, and email dispatches to travelers and operators |
 | **Page: /admin/destinations** | `/admin/destinations` | [`app/admin/destinations/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/destinations/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /admin/enquiries** | `/admin/enquiries` | [`app/admin/enquiries/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/enquiries/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/financial-reports** | `/admin/financial-reports` | [`app/admin/financial-reports/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/financial-reports/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/hotels** | `/admin/hotels` | [`app/admin/hotels/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/hotels/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Fleet, Room & Ticket Inventory Management** | `/admin/inventory` | [`app/admin/inventory/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/admin/inventory/page.tsx) | `Super Admin / Platform Ops` | Real-time allocation and locks on buses, hotels, and tourist vehicles |
