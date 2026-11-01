@@ -19,7 +19,12 @@ import {
   RefreshCw,
   ExternalLink,
   ShieldCheck,
+  Volume2,
 } from 'lucide-react';
+import {
+  initAudioUnlocker,
+  testNotificationSound,
+} from '@/lib/utils/sound';
 
 interface ContactEnquiry {
   id: string;
@@ -70,6 +75,7 @@ export default function AdminEnquiriesPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    initAudioUnlocker();
     fetchEnquiries();
   }, [selectedStatus, selectedType]);
 
@@ -206,13 +212,24 @@ export default function AdminEnquiriesPage() {
           </p>
         </div>
 
-        <button
-          onClick={fetchEnquiries}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Records</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => testNotificationSound('notification')}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-xs font-bold text-amber-900 shadow-2xs transition-colors cursor-pointer"
+            title="Click to test audible sound chime"
+          >
+            <Volume2 className="w-3.5 h-3.5 text-amber-600" />
+            <span>Test Sound</span>
+          </button>
+          <button
+            onClick={fetchEnquiries}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh Records</span>
+          </button>
+        </div>
       </div>
 
       {/* KPI Stats Cards */}

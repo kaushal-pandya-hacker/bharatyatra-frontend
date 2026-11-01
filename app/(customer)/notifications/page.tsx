@@ -19,8 +19,15 @@ import {
   User,
   Headphones,
   CheckCircle2,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
+import {
+  initAudioUnlocker,
+  playNotificationSound,
+  testNotificationSound,
+} from '@/lib/utils/sound';
 
 export interface InAppNotification {
   id: string;
@@ -233,6 +240,7 @@ export default function NotificationsPage() {
           );
         }
         setReplyMessage('');
+        playNotificationSound('message_sent');
         showToast('Reply delivered to BharatYatra Support operations');
       } else {
         showToast('Error sending message. Please reach WhatsApp concierge.');
@@ -246,6 +254,7 @@ export default function NotificationsPage() {
 
   // Auto-open ticket if specified in URL query
   useEffect(() => {
+    initAudioUnlocker();
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const ticketParam = params.get('ticket');
@@ -338,13 +347,24 @@ export default function NotificationsPage() {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setTicketModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer transition"
-                aria-label="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => testNotificationSound('notification')}
+                  className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                  title="Click to test notification chime"
+                >
+                  <Volume2 className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Test Sound</span>
+                </button>
+                <button
+                  onClick={() => setTicketModalOpen(false)}
+                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer transition"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Modal Body: Conversation Thread */}

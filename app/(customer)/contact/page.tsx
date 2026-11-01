@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { SMART_QR_CONFIG } from '@/lib/config/smart-qr-config';
 import { AshokaChakraIcon } from '@/components/qr/AshokaChakraIcon';
+import { initAudioUnlocker, playNotificationSound } from '@/lib/utils/sound';
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
@@ -51,6 +52,7 @@ export default function ContactUsPage() {
 
       const json = await res.json();
       if (res.ok && json.success) {
+        playNotificationSound('message_sent');
         setSubmissionResult(json.data);
         setIsSubmitted(true);
         if (typeof window !== 'undefined') {

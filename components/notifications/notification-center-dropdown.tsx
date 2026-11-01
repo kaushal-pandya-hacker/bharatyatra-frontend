@@ -3,8 +3,15 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bell, Check, CheckCheck, Clock, Compass, Calendar, Hotel, AlertCircle, ExternalLink, Sparkles, MessageSquare } from 'lucide-react';
+import { Bell, Check, CheckCheck, Clock, Compass, Calendar, Hotel, AlertCircle, ExternalLink, Sparkles, MessageSquare, Volume2, VolumeX } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
+import {
+  initAudioUnlocker,
+  playNotificationSound,
+  testNotificationSound,
+  isSoundAlertsEnabled,
+  setSoundAlertsEnabled,
+} from '@/lib/utils/sound';
 
 export interface InAppNotification {
   id: string;
@@ -26,7 +33,29 @@ export function NotificationCenterDropdown() {
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const [soundActive, setSoundActive] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const prevUnreadCountRef = useRef<number>(-1);
+
+  useEffect(() => {
+    initAudioUnlocker();
+    setSoundActive(isSoundAlertsEnabled());
+  }, []);
+
+  const toggleSound = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const next = !soundActive;
+    setSoundActive(next);
+    setSoundAlertsEnabled(next);
+    if (next) {
+      testNotificationSound('notification');
+    }
+  };
+
+  const handleTestSound = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    testNotificationSound('notification');
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -61,7 +90,14 @@ export function NotificationCenterDropdown() {
       }
       if (countRes && countRes.ok) {
         const countData = await countRes.json();
-        setUnreadCount(countData.count ?? countData.unreadCount ?? 0);
+        const newUnread = countData.count ?? countData.unreadCount ?? 0;
+        setUnreadCount(newUnread);
+
+        // Sound chime on new notifications
+        if (prevUnreadCountRef.current !== -1 && newUnread > prevUnreadCountRef.current) {
+          playNotificationSound('notification');
+        }
+        prevUnreadCountRef.current = newUnread;
       }
     } catch {
       // Graceful fallback
@@ -196,15 +232,38 @@ export function NotificationCenterDropdown() {
               )}
             </div>
 
-            {unreadCount > 0 && (
+            <div className="flex items-center gap-1.5">
               <button
-                onClick={markAllAsRead}
-                className="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 transition-colors cursor-pointer"
+                type="button"
+                onClick={handleTestSound}
+                className="px-2 py-0.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-900 text-[10px] font-bold flex items-center gap-1 cursor-pointer transition border border-amber-200/60"
+                title="Click to test notification chime"
               >
-                <CheckCheck className="w-3.5 h-3.5" />
-                <span>Mark all read</span>
+                <Volume2 className="w-3 h-3 text-amber-600" />
+                <span>Test Chime</span>
               </button>
-            )}
+              <button
+                type="button"
+                onClick={toggleSound}
+                className="p-1 rounded-md text-slate-400 hover:text-slate-800 hover:bg-slate-200/50 transition cursor-pointer"
+                title={soundActive ? 'Mute sound alerts' : 'Enable sound alerts'}
+              >
+                {soundActive ? (
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                ) : (
+                  <VolumeX className="w-3.5 h-3.5 text-rose-500" />
+                )}
+              </button>
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  className="text-xs font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 transition-colors cursor-pointer ml-1"
+                >
+                  <CheckCheck className="w-3.5 h-3.5" />
+                  <span>Mark read</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Tabs */}

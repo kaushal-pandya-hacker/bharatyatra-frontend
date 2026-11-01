@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Bell, Inbox, Headphones, X, ArrowRight } from 'lucide-react';
+import { Bell, Inbox, Headphones, X, ArrowRight, Volume2, VolumeX } from 'lucide-react';
+import {
+  initAudioUnlocker,
+  playNotificationSound,
+  testNotificationSound,
+  isSoundAlertsEnabled,
+  setSoundAlertsEnabled,
+} from '@/lib/utils/sound';
 
 interface AdminAlertItem {
   id: string;
@@ -28,28 +35,27 @@ export function AdminNotificationDropdown({ onCountsUpdate }: AdminNotificationP
   const [newEnquiriesCount, setNewEnquiriesCount] = useState(0);
   const [openTicketsCount, setOpenTicketsCount] = useState(0);
   const [toastAlert, setToastAlert] = useState<AdminAlertItem | null>(null);
+  const [soundActive, setSoundActive] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const prevCountRef = useRef<number>(-1);
 
-  const playChime = () => {
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); // A5
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.4);
-    } catch {
-      // AudioContext blocked or not supported
+  useEffect(() => {
+    initAudioUnlocker();
+    setSoundActive(isSoundAlertsEnabled());
+  }, []);
+
+  const toggleSound = () => {
+    const next = !soundActive;
+    setSoundActive(next);
+    setSoundAlertsEnabled(next);
+    if (next) {
+      testNotificationSound('notification');
     }
+  };
+
+  const handleTestSound = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    testNotificationSound('notification');
   };
 
   const fetchAlerts = async () => {
@@ -76,7 +82,7 @@ export function AdminNotificationDropdown({ onCountsUpdate }: AdminNotificationP
 
         // Live notification detection when admin has page open
         if (prevCountRef.current !== -1 && total > prevCountRef.current && json.alerts?.[0]) {
-          playChime();
+          playNotificationSound('notification');
           setToastAlert(json.alerts[0]);
         }
         prevCountRef.current = total;
@@ -174,13 +180,36 @@ export function AdminNotificationDropdown({ onCountsUpdate }: AdminNotificationP
                 </span>
               )}
             </div>
-            <Link
-              href="/admin/enquiries"
-              onClick={() => setIsOpen(false)}
-              className="text-[11px] font-bold text-blue-700 hover:underline"
-            >
-              Open Desk
-            </Link>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleTestSound}
+                className="px-2 py-0.5 rounded-md bg-amber-100 hover:bg-amber-200 text-amber-900 text-[10px] font-bold flex items-center gap-1 cursor-pointer transition shadow-2xs"
+                title="Click to test audible sound chime"
+              >
+                <Volume2 className="w-3 h-3 text-amber-700" />
+                <span>Test Chime</span>
+              </button>
+              <button
+                type="button"
+                onClick={toggleSound}
+                className="p-1 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 transition cursor-pointer"
+                title={soundActive ? 'Mute sound alerts' : 'Enable sound alerts'}
+              >
+                {soundActive ? (
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                ) : (
+                  <VolumeX className="w-3.5 h-3.5 text-rose-500" />
+                )}
+              </button>
+              <Link
+                href="/admin/enquiries"
+                onClick={() => setIsOpen(false)}
+                className="text-[11px] font-bold text-blue-700 hover:underline ml-1"
+              >
+                Open Desk
+              </Link>
+            </div>
           </div>
 
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">

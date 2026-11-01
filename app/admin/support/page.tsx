@@ -12,7 +12,13 @@ import {
   Send,
   User,
   ShieldCheck,
+  Volume2,
 } from 'lucide-react';
+import {
+  initAudioUnlocker,
+  playNotificationSound,
+  testNotificationSound,
+} from '@/lib/utils/sound';
 
 export default function AdminSupportPage() {
   const [tickets, setTickets] = useState<any[]>([]);
@@ -24,6 +30,7 @@ export default function AdminSupportPage() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
+    initAudioUnlocker();
     fetchTickets();
   }, [selectedStatus]);
 
@@ -68,6 +75,7 @@ export default function AdminSupportPage() {
       });
       const data = await res.json();
       if (data.success) {
+        playNotificationSound('message_sent');
         setActiveTicket(data.data);
         setReplyMessage('');
         fetchTickets();
@@ -130,6 +138,15 @@ export default function AdminSupportPage() {
             Resolve traveler booking inquiries, payment reconciliations, cancellations, and special requests.
           </p>
         </div>
+        <button
+          type="button"
+          onClick={() => testNotificationSound('notification')}
+          className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+          title="Click to test audible chime"
+        >
+          <Volume2 className="w-4 h-4 text-amber-600" />
+          <span>Test Audio Chime</span>
+        </button>
       </div>
 
       {/* Filter and Search Bar */}
