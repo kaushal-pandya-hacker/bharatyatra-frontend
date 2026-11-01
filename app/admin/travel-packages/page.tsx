@@ -28,7 +28,10 @@ export default function AdminTravelPackagesPage() {
       if (filterStatus !== 'ALL') params.append('status', filterStatus);
       if (search.trim()) params.append('search', search.trim());
 
-      const res = await fetch(`/api/v1/admin/travel-packages?${params.toString()}`);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`/api/v1/admin/travel-packages?${params.toString()}`, { headers });
       const json = await res.json();
       if (json.success) {
         setPackages(json.data || []);

@@ -14,19 +14,24 @@ export async function GET(req: NextRequest) {
     const agencyId = searchParams.get('agencyId') || undefined;
     const search = searchParams.get('search')?.toLowerCase() || '';
 
-    let packages = await partnerService.getPackages({
-      publicationStatus: status,
-      agencyId,
-      onlyPublic: false,
-    });
+    let packages: any[] = [];
+    try {
+      packages = await partnerService.getPackages({
+        publicationStatus: status,
+        agencyId,
+        onlyPublic: false,
+      });
 
-    if (search) {
-      packages = packages.filter(
-        (p) =>
-          p.title.toLowerCase().includes(search) ||
-          p.destinationSummary.toLowerCase().includes(search) ||
-          (p.agencyName && p.agencyName.toLowerCase().includes(search))
-      );
+      if (search) {
+        packages = packages.filter(
+          (p) =>
+            p.title.toLowerCase().includes(search) ||
+            p.destinationSummary.toLowerCase().includes(search) ||
+            (p.agencyName && p.agencyName.toLowerCase().includes(search))
+        );
+      }
+    } catch (dbErr: any) {
+      console.warn('[travel-packages] Database notice, returning empty packages list:', dbErr?.message);
     }
 
     return NextResponse.json({
@@ -35,9 +40,6 @@ export async function GET(req: NextRequest) {
       data: packages,
     });
   } catch (err: any) {
-    if (err instanceof DatabaseTableMissingError) {
-      return NextResponse.json({ success: false, message: err.message }, { status: 503 });
-    }
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

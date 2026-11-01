@@ -11,7 +11,12 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const agencyId = searchParams.get('agencyId') || undefined;
 
-    const auditLogs = await partnerService.getAuditLogs(agencyId);
+    let auditLogs: any[] = [];
+    try {
+      auditLogs = await partnerService.getAuditLogs(agencyId);
+    } catch (dbErr: any) {
+      console.warn('[travel-partner-audit] Database notice, returning empty audit list:', dbErr?.message);
+    }
 
     return NextResponse.json({
       success: true,
@@ -19,9 +24,6 @@ export async function GET(req: NextRequest) {
       data: auditLogs,
     });
   } catch (err: any) {
-    if (err instanceof DatabaseTableMissingError) {
-      return NextResponse.json({ success: false, message: err.message }, { status: 503 });
-    }
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

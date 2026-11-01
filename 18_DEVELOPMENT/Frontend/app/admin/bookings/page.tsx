@@ -18,14 +18,19 @@ export default function AdminBookingsPage() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
       let url = '/api/v1/admin/bookings';
       if (selectedStatus !== 'ALL') {
         url += `?status=${selectedStatus}`;
       }
-      const res = await fetch(url);
-      const json = await res.json();
-      if (json && json.data) {
-        setBookings(json.data);
+      const res = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.data) {
+          setBookings(json.data);
+        }
       }
     } catch (e) {
       console.error('Failed to load admin bookings:', e);

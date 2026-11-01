@@ -25,7 +25,10 @@ export default function AdminTravelCommissionsPage() {
   const fetchLedger = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/v1/admin/travel-commissions');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch('/api/v1/admin/travel-commissions', { headers });
       const json = await res.json();
       if (json.success) {
         setLedger(json.data || []);
@@ -48,9 +51,13 @@ export default function AdminTravelCommissionsPage() {
 
     setSettling(true);
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
       const res = await fetch('/api/v1/admin/travel-commissions/settle', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           ledgerId: selectedEntry.id,
           settlementRef: settlementRef || `STMT-${Date.now()}`,

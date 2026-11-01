@@ -69,6 +69,17 @@ export async function getAuthenticatedAgency(req: NextRequest): Promise<TravelAg
  * - NEVER trusts user_metadata or email domain suffix (e.g. '@bharatyatra.in')
  */
 export async function verifyAdminRequest(req: NextRequest): Promise<{ authorized: boolean; adminId?: string; error?: string }> {
+  // Check 0: Server-authenticated Administrator Guard (supports admin tokens, cookies, and Supabase app_metadata)
+  try {
+    const { requireAdminUser } = await import('@/lib/auth/server-auth');
+    const auth = await requireAdminUser(req);
+    if (auth.user && auth.user.role === 'ADMIN') {
+      return { authorized: true, adminId: auth.user.id };
+    }
+  } catch (err) {
+    // Continue with other verification methods
+  }
+
   const adminSecret = process.env.ADMIN_SECRET_KEY;
   const adminKeyHeader = req.headers.get('x-admin-key') || req.headers.get('x-admin-token');
 
