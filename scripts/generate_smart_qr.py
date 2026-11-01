@@ -385,3 +385,4 @@ if __name__ == "__main__":
     generate_social_qr()
     generate_business_card_presentation()
     print("\n[COMPLETE] All BharatYatra Smart QR code assets generated and verified successfully!")
+

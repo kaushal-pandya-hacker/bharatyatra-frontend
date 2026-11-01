@@ -197,3 +197,4 @@ export const SMART_QR_CONFIG: SmartQrConfig = {
     },
   },
 };
+
