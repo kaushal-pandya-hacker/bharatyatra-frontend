@@ -198,12 +198,18 @@ export default function AdminDashboardPage() {
           </div>
           <div className="mt-3">
             <div className="text-2xl sm:text-3xl font-black text-slate-900">
-              {kpi.paymentSuccessRate}%
+              {kpi.paymentSuccessRate != null ? `${kpi.paymentSuccessRate}%` : 'N/A'}
             </div>
             <div className="text-[11px] font-semibold text-slate-500 mt-1 flex items-center gap-2">
-              <span className="text-emerald-600 font-bold">BharatGateway™ Active</span>
-              <span>•</span>
-              <span>Zero Dropoffs</span>
+              {kpi.paymentSuccessRate != null ? (
+                <>
+                  <span className="text-emerald-600 font-bold">{kpi.successfulPaymentsCount || 0} Successful</span>
+                  <span>•</span>
+                  <span>{kpi.eligiblePaymentAttempts || 0} Attempts</span>
+                </>
+              ) : (
+                <span className="text-slate-400 font-medium">No eligible transactions (N/A)</span>
+              )}
             </div>
           </div>
         </div>

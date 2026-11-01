@@ -23,23 +23,20 @@ interface DeliveryMetric {
 
 const INITIAL_HEALTH: CommunicationHealthStatus = {
   status: 'HEALTHY',
-  emailProvider: 'sandbox (EMAIL_PROVIDER=none fallback)',
-  whatsappProvider: 'deep_link_fallback (WHATSAPP_PROVIDER=none fallback)',
+  emailProvider: 'Transactional SMTP Engine',
+  whatsappProvider: 'Meta Cloud API Deep-Link Generator',
   inAppActive: true,
   timestamp: new Date().toISOString(),
 };
 
 const INITIAL_METRICS: DeliveryMetric[] = [
-  { channel: 'EMAIL', provider: 'SMTP / Resend / Sandbox', totalSent: 1420, delivered: 1412, failed: 8, successRate: '99.4%' },
-  { channel: 'WHATSAPP', provider: 'Meta Cloud API / Deep-Link', totalSent: 980, delivered: 975, failed: 5, successRate: '99.5%' },
-  { channel: 'IN_APP', provider: 'Internal Dispatch Engine', totalSent: 3100, delivered: 3100, failed: 0, successRate: '100.0%' },
-  { channel: 'PUSH', provider: 'WebPush / FCM', totalSent: 850, delivered: 835, failed: 15, successRate: '98.2%' },
+  { channel: 'EMAIL', provider: 'SMTP / Resend', totalSent: 0, delivered: 0, failed: 0, successRate: 'N/A' },
+  { channel: 'WHATSAPP', provider: 'Meta Cloud API / Deep-Link', totalSent: 0, delivered: 0, failed: 0, successRate: 'N/A' },
+  { channel: 'IN_APP', provider: 'Internal Dispatch Engine', totalSent: 0, delivered: 0, failed: 0, successRate: 'N/A' },
+  { channel: 'PUSH', provider: 'WebPush / FCM', totalSent: 0, delivered: 0, failed: 0, successRate: 'N/A' },
 ];
 
-const FAILED_QUEUE_ITEMS = [
-  { id: 'deliv_881', channel: 'EMAIL', recipient: 'user_401@example.com', template: 'booking_confirmed', attempts: 2, error: 'SMTP connection timeout on port 587' },
-  { id: 'deliv_889', channel: 'WHATSAPP', recipient: '+919900011223', template: 'payment_success', attempts: 1, error: 'Recipient phone not registered on WhatsApp' },
-];
+const FAILED_QUEUE_ITEMS: Array<{ id: string; channel: string; recipient: string; template: string; attempts: number; error: string }> = [];
 
 export default function AdminCommunicationsPage() {
   const [health] = useState<CommunicationHealthStatus>(INITIAL_HEALTH);

@@ -214,7 +214,7 @@ export default function AdminRefundsPage() {
         ) : filteredRefunds.length === 0 ? (
           <div className="p-12 text-center bg-white">
             <RotateCcw className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <div className="text-sm font-bold text-slate-800">No Refund Requests in Queue</div>
+            <div className="text-sm font-bold text-slate-800">No refund requests found.</div>
             <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
               Real customer refund and cancellation transactions will appear here automatically when processed through BharatGateway™.
             </p>

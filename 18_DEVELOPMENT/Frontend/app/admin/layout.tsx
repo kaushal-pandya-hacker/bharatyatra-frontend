@@ -40,6 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [adminUser, setAdminUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [platformHealth, setPlatformHealth] = useState<'OPERATIONAL' | 'DEGRADED' | 'CHECKING'>('CHECKING');
 
   // Normalize pathname to prevent trailing slash mismatches
   const cleanPath = pathname?.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
@@ -69,6 +70,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     setLoading(false);
+
+    // Live health check
+    const checkHealth = async () => {
+      try {
+        const res = await fetch('/api/v1/health');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.status === 'OPERATIONAL') {
+            setPlatformHealth('OPERATIONAL');
+          } else {
+            setPlatformHealth('DEGRADED');
+          }
+        } else {
+          setPlatformHealth('DEGRADED');
+        }
+      } catch {
+        setPlatformHealth('DEGRADED');
+      }
+    };
+    checkHealth();
   }, [router]);
 
   if (loading) {
@@ -251,9 +272,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
-            <span className="text-[11px] sm:text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Platform Operational
-            </span>
+            {platformHealth === 'OPERATIONAL' && (
+              <span className="text-[11px] sm:text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-xs">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Platform Operational
+              </span>
+            )}
+            {platformHealth === 'CHECKING' && (
+              <span className="text-[11px] sm:text-xs font-semibold text-slate-600 bg-slate-50 px-3 py-1 rounded-full border border-slate-200 flex items-center gap-1.5 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-slate-400 animate-ping"></span>
+                <span>Probing Telemetry...</span>
+              </span>
+            )}
+            {platformHealth === 'DEGRADED' && (
+              <span className="text-[11px] sm:text-xs font-semibold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 flex items-center gap-1.5 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>System Degraded</span>
+              </span>
+            )}
           </div>
         </header>
 

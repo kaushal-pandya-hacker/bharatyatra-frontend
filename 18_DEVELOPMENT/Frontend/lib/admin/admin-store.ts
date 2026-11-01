@@ -561,11 +561,14 @@ class AdminDataStoreImpl {
     const activePackages = this.destinations.length;
     const pendingTickets = this.supportTickets.filter((t) => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length;
 
-    const successfulPaymentsCount = this.payments.filter((p) => p.status === 'SUCCESSFUL').length;
+    const eligibleAttempts = this.payments.length;
+    const successfulPaymentsCount = this.payments.filter(
+      (p) => p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID'
+    ).length;
     const paymentSuccessRate =
-      this.payments.length > 0
-        ? Math.round((successfulPaymentsCount / this.payments.length) * 100)
-        : 100;
+      eligibleAttempts > 0
+        ? Math.round((successfulPaymentsCount / eligibleAttempts) * 100)
+        : null;
 
     // Compute categoryShare dynamically from real records
     const categoryTotals: Record<string, { bookings: number; revenue: number }> = {};
@@ -628,6 +631,8 @@ class AdminDataStoreImpl {
         activePackages,
         pendingTickets,
         paymentSuccessRate,
+        eligiblePaymentAttempts: eligibleAttempts,
+        successfulPaymentsCount,
       },
       suppliers: {
         total: this.suppliers.length,
