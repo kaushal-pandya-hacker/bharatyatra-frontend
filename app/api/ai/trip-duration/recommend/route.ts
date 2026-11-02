@@ -14,6 +14,7 @@ import {
   calculateDualTripDuration,
   DurationEngineInput,
 } from '@/lib/ai-planner/duration-engine';
+import { calculateTripDurationRecommendation } from '@/lib/ai-planner/trip-duration-intelligence-engine';
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,15 +41,29 @@ export async function POST(req: NextRequest) {
     };
 
     const recommendation = calculateDualTripDuration(input);
+    const fullIntelligence = calculateTripDurationRecommendation({
+      origin,
+      destinations,
+      travelMode: body.travelMode || body.mode || 'car',
+      travelPace: body.travelPace || body.pace || 'balanced',
+      preferences: body.preferences || body.interests || [],
+      budget: body.budget,
+      travellers: body.travellers || body.adults || 2,
+      travelDate: body.travelDate || body.startDate,
+    });
 
     return NextResponse.json(
       {
         success: true,
         ...recommendation,
-        recommendedDuration: recommendation.recommendedDuration || recommendation.comfortableDuration,
+        ...fullIntelligence,
+        recommendedDuration: fullIntelligence.recommendedDuration,
+        minimumDuration: fullIntelligence.minimumDuration,
+        relaxedDuration: fullIntelligence.relaxedDuration,
         recommendation: {
           ...recommendation,
-          recommendedDuration: recommendation.recommendedDuration || recommendation.comfortableDuration,
+          ...fullIntelligence,
+          recommendedDuration: fullIntelligence.recommendedDuration,
         },
       },
       { status: 200 }
