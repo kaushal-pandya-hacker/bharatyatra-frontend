@@ -1,0 +1,429 @@
+[
+  {
+    "id": "rev_b5e03563-6ce",
+    "tripId": "trip_star5_004",
+    "userId": "usr_happy_004",
+    "customerName": "Aarav Sharma",
+    "customerEmail": "aarav@example.com",
+    "destination": "Udaipur, Rajasthan",
+    "tripDates": {
+      "startDate": "2026-10-10",
+      "durationDays": 4
+    },
+    "travellerCount": 2,
+    "overallRating": 5,
+    "categoryRatings": {},
+    "positiveHighlights": [
+      "Easy trip planning",
+      "Great accommodation",
+      "Helpful recommendations"
+    ],
+    "improvementSuggestions": [],
+    "writtenReview": "Updated review: The private heritage hotel was truly unforgettable!",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:41:52.410Z",
+    "updatedAt": "2026-11-02T10:43:24.838Z"
+  },
+  {
+    "id": "rev_f4536421-bcc",
+    "tripId": "trip_star1_005",
+    "userId": "usr_upset_005",
+    "customerName": "Rohit Verma",
+    "customerEmail": "rohit@example.com",
+    "destination": "Goa",
+    "tripDates": {
+      "startDate": "2026-10-12",
+      "durationDays": 3
+    },
+    "travellerCount": 2,
+    "overallRating": 1,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [
+      "Improved transportation options",
+      "Faster customer support"
+    ],
+    "writtenReview": "Flight was delayed and transit cab was not waiting at the airport.",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [
+      {
+        "id": "th_8f1c083e",
+        "sender": "ADMIN",
+        "senderName": "Rajesh Kumar (Operations Support Lead)",
+        "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+        "timestamp": "2026-11-02T10:41:53.463Z"
+      },
+      {
+        "id": "th_cc1b6b49",
+        "sender": "CUSTOMER",
+        "senderName": "Rohit Verma",
+        "message": "Thank you Rajesh, I appreciate the prompt resolution and credit!",
+        "timestamp": "2026-11-02T10:41:53.547Z"
+      },
+      {
+        "id": "th_38fad26e",
+        "sender": "ADMIN",
+        "senderName": "Rajesh Kumar (Operations Support Lead)",
+        "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+        "timestamp": "2026-11-02T10:43:24.838Z"
+      }
+    ],
+    "createdAt": "2026-11-02T10:41:53.099Z",
+    "updatedAt": "2026-11-02T10:43:24.838Z",
+    "officialReply": {
+      "responderName": "Rajesh Kumar (Operations Support Lead)",
+      "responderRole": "OFFICIAL_SUPPORT",
+      "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+      "timestamp": "2026-11-02T10:43:24.838Z"
+    }
+  },
+  {
+    "id": "rev_bc80453f-899",
+    "tripId": "trip_skip_007",
+    "userId": "usr_quick_007",
+    "customerName": "Neha Patel",
+    "customerEmail": "neha@example.com",
+    "destination": "Gir National Park",
+    "tripDates": {
+      "startDate": "2026-10-14",
+      "durationDays": 2
+    },
+    "travellerCount": 2,
+    "overallRating": 4,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [],
+    "writtenReview": "Wonderful safari experience with our family.",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:41:53.224Z",
+    "updatedAt": "2026-11-02T10:43:24.837Z"
+  },
+  {
+    "id": "rev_6a62d731-acf",
+    "tripId": "trip_photos_008",
+    "userId": "usr_photo_008",
+    "customerName": "Kunal Joshi",
+    "customerEmail": "kunal@example.com",
+    "destination": "Varanasi",
+    "tripDates": {
+      "startDate": "2026-10-18",
+      "durationDays": 3
+    },
+    "travellerCount": 2,
+    "overallRating": 5,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [],
+    "writtenReview": "Mesmerizing evening Aarti and boat ride on the Ganga.",
+    "photos": [
+      {
+        "id": "img_1",
+        "url": "https://images.unsplash.com/photo-1561361513-2d000a50f0dc",
+        "caption": "Ganga Aarti"
+      },
+      {
+        "id": "img_2",
+        "url": "https://images.unsplash.com/photo-1571536802807-30451e3955d8",
+        "caption": "Assi Ghat Sunrise"
+      }
+    ],
+    "publicConsent": true,
+    "status": "PUBLISHED",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:41:53.357Z",
+    "updatedAt": "2026-11-02T10:43:24.837Z",
+    "moderationNotes": "Verified authentic customer feedback."
+  },
+  {
+    "id": "rev_860a4122-ea6",
+    "tripId": "trip_star5_1793616242953",
+    "userId": "usr_happy_1793616242953",
+    "customerName": "Aarav Sharma",
+    "customerEmail": "aarav_1793616242953@example.com",
+    "destination": "Udaipur, Rajasthan",
+    "tripDates": {
+      "startDate": "2026-10-10",
+      "durationDays": 4
+    },
+    "travellerCount": 2,
+    "overallRating": 5,
+    "categoryRatings": {},
+    "positiveHighlights": [
+      "Easy trip planning",
+      "Great accommodation",
+      "Helpful recommendations"
+    ],
+    "improvementSuggestions": [],
+    "writtenReview": "Updated review: The private heritage hotel was truly unforgettable!",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:44:02.955Z",
+    "updatedAt": "2026-11-02T10:44:04.065Z"
+  },
+  {
+    "id": "rev_36997b1f-a8d",
+    "tripId": "trip_star1_1793616242953",
+    "userId": "usr_upset_1793616242953",
+    "customerName": "Rohit Verma",
+    "customerEmail": "rohit_1793616242953@example.com",
+    "destination": "Goa",
+    "tripDates": {
+      "startDate": "2026-10-12",
+      "durationDays": 3
+    },
+    "travellerCount": 2,
+    "overallRating": 4,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [
+      "Improved transportation options",
+      "Faster customer support"
+    ],
+    "writtenReview": "Initial transit delay was resolved promptly by BharatYatra support. Good service!",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": false,
+    "repliesThread": [
+      {
+        "id": "th_343f0729",
+        "sender": "ADMIN",
+        "senderName": "Rajesh Kumar (Operations Support Lead)",
+        "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+        "timestamp": "2026-11-02T10:44:04.067Z"
+      },
+      {
+        "id": "th_c10eb094",
+        "sender": "CUSTOMER",
+        "senderName": "Rohit Verma",
+        "message": "Thank you Rajesh, I appreciate the prompt resolution and credit!",
+        "timestamp": "2026-11-02T10:44:04.210Z"
+      }
+    ],
+    "createdAt": "2026-11-02T10:44:03.696Z",
+    "updatedAt": "2026-11-02T10:44:04.211Z",
+    "officialReply": {
+      "responderName": "Rajesh Kumar (Operations Support Lead)",
+      "responderRole": "OFFICIAL_SUPPORT",
+      "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+      "timestamp": "2026-11-02T10:44:04.067Z"
+    }
+  },
+  {
+    "id": "rev_2610bc5b-099",
+    "tripId": "trip_skip_1793616242953",
+    "userId": "usr_quick_1793616242953",
+    "customerName": "Neha Patel",
+    "customerEmail": "neha_1793616242953@example.com",
+    "destination": "Gir National Park",
+    "tripDates": {
+      "startDate": "2026-10-14",
+      "durationDays": 2
+    },
+    "travellerCount": 2,
+    "overallRating": 4,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [],
+    "writtenReview": "Wonderful safari experience with our family.",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:44:03.803Z",
+    "updatedAt": "2026-11-02T10:44:03.803Z"
+  },
+  {
+    "id": "rev_b3baeb49-d4e",
+    "tripId": "trip_photos_1793616242953",
+    "userId": "usr_photo_1793616242953",
+    "customerName": "Kunal Joshi",
+    "customerEmail": "kunal_1793616242953@example.com",
+    "destination": "Varanasi",
+    "tripDates": {
+      "startDate": "2026-10-18",
+      "durationDays": 3
+    },
+    "travellerCount": 2,
+    "overallRating": 5,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [],
+    "writtenReview": "Mesmerizing evening Aarti and boat ride on the Ganga.",
+    "photos": [
+      {
+        "id": "img_1",
+        "url": "https://images.unsplash.com/photo-1561361513-2d000a50f0dc",
+        "caption": "Ganga Aarti"
+      },
+      {
+        "id": "img_2",
+        "url": "https://images.unsplash.com/photo-1571536802807-30451e3955d8",
+        "caption": "Assi Ghat Sunrise"
+      }
+    ],
+    "publicConsent": true,
+    "status": "PUBLISHED",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:44:03.940Z",
+    "updatedAt": "2026-11-02T10:44:04.211Z",
+    "moderationNotes": "Verified authentic customer feedback."
+  },
+  {
+    "id": "rev_3c954751-778",
+    "tripId": "trip_star5_1793616342764",
+    "userId": "usr_happy_1793616342764",
+    "customerName": "Aarav Sharma",
+    "customerEmail": "aarav_1793616342764@example.com",
+    "destination": "Udaipur, Rajasthan",
+    "tripDates": {
+      "startDate": "2026-10-10",
+      "durationDays": 4
+    },
+    "travellerCount": 2,
+    "overallRating": 5,
+    "categoryRatings": {},
+    "positiveHighlights": [
+      "Easy trip planning",
+      "Great accommodation",
+      "Helpful recommendations"
+    ],
+    "improvementSuggestions": [],
+    "writtenReview": "Updated review: The private heritage hotel was truly unforgettable!",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:45:42.765Z",
+    "updatedAt": "2026-11-02T10:45:43.617Z"
+  },
+  {
+    "id": "rev_5ee557d4-20f",
+    "tripId": "trip_star1_1793616342764",
+    "userId": "usr_upset_1793616342764",
+    "customerName": "Rohit Verma",
+    "customerEmail": "rohit_1793616342764@example.com",
+    "destination": "Goa",
+    "tripDates": {
+      "startDate": "2026-10-12",
+      "durationDays": 3
+    },
+    "travellerCount": 2,
+    "overallRating": 4,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [
+      "Improved transportation options",
+      "Faster customer support"
+    ],
+    "writtenReview": "Initial transit delay was resolved promptly by BharatYatra support. Good service!",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": false,
+    "repliesThread": [
+      {
+        "id": "th_df40c410",
+        "sender": "ADMIN",
+        "senderName": "Rajesh Kumar (Operations Support Lead)",
+        "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+        "timestamp": "2026-11-02T10:45:43.618Z"
+      },
+      {
+        "id": "th_f51a6c1b",
+        "sender": "CUSTOMER",
+        "senderName": "Rohit Verma",
+        "message": "Thank you Rajesh, I appreciate the prompt resolution and credit!",
+        "timestamp": "2026-11-02T10:45:43.712Z"
+      }
+    ],
+    "createdAt": "2026-11-02T10:45:43.323Z",
+    "updatedAt": "2026-11-02T10:45:43.713Z",
+    "officialReply": {
+      "responderName": "Rajesh Kumar (Operations Support Lead)",
+      "responderRole": "OFFICIAL_SUPPORT",
+      "message": "Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a compensation credit to your account.",
+      "timestamp": "2026-11-02T10:45:43.618Z"
+    }
+  },
+  {
+    "id": "rev_abca4d2d-73f",
+    "tripId": "trip_skip_1793616342764",
+    "userId": "usr_quick_1793616342764",
+    "customerName": "Neha Patel",
+    "customerEmail": "neha_1793616342764@example.com",
+    "destination": "Gir National Park",
+    "tripDates": {
+      "startDate": "2026-10-14",
+      "durationDays": 2
+    },
+    "travellerCount": 2,
+    "overallRating": 4,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [],
+    "writtenReview": "Wonderful safari experience with our family.",
+    "photos": [],
+    "publicConsent": false,
+    "status": "PENDING_MODERATION",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:45:43.416Z",
+    "updatedAt": "2026-11-02T10:45:43.416Z"
+  },
+  {
+    "id": "rev_f0b4a1b6-877",
+    "tripId": "trip_photos_1793616342764",
+    "userId": "usr_photo_1793616342764",
+    "customerName": "Kunal Joshi",
+    "customerEmail": "kunal_1793616342764@example.com",
+    "destination": "Varanasi",
+    "tripDates": {
+      "startDate": "2026-10-18",
+      "durationDays": 3
+    },
+    "travellerCount": 2,
+    "overallRating": 5,
+    "categoryRatings": {},
+    "positiveHighlights": [],
+    "improvementSuggestions": [],
+    "writtenReview": "Mesmerizing evening Aarti and boat ride on the Ganga.",
+    "photos": [
+      {
+        "id": "img_1",
+        "url": "https://images.unsplash.com/photo-1561361513-2d000a50f0dc",
+        "caption": "Ganga Aarti"
+      },
+      {
+        "id": "img_2",
+        "url": "https://images.unsplash.com/photo-1571536802807-30451e3955d8",
+        "caption": "Assi Ghat Sunrise"
+      }
+    ],
+    "publicConsent": true,
+    "status": "PUBLISHED",
+    "isResolved": true,
+    "repliesThread": [],
+    "createdAt": "2026-11-02T10:45:43.524Z",
+    "updatedAt": "2026-11-02T10:45:43.714Z",
+    "moderationNotes": "Verified authentic customer feedback."
+  }
+]

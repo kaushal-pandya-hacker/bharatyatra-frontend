@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminUser } from '@/lib/auth/server-auth';
 import { adminDataStore } from '@/lib/admin/admin-store';
+import { reviewStore } from '@/lib/reviews/review-store';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -14,6 +15,18 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ success: false, message: 'Invalid status for review moderation.' }, { status: 400 });
     }
 
+    // Try reviewStore first
+    const fromReviewStore = reviewStore.getReviewById(params.id);
+    if (fromReviewStore) {
+      const updatedStoreReview = reviewStore.moderateReview(params.id, status as any, notes);
+      return NextResponse.json({
+        success: true,
+        message: `Review status updated to ${status}.`,
+        data: updatedStoreReview,
+      });
+    }
+
+    // Fallback to adminDataStore
     const updated = adminDataStore.moderateReview(params.id, status, notes || '', auth.user.email);
     if (!updated) {
       return NextResponse.json({ success: false, message: 'Review not found.' }, { status: 404 });
@@ -31,4 +44,3 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     );
   }
 }
-

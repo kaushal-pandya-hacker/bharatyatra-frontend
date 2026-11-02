@@ -65,5 +65,261 @@
       "ticketNumber": "BY-TKT-0003",
       "ticketId": "tkt-1793590438135"
     }
+  },
+  {
+    "id": "5dbe6c1b-9037-4a0c-a17e-c9ddaa90f70b",
+    "userId": "usr_happy_004",
+    "recipientEmail": "aarav@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Udaipur, Rajasthan has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:41:52.412Z",
+    "metadata": {
+      "reviewId": "rev_b5e03563-6ce",
+      "tripId": "trip_star5_004"
+    }
+  },
+  {
+    "id": "47d326ff-f465-4043-b263-458c178e18ab",
+    "userId": "usr_upset_005",
+    "recipientEmail": "rohit@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Goa has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:41:53.100Z",
+    "metadata": {
+      "reviewId": "rev_f4536421-bcc",
+      "tripId": "trip_star1_005"
+    }
+  },
+  {
+    "id": "22d9dd68-9cd4-44b6-9c16-35892a9713af",
+    "userId": "usr_quick_007",
+    "recipientEmail": "neha@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Gir National Park has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:41:53.225Z",
+    "metadata": {
+      "reviewId": "rev_bc80453f-899",
+      "tripId": "trip_skip_007"
+    }
+  },
+  {
+    "id": "dd945fb5-e163-4273-a588-773366fa58d1",
+    "userId": "usr_photo_008",
+    "recipientEmail": "kunal@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Varanasi has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:41:53.357Z",
+    "metadata": {
+      "reviewId": "rev_6a62d731-acf",
+      "tripId": "trip_photos_008"
+    }
+  },
+  {
+    "id": "26fad189-b92f-4690-bedd-0be9f3737ced",
+    "userId": "usr_upset_005",
+    "recipientEmail": "rohit@example.com",
+    "title": "Response to your Goa review",
+    "message": "Rajesh Kumar (Operations Support Lead) from BharatYatra replied: \"Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a ...\"",
+    "category": "TRIP_REVIEW",
+    "type": "ADMIN_REPLIED_TO_REVIEW",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:41:53.463Z",
+    "metadata": {
+      "reviewId": "rev_f4536421-bcc",
+      "tripId": "trip_star1_005"
+    }
+  },
+  {
+    "id": "2bfa4d4d-c051-4f1d-9d4e-04a7a6660c7e",
+    "userId": "usr_upset_005",
+    "recipientEmail": "rohit@example.com",
+    "title": "Response to your Goa review",
+    "message": "Rajesh Kumar (Operations Support Lead) from BharatYatra replied: \"Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a ...\"",
+    "category": "TRIP_REVIEW",
+    "type": "ADMIN_REPLIED_TO_REVIEW",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:43:24.840Z",
+    "metadata": {
+      "reviewId": "rev_f4536421-bcc",
+      "tripId": "trip_star1_005"
+    }
+  },
+  {
+    "id": "0e3e5c09-c9a9-49ed-8545-eeb6a1ca8a81",
+    "userId": "usr_happy_1793616242953",
+    "recipientEmail": "aarav_1793616242953@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Udaipur, Rajasthan has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:44:02.957Z",
+    "metadata": {
+      "reviewId": "rev_860a4122-ea6",
+      "tripId": "trip_star5_1793616242953"
+    }
+  },
+  {
+    "id": "a4633b82-84cc-49f7-a166-4703a2e3138c",
+    "userId": "usr_upset_1793616242953",
+    "recipientEmail": "rohit_1793616242953@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Goa has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:44:03.696Z",
+    "metadata": {
+      "reviewId": "rev_36997b1f-a8d",
+      "tripId": "trip_star1_1793616242953"
+    }
+  },
+  {
+    "id": "18d46bbc-4a01-4d55-ac5c-700bfcb694fd",
+    "userId": "usr_quick_1793616242953",
+    "recipientEmail": "neha_1793616242953@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Gir National Park has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:44:03.804Z",
+    "metadata": {
+      "reviewId": "rev_2610bc5b-099",
+      "tripId": "trip_skip_1793616242953"
+    }
+  },
+  {
+    "id": "4cf21be9-7428-4e42-9a2e-031a976ca49d",
+    "userId": "usr_photo_1793616242953",
+    "recipientEmail": "kunal_1793616242953@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Varanasi has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:44:03.941Z",
+    "metadata": {
+      "reviewId": "rev_b3baeb49-d4e",
+      "tripId": "trip_photos_1793616242953"
+    }
+  },
+  {
+    "id": "ed54e516-c783-4fd2-9047-60a96c87e3e9",
+    "userId": "usr_upset_1793616242953",
+    "recipientEmail": "rohit_1793616242953@example.com",
+    "title": "Response to your Goa review",
+    "message": "Rajesh Kumar (Operations Support Lead) from BharatYatra replied: \"Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a ...\"",
+    "category": "TRIP_REVIEW",
+    "type": "ADMIN_REPLIED_TO_REVIEW",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:44:04.067Z",
+    "metadata": {
+      "reviewId": "rev_36997b1f-a8d",
+      "tripId": "trip_star1_1793616242953"
+    }
+  },
+  {
+    "id": "0f038911-eae3-4c06-96d2-a3a0743dde3d",
+    "userId": "usr_happy_1793616342764",
+    "recipientEmail": "aarav_1793616342764@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Udaipur, Rajasthan has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:45:42.769Z",
+    "metadata": {
+      "reviewId": "rev_3c954751-778",
+      "tripId": "trip_star5_1793616342764"
+    }
+  },
+  {
+    "id": "ed68b327-3aae-42a9-b447-db834bba9938",
+    "userId": "usr_upset_1793616342764",
+    "recipientEmail": "rohit_1793616342764@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Goa has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:45:43.324Z",
+    "metadata": {
+      "reviewId": "rev_5ee557d4-20f",
+      "tripId": "trip_star1_1793616342764"
+    }
+  },
+  {
+    "id": "d93eadef-6993-4d4e-befd-a4ec76592448",
+    "userId": "usr_quick_1793616342764",
+    "recipientEmail": "neha_1793616342764@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Gir National Park has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:45:43.416Z",
+    "metadata": {
+      "reviewId": "rev_abca4d2d-73f",
+      "tripId": "trip_skip_1793616342764"
+    }
+  },
+  {
+    "id": "cc2d0679-e38d-4221-87d9-c92474c58a64",
+    "userId": "usr_photo_1793616342764",
+    "recipientEmail": "kunal_1793616342764@example.com",
+    "title": "Thank you for reviewing your journey! ❤️",
+    "message": "Your feedback for Varanasi has been received. Thank you for helping us improve BharatYatra!",
+    "category": "TRIP_REVIEW",
+    "type": "REVIEW_SUBMITTED",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:45:43.524Z",
+    "metadata": {
+      "reviewId": "rev_f0b4a1b6-877",
+      "tripId": "trip_photos_1793616342764"
+    }
+  },
+  {
+    "id": "8e630194-a77e-4ea3-99de-ca6c62d8f6a5",
+    "userId": "usr_upset_1793616342764",
+    "recipientEmail": "rohit_1793616342764@example.com",
+    "title": "Response to your Goa review",
+    "message": "Rajesh Kumar (Operations Support Lead) from BharatYatra replied: \"Dear Rohit, we sincerely apologize for the transit delay in Goa. Our logistics manager has issued a ...\"",
+    "category": "TRIP_REVIEW",
+    "type": "ADMIN_REPLIED_TO_REVIEW",
+    "deepLink": "/dashboard#reviews",
+    "readAt": null,
+    "createdAt": "2026-11-02T10:45:43.619Z",
+    "metadata": {
+      "reviewId": "rev_5ee557d4-20f",
+      "tripId": "trip_star1_1793616342764"
+    }
   }
 ]

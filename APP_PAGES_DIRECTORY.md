@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **154**  
+> **Total Registered Pages:** **156**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -10,13 +10,13 @@
 
 - [Admin Portal (Super-Admin & Operations) (34 pages)](#admin-portal-super-admin-operations)
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
-- [Trip Command Center, Splitter & Telemetry (9 pages)](#trip-command-center-splitter-telemetry)
+- [Trip Command Center, Splitter & Telemetry (10 pages)](#trip-command-center-splitter-telemetry)
 - [Bookings, Checkout & Settlement (11 pages)](#bookings-checkout-settlement)
 - [Authentication, Security & Onboarding (8 pages)](#authentication-security-onboarding)
 - [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
 - [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
-- [Customer Discovery, Itinerary & Travel Products (52 pages)](#customer-discovery-itinerary-travel-products)
+- [Customer Discovery, Itinerary & Travel Products (53 pages)](#customer-discovery-itinerary-travel-products)
 
 ---
 
@@ -87,6 +87,7 @@
 | **Trip Cost Intelligence & Predictive Budget** | `/trips/[id]/cost` | [`app/(customer)/trips/[id]/cost/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/[id]/cost/page.tsx) | `Authenticated Traveler` | Category-wise expense breakdown, fuel cost predictions, and buffer safety |
 | **Trip Expense Quick Logger** | `/trips/[id]/expense` | [`app/(customer)/trips/[id]/expense/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/[id]/expense/page.tsx) | `Authenticated Traveler` | Log new fuel, toll, food, or stay expense with receipt and payer tags |
 | **Group Expense Split & Multi-Payer Wallet** | `/trips/[id]/expenses` | [`app/(customer)/trips/[id]/expenses/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/[id]/expenses/page.tsx) | `Authenticated Traveler` | Multi-payer expense ledger with minor-unit mathematical precision and balances |
+| **Page: /trips/[id]/review** | `/trips/[id]/review` | [`app/(customer)/trips/[id]/review/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/[id]/review/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Debt Settlement & Payment Reconciliation** | `/trips/[id]/settle` | [`app/(customer)/trips/[id]/settle/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/[id]/settle/page.tsx) | `Authenticated Traveler` | One-click UPI payment between group members to settle outstanding shares |
 | **Final Circuit Settlement & Archive** | `/trips/[id]/settlement` | [`app/(customer)/trips/[id]/settlement/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/[id]/settlement/page.tsx) | `Authenticated Traveler` | Finalized group balance statement and audit record upon trip completion |
 | **Interactive Road Trip Navigator & Fuel Planner** | `/trips/road-trip` | [`app/(customer)/trips/road-trip/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/trips/road-trip/page.tsx) | `Traveler` | Live mileage calculation, toll estimates, and verified highway dhabas |
@@ -217,6 +218,7 @@
 | **Page: /refund-policy** | `/refund-policy` | [`app/refund-policy/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/refund-policy/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Curated Dining & Regional Food Guide** | `/restaurants` | [`app/(customer)/restaurants/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/restaurants/page.tsx) | `Public / Traveler` | Authentic Kathiyawadi, Gujarati thali, street food, and fine dining |
 | **Restaurant Menu, Hours & Table Booking** | `/restaurants/[id]` | [`app/(customer)/restaurants/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/restaurants/[id]/page.tsx) | `Public / Traveler` | Signature dishes, pricing for two, hygiene ratings, and table reservations |
+| **Page: /reviews** | `/reviews` | [`app/reviews/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/reviews/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Wishlist & Saved Places Collection** | `/saved` | [`app/(customer)/saved/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/saved/page.tsx) | `Authenticated Traveler` | Bookmarked hotels, itineraries, packages, and hidden gems |
 | **All 36 States & Union Territories of India** | `/states` | [`app/(customer)/states/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/states/page.tsx) | `Public / Traveler` | Complete geographic directory of Indian states with cultural overviews |
 | **State Tourism Portal & Regional Circuits** | `/states/[slug]` | [`app/(customer)/states/[slug]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/states/[slug]/page.tsx) | `Public / Traveler` | State highlights, top districts, regional cuisine, and tourism circuits |
