@@ -8,12 +8,13 @@ import {
 } from 'lucide-react';
 import { sendNexiChatMessage, NexiChatResponse } from '@/lib/nexi-api';
 import { useNexi } from '@/lib/nexi/nexi-context';
+import { useDiwali } from '@/lib/campaigns/diwali-context';
 
 interface ChatMessage {
   id: string;
   role: 'USER' | 'ASSISTANT';
   content: string;
-  actions?: NexiChatResponse['actions'];
+  actions?: any[];
   timestamp: Date;
 }
 
@@ -21,6 +22,7 @@ export function NexiChatFloating() {
   const router = useRouter();
   const pathname = usePathname();
   const { isOpen, closeNexi, pendingPrompt, clearPendingPrompt } = useNexi();
+  const { isDiwaliActive } = useDiwali();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -30,25 +32,34 @@ export function NexiChatFloating() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize Welcome Message on first open
+  // Initialize Welcome Message on first open (Festive adaptive)
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([
         {
           id: 'welcome-1',
           role: 'ASSISTANT',
-          content: "Hi! I'm **NEXI**, your BharatYatra travel assistant 24/7.\n\nI can help you plan trips, understand your itinerary, check your bookings, suggest packing lists, and answer travel questions.",
-          actions: [
-            { type: 'OPEN_PLANNER', label: 'Plan a Trip' },
-            { type: 'OPEN_TRIP', label: 'My Next Trip' },
-            { type: 'OPEN_BOOKING', label: 'My Bookings' },
-            { type: 'OPEN_PROFILE', label: 'Travel Preferences' },
-          ],
+          content: isDiwaliActive
+            ? "Namaste! 🪔 Ready to make this Diwali unforgettable? Let's plan your next journey across India!\n\nI can recommend festive holiday circuits, calculate realistic travel durations, recommend verified stays, and organize your family itinerary."
+            : "Hi! I'm **NEXI**, your BharatYatra travel assistant 24/7.\n\nI can help you plan trips, understand your itinerary, check your bookings, suggest packing lists, and answer travel questions.",
+          actions: isDiwaliActive
+            ? [
+                { type: 'OPEN_PLANNER', label: '🪔 Plan a Diwali Trip' },
+                { type: 'OPEN_DESTINATIONS', label: 'Festive Destinations' },
+                { type: 'OPEN_OFFERS', label: 'Diwali Travel Offers' },
+                { type: 'OPEN_BOOKING', label: 'My Bookings' },
+              ]
+            : [
+                { type: 'OPEN_PLANNER', label: 'Plan a Trip' },
+                { type: 'OPEN_TRIP', label: 'My Next Trip' },
+                { type: 'OPEN_BOOKING', label: 'My Bookings' },
+                { type: 'OPEN_PROFILE', label: 'Travel Preferences' },
+              ],
           timestamp: new Date(),
         },
       ]);
     }
-  }, [isOpen, messages.length]);
+  }, [isOpen, messages.length, isDiwaliActive]);
 
   // Handle pendingPrompt if sent when opening Nexi
   useEffect(() => {
@@ -124,6 +135,16 @@ export function NexiChatFloating() {
 
       case 'OPEN_PROFILE':
         router.push('/profile');
+        closeNexi();
+        break;
+
+      case 'OPEN_DESTINATIONS':
+        router.push('/destinations');
+        closeNexi();
+        break;
+
+      case 'OPEN_OFFERS':
+        router.push('/#diwali-offers');
         closeNexi();
         break;
 

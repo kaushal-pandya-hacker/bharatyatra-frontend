@@ -19,6 +19,10 @@ import {
   Award,
   ArrowUpRight,
   Sparkle,
+  Layers,
+  Palette,
+  Code2,
+  CheckCircle2,
 } from 'lucide-react';
 import { SMART_QR_CONFIG, SmartQrButtonConfig } from '@/lib/config/smart-qr-config';
 import { AshokaChakraIcon } from '@/components/qr/AshokaChakraIcon';
@@ -86,19 +90,20 @@ export function SmartQrLandingClient() {
   };
 
   const handleShare = async () => {
-    const url = SMART_QR_CONFIG.brand.landingPageUrl;
+    const shareMessage =
+      'Discover India with BharatYatra! Explore destinations, plan trips, and experience more. Visit https://www.bharatyatra.in/qr/';
     const title = 'BharatYatra — Discover India. Travel Better.';
-    const text = 'Check out BharatYatra, India\'s premier AI travel platform.';
+    const url = SMART_QR_CONFIG.brand.landingPageUrl;
 
     if (navigator.share) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({ title, text: shareMessage, url });
       } catch {
         // User dismissed share dialog
       }
     } else {
       try {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareMessage);
         setCopied(true);
         setTimeout(() => setCopied(false), 2500);
       } catch {
@@ -499,9 +504,110 @@ export function SmartQrLandingClient() {
             </Link>
           </div>
         </section>
+
+        {/* 5. OFFICIAL TECHNOLOGY PARTNER — NEXIIIFY WEB AGENCY PROMOTION */}
+        <section
+          id="agency-credit"
+          aria-label="Technology Partner — Nexiify Web Agency"
+          className="w-full mt-8"
+        >
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#071324] via-[#0A192F] to-[#0F2942] border border-cyan-500/20 shadow-xl p-5 sm:p-7 lg:p-8 text-white">
+            
+            {/* Ambient Radial Glows */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              
+              {/* Left Column: Brand & Services */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-[10px] font-extrabold uppercase tracking-widest shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>POWERED BY DIGITAL CREATIVITY</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white leading-tight font-['Outfit',sans-serif]">
+                    Your Digital Presence Deserves Better.
+                  </h2>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    This platform is designed and developed by <strong className="text-cyan-300 font-bold">Nexiify Web Agency</strong>, creating modern, scalable, and innovative digital experiences for businesses.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-baseline gap-2.5 pt-0.5">
+                  <span className="text-base sm:text-lg font-black tracking-wider text-white uppercase font-['Outfit',sans-serif]">
+                    NEXIIIFY WEB AGENCY
+                  </span>
+                  <span className="text-xs font-semibold text-amber-400">
+                    &ldquo;Design. Develop. Deliver.&rdquo;
+                  </span>
+                </div>
+
+                {/* 4 Core Services Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  {[
+                    { name: 'Website Development', icon: Globe },
+                    { name: 'Web Application Development', icon: Layers },
+                    { name: 'UI/UX Design', icon: Palette },
+                    { name: 'Custom Digital Solutions', icon: Code2 },
+                  ].map((svc) => {
+                    const IconComponent = svc.icon;
+                    return (
+                      <div
+                        key={svc.name}
+                        className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-slate-200"
+                      >
+                        <div className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center shrink-0">
+                          <IconComponent className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-[11px] sm:text-xs font-medium text-slate-200">
+                          {svc.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Column: CTA Box */}
+              <div className="lg:col-span-5 flex flex-col justify-center">
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/15 backdrop-blur-sm text-center space-y-3 shadow-xl">
+                  <div className="space-y-1">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-amber-400">
+                      NEED A WEBSITE FOR YOUR BUSINESS?
+                    </span>
+                    <p className="text-[11px] text-slate-300">
+                      Transform your ideas into high-converting digital realities.
+                    </p>
+                  </div>
+
+                  <a
+                    href="https://nexiify.in/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs tracking-wide shadow-lg shadow-cyan-500/25 transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <span>BUILD YOUR WEBSITE WITH NEXIIIFY</span>
+                    <ArrowUpRight className="w-4 h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+
+                  <p className="text-[11px] text-slate-400 font-medium italic">
+                    &ldquo;Let&apos;s build something extraordinary together.&rdquo;
+                  </p>
+
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-center gap-1.5 text-[10px] text-slate-400">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span>Official Technology &amp; Growth Partner</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* 5. RESPECTFUL TRICOLOUR LUXURY FOOTER */}
+      {/* 6. RESPECTFUL TRICOLOUR LUXURY FOOTER WITH AGENCY CREDITS */}
       <footer className="w-full border-t border-slate-200/80 bg-white/90 backdrop-blur-md text-center py-6 px-4 mt-8 space-y-3">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-500 font-semibold">
           <Link href="/" className="hover:text-[#0A192F] transition-colors">
@@ -533,13 +639,30 @@ export function SmartQrLandingClient() {
           </Link>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-          <span>Official Smart QR Portal of</span>
-          <strong className="text-slate-700 font-extrabold uppercase">BharatYatra</strong>
-          <span>•</span>
-          <span className="flex items-center gap-1 font-medium">
-            Made with <Heart className="w-3 h-3 text-red-500 fill-red-500 inline" /> in India
-          </span>
+        {/* Phase 8 Development Credit */}
+        <div className="space-y-1 pt-1">
+          <p className="text-xs font-semibold text-slate-600">
+            &copy; 2026 BharatYatra. All Rights Reserved.
+          </p>
+          <p className="text-xs text-slate-500 flex items-center justify-center gap-1 font-medium">
+            <span>Designed &amp; Developed with</span>
+            <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 inline" aria-label="love" />
+            <span>by</span>
+            <a
+              href="https://nexiify.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#0A192F] hover:text-cyan-600 transition-colors inline-flex items-center gap-0.5 underline decoration-slate-300 hover:decoration-cyan-500 underline-offset-2"
+            >
+              <span>Nexiify Web Agency</span>
+              <ExternalLink className="w-3 h-3 text-slate-400" />
+            </a>
+          </p>
+        </div>
+
+        {/* Made in India Sovereignty Note */}
+        <div className="text-[11px] text-slate-400">
+          Official Sovereign Smart QR Portal • Made in India
         </div>
 
         {/* Bottom Tricolour Bar */}

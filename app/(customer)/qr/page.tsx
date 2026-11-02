@@ -10,16 +10,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'BharatYatra — Official Smart QR Portal | Your Journey Starts Here',
+  title: 'BharatYatra Smart QR | Discover India. Travel Better.',
   description:
-    'One scan. Endless possibilities. Explore incredible destinations, discover verified packages, build your AI itinerary, or partner with BharatYatra.',
+    'Explore India, plan your journey, discover destinations, and connect with BharatYatra through its official Smart QR Portal.',
   alternates: {
     canonical: 'https://www.bharatyatra.in/qr/',
   },
   openGraph: {
-    title: 'BharatYatra — Official Smart QR Portal',
+    title: 'BharatYatra Smart QR | Discover India. Travel Better.',
     description:
-      'Discover India. Travel Better. Access the AI Trip Planner, destination guides, curated tour packages, and travel partner ecosystem.',
+      'Explore India, plan your journey, discover destinations, and connect with BharatYatra through its official Smart QR Portal.',
     url: 'https://www.bharatyatra.in/qr/',
     siteName: 'BharatYatra',
     images: [
