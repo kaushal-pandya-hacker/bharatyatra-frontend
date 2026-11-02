@@ -60,7 +60,7 @@ export default function HomePageClient() {
             {/* Cinematic Full-Bleed Imagery with Scrim */}
             <div className="relative w-full min-h-[520px] sm:min-h-[640px] flex flex-col justify-between pt-16 sm:pt-24 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-12">
               <Image
-                src="/hero-bg.jpg"
+                src="/diwali-hero-bg.jpg"
                 alt="Cinematic luxury editorial photograph of an ornate Rajasthani palace courtyard carved in sandstone at sunrise"
                 fill
                 priority

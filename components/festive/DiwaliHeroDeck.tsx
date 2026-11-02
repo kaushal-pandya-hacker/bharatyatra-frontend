@@ -35,24 +35,24 @@ export function DiwaliHeroDeck() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#0A1128] text-white">
-      {/* Background Image with Deep Cinematic Warm Scrim */}
+      {/* Background Image with Deep Festive Navy Atmosphere */}
       <div className="relative w-full min-h-[580px] sm:min-h-[660px] flex flex-col justify-between pt-12 sm:pt-20 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-12">
         <Image
-          src="/hero-bg.jpg"
-          alt="Cinematic Indian architectural palace courtyard at twilight illuminated with festive Diwali lights"
+          src="/images/festive/diwali-hero-bg.jpg"
+          alt="BharatYatra Diwali Festive Celebration - Deep Navy Sky with Glowing Golden Lanterns and Diyas"
           fill
           priority
-          quality={85}
+          quality={95}
           sizes="100vw"
-          className="object-cover object-center pointer-events-none -z-0 opacity-45 mix-blend-luminosity"
+          className="object-cover object-center pointer-events-none -z-0"
         />
 
-        {/* Ambient Golden particles and warm festive glows */}
-        <DiwaliGoldenAmbience density="medium" />
+        {/* Subtle dark navy overlay (approx 15-20%) for crisp text readability while preserving vibrant festive colors */}
+        <div className="absolute inset-0 bg-[#0A1128]/20 pointer-events-none -z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0A1128]/35 via-[#0A1128]/15 to-transparent pointer-events-none -z-0" />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A1128]/95 via-[#102A56]/75 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1128] via-transparent to-[#0A1128]/80 pointer-events-none" />
-        <div className="absolute -top-32 right-1/4 w-[500px] h-[300px] bg-[#F5BD4F]/10 blur-3xl rounded-full pointer-events-none" />
+        {/* Ambient subtle golden sparkles */}
+        <DiwaliGoldenAmbience density="low" />
 
         {/* Hero Centerpiece Content */}
         <div className="relative z-20 my-auto max-w-4xl space-y-6">
