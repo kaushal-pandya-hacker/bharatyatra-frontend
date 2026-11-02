@@ -1,149 +1,267 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Compass,
   Sparkles,
   ArrowRight,
-  ArrowLeft,
-  Users,
   Car,
   Plane,
   Train,
   Bus,
   Bike,
-  Route,
-  Hotel,
-  ShieldCheck,
   CheckCircle2,
-  DollarSign,
-  Heart,
   Calendar,
-  Check,
   MapPin,
-  Camera,
-  Coffee,
-  Mountain,
-  Sun,
-  ShieldAlert,
-  ChevronRight,
-  Edit2,
-  Bookmark,
-  Layers,
-  HelpCircle,
+  Search,
+  AlertTriangle,
+  Utensils,
+  Clock,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useDestinationSelection } from '@/lib/tourism/destination-selection-context';
 import {
   TravelProfile,
   fetchUserTravelProfile,
   saveUserTravelProfile,
   skipUserOnboarding,
-  DEFAULT_TRAVEL_PROFILE,
 } from '@/lib/profile/travel-profile';
+import {
+  calculateTripDurationRecommendation,
+  customizeTripDuration,
+  TripDurationRecommendationOutput,
+  CustomizeDurationOutput,
+} from '@/lib/ai-planner/trip-duration-intelligence-engine';
+import { searchCities, CityItem } from '@/lib/data/indian-cities';
+import { generateItineraryBlueprint, PlanningResult } from '@/lib/trips/itinerary-generator';
+import { saveTripToApi, saveTrip, TripItem } from '@/lib/trips/trip-storage';
+import { playNotificationSound, initAudioUnlocker } from '@/lib/utils/sound';
+import { AshokaChakraIcon } from '@/components/qr/AshokaChakraIcon';
+
+// Popular Indian Destination Presets for Quick Pick
+const QUICK_DESTINATIONS = [
+  { name: 'Leh & Ladakh', state: 'Ladakh', region: 'Himalayas', icon: '🏔️', type: 'Adventure & Altitude' },
+  { name: 'Jaipur & Udaipur', state: 'Rajasthan', region: 'North', icon: '🏰', type: 'Royal Heritage' },
+  { name: 'Munnar & Alleppey', state: 'Kerala', region: 'South', icon: '🌴', type: 'Backwaters & Hills' },
+  { name: 'Varanasi Ghats', state: 'Uttar Pradesh', region: 'North', icon: '🪔', type: 'Spiritual Sacred' },
+  { name: 'Baratang & Port Blair', state: 'Andaman & Nicobar Islands', region: 'Islands', icon: '🏝️', type: 'Coastal & Caves' },
+  { name: 'White Rann of Kutch', state: 'Gujarat', region: 'West', icon: '🏜️', type: 'Desert & Culture' },
+  { name: 'Goa Coastal Trail', state: 'Goa', region: 'West', icon: '🏖️', type: 'Beaches & Leisure' },
+  { name: 'Statue of Unity & Narmada', state: 'Gujarat', region: 'West', icon: '🌿', type: 'Landmark & Eco' },
+];
 
 function OnboardingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isEditMode = searchParams.get('edit') === 'true';
+  const isEditMode = searchParams ? searchParams.get('edit') === 'true' : false;
+  const flowParam = searchParams ? searchParams.get('flow') : null; // 'plan' if triggered from selection bar
   const { user } = useAuth();
+  const { selectedDestinations, clearSelection } = useDestinationSelection();
 
-  // Wizard Step (1 to 9)
-  const [currentStep, setCurrentStep] = useState<number>(isEditMode ? 8 : 1);
+  // Wizard Step: 0 = Welcome, 1..7 = Core Questions, 8 = AI Duration & Summary, 9 = Final Itinerary Ready
+  const [currentStep, setCurrentStep] = useState<number>(isEditMode ? 8 : (flowParam === 'plan' ? 1 : 0));
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [notification, setNotification] = useState<string | null>(null);
 
-  // --- Step 2: Traveller Info State ---
+  // --- STEP 1: TRAVELLER INFORMATION ---
   const [groupType, setGroupType] = useState<string>('Family');
-  const [totalPax, setTotalPax] = useState<number>(2);
   const [adults, setAdults] = useState<number>(2);
   const [children, setChildren] = useState<number>(0);
-  const [infants, setInfants] = useState<number>(0);
-  const [seniors, setSeniors] = useState<number>(0);
-  const [accessibilityNeeds, setAccessibilityNeeds] = useState<string[]>([]);
+  const [childAgeGroups, setChildAgeGroups] = useState<string[]>([]);
+  const [hasSeniors, setHasSeniors] = useState<boolean>(false);
 
-  // --- Step 3: Travel Mode State ---
-  const [travelModePreference, setTravelModePreference] = useState<'road_trip' | 'book_transport' | 'mixed' | 'not_sure'>('road_trip');
-  const [roadVehicleType, setRoadVehicleType] = useState<string>('Car');
-  const [isVehicleOwned, setIsVehicleOwned] = useState<boolean>(true);
-  const [vehicleCount, setVehicleCount] = useState<number>(1);
-  const [isLongDistanceReady, setIsLongDistanceReady] = useState<boolean>(true);
-  const [drivingPace, setDrivingPace] = useState<string>('relaxed');
-  const [bookedTransportModes, setBookedTransportModes] = useState<string[]>(['flight', 'train']);
-  const [mixedPreferences, setMixedPreferences] = useState<string[]>(['flight_plus_cab', 'train_plus_road']);
+  // --- STEP 2: TRAVEL DESTINATION ---
+  const [originCity, setOriginCity] = useState<string>('Ahmedabad, Gujarat');
+  const [originSearch, setOriginSearch] = useState<string>('');
+  const [showOriginDropdown, setShowOriginDropdown] = useState<boolean>(false);
+  const [destinations, setDestinations] = useState<string[]>([]);
+  const [destInput, setDestInput] = useState<string>('');
+  const [showDestDropdown, setShowDestDropdown] = useState<boolean>(false);
+  const [isRoundTrip, setIsRoundTrip] = useState<boolean>(true);
+  const [isMultiDestination, setIsMultiDestination] = useState<boolean>(false);
 
-  // --- Step 4: Bookings Needed State ---
-  const [bookingPreferences, setBookingPreferences] = useState<string[]>([
-    'hotels',
-    'local_activities',
-  ]);
-  const [arrangeMyself, setArrangeMyself] = useState<boolean>(false);
+  // --- STEP 3: TRAVEL DATES ---
+  const [dateMode, setDateMode] = useState<'flexible' | 'fixed'>('flexible');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [preferredSeason, setPreferredSeason] = useState<string>('Winter & Festive Peak (Oct–Feb)');
 
-  // --- Step 5: Accommodation State ---
-  const [accommodationTypes, setAccommodationTypes] = useState<string[]>([
-    'standard',
-    'resorts',
-  ]);
-  const [roomCount, setRoomCount] = useState<number>(1);
-  const [roomArrangement, setRoomArrangement] = useState<string>('King Bed');
-  const [roomAccessibility, setRoomAccessibility] = useState<string>('Standard Room');
+  // --- STEP 4: TRANSPORTATION ---
+  const [preferredTransport, setPreferredTransport] = useState<string>('road_trip'); // road_trip, flight, train, bus, bike, ai_decide
 
-  // --- Step 6: Budget State ---
+  // --- STEP 5: BUDGET ---
+  const [budgetTier, setBudgetTier] = useState<'budget' | 'balanced' | 'luxury' | 'custom'>('balanced');
   const [budgetScope, setBudgetScope] = useState<'per_person' | 'total_group'>('total_group');
-  const [budgetRange, setBudgetRange] = useState<string>('25k_50k');
-  const [customBudgetAmount, setCustomBudgetAmount] = useState<number>(35000);
+  const [customBudgetAmount, setCustomBudgetAmount] = useState<number>(45000);
 
-  // --- Step 7: Style & Pace State ---
+  // --- STEP 6: TRAVEL PACE ---
+  const [travelPace, setTravelPace] = useState<'relaxed' | 'balanced' | 'packed'>('balanced');
+
+  // --- STEP 7: TRAVEL PREFERENCES ---
+  const [accommodationTypes, setAccommodationTypes] = useState<string[]>(['Boutique Hotels', 'Heritage Havelis']);
+  const [foodPreference, setFoodPreference] = useState<string>('Pure Vegetarian');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([
-    'Historical Places',
+    'History & Heritage',
     'Nature & Scenic',
-    'Food & Local Culture',
+    'Culture & Festivals',
   ]);
-  const [travelPace, setTravelPace] = useState<'relaxed' | 'balanced' | 'active'>('balanced');
-  const [explorationStyle, setExplorationStyle] = useState<'fewer_deep' | 'balanced' | 'more_destinations'>('balanced');
+  const [specialRequirements, setSpecialRequirements] = useState<string>('');
 
-  // Load existing profile if available on mount
+  // --- STEP 8: INTELLIGENT AI DURATION RECOMMENDATION STATE ---
+  const [durationRecommendation, setDurationRecommendation] = useState<TripDurationRecommendationOutput | null>(null);
+  const [chosenDurationDays, setChosenDurationDays] = useState<number>(5);
+  const [durationTierSelection, setDurationTierSelection] = useState<'recommended' | 'minimum' | 'relaxed' | 'custom'>('recommended');
+  const [, setCustomizationResult] = useState<CustomizeDurationOutput | null>(null);
+
+  // --- STEP 9: GENERATED TRIP RESULT ---
+  const [generatedTrip, setGeneratedTrip] = useState<TripItem | null>(null);
+  const [generatedBlueprint, setGeneratedBlueprint] = useState<PlanningResult | null>(null);
+
+  // Audio unlocker
   useEffect(() => {
-    async function loadInitialProfile() {
-      try {
-        const prof = await fetchUserTravelProfile(user?.id);
-        if (prof) {
-          if (prof.groupType) setGroupType(prof.groupType);
-          if (prof.typicalTravelers) setTotalPax(prof.typicalTravelers);
-          if (prof.travelerComposition) {
-            setAdults(prof.travelerComposition.adults || 2);
-            setChildren(prof.travelerComposition.children || 0);
-            setInfants(prof.travelerComposition.infants || 0);
-            setSeniors(prof.travelerComposition.seniors || 0);
-          }
-          if (prof.travelModePreference) setTravelModePreference(prof.travelModePreference);
-          if (prof.bookingPreferences && prof.bookingPreferences.length > 0) {
-            setBookingPreferences(prof.bookingPreferences);
-            setArrangeMyself(prof.bookingPreferences.includes('arrange_myself'));
-          }
-          if (prof.accommodationTypes && prof.accommodationTypes.length > 0) {
-            setAccommodationTypes(prof.accommodationTypes);
-          }
-          if (prof.budgetScope) setBudgetScope(prof.budgetScope);
-          if (prof.budgetRange) setBudgetRange(prof.budgetRange);
-          if (prof.customBudgetAmount) setCustomBudgetAmount(prof.customBudgetAmount);
-          if (prof.interests && prof.interests.length > 0) setSelectedInterests(prof.interests);
-          if (prof.pace) setTravelPace(prof.pace as any);
-          if (prof.explorationStyle) setExplorationStyle(prof.explorationStyle);
-          if (prof.roomRequirements?.roomCount) setRoomCount(prof.roomRequirements.roomCount);
-        }
-      } catch (e) {}
+    initAudioUnlocker();
+  }, []);
+
+  // Hydrate destinations from context if available
+  useEffect(() => {
+    if (selectedDestinations && selectedDestinations.length > 0) {
+      const names = selectedDestinations.map((d) => d.name);
+      setDestinations((prev) => Array.from(new Set([...prev, ...names])));
+      if (selectedDestinations.length > 1) {
+        setIsMultiDestination(true);
+      }
     }
-    loadInitialProfile();
+  }, [selectedDestinations]);
+
+  // Load saved draft or profile on mount
+  useEffect(() => {
+    async function initData() {
+      try {
+        if (typeof window !== 'undefined') {
+          const savedDraft = localStorage.getItem('by_onboarding_draft');
+          if (savedDraft) {
+            const draft = JSON.parse(savedDraft);
+            if (draft.groupType) setGroupType(draft.groupType);
+            if (draft.adults) setAdults(draft.adults);
+            if (draft.children) setChildren(draft.children);
+            if (draft.childAgeGroups) setChildAgeGroups(draft.childAgeGroups);
+            if (draft.originCity) setOriginCity(draft.originCity);
+            if (draft.destinations && draft.destinations.length > 0) setDestinations(draft.destinations);
+            if (draft.dateMode) setDateMode(draft.dateMode);
+            if (draft.preferredTransport) setPreferredTransport(draft.preferredTransport);
+            if (draft.budgetTier) setBudgetTier(draft.budgetTier);
+            if (draft.budgetScope) setBudgetScope(draft.budgetScope);
+            if (draft.travelPace) setTravelPace(draft.travelPace);
+            if (draft.foodPreference) setFoodPreference(draft.foodPreference);
+            if (draft.selectedInterests) setSelectedInterests(draft.selectedInterests);
+            if (draft.accommodationTypes) setAccommodationTypes(draft.accommodationTypes);
+          }
+        }
+
+        if (user?.id) {
+          const prof = await fetchUserTravelProfile(user.id);
+          if (prof) {
+            if (prof.groupType) setGroupType(prof.groupType);
+            if (prof.travelerComposition?.adults) setAdults(prof.travelerComposition.adults);
+            if (prof.travelerComposition?.children) setChildren(prof.travelerComposition.children);
+            if (prof.pace) setTravelPace(prof.pace as any);
+            if (prof.interests && prof.interests.length > 0) setSelectedInterests(prof.interests);
+            if (prof.accommodationTypes && prof.accommodationTypes.length > 0) {
+              setAccommodationTypes(prof.accommodationTypes);
+            }
+          }
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    }
+    initData();
   }, [user]);
 
-  // Keep totalPax in sync with adults + children + infants + seniors
-  const compositionTotal = adults + children + infants + seniors;
-  const isCompositionValid = compositionTotal === totalPax;
+  // Autosave draft into localStorage on every relevant change
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const draftState = {
+          groupType,
+          adults,
+          children,
+          childAgeGroups,
+          originCity,
+          destinations,
+          dateMode,
+          startDate,
+          endDate,
+          preferredSeason,
+          preferredTransport,
+          budgetTier,
+          budgetScope,
+          customBudgetAmount,
+          travelPace,
+          accommodationTypes,
+          foodPreference,
+          selectedInterests,
+          specialRequirements,
+          currentStep,
+        };
+        localStorage.setItem('by_onboarding_draft', JSON.stringify(draftState));
+      }
+    } catch {}
+  }, [
+    groupType,
+    adults,
+    children,
+    childAgeGroups,
+    originCity,
+    destinations,
+    dateMode,
+    startDate,
+    endDate,
+    preferredSeason,
+    preferredTransport,
+    budgetTier,
+    budgetScope,
+    customBudgetAmount,
+    travelPace,
+    accommodationTypes,
+    foodPreference,
+    selectedInterests,
+    specialRequirements,
+    currentStep,
+  ]);
 
-  // Toggle helper for multi-select arrays
-  const toggleItem = (list: string[], setList: (l: string[]) => void, item: string) => {
+  // Destination search matches
+  const destinationSuggestions: CityItem[] = useMemo(() => {
+    if (!destInput.trim()) return [];
+    return searchCities(destInput).slice(0, 6);
+  }, [destInput]);
+
+  const originSuggestions: CityItem[] = useMemo(() => {
+    if (!originSearch.trim()) return [];
+    return searchCities(originSearch).slice(0, 6);
+  }, [originSearch]);
+
+  const handleAddDestination = (name: string) => {
+    const clean = name.trim();
+    if (clean && !destinations.includes(clean)) {
+      const updated = [...destinations, clean];
+      setDestinations(updated);
+      if (updated.length > 1) setIsMultiDestination(true);
+    }
+    setDestInput('');
+    setShowDestDropdown(false);
+  };
+
+  const handleRemoveDest = (index: number) => {
+    const updated = destinations.filter((_, i) => i !== index);
+    setDestinations(updated);
+    if (updated.length <= 1) setIsMultiDestination(false);
+  };
+
+  const toggleArrayItem = (list: string[], setList: (v: string[]) => void, item: string) => {
     if (list.includes(item)) {
       setList(list.filter((x) => x !== item));
     } else {
@@ -151,1430 +269,1579 @@ function OnboardingContent() {
     }
   };
 
-  // Handle Skip
+  // Trigger Intelligent AI Duration Calculation when entering Step 8
+  const runDurationRecommendation = async () => {
+    setIsCalculating(true);
+    try {
+      const targetDests = destinations.length > 0 ? destinations : ['Leh & Ladakh', 'Jaipur & Udaipur'];
+      const paceMapped = travelPace === 'packed' ? 'active' : travelPace;
+      const modeMapped = preferredTransport === 'ai_decide' ? 'flight' : preferredTransport === 'road_trip' ? 'car' : preferredTransport;
+
+      const rec = calculateTripDurationRecommendation({
+        origin: originCity,
+        destinations: targetDests,
+        travelMode: modeMapped as any,
+        travelPace: paceMapped as any,
+        travellers: adults + children,
+        hasSeniors,
+        hasChildren: children > 0,
+        preferences: selectedInterests,
+      });
+
+      setDurationRecommendation(rec);
+      setChosenDurationDays(rec.recommendedDuration.days);
+      setDurationTierSelection('recommended');
+    } catch (e) {
+      console.error('[Onboarding] Error calculating duration:', e);
+    } finally {
+      setIsCalculating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (currentStep === 8) {
+      runDurationRecommendation();
+    }
+  }, [currentStep]);
+
+  const handleSelectTier = (tier: 'recommended' | 'minimum' | 'relaxed') => {
+    if (!durationRecommendation) return;
+    setDurationTierSelection(tier);
+    if (tier === 'recommended') setChosenDurationDays(durationRecommendation.recommendedDuration.days);
+    if (tier === 'minimum') setChosenDurationDays(durationRecommendation.minimumDuration.days);
+    if (tier === 'relaxed') setChosenDurationDays(durationRecommendation.relaxedDuration.days);
+  };
+
+  const handleAdjustDays = (newDays: number) => {
+    if (!durationRecommendation) return;
+    const clamped = Math.max(2, Math.min(28, newDays));
+    setChosenDurationDays(clamped);
+    setDurationTierSelection('custom');
+
+    const customized = customizeTripDuration({
+      origin: originCity,
+      destinations: destinations.length > 0 ? destinations : ['Rajasthan'],
+      travelMode: preferredTransport === 'road_trip' ? 'car' : 'flight',
+      travelPace: travelPace === 'packed' ? 'active' : travelPace,
+      customDays: clamped,
+      travellers: adults + children,
+    });
+    setCustomizationResult(customized);
+  };
+
+  const handleGenerateAIItinerary = async () => {
+    setIsSaving(true);
+    playNotificationSound('notification');
+
+    try {
+      const totalTravellers = adults + children;
+      const targetPlaces = destinations.length > 0 ? destinations : ['Ahmedabad Heritage', 'White Rann of Kutch'];
+
+      // 1. Generate Itinerary Blueprint
+      const blueprint = generateItineraryBlueprint({
+        selectedPlaceIds: [],
+        durationDays: chosenDurationDays,
+        originCity: originCity.split(',')[0].trim(),
+        paxCount: totalTravellers,
+        selectedTier: budgetTier === 'custom' ? 'balanced' : budgetTier,
+        customPlaces: targetPlaces.map((d, idx) => ({
+          id: 9100 + idx,
+          name: d,
+          district: d,
+          category: 'Modern & Cultural' as const,
+          description: `Signature destination experience across ${d}`,
+          image: '/hero-bg.jpg',
+        })),
+        tripContext: {
+          traveler: {
+            name: user?.fullName || 'BharatYatra Traveler',
+            typicalTravelers: totalTravellers,
+          },
+          origin: {
+            city: originCity.split(',')[0].trim(),
+            state: originCity.split(',')[1]?.trim() || 'India',
+            country: 'India',
+          },
+          trip: {
+            origin: {
+              city: originCity.split(',')[0].trim(),
+              state: originCity.split(',')[1]?.trim() || 'India',
+              country: 'India',
+            },
+            destination: {
+              city: targetPlaces[0],
+            },
+            travelers: totalTravellers,
+            durationDays: chosenDurationDays,
+            startDate: startDate || new Date().toISOString().split('T')[0],
+          },
+          preferences: {
+            budget: budgetTier,
+            pace: travelPace,
+            transport: [preferredTransport],
+            interests: selectedInterests,
+          },
+        },
+      });
+
+      setGeneratedBlueprint(blueprint);
+
+      // 2. Save Trip to Storage & Backend
+      const newTripItem: TripItem = {
+        id: `trip_${Date.now()}`,
+        tripId: `trip_${Date.now()}`,
+        title: blueprint.circuitTitle,
+        destination: targetPlaces.join(', '),
+        destinationCity: targetPlaces[0],
+        originCity: originCity.split(',')[0].trim(),
+        startDate: startDate || new Date().toISOString().split('T')[0],
+        durationDays: chosenDurationDays,
+        travelers: totalTravellers,
+        status: 'UPCOMING',
+        selectedTier: budgetTier === 'custom' ? 'balanced' : budgetTier,
+        budgetInr: durationRecommendation?.budgetEstimate?.totalGroupCost || 35000,
+      };
+
+      await saveTripToApi(newTripItem);
+      saveTrip(newTripItem);
+      setGeneratedTrip(newTripItem);
+
+      // 3. Save Permanent User Preferences
+      const permanentProfile: Partial<TravelProfile> = {
+        fullName: user?.fullName || 'BharatYatra Traveler',
+        typicalTravelers: totalTravellers,
+        completed: true,
+        onboardingStatus: 'COMPLETED',
+        groupType,
+        travelerComposition: {
+          adults,
+          children,
+          infants: childAgeGroups.includes('Infants (0–2)') ? 1 : 0,
+          seniors: hasSeniors ? 1 : 0,
+        },
+        travelModePreference: preferredTransport === 'road_trip' ? 'road_trip' : 'book_transport',
+        accommodationTypes,
+        budgetScope,
+        budgetRange: budgetTier,
+        customBudgetAmount: customBudgetAmount,
+        interests: selectedInterests,
+        pace: travelPace,
+        origin: {
+          city: originCity.split(',')[0].trim(),
+          state: originCity.split(',')[1]?.trim() || 'India',
+          country: 'India',
+        },
+      };
+
+      await saveUserTravelProfile(permanentProfile, user?.id);
+
+      // 4. Clear temporary selection context
+      clearSelection();
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('by_onboarding_draft');
+      }
+
+      playNotificationSound('notification');
+      setCurrentStep(9);
+    } catch (err: any) {
+      console.error('[Onboarding] Error generating trip:', err);
+      setNotification('A temporary network issue occurred while saving your trip. Saved locally.');
+      setCurrentStep(9);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSkip = async () => {
     await skipUserOnboarding(user?.id);
     router.push('/');
   };
 
-  // Handle Save Profile
-  const handleSaveProfile = async () => {
-    setIsSaving(true);
-    setNotification(null);
-
-    const profileData: Partial<TravelProfile> = {
-      fullName: user?.fullName || 'BharatYatra Traveler',
-      typicalTravelers: totalPax,
-      completed: true,
-      onboardingStatus: 'COMPLETED',
-      groupType,
-      travelerComposition: {
-        adults,
-        children,
-        infants,
-        seniors,
-      },
-      travelModePreference,
-      ownVehicleDetails: travelModePreference === 'road_trip' ? {
-        vehicleType: roadVehicleType,
-        isOwned: isVehicleOwned,
-        vehicleCount,
-        longDistanceReady: isLongDistanceReady,
-        drivingPace,
-      } : undefined,
-      bookingPreferences: arrangeMyself ? ['arrange_myself'] : bookingPreferences,
-      accommodationTypes,
-      roomRequirements: {
-        roomCount,
-        arrangement: roomArrangement,
-        accessibility: roomAccessibility,
-      },
-      budgetScope,
-      budgetRange,
-      customBudgetAmount,
-      interests: selectedInterests,
-      pace: travelPace,
-      explorationStyle,
-      accessibilityRequirements: accessibilityNeeds,
-    };
-
-    try {
-      await saveUserTravelProfile(profileData, user?.id);
-      setIsSaving(false);
-      setCurrentStep(9); // Show Step 9 Dashboard
-    } catch (e) {
-      setIsSaving(false);
-      setNotification('Unable to save travel profile to server. Local copy saved.');
-      setCurrentStep(9);
-    }
-  };
+  const progressPercent = currentStep === 0 ? 0 : Math.min(100, Math.round((currentStep / 8) * 100));
 
   return (
-    <div className="min-h-screen bg-[#0A1128] text-white selection:bg-amber-400 selection:text-slate-950 font-sans flex flex-col justify-between">
-      {/* Top Navigation Bar */}
-      <header className="w-full border-b border-[#2A3656] bg-[#141A32]/80 backdrop-blur-md px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-40">
-        <Link href="/" className="flex items-center gap-3">
-          <img src="/logo.png" alt="BharatYatra Logo" className="h-10 w-auto object-contain" />
-          <span className="text-xs uppercase tracking-widest text-amber-400 font-extrabold hidden sm:inline">
-            Traveler Intelligence
-          </span>
-        </Link>
-
-        {/* Step Progress Pills (Steps 1–8) */}
-        {currentStep <= 8 && (
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => {
-                  if (s < currentStep || isEditMode) setCurrentStep(s);
-                }}
-                className={`h-2 rounded-full transition-all ${
-                  s === currentStep
-                    ? 'w-6 bg-amber-400'
-                    : s < currentStep
-                    ? 'w-2 bg-emerald-400 cursor-pointer'
-                    : 'w-2 bg-slate-800'
-                }`}
-                title={`Step ${s}`}
-              />
-            ))}
-            <span className="text-xs text-slate-400 ml-2 font-mono">
-              Step {currentStep} of 8
+    <div className="min-h-screen bg-slate-50 text-[#102A56] font-sans flex flex-col justify-between selection:bg-amber-100 selection:text-amber-900">
+      
+      {/* Top Header & Progress */}
+      <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40 shadow-xs">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <AshokaChakraIcon size={20} color="#000080" />
+            <span className="text-base font-black tracking-tight text-[#102A56]">
+              Bharat<span className="text-[#F28C28]">Yatra</span>
             </span>
-          </div>
-        )}
+            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-blue-50 text-[#1769AA] text-[10px] font-black uppercase tracking-wider border border-blue-200">
+              Smart Onboarding
+            </span>
+          </Link>
 
-        {/* Skip for now option */}
-        {currentStep <= 8 && (
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-500 transition"
-          >
-            Skip for Now
-          </button>
-        )}
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-4xl w-full mx-auto p-4 sm:p-8 flex-1 flex flex-col justify-center">
-        {/* =================================================================== */}
-        {/* STEP 1: WELCOME SCREEN                                              */}
-        {/* =================================================================== */}
-        {currentStep === 1 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-12 shadow-2xl relative overflow-hidden animate-in fade-in duration-300">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
-
-            <div className="relative z-10 space-y-6 text-center max-w-2xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" /> Welcome to BharatYatra
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                Let's understand how you love to travel.
-              </h1>
-              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                We'll personalize your journeys around you. Answer a few brief questions so your AI itineraries,
-                transportation options, and stay recommendations are perfectly tailored every time.
-              </p>
-
-              {/* 3 Pillars */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-left">
-                <div className="bg-[#0A1128]/70 border border-slate-800 p-4 rounded-2xl space-y-1.5">
-                  <div className="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center">
-                    <Compass className="w-4 h-4" />
-                  </div>
-                  <h4 className="text-xs font-bold text-white">Adaptive AI Pacing</h4>
-                  <p className="text-[11px] text-slate-400">
-                    No rushing. Duration and daily schedules dynamically balance transit with rest.
-                  </p>
-                </div>
-
-                <div className="bg-[#0A1128]/70 border border-slate-800 p-4 rounded-2xl space-y-1.5">
-                  <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center">
-                    <Car className="w-4 h-4" />
-                  </div>
-                  <h4 className="text-xs font-bold text-white">Your Vehicle or Bookings</h4>
-                  <p className="text-[11px] text-slate-400">
-                    Tell us if you love road trips or want flights and train tickets arranged for you.
-                  </p>
-                </div>
-
-                <div className="bg-[#0A1128]/70 border border-slate-800 p-4 rounded-2xl space-y-1.5">
-                  <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
-                    <DollarSign className="w-4 h-4" />
-                  </div>
-                  <h4 className="text-xs font-bold text-white">Zero Invented Costs</h4>
-                  <p className="text-[11px] text-slate-400">
-                    Calculated using verified rates, room occupancy math, and actual highway distances.
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(2)}
-                  className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-2xl transition shadow-xl shadow-amber-400/20 flex items-center justify-center gap-2 text-sm uppercase tracking-wider"
-                >
-                  <span>Start Planning</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSkip}
-                  className="w-full sm:w-auto px-6 py-4 text-xs font-semibold text-slate-400 hover:text-white transition"
-                >
-                  Skip for Now
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* =================================================================== */}
-        {/* STEP 2: TRAVELLER INFORMATION                                      */}
-        {/* =================================================================== */}
-        {currentStep === 2 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 2 • Party Details</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">Who is travelling with you?</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Tell us your typical travel group size and composition so we allocate the right number of rooms and seats.
-              </p>
-            </div>
-
-            {/* Travel Group Type */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Travel Group Type</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {['Solo', 'Couple', 'Family', 'Friends', 'Group tour', 'Corporate', 'Other'].map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => {
-                      setGroupType(t);
-                      if (t === 'Solo') {
-                        setTotalPax(1);
-                        setAdults(1);
-                        setChildren(0);
-                        setInfants(0);
-                        setSeniors(0);
-                      } else if (t === 'Couple') {
-                        setTotalPax(2);
-                        setAdults(2);
-                        setChildren(0);
-                        setInfants(0);
-                        setSeniors(0);
-                      }
-                    }}
-                    className={`py-3 px-3 rounded-xl text-xs font-bold border transition ${
-                      groupType === t
-                        ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md'
-                        : 'bg-[#0A1128] text-slate-300 border-slate-700 hover:border-slate-500'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Total Travellers Selector */}
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Total Travellers</label>
-                <span className="text-sm font-black text-amber-300">{totalPax} {totalPax === 1 ? 'person' : 'people'}</span>
-              </div>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                {[1, 2, 4, 6, 10, 15].map((count) => (
-                  <button
-                    key={count}
-                    type="button"
-                    onClick={() => {
-                      setTotalPax(count);
-                      setAdults(count);
-                      setChildren(0);
-                      setInfants(0);
-                      setSeniors(0);
-                    }}
-                    className={`py-2.5 rounded-xl text-xs font-bold border transition ${
-                      totalPax === count
-                        ? 'bg-amber-400 text-slate-950 border-amber-400'
-                        : 'bg-[#0A1128] text-slate-300 border-slate-700 hover:border-slate-500'
-                    }`}
-                  >
-                    {count === 1 ? '1 Solo' : count === 15 ? '12+ Pax' : `${count} Pax`}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Traveller Composition Breakdown */}
-            <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Traveller Composition</span>
-                <span className={`text-[11px] font-mono ${isCompositionValid ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  Sum: {compositionTotal} / {totalPax} Pax {isCompositionValid ? '✓' : '(Please balance)'}
+          {/* Progress Indicator */}
+          {currentStep >= 1 && currentStep <= 8 && (
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex flex-col text-right">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Step {currentStep} of 8
+                </span>
+                <span className="text-xs font-black text-[#102A56]">
+                  {currentStep === 1 && 'Traveller Info'}
+                  {currentStep === 2 && 'Destinations'}
+                  {currentStep === 3 && 'Travel Dates'}
+                  {currentStep === 4 && 'Transportation'}
+                  {currentStep === 5 && 'Budget Tier'}
+                  {currentStep === 6 && 'Travel Pace'}
+                  {currentStep === 7 && 'Preferences'}
+                  {currentStep === 8 && 'AI Duration & Summary'}
                 </span>
               </div>
+              <div className="w-24 sm:w-36 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
+                <div
+                  className="h-full bg-gradient-to-r from-[#1769AA] via-[#F28C28] to-[#F5BD4F] transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+          )}
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {/* Adults */}
-                <div className="bg-[#141A32] p-3 rounded-xl border border-slate-700">
-                  <span className="text-[11px] text-slate-400 block font-semibold">Adults (12+)</span>
-                  <div className="flex items-center justify-between mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setAdults(Math.max(1, adults - 1))}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-black text-white">{adults}</span>
-                    <button
-                      type="button"
-                      onClick={() => setAdults(adults + 1)}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      +
-                    </button>
-                  </div>
+          {/* Skip for Now */}
+          {currentStep <= 8 && (
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="text-xs font-bold text-slate-500 hover:text-[#102A56] px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 transition cursor-pointer"
+            >
+              Skip for Now
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Main Form Body */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        
+        {notification && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center justify-between">
+            <span>{notification}</span>
+            <button onClick={() => setNotification(null)} className="text-amber-700 font-black cursor-pointer">✕</button>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* STEP 0: WELCOME SCREEN                                              */}
+        {/* =================================================================== */}
+        {currentStep === 0 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-12 shadow-sm text-center space-y-6 relative overflow-hidden animate-in fade-in duration-200">
+            <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200/60 text-amber-600 mx-auto flex items-center justify-center shadow-xs">
+              <Sparkles className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-black tracking-widest text-[#F28C28] uppercase font-mono">
+                ✨ Official Traveler Setup
+              </span>
+              <h1 className="text-3xl sm:text-5xl font-black text-[#102A56] tracking-tight">
+                Welcome to BharatYatra!
+              </h1>
+              <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+                Let&apos;s get to know your travel preferences. We&apos;ll help you plan a journey that suits you.
+              </p>
+            </div>
+
+            {/* 3 Pillars */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-left">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                  <Compass className="w-4 h-4" />
                 </div>
+                <h4 className="text-xs font-bold text-[#102A56]">Intelligent Auto-Duration</h4>
+                <p className="text-[11px] text-slate-500 leading-normal">
+                  No arbitrary day counts. AI evaluates highway distances, terrain, and dwell times.
+                </p>
+              </div>
 
-                {/* Children */}
-                <div className="bg-[#141A32] p-3 rounded-xl border border-slate-700">
-                  <span className="text-[11px] text-slate-400 block font-semibold">Children (2–11)</span>
-                  <div className="flex items-center justify-between mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setChildren(Math.max(0, children - 1))}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-black text-white">{children}</span>
-                    <button
-                      type="button"
-                      onClick={() => setChildren(children + 1)}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      +
-                    </button>
-                  </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                  <Car className="w-4 h-4" />
                 </div>
+                <h4 className="text-xs font-bold text-[#102A56]">Your Vehicle or Bookings</h4>
+                <p className="text-[11px] text-slate-500 leading-normal">
+                  Choose self-drive road trips, high-speed rail, or full flight &amp; hotel logistics.
+                </p>
+              </div>
 
-                {/* Infants */}
-                <div className="bg-[#141A32] p-3 rounded-xl border border-slate-700">
-                  <span className="text-[11px] text-slate-400 block font-semibold">Infants (&lt; 2)</span>
-                  <div className="flex items-center justify-between mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setInfants(Math.max(0, infants - 1))}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-black text-white">{infants}</span>
-                    <button
-                      type="button"
-                      onClick={() => setInfants(infants + 1)}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      +
-                    </button>
-                  </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <Utensils className="w-4 h-4" />
                 </div>
+                <h4 className="text-xs font-bold text-[#102A56]">Dietary &amp; Cultural Care</h4>
+                <p className="text-[11px] text-slate-500 leading-normal">
+                  Pure Veg, Jain, Vegan, and accessibility accommodations respected across all stops.
+                </p>
+              </div>
+            </div>
 
-                {/* Seniors */}
-                <div className="bg-[#141A32] p-3 rounded-xl border border-slate-700">
-                  <span className="text-[11px] text-slate-400 block font-semibold">Seniors (60+)</span>
-                  <div className="flex items-center justify-between mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setSeniors(Math.max(0, seniors - 1))}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-black text-white">{seniors}</span>
-                    <button
-                      type="button"
-                      onClick={() => setSeniors(seniors + 1)}
-                      className="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      +
-                    </button>
-                  </div>
+            {/* Action Buttons */}
+            <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#102A56] hover:bg-blue-950 text-white font-black rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer"
+              >
+                <span>Start Planning</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleSkip}
+                className="w-full sm:w-auto px-6 py-3.5 text-xs font-bold text-slate-500 hover:text-[#102A56] transition cursor-pointer"
+              >
+                Skip for Now
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* STEP 1: TRAVELLER INFORMATION                                      */}
+        {/* =================================================================== */}
+        {currentStep === 1 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
+            <div>
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 1 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">Who is travelling?</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Tell us about your group composition so we can recommend the right vehicles, room arrangements, and daily pacing.
+              </p>
+            </div>
+
+            {/* Group Type Selector */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {[
+                { id: 'Solo', label: 'Solo', icon: '🎒', desc: '1 Traveler' },
+                { id: 'Couple', label: 'Couple', icon: '💑', desc: '2 Adults' },
+                { id: 'Family', label: 'Family', icon: '👨‍👩‍👧‍👦', desc: 'Parents & Kids' },
+                { id: 'Friends', label: 'Friends', icon: '🍻', desc: 'Peer Group' },
+                { id: 'Group', label: 'Group', icon: '🚌', desc: 'Large Tour' },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    setGroupType(t.id);
+                    if (t.id === 'Solo') {
+                      setAdults(1);
+                      setChildren(0);
+                    } else if (t.id === 'Couple') {
+                      setAdults(2);
+                      setChildren(0);
+                    }
+                  }}
+                  className={`p-4 rounded-2xl border text-center transition cursor-pointer ${
+                    groupType === t.id
+                      ? 'border-[#102A56] bg-blue-50/60 ring-2 ring-[#102A56]/20'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <span className="text-2xl block mb-1">{t.icon}</span>
+                  <span className="font-extrabold text-xs text-[#102A56] block">{t.label}</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">{t.desc}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Steppers: Adults and Children */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <label className="text-xs font-bold text-[#102A56] block">Adults (Age 18+)</label>
+                  <span className="text-[11px] text-slate-500">Standard room &amp; vehicle occupancy</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setAdults(Math.max(1, adults - 1))}
+                    className="w-8 h-8 rounded-xl bg-white border border-slate-300 font-bold text-[#102A56] hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                  >
+                    -
+                  </button>
+                  <span className="text-sm font-black text-[#102A56] w-6 text-center">{adults}</span>
+                  <button
+                    type="button"
+                    onClick={() => setAdults(Math.min(20, adults + 1))}
+                    className="w-8 h-8 rounded-xl bg-white border border-slate-300 font-bold text-[#102A56] hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <label className="text-xs font-bold text-[#102A56] block">Children (Under 18)</label>
+                  <span className="text-[11px] text-slate-500">Extra beds &amp; kid-friendly attractions</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = Math.max(0, children - 1);
+                      setChildren(next);
+                      if (next === 0) setChildAgeGroups([]);
+                    }}
+                    className="w-8 h-8 rounded-xl bg-white border border-slate-300 font-bold text-[#102A56] hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                  >
+                    -
+                  </button>
+                  <span className="text-sm font-black text-[#102A56] w-6 text-center">{children}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChildren(Math.min(10, children + 1));
+                      if (childAgeGroups.length === 0) setChildAgeGroups(['Kids (3–12)']);
+                    }}
+                    className="w-8 h-8 rounded-xl bg-white border border-slate-300 font-bold text-[#102A56] hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Additional Accessibility Requirements */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Accessibility & Comfort Needs</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {[
-                  { id: 'senior_friendly', label: 'Senior-Friendly Pacing & Steps' },
-                  { id: 'child_friendly', label: 'Child-Friendly Stays & Stops' },
-                  { id: 'wheelchair', label: 'Wheelchair / Elevator Access' },
-                ].map((item) => {
-                  const isChecked = accessibilityNeeds.includes(item.id);
-                  return (
+            {/* Children's Age Groups */}
+            {children > 0 && (
+              <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 space-y-2">
+                <span className="text-xs font-bold text-amber-900 block">Children&apos;s Age Groups:</span>
+                <div className="flex flex-wrap gap-2">
+                  {['Infants (0–2)', 'Kids (3–12)', 'Teens (13–17)'].map((age) => (
                     <button
-                      key={item.id}
+                      key={age}
                       type="button"
-                      onClick={() => toggleItem(accessibilityNeeds, setAccessibilityNeeds, item.id)}
-                      className={`p-3 rounded-xl text-left text-xs font-semibold border transition flex items-center gap-2 ${
-                        isChecked
-                          ? 'bg-teal-500/20 text-teal-300 border-teal-500/40'
-                          : 'bg-[#0A1128] text-slate-400 border-slate-800 hover:border-slate-700'
+                      onClick={() => toggleArrayItem(childAgeGroups, setChildAgeGroups, age)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                        childAgeGroups.includes(age)
+                          ? 'bg-[#102A56] text-white shadow-2xs'
+                          : 'bg-white border border-amber-300 text-amber-900'
                       }`}
                     >
-                      <CheckCircle2 className={`w-4 h-4 shrink-0 ${isChecked ? 'text-teal-400' : 'text-slate-600'}`} />
-                      <span>{item.label}</span>
+                      {age}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Senior Citizens & Special Needs Checkbox */}
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="seniors-check"
+                checked={hasSeniors}
+                onChange={(e) => setHasSeniors(e.target.checked)}
+                className="w-4 h-4 text-[#102A56] rounded border-slate-300 focus:ring-blue-600 cursor-pointer"
+              />
+              <label htmlFor="seniors-check" className="text-xs font-semibold text-slate-700 cursor-pointer">
+                Travelling with Senior Citizens (60+) — Apply gentle transit speeds and elevator/ground-floor preferences
+              </label>
+            </div>
+
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(0)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentStep(2)}
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>Continue</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* STEP 2: TRAVEL DESTINATION                                          */}
+        {/* =================================================================== */}
+        {currentStep === 2 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
+            <div>
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 2 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">Where would you like to travel?</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Choose single or multiple destinations across all Indian states and union territories.
+              </p>
+            </div>
+
+            {/* Starting Location (Origin) */}
+            <div className="space-y-1 relative">
+              <label className="text-xs font-bold text-slate-700 block">Where are you travelling from? (Starting City)</label>
+              <div className="relative">
+                <MapPin className="w-4 h-4 text-[#F28C28] absolute left-3.5 top-3" />
+                <input
+                  type="text"
+                  value={originSearch || originCity}
+                  onChange={(e) => {
+                    setOriginSearch(e.target.value);
+                    setShowOriginDropdown(true);
+                  }}
+                  onFocus={() => setShowOriginDropdown(true)}
+                  placeholder="e.g. Ahmedabad, Gujarat"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#102A56] focus:ring-1 focus:ring-[#102A56] text-xs font-bold text-[#102A56]"
+                />
+              </div>
+
+              {showOriginDropdown && originSuggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-30 overflow-hidden divide-y divide-slate-100 max-h-48 overflow-y-auto">
+                  {originSuggestions.map((c) => (
+                    <button
+                      key={`${c.city}-${c.state}`}
+                      type="button"
+                      onClick={() => {
+                        setOriginCity(`${c.city}, ${c.state}`);
+                        setOriginSearch('');
+                        setShowOriginDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center justify-between cursor-pointer"
+                    >
+                      <span>{c.city}, {c.state}</span>
+                      <span className="text-[10px] text-slate-400 uppercase">{c.country}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Selected Destinations Tag Deck */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-700 block">Selected Destinations ({destinations.length})</label>
+                {destinations.length > 1 && (
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    Multi-Destination Circuit
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2 min-h-[44px] p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                {destinations.length === 0 ? (
+                  <span className="text-xs text-slate-400 italic">No destination added yet. Choose suggestions below or type to search.</span>
+                ) : (
+                  destinations.map((d, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#102A56] text-white text-xs font-bold shadow-2xs"
+                    >
+                      <span>{d}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveDest(idx)}
+                        className="w-3.5 h-3.5 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-[10px] cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))
+                )}
+              </div>
+
+              {/* Add Destination Search Input */}
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <input
+                  type="text"
+                  value={destInput}
+                  onChange={(e) => {
+                    setDestInput(e.target.value);
+                    setShowDestDropdown(true);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (destInput.trim()) handleAddDestination(destInput);
+                    }
+                  }}
+                  placeholder="Type city, state, or landmark name to add..."
+                  className="w-full pl-10 pr-24 py-2.5 rounded-xl border border-slate-200 focus:border-[#102A56] text-xs font-medium"
+                />
+                <button
+                  type="button"
+                  onClick={() => destInput.trim() && handleAddDestination(destInput)}
+                  className="absolute right-1.5 top-1.5 px-3 py-1.5 bg-[#102A56] text-white rounded-lg text-xs font-bold hover:bg-blue-950 cursor-pointer"
+                >
+                  Add Place
+                </button>
+
+                {showDestDropdown && destinationSuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-30 divide-y divide-slate-100 max-h-48 overflow-y-auto">
+                    {destinationSuggestions.map((c) => (
+                      <button
+                        key={`${c.city}-${c.state}`}
+                        type="button"
+                        onClick={() => handleAddDestination(`${c.city}, ${c.state}`)}
+                        className="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center justify-between cursor-pointer"
+                      >
+                        <span>{c.city}, {c.state}</span>
+                        <span className="text-[10px] text-slate-400 uppercase">{c.country}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Destination Suggestions */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                Quick Destination Suggestions
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {QUICK_DESTINATIONS.map((preset) => {
+                  const isSelected = destinations.includes(preset.name);
+                  return (
+                    <button
+                      key={preset.name}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setDestinations(destinations.filter((x) => x !== preset.name));
+                        } else {
+                          handleAddDestination(preset.name);
+                        }
+                      }}
+                      className={`p-2.5 rounded-xl border text-left transition cursor-pointer ${
+                        isSelected
+                          ? 'border-[#102A56] bg-blue-50/70 font-bold'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-base">{preset.icon}</span>
+                        <span className="text-xs font-bold text-[#102A56] truncate">{preset.name}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-500 block truncate mt-0.5">{preset.type}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Navigation Buttons */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-800">
+            {/* Journey Type Toggle (Round Trip vs One-Way) */}
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-[#102A56] block">Return to Starting City?</span>
+                <span className="text-[10px] text-slate-500">Calculate fuel, tolls, and return leg logistics</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsRoundTrip(true)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    isRoundTrip ? 'bg-[#102A56] text-white shadow-2xs' : 'text-slate-600'
+                  }`}
+                >
+                  Round Trip
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsRoundTrip(false)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    !isRoundTrip ? 'bg-[#102A56] text-white shadow-2xs' : 'text-slate-600'
+                  }`}
+                >
+                  One Way
+                </button>
+              </div>
+            </div>
+
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                Back
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  setTotalPax(compositionTotal > 0 ? compositionTotal : totalPax);
+                  if (destinations.length === 0) {
+                    handleAddDestination('Leh & Ladakh');
+                  }
                   setCurrentStep(3);
                 }}
-                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition"
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* STEP 3: HOW DO YOU WANT TO TRAVEL?                                 */}
+        {/* STEP 3: TRAVEL DATES                                                */}
         {/* =================================================================== */}
         {currentStep === 3 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 3 • Transportation</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">How would you like to explore India?</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Whether you prefer personal road trips or scheduled flights and superfast trains, we calibrate every route.
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 3 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">When are you planning to travel?</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Tell us whether your schedule is fixed or if you&apos;d like AI to suggest optimal seasonal dates.
               </p>
             </div>
 
-            {/* The 4 Major Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Option A: Road Trip */}
-              <div
-                onClick={() => setTravelModePreference('road_trip')}
-                className={`p-5 rounded-2xl border cursor-pointer transition ${
-                  travelModePreference === 'road_trip'
-                    ? 'bg-amber-950/20 border-amber-400 ring-2 ring-amber-400/30 shadow-lg'
-                    : 'bg-[#0A1128] border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black">
-                  <Car className="w-5 h-5" />
-                </div>
-                <h3 className="text-base font-bold text-white mt-3">Option A — Road Trip</h3>
-                <p className="text-xs text-slate-300 mt-1">"I want to travel using my own vehicle."</p>
-
-                {travelModePreference === 'road_trip' && (
-                  <div className="mt-4 pt-3 border-t border-slate-800 space-y-3 animate-in fade-in">
-                    <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-bold">Vehicle Type</span>
-                      <div className="grid grid-cols-4 gap-1.5 mt-1">
-                        {['Car', 'Motorcycle', 'SUV', 'Camper'].map((vt) => (
-                          <button
-                            key={vt}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setRoadVehicleType(vt);
-                            }}
-                            className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border transition ${
-                              roadVehicleType === vt
-                                ? 'bg-amber-400 text-slate-950 border-amber-400'
-                                : 'bg-[#141A32] text-slate-300 border-slate-700'
-                            }`}
-                          >
-                            {vt}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-300">Do you own the vehicle?</span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsVehicleOwned(!isVehicleOwned);
-                        }}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${
-                          isVehicleOwned ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {isVehicleOwned ? 'Yes, Owned' : 'Rented / Borrowed'}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-300">Driving Pace</span>
-                      <div className="flex gap-1">
-                        {['relaxed', 'longer'].map((p) => (
-                          <button
-                            key={p}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDrivingPace(p);
-                            }}
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                              drivingPace === p ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-slate-400'
-                            }`}
-                          >
-                            {p}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Option B: Book Transportation */}
-              <div
-                onClick={() => setTravelModePreference('book_transport')}
-                className={`p-5 rounded-2xl border cursor-pointer transition ${
-                  travelModePreference === 'book_transport'
-                    ? 'bg-blue-950/20 border-blue-400 ring-2 ring-blue-400/30 shadow-lg'
-                    : 'bg-[#0A1128] border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black">
-                  <Plane className="w-5 h-5" />
-                </div>
-                <h3 className="text-base font-bold text-white mt-3">Option B — Book Transportation</h3>
-                <p className="text-xs text-slate-300 mt-1">"I want BharatYatra to help me find and arrange transportation."</p>
-
-                {travelModePreference === 'book_transport' && (
-                  <div className="mt-4 pt-3 border-t border-slate-800 space-y-2 animate-in fade-in">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold">Preferred Transport Modes</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[
-                        { id: 'flight', label: 'Flights' },
-                        { id: 'train', label: 'Superfast Trains' },
-                        { id: 'bus', label: 'Express Buses' },
-                        { id: 'cab', label: 'Private Intercity Cab' },
-                        { id: 'rental', label: 'Car Rental' },
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleItem(bookedTransportModes, setBookedTransportModes, item.id);
-                          }}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
-                            bookedTransportModes.includes(item.id)
-                              ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                              : 'bg-[#141A32] text-slate-400 border-slate-700'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Option C: Mixed Travel */}
-              <div
-                onClick={() => setTravelModePreference('mixed')}
-                className={`p-5 rounded-2xl border cursor-pointer transition ${
-                  travelModePreference === 'mixed'
-                    ? 'bg-purple-950/20 border-purple-400 ring-2 ring-purple-400/30 shadow-lg'
-                    : 'bg-[#0A1128] border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-purple-500 text-white flex items-center justify-center font-black">
-                  <Route className="w-5 h-5" />
-                </div>
-                <h3 className="text-base font-bold text-white mt-3">Option C — Mixed Travel</h3>
-                <p className="text-xs text-slate-300 mt-1">"I want to combine road trips with trains, flights or buses."</p>
-
-                {travelModePreference === 'mixed' && (
-                  <div className="mt-4 pt-3 border-t border-slate-800 space-y-2 animate-in fade-in">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold">Preferred Combinations</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[
-                        { id: 'flight_plus_cab', label: 'Flight + Local Cab' },
-                        { id: 'train_plus_road', label: 'Train + Road Trip' },
-                        { id: 'road_plus_ferry', label: 'Road + Island Ferry' },
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleItem(mixedPreferences, setMixedPreferences, item.id);
-                          }}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
-                            mixedPreferences.includes(item.id)
-                              ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                              : 'bg-[#141A32] text-slate-400 border-slate-700'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Option D: Not Sure */}
-              <div
-                onClick={() => setTravelModePreference('not_sure')}
-                className={`p-5 rounded-2xl border cursor-pointer transition ${
-                  travelModePreference === 'not_sure'
-                    ? 'bg-teal-950/20 border-teal-400 ring-2 ring-teal-400/30 shadow-lg'
-                    : 'bg-[#0A1128] border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-teal-500 text-slate-950 flex items-center justify-center font-black">
-                  <Compass className="w-5 h-5" />
-                </div>
-                <h3 className="text-base font-bold text-white mt-3">Option D — Not Sure</h3>
-                <p className="text-xs text-slate-300 mt-1">"Recommend the best transportation for my journey."</p>
-                <p className="text-[11px] text-teal-300/80 mt-2">
-                  AI will evaluate origin, destination, road terrain, and distance to pick the most comfortable mode.
-                </p>
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-800">
+            {/* Date Mode Toggle */}
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setCurrentStep(2)}
-                className="px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                onClick={() => setDateMode('flexible')}
+                className={`p-4 rounded-2xl border text-center transition cursor-pointer ${
+                  dateMode === 'flexible'
+                    ? 'border-[#102A56] bg-blue-50/60 ring-2 ring-[#102A56]/20'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                <Sparkles className="w-6 h-6 text-[#F28C28] mx-auto mb-1.5" />
+                <span className="font-extrabold text-xs text-[#102A56] block">Flexible Dates</span>
+                <span className="text-[10px] text-slate-500 block mt-0.5">Let AI recommend peak season</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => setCurrentStep(4)}
-                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition"
+                onClick={() => setDateMode('fixed')}
+                className={`p-4 rounded-2xl border text-center transition cursor-pointer ${
+                  dateMode === 'fixed'
+                    ? 'border-[#102A56] bg-blue-50/60 ring-2 ring-[#102A56]/20'
+                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                }`}
               >
-                <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
+                <Calendar className="w-6 h-6 text-[#1769AA] mx-auto mb-1.5" />
+                <span className="font-extrabold text-xs text-[#102A56] block">Fixed Dates</span>
+                <span className="text-[10px] text-slate-500 block mt-0.5">I have exact departure dates</span>
               </button>
             </div>
-          </div>
-        )}
 
-        {/* =================================================================== */}
-        {/* STEP 4: WHAT BOOKINGS DO YOU NEED?                                 */}
-        {/* =================================================================== */}
-        {currentStep === 4 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 4 • Service Preferences</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">What would you like BharatYatra to arrange?</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Select services you want bundled into your itinerary. (Selecting an item indicates preference only; no bookings are executed without supplier confirmation).
-              </p>
-            </div>
-
-            {/* Arrange Myself Override */}
-            <div
-              onClick={() => {
-                const next = !arrangeMyself;
-                setArrangeMyself(next);
-                if (next) setBookingPreferences(['arrange_myself']);
-                else setBookingPreferences(['hotels', 'local_activities']);
-              }}
-              className={`p-4 rounded-2xl border cursor-pointer transition flex items-center justify-between ${
-                arrangeMyself
-                  ? 'bg-amber-400 text-slate-950 border-amber-400 font-bold shadow'
-                  : 'bg-[#0A1128] text-slate-300 border-slate-700 hover:border-slate-500'
-              }`}
-            >
-              <div>
-                <span className="text-sm font-extrabold">"I'll arrange everything myself."</span>
-                <p className={`text-xs mt-0.5 ${arrangeMyself ? 'text-slate-900' : 'text-slate-400'}`}>
-                  Use BharatYatra purely for free AI route mapping, timing intelligence, and landmark blueprints.
-                </p>
+            {/* Flexible Season Cards */}
+            {dateMode === 'flexible' ? (
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 block">Preferred Season or Holiday Window:</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { id: 'Winter & Festive Peak (Oct–Feb)', label: '❄️ Winter / Festive Peak (Oct–Feb)', desc: 'Crisp pleasant weather, Rann Utsav & Beach season' },
+                    { id: 'Spring & Heritage (Feb–Apr)', label: '🌸 Spring Season (Feb–Apr)', desc: 'Mild temperatures across Rajasthan, Gujarat & MP' },
+                    { id: 'Summer Hill Escape (May–Jun)', label: '☀️ Summer Hill Escape (May–Jun)', desc: 'Cool breeze in Ladakh, Himachal, Kashmir & Ooty' },
+                    { id: 'Monsoon Trails (Jul–Sep)', label: '🌧️ Monsoon Scenic Trails (Jul–Sep)', desc: 'Lush green Western Ghats, waterfalls & valley treks' },
+                    { id: 'Upcoming Long Weekend', label: '🚀 Upcoming Long Weekend', desc: 'Short recharge 3–4 days break' },
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setPreferredSeason(s.id)}
+                      className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
+                        preferredSeason === s.id
+                          ? 'border-[#102A56] bg-blue-50/70 font-bold'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <span className="text-xs font-extrabold text-[#102A56] block">{s.label}</span>
+                      <span className="text-[11px] text-slate-500 block mt-0.5">{s.desc}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <CheckCircle2 className="w-5 h-5 shrink-0" />
-            </div>
-
-            {!arrangeMyself && (
-              <div className="space-y-4 pt-2">
-                {/* Transportation */}
-                <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-teal-400">Transportation Services</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {[
-                      { id: 'flight_tickets', label: 'Flight Tickets' },
-                      { id: 'train_tickets', label: 'Train Bookings' },
-                      { id: 'bus_tickets', label: 'Bus Tickets' },
-                      { id: 'private_cab', label: 'Private Intercity Cab' },
-                      { id: 'vehicle_rental', label: 'Self-Drive Rental' },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => toggleItem(bookingPreferences, setBookingPreferences, item.id)}
-                        className={`p-3 rounded-xl text-left text-xs font-semibold border transition flex items-center gap-2 ${
-                          bookingPreferences.includes(item.id)
-                            ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 font-bold'
-                            : 'bg-[#0A1128] text-slate-400 border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        <Check className={`w-3.5 h-3.5 ${bookingPreferences.includes(item.id) ? 'text-teal-400' : 'text-slate-700'}`} />
-                        <span>{item.label}</span>
-                      </button>
-                    ))}
-                  </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <label className="text-xs font-bold text-[#102A56] block">Departure / Start Date</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold text-[#102A56] bg-white"
+                  />
                 </div>
 
-                {/* Accommodation */}
-                <div className="space-y-2 pt-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Accommodations</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {[
-                      { id: 'hotels', label: 'Hotels & Haveli Stays' },
-                      { id: 'resorts', label: 'Luxury Resorts' },
-                      { id: 'homestays', label: 'Heritage Homestays' },
-                      { id: 'campsites', label: 'Campsites & Glamping' },
-                      { id: 'hostels', label: 'Backpacker Hostels' },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => toggleItem(bookingPreferences, setBookingPreferences, item.id)}
-                        className={`p-3 rounded-xl text-left text-xs font-semibold border transition flex items-center gap-2 ${
-                          bookingPreferences.includes(item.id)
-                            ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 font-bold'
-                            : 'bg-[#0A1128] text-slate-400 border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        <Check className={`w-3.5 h-3.5 ${bookingPreferences.includes(item.id) ? 'text-amber-400' : 'text-slate-700'}`} />
-                        <span>{item.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Experiences */}
-                <div className="space-y-2 pt-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Experiences & Tours</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {[
-                      { id: 'local_activities', label: 'Local Activities' },
-                      { id: 'adventure_activities', label: 'Adventure & Treks' },
-                      { id: 'guided_tours', label: 'Licensed Heritage Guides' },
-                      { id: 'complete_package', label: 'Complete Tour Package' },
-                      { id: 'travel_insurance', label: 'Travel Insurance Info' },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => toggleItem(bookingPreferences, setBookingPreferences, item.id)}
-                        className={`p-3 rounded-xl text-left text-xs font-semibold border transition flex items-center gap-2 ${
-                          bookingPreferences.includes(item.id)
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40 font-bold'
-                            : 'bg-[#0A1128] text-slate-400 border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        <Check className={`w-3.5 h-3.5 ${bookingPreferences.includes(item.id) ? 'text-blue-400' : 'text-slate-700'}`} />
-                        <span>{item.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <label className="text-xs font-bold text-[#102A56] block">Return Date (Optional)</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="Leave blank for AI duration"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold text-[#102A56] bg-white"
+                  />
+                  <span className="text-[10px] text-slate-500 block">Leave blank to let AI recommend optimal length!</span>
                 </div>
               </div>
             )}
 
-            {/* Navigation Buttons */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-800">
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 type="button"
-                onClick={() => setCurrentStep(3)}
-                className="px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                onClick={() => setCurrentStep(2)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                Back
               </button>
               <button
                 type="button"
-                onClick={() => setCurrentStep(5)}
-                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition"
+                onClick={() => setCurrentStep(4)}
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* STEP 5: ACCOMMODATION PREFERENCES                                  */}
+        {/* STEP 4: TRANSPORTATION                                              */}
         {/* =================================================================== */}
-        {currentStep === 5 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
+        {currentStep === 4 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 5 • Lodging & Stays</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">Where would you prefer to stay?</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Select your preferred lodging tiers and room requirements. You can choose multiple options.
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 4 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">What is your preferred mode of travel?</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                BharatYatra AI considers distance, transit times, highway topography, and budget when planning travel legs.
               </p>
             </div>
 
-            {/* Stay Options */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { id: 'budget', label: 'Budget Hotels (1–2★)', desc: 'Clean basic stays' },
-                { id: 'standard', label: 'Standard Hotels (3★)', desc: 'Comfort & breakfast' },
-                { id: 'premium', label: 'Premium Hotels (4★)', desc: 'Full-service amenities' },
-                { id: 'luxury', label: 'Luxury Stays & 5★', desc: 'World-class luxury' },
-                { id: 'resorts', label: 'Resorts & Retreats', desc: 'Scenic getaways' },
-                { id: 'homestays', label: 'Heritage Homestays', desc: 'Authentic local hosts' },
-                { id: 'hostels', label: 'Backpacker Hostels', desc: 'Social & vibrant' },
-                { id: 'campsites', label: 'Campsites & Tents', desc: 'Outdoor immersion' },
-                { id: 'recommend', label: 'Recommend by Budget', desc: 'Auto-balanced by AI' },
-              ].map((tier) => {
-                const isSelected = accommodationTypes.includes(tier.id);
+                { id: 'road_trip', label: 'Road Trip', icon: Car, desc: 'Own vehicle or private cab with door-to-door scenic freedom.' },
+                { id: 'flight', label: 'Flight', icon: Plane, desc: 'Fast airport-to-airport transfers for distant destinations.' },
+                { id: 'train', label: 'Express Rail', icon: Train, desc: 'Scenic rail journeys via Vande Bharat, Tejas, & Rajdhani.' },
+                { id: 'bus', label: 'Bus', icon: Bus, desc: 'Luxury AC multi-axle sleeper coaches with verified amenities.' },
+                { id: 'bike', label: 'Bike Ride', icon: Bike, desc: 'Adventurous two-wheeler motorcycle circuit.' },
+                { id: 'ai_decide', label: 'Let AI Decide', icon: Compass, desc: 'Optimal multimodal combination balancing speed, cost & fatigue.' },
+              ].map((m) => {
+                const IconComponent = m.icon;
+                const isSelected = preferredTransport === m.id;
                 return (
                   <button
-                    key={tier.id}
+                    key={m.id}
                     type="button"
-                    onClick={() => toggleItem(accommodationTypes, setAccommodationTypes, tier.id)}
-                    className={`p-3.5 rounded-2xl text-left border transition ${
+                    onClick={() => setPreferredTransport(m.id)}
+                    className={`p-4 rounded-2xl border text-left transition cursor-pointer flex items-start gap-3.5 ${
                       isSelected
-                        ? 'bg-amber-400/20 text-white border-amber-400 ring-1 ring-amber-400/30'
-                        : 'bg-[#0A1128] text-slate-300 border-slate-800 hover:border-slate-700'
+                        ? 'border-[#102A56] bg-blue-50/60 ring-2 ring-[#102A56]/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
-                    <div className="text-xs font-bold">{tier.label}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">{tier.desc}</div>
+                    <div className={`p-2.5 rounded-xl shrink-0 ${isSelected ? 'bg-[#102A56] text-white' : 'bg-slate-100 text-slate-700'}`}>
+                      <IconComponent className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="font-extrabold text-xs text-[#102A56] block">{m.label}</span>
+                      <span className="text-[11px] text-slate-500 leading-relaxed block mt-0.5">{m.desc}</span>
+                    </div>
                   </button>
                 );
               })}
             </div>
 
-            {/* Room Arrangements */}
-            <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Room Allocation & Needs</span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <span className="text-[11px] text-slate-400 block font-semibold">Number of Rooms</span>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setRoomCount(Math.max(1, roomCount - 1))}
-                      className="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-black text-white px-2">{roomCount} {roomCount === 1 ? 'Room' : 'Rooms'}</span>
-                    <button
-                      type="button"
-                      onClick={() => setRoomCount(roomCount + 1)}
-                      className="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-xs"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="text-[11px] text-slate-400 block font-semibold">Room Arrangement</span>
-                  <select
-                    value={roomArrangement}
-                    onChange={(e) => setRoomArrangement(e.target.value)}
-                    className="w-full mt-1.5 bg-[#141A32] border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none"
-                  >
-                    <option value="King Bed">1 King / Queen Bed</option>
-                    <option value="Twin Beds">Twin Single Beds</option>
-                    <option value="Family Suite">Family Suite / Connecting</option>
-                  </select>
-                </div>
-
-                <div>
-                  <span className="text-[11px] text-slate-400 block font-semibold">Special Accessibility</span>
-                  <select
-                    value={roomAccessibility}
-                    onChange={(e) => setRoomAccessibility(e.target.value)}
-                    className="w-full mt-1.5 bg-[#141A32] border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none"
-                  >
-                    <option value="Standard Room">Standard Access</option>
-                    <option value="Ground Floor Required">Ground Floor Required</option>
-                    <option value="Wheelchair Accessible">Wheelchair Accessible</option>
-                  </select>
-                </div>
+            {/* Route Physics Info Card */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-xs text-slate-600">
+              <div className="flex items-center gap-2 font-bold text-[#102A56]">
+                <Clock className="w-4 h-4 text-[#F28C28]" />
+                <span>Door-to-Door Transit Evaluation</span>
               </div>
+              <p className="text-[11px] text-slate-500 leading-normal">
+                Origin: <strong className="text-slate-800">{originCity}</strong> ➔ Target:{' '}
+                <strong className="text-slate-800">{destinations.slice(0, 3).join(', ') || 'Selected destinations'}</strong>.
+                AI automatically builds realistic rest stops, fuel intervals, and meal halts into your itinerary.
+              </p>
             </div>
 
-            {/* Navigation Buttons */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-800">
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 type="button"
-                onClick={() => setCurrentStep(4)}
-                className="px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                onClick={() => setCurrentStep(3)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                Back
               </button>
               <button
                 type="button"
-                onClick={() => setCurrentStep(6)}
-                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition"
+                onClick={() => setCurrentStep(5)}
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* STEP 6: BUDGET PREFERENCES                                         */}
+        {/* STEP 5: BUDGET                                                      */}
         {/* =================================================================== */}
-        {currentStep === 6 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
+        {currentStep === 5 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 6 • Financial Calibration</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">What is your approximate travel budget?</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Tell us your target expenditure so the AI picks realistic stays, transit options, and dining.
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 5 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">What is your budget tier?</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                We calculate transparent estimates without hidden fees, covering hotel tariffs, toll math, and meal averages.
               </p>
             </div>
 
-            {/* Per Person vs Total Group Budget Toggle */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Budget Calculation Scope</label>
-              <div className="grid grid-cols-2 gap-3 max-w-md">
-                <button
-                  type="button"
-                  onClick={() => setBudgetScope('per_person')}
-                  className={`p-3.5 rounded-2xl border text-center font-bold text-xs transition ${
-                    budgetScope === 'per_person'
-                      ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md'
-                      : 'bg-[#0A1128] text-slate-400 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  Per Person Budget
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBudgetScope('total_group')}
-                  className={`p-3.5 rounded-2xl border text-center font-bold text-xs transition ${
-                    budgetScope === 'total_group'
-                      ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-md'
-                      : 'bg-[#0A1128] text-slate-400 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  Total Group Budget ({totalPax} Pax)
-                </button>
-              </div>
-            </div>
-
-            {/* Budget Ranges */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+            {/* Primary 3 Options + Custom */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
-                { id: 'under_5k', label: 'Under ₹5,000' },
-                { id: '5k_10k', label: '₹5,000 – ₹10,000' },
-                { id: '10k_25k', label: '₹10,000 – ₹25,000' },
-                { id: '25k_50k', label: '₹25,000 – ₹50,000' },
-                { id: '50k_100k', label: '₹50,000 – ₹1,00,000' },
-                { id: 'above_100k', label: 'Above ₹1,00,000' },
-                { id: 'custom', label: 'Custom Amount' },
-                { id: 'not_decided', label: 'Not Decided Yet' },
+                { id: 'budget', label: 'Budget', icon: '🎒', range: 'Hostels & Local Transit', approx: '₹1,500 – ₹2,500 / day / person' },
+                { id: 'balanced', label: 'Balanced', icon: '🏨', range: '3★–4★ Hotels & Private Cab', approx: '₹3,500 – ₹6,500 / day / person' },
+                { id: 'luxury', label: 'Luxury', icon: '👑', range: '5★ Resorts & Express Travel', approx: '₹9,000+ / day / person' },
               ].map((b) => (
                 <button
                   key={b.id}
                   type="button"
-                  onClick={() => setBudgetRange(b.id)}
-                  className={`p-3 rounded-xl text-center border text-xs font-bold transition ${
-                    budgetRange === b.id
-                      ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 shadow ring-1 ring-teal-500/30'
-                      : 'bg-[#0A1128] text-slate-300 border-slate-800 hover:border-slate-700'
+                  onClick={() => setBudgetTier(b.id as any)}
+                  className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
+                    budgetTier === b.id
+                      ? 'border-[#102A56] bg-blue-50/60 ring-2 ring-[#102A56]/20'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
-                  {b.label}
+                  <span className="text-2xl block mb-1.5">{b.icon}</span>
+                  <span className="font-extrabold text-xs text-[#102A56] block">{b.label}</span>
+                  <span className="text-[11px] text-slate-600 font-semibold block mt-1">{b.range}</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">{b.approx}</span>
                 </button>
               ))}
             </div>
 
-            {/* Custom Budget Input */}
-            {budgetRange === 'custom' && (
-              <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-2 animate-in fade-in">
-                <label className="text-xs font-bold text-slate-300">Enter Exact Budget Amount (INR)</label>
-                <div className="flex items-center gap-2 bg-[#141A32] border border-slate-700 rounded-xl px-4 py-2.5 max-w-sm">
-                  <span className="text-amber-400 font-bold">₹</span>
-                  <input
-                    type="number"
-                    step={1000}
-                    value={customBudgetAmount}
-                    onChange={(e) => setCustomBudgetAmount(Math.max(1000, parseInt(e.target.value) || 0))}
-                    className="w-full bg-transparent text-sm text-white focus:outline-none"
-                    placeholder="35000"
-                  />
+            {/* Custom Budget Amount Option */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#102A56]">Or Specify Custom Budget Amount:</span>
+                <button
+                  type="button"
+                  onClick={() => setBudgetTier('custom')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    budgetTier === 'custom' ? 'bg-[#102A56] text-white' : 'bg-white border border-slate-300 text-slate-700'
+                  }`}
+                >
+                  Use Custom Budget
+                </button>
+              </div>
+
+              {budgetTier === 'custom' && (
+                <div className="flex items-center gap-3">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3.5 top-2.5 text-xs font-bold text-slate-500">₹</span>
+                    <input
+                      type="number"
+                      step={1000}
+                      value={customBudgetAmount}
+                      onChange={(e) => setCustomBudgetAmount(Number(e.target.value))}
+                      className="w-full pl-8 pr-4 py-2 rounded-xl border border-slate-200 font-bold text-xs text-[#102A56] bg-white"
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-slate-600">INR</span>
+                </div>
+              )}
+
+              {/* Budget Scope: Per Person vs Total */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-200/80">
+                <span className="text-[11px] font-bold text-slate-600">Is this budget:</span>
+                <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => setBudgetScope('per_person')}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                      budgetScope === 'per_person' ? 'bg-[#102A56] text-white shadow-2xs' : 'text-slate-600'
+                    }`}
+                  >
+                    Per Person
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBudgetScope('total_group')}
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                      budgetScope === 'total_group' ? 'bg-[#102A56] text-white shadow-2xs' : 'text-slate-600'
+                    }`}
+                  >
+                    Total Trip Budget
+                  </button>
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* Navigation Buttons */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-800">
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 type="button"
-                onClick={() => setCurrentStep(5)}
-                className="px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                onClick={() => setCurrentStep(4)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                Back
               </button>
               <button
                 type="button"
-                onClick={() => setCurrentStep(7)}
-                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition"
+                onClick={() => setCurrentStep(6)}
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* STEP 7: TRAVEL STYLE & INTERESTS                                   */}
+        {/* STEP 6: TRAVEL PACE                                                 */}
         {/* =================================================================== */}
-        {currentStep === 7 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
+        {currentStep === 6 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 7 • Passions & Pacing</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">What kind of travel experience do you enjoy?</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Select your travel interests, exploration pace, and how many places you prefer to discover each day.
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 6 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">What is your ideal travel pace?</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                We adjust daily itinerary densities, sightseeing dwell times, and rest stops to fit your speed.
               </p>
             </div>
 
-            {/* Travel Interests Chips */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Interests & Activities</label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  'Historical Places',
-                  'Nature & Scenic',
-                  'Religious Destinations',
-                  'Wildlife & Safari',
-                  'Beaches & Coastal',
-                  'Mountains & Hills',
-                  'Adventure & Trekking',
-                  'Food & Local Culture',
-                  'Photography',
-                  'Relaxation & Wellness',
-                  'Shopping & Handicrafts',
-                  'Luxury Experiences',
-                  'Family-Friendly',
-                ].map((item) => {
-                  const isSelected = selectedInterests.includes(item);
-                  return (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => toggleItem(selectedInterests, setSelectedInterests, item)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition ${
-                        isSelected
-                          ? 'bg-amber-400 text-slate-950 border-amber-400 font-bold shadow'
-                          : 'bg-[#0A1128] text-slate-300 border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Travel Pace */}
-            <div className="space-y-2 pt-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Travel Pace</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { id: 'relaxed', label: 'Relaxed', desc: 'Slow travel with plenty of downtime & café stops' },
-                  { id: 'balanced', label: 'Balanced', desc: 'Optimal sightseeing with relaxed evenings' },
-                  { id: 'active', label: 'Active', desc: 'High-energy to cover maximum iconic sights' },
-                ].map((p) => (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                {
+                  id: 'relaxed',
+                  label: 'Relaxed',
+                  icon: '☕',
+                  title: 'Fewer Activities & Free Time',
+                  desc: '1–2 key landmarks per day. Late mornings, extended cafe breaks, and leisurely scenic sunsets.',
+                },
+                {
+                  id: 'balanced',
+                  label: 'Balanced',
+                  icon: '⚖️',
+                  title: 'Sightseeing & Relaxation',
+                  desc: '3–4 highlights per day. A steady, rewarding rhythm covering major sights with comfortable pauses.',
+                },
+                {
+                  id: 'packed',
+                  label: 'Packed',
+                  icon: '⚡',
+                  title: 'More Sights & Activities',
+                  desc: '5+ attractions daily. High-energy explorer schedule covering maximum landmarks from dawn to dusk.',
+                },
+              ].map((p) => {
+                const isSelected = travelPace === p.id;
+                return (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => setTravelPace(p.id as any)}
-                    className={`p-3.5 rounded-2xl border text-left transition ${
-                      travelPace === p.id
-                        ? 'bg-teal-500/20 text-white border-teal-400 ring-1 ring-teal-400/30'
-                        : 'bg-[#0A1128] text-slate-300 border-slate-800 hover:border-slate-700'
+                    className={`p-5 rounded-2xl border text-left transition cursor-pointer space-y-2 ${
+                      isSelected
+                        ? 'border-[#102A56] bg-blue-50/60 ring-2 ring-[#102A56]/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
-                    <div className="text-xs font-bold text-teal-300">{p.label}</div>
-                    <div className="text-[10px] text-slate-400 mt-1">{p.desc}</div>
+                    <span className="text-3xl block">{p.icon}</span>
+                    <span className="font-extrabold text-sm text-[#102A56] block">{p.label}</span>
+                    <span className="text-xs font-bold text-slate-700 block">{p.title}</span>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">{p.desc}</p>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
 
-            {/* Exploration Preference */}
-            <div className="space-y-2 pt-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-300">Exploration Style</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { id: 'fewer_deep', label: 'Fewer Destinations', desc: 'Deeper local immersion & minimal hotel hops' },
-                  { id: 'balanced', label: 'Balanced Sightseeing', desc: 'Standard regional circuit with key highlights' },
-                  { id: 'more_destinations', label: 'More Destinations', desc: 'Broad multi-city discovery expedition' },
-                ].map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setExplorationStyle(s.id as any)}
-                    className={`p-3.5 rounded-2xl border text-left transition ${
-                      explorationStyle === s.id
-                        ? 'bg-purple-500/20 text-white border-purple-400 ring-1 ring-purple-400/30'
-                        : 'bg-[#0A1128] text-slate-300 border-slate-800 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="text-xs font-bold text-purple-300">{s.label}</div>
-                    <div className="text-[10px] text-slate-400 mt-1">{s.desc}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="pt-4 flex items-center justify-between border-t border-slate-800">
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 type="button"
-                onClick={() => setCurrentStep(6)}
-                className="px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition"
+                onClick={() => setCurrentStep(5)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                Back
               </button>
-              <button
-                type="button"
-                onClick={() => setCurrentStep(8)}
-                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition"
-              >
-                <span>Review Profile</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* =================================================================== */}
-        {/* STEP 8: REVIEW YOUR TRAVEL PROFILE                                 */}
-        {/* =================================================================== */}
-        {currentStep === 8 && (
-          <div className="bg-[#141A32] border border-[#2A3656] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6 animate-in fade-in duration-300">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 8 • Confirmation</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">Your BharatYatra Travel Profile</h2>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Review your saved preferences before locking them in. You can edit any individual section below.
-              </p>
-            </div>
-
-            {/* Profile Summary Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Party & Travellers */}
-              <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5" /> Travellers & Party
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(2)}
-                    className="text-xs text-slate-400 hover:text-amber-400 flex items-center gap-1"
-                  >
-                    <Edit2 className="w-3 h-3" /> Edit
-                  </button>
-                </div>
-                <p className="text-sm font-bold text-white">
-                  {totalPax} {totalPax === 1 ? 'Person' : 'People'} • {groupType}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {adults} Adults{children > 0 ? `, ${children} Children` : ''}
-                  {infants > 0 ? `, ${infants} Infants` : ''}
-                  {seniors > 0 ? `, ${seniors} Seniors` : ''}
-                </p>
-              </div>
-
-              {/* Transportation */}
-              <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
-                    <Car className="w-3.5 h-3.5" /> Transportation Mode
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(3)}
-                    className="text-xs text-slate-400 hover:text-teal-400 flex items-center gap-1"
-                  >
-                    <Edit2 className="w-3 h-3" /> Edit
-                  </button>
-                </div>
-                <p className="text-sm font-bold text-white capitalize">
-                  {travelModePreference === 'road_trip'
-                    ? `Own Road Trip (${roadVehicleType})`
-                    : travelModePreference === 'book_transport'
-                    ? `Book Transportation (${bookedTransportModes.join(', ')})`
-                    : travelModePreference === 'mixed'
-                    ? 'Mixed Multi-Modal'
-                    : 'AI Decided'}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {travelModePreference === 'road_trip' ? `${drivingPace} driving pacing` : 'Door-to-door transit buffers'}
-                </p>
-              </div>
-
-              {/* Bookings & Stays */}
-              <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
-                    <Hotel className="w-3.5 h-3.5" /> Lodging & Bookings
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(5)}
-                    className="text-xs text-slate-400 hover:text-blue-400 flex items-center gap-1"
-                  >
-                    <Edit2 className="w-3 h-3" /> Edit
-                  </button>
-                </div>
-                <p className="text-sm font-bold text-white">
-                  {arrangeMyself ? 'Self-Arranged' : accommodationTypes.join(', ')}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {roomCount} {roomCount === 1 ? 'Room' : 'Rooms'} • {roomArrangement}
-                </p>
-              </div>
-
-              {/* Budget & Pacing */}
-              <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
-                    <DollarSign className="w-3.5 h-3.5" /> Budget & Pacing
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(6)}
-                    className="text-xs text-slate-400 hover:text-purple-400 flex items-center gap-1"
-                  >
-                    <Edit2 className="w-3 h-3" /> Edit
-                  </button>
-                </div>
-                <p className="text-sm font-bold text-white capitalize">
-                  {budgetRange === 'custom' ? `₹${customBudgetAmount.toLocaleString('en-IN')}` : budgetRange.replace('_', '–')} ({budgetScope.replace('_', ' ')})
-                </p>
-                <p className="text-xs text-slate-400 capitalize">
-                  {travelPace} pace • {explorationStyle.replace('_', ' ')}
-                </p>
-              </div>
-            </div>
-
-            {/* Interests Summary */}
-            <div className="bg-[#0A1128] p-4 rounded-2xl border border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                  <Heart className="w-3.5 h-3.5" /> Core Travel Interests
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(7)}
-                  className="text-xs text-slate-400 hover:text-amber-400 flex items-center gap-1"
-                >
-                  <Edit2 className="w-3 h-3" /> Edit
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedInterests.map((item) => (
-                  <span
-                    key={item}
-                    className="bg-[#141A32] text-amber-300 border border-amber-400/30 text-xs px-2.5 py-1 rounded-lg font-medium"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {notification && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs rounded-xl flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>{notification}</span>
-              </div>
-            )}
-
-            {/* Final Action Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-800">
               <button
                 type="button"
                 onClick={() => setCurrentStep(7)}
-                className="w-full sm:w-auto px-5 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition"
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Back to Edit
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSaveProfile}
-                disabled={isSaving}
-                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-amber-400/20 transition disabled:opacity-50"
-              >
-                {isSaving ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-                    <span>Saving Preferences...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 text-slate-950" />
-                    <span>Save My Travel Profile</span>
-                  </>
-                )}
+                <span>Continue</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* STEP 9: PERSONALIZED DASHBOARD / COMPLETION                        */}
+        {/* STEP 7: TRAVEL PREFERENCES (Stay, Food & Interests)                 */}
         {/* =================================================================== */}
-        {currentStep === 9 && (
-          <div className="bg-[#141A32] border border-amber-400/40 rounded-3xl p-6 sm:p-12 shadow-2xl text-center max-w-2xl mx-auto space-y-6 animate-in zoom-in-95 duration-400">
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center mx-auto shadow-xl">
-              <Check className="w-9 h-9 stroke-[3]" />
-            </div>
-
+        {currentStep === 7 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Setup Complete</span>
-              <h2 className="text-3xl sm:text-4xl font-black text-white mt-1">Your travel preferences are ready!</h2>
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-md mx-auto">
-                BharatYatra has personalized your travel engine. Your future itineraries will now automatically load with
-                your preferred pacing, vehicle setup, and stay preferences.
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 7 of 8</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">Stay, food, and travel interests</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                These preferences become your permanent traveler profile so future trips match your tastes.
               </p>
             </div>
 
-            {/* Quick Links Dashboard Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 text-left">
-              <Link
-                href="/plan"
-                className="bg-[#0A1128] border border-slate-800 hover:border-amber-400/50 p-4 rounded-2xl group transition space-y-1"
-              >
-                <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Compass className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">Plan a New Trip</h4>
-                <p className="text-[10px] text-slate-400">Prepopulates your saved profile</p>
-              </Link>
+            {/* Food Preferences (Mandatory Single Choice) */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 block">Food &amp; Dining Preference (Required):</label>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {[
+                  { id: 'Pure Vegetarian', label: 'Pure Veg', icon: '🥗' },
+                  { id: 'Jain', label: 'Jain (No Root)', icon: '🌿' },
+                  { id: 'Vegan', label: 'Vegan', icon: '🌱' },
+                  { id: 'Non-vegetarian', label: 'Non-Veg', icon: '🍗' },
+                  { id: 'No preference', label: 'No Preference', icon: '🍽️' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setFoodPreference(f.id)}
+                    className={`p-3 rounded-xl border text-center transition cursor-pointer ${
+                      foodPreference === f.id
+                        ? 'border-[#102A56] bg-blue-50/70 font-bold ring-1 ring-[#102A56]'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
+                  >
+                    <span className="text-lg block mb-0.5">{f.icon}</span>
+                    <span className="text-xs font-bold text-[#102A56]">{f.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              <Link
-                href="/ai-planner"
-                className="bg-[#0A1128] border border-slate-800 hover:border-teal-400/50 p-4 rounded-2xl group transition space-y-1"
-              >
-                <div className="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-teal-300 transition-colors">AI Duration Planner</h4>
-                <p className="text-[10px] text-slate-400">Calculate ideal route days</p>
-              </Link>
+            {/* Accommodation Preferences */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 block">Accommodation Styles (Select any):</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  'Boutique Hotels',
+                  'Heritage Havelis',
+                  'Luxury Resorts',
+                  'Verified Homestays',
+                  'Eco Lodges & Cottages',
+                  'Desert & Safari Tents',
+                ].map((st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => toggleArrayItem(accommodationTypes, setAccommodationTypes, st)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      accommodationTypes.includes(st)
+                        ? 'bg-[#102A56] text-white shadow-2xs'
+                        : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              <Link
-                href="/states"
-                className="bg-[#0A1128] border border-slate-800 hover:border-blue-400/50 p-4 rounded-2xl group transition space-y-1"
-              >
-                <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-blue-300 transition-colors">Explore States & UTs</h4>
-                <p className="text-[10px] text-slate-400">All 36 regions of India</p>
-              </Link>
+            {/* Travel Interests */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 block">Travel Interests &amp; Passions:</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'Adventure', icon: '🧗' },
+                  { label: 'Nature & Wildlife', icon: '🌲' },
+                  { label: 'Spirituality & Temples', icon: '🪔' },
+                  { label: 'History & Heritage', icon: '🏰' },
+                  { label: 'Culture & Festivals', icon: '🎭' },
+                  { label: 'Shopping & Handicrafts', icon: '🛍️' },
+                  { label: 'Beaches & Coastal', icon: '🏖️' },
+                ].map((interest) => (
+                  <button
+                    key={interest.label}
+                    type="button"
+                    onClick={() => toggleArrayItem(selectedInterests, setSelectedInterests, interest.label)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                      selectedInterests.includes(interest.label)
+                        ? 'bg-[#F28C28] text-white shadow-2xs'
+                        : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span>{interest.icon}</span>
+                    <span>{interest.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              <Link
-                href="/landmarks"
-                className="bg-[#0A1128] border border-slate-800 hover:border-purple-400/50 p-4 rounded-2xl group transition space-y-1"
-              >
-                <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Mountain className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">100 Landmarks</h4>
-                <p className="text-[10px] text-slate-400">Iconic Gujarat directory</p>
-              </Link>
+            {/* Special Requirements */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700 block">Special Requirements (Optional):</label>
+              <textarea
+                rows={2}
+                value={specialRequirements}
+                onChange={(e) => setSpecialRequirements(e.target.value)}
+                placeholder="e.g. Ground floor room needed for senior citizen, wheelchair accessibility, infant booster seat..."
+                className="w-full p-3 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-[#102A56]"
+              />
+            </div>
 
-              <Link
-                href="/saved"
-                className="bg-[#0A1128] border border-slate-800 hover:border-emerald-400/50 p-4 rounded-2xl group transition space-y-1"
+            {/* Nav */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(6)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Bookmark className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">My Trips & Stays</h4>
-                <p className="text-[10px] text-slate-400">Saved itineraries & bookings</p>
-              </Link>
-
+                Back
+              </button>
               <button
                 type="button"
                 onClick={() => setCurrentStep(8)}
-                className="bg-[#0A1128] border border-slate-800 hover:border-amber-400/50 p-4 rounded-2xl group transition space-y-1 text-left"
+                className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <Edit2 className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors">Edit Preferences</h4>
-                <p className="text-[10px] text-slate-400">Update anytime</p>
+                <span>Calculate AI Duration</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
-            </div>
-
-            {/* Launch CTA */}
-            <div className="pt-4">
-              <Link
-                href="/plan"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider shadow-xl shadow-amber-400/20 transition"
-              >
-                <span>Launch Trip Planner</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         )}
+
+        {/* =================================================================== */}
+        {/* STEP 8: INTELLIGENT AI DURATION RECOMMENDATION & SUMMARY            */}
+        {/* =================================================================== */}
+        {currentStep === 8 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-150">
+            <div>
+              <span className="text-[11px] font-black text-[#F28C28] uppercase tracking-wider">Step 8 of 8 • AI Intelligence</span>
+              <h2 className="text-2xl font-black text-[#102A56] mt-0.5">Your Personalized Journey Architecture</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                AI analyzed door-to-door transit times, terrain topography, and attraction density to compute your optimal trip duration.
+              </p>
+            </div>
+
+            {isCalculating ? (
+              <div className="py-12 text-center space-y-4">
+                <div className="w-12 h-12 border-3 border-[#102A56] border-t-[#F28C28] rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-bold text-slate-600">
+                  Evaluating door-to-door distances, altitude buffers, and landmark exploration times...
+                </p>
+              </div>
+            ) : durationRecommendation ? (
+              <div className="space-y-6">
+                
+                {/* PROMINENT AI DURATION HERO CARD */}
+                <div className="p-6 rounded-3xl bg-gradient-to-br from-[#102A56] to-[#0A1A33] text-white space-y-4 shadow-md relative overflow-hidden">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[11px] font-mono font-black uppercase tracking-wider flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-amber-400" /> AI Intelligent Recommendation
+                    </span>
+                    <span className="text-xs text-slate-300">
+                      ~{durationRecommendation.travelTime.totalDistanceKm} km • ~{durationRecommendation.travelTime.totalTransitHours.toFixed(1)}h Total Transit
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-3xl sm:text-4xl font-black text-amber-400">
+                      Recommended duration: {durationRecommendation.recommendedDuration.days}–{durationRecommendation.relaxedDuration.days} days
+                    </h3>
+                    <p className="text-xs text-slate-200 mt-1">
+                      Current selection: <strong className="text-white">{chosenDurationDays} Days / {Math.max(1, chosenDurationDays - 1)} Nights</strong>
+                    </p>
+                  </div>
+
+                  {/* Why AI recommends this */}
+                  <div className="pt-2 border-t border-white/10 space-y-1.5">
+                    <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
+                      Why we recommend this duration:
+                    </span>
+                    <ul className="space-y-1 text-xs text-slate-200">
+                      {durationRecommendation.reasoning.slice(0, 4).map((r, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                          <span>{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Route & Altitude Warning if applicable */}
+                  {durationRecommendation.warnings && durationRecommendation.warnings.length > 0 && (
+                    <div className="p-3 bg-amber-500/15 border border-amber-400/40 rounded-xl text-xs text-amber-200 space-y-1">
+                      <div className="font-bold text-amber-300 flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> High Altitude &amp; Route Advisory
+                      </div>
+                      <ul className="list-disc list-inside text-[11px] space-y-0.5">
+                        {durationRecommendation.warnings.map((w, idx) => (
+                          <li key={idx}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Duration Adjustment Controls */}
+                  <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTier('minimum')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                          durationTierSelection === 'minimum' ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        Fast Track ({durationRecommendation.minimumDuration.days}D)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTier('recommended')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                          durationTierSelection === 'recommended' ? 'bg-amber-400 text-slate-950 font-black' : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        Recommended ({durationRecommendation.recommendedDuration.days}D)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTier('relaxed')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                          durationTierSelection === 'relaxed' ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        Relaxed Pace ({durationRecommendation.relaxedDuration.days}D)
+                      </button>
+                    </div>
+
+                    {/* Stepper for custom days */}
+                    <div className="flex items-center gap-2 bg-white/10 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => handleAdjustDays(chosenDurationDays - 1)}
+                        className="w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center cursor-pointer text-xs"
+                      >
+                        -
+                      </button>
+                      <span className="text-xs font-bold w-12 text-center">{chosenDurationDays} Days</span>
+                      <button
+                        type="button"
+                        onClick={() => handleAdjustDays(chosenDurationDays + 1)}
+                        className="w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold flex items-center justify-center cursor-pointer text-xs"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* TRIP SUMMARY REVIEW CARD WITH DIRECT EDIT BUTTONS */}
+                <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200/90 space-y-4">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Complete Trip Configuration Summary
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-start justify-between">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Starting Location &amp; Route</span>
+                        <span className="font-extrabold text-[#102A56] block mt-0.5">{originCity}</span>
+                        <span className="text-[11px] text-slate-500 block">
+                          {isRoundTrip ? 'Round Trip' : 'One Way'} • {isMultiDestination ? 'Multi-destination' : 'Single destination'}
+                        </span>
+                      </div>
+                      <button onClick={() => setCurrentStep(2)} className="text-[#1769AA] font-bold text-xs underline cursor-pointer">
+                        Edit
+                      </button>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-start justify-between">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Destinations</span>
+                        <span className="font-extrabold text-[#102A56] block mt-0.5">
+                          {destinations.slice(0, 3).join(', ') || 'Custom Selection'}
+                        </span>
+                        <span className="text-[11px] text-slate-500 block">{destinations.length} places selected</span>
+                      </div>
+                      <button onClick={() => setCurrentStep(2)} className="text-[#1769AA] font-bold text-xs underline cursor-pointer">
+                        Edit
+                      </button>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-start justify-between">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Travellers</span>
+                        <span className="font-extrabold text-[#102A56] block mt-0.5">{groupType}</span>
+                        <span className="text-[11px] text-slate-500 block">
+                          {adults} Adults{children > 0 ? `, ${children} Children` : ''}{hasSeniors ? ' (Inc. Seniors)' : ''}
+                        </span>
+                      </div>
+                      <button onClick={() => setCurrentStep(1)} className="text-[#1769AA] font-bold text-xs underline cursor-pointer">
+                        Edit
+                      </button>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-start justify-between">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Dates &amp; Pace</span>
+                        <span className="font-extrabold text-[#102A56] block mt-0.5">
+                          {dateMode === 'fixed' ? `${startDate || 'Selected'} to ${endDate || 'Optimal'}` : preferredSeason}
+                        </span>
+                        <span className="text-[11px] text-slate-500 block uppercase font-semibold text-amber-700">
+                          {travelPace} Pace
+                        </span>
+                      </div>
+                      <button onClick={() => setCurrentStep(3)} className="text-[#1769AA] font-bold text-xs underline cursor-pointer">
+                        Edit
+                      </button>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-start justify-between">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Transport &amp; Budget</span>
+                        <span className="font-extrabold text-[#102A56] block mt-0.5 uppercase">
+                          {preferredTransport.replace('_', ' ')}
+                        </span>
+                        <span className="text-[11px] text-slate-500 block capitalize">
+                          {budgetTier} Tier ({budgetScope.replace('_', ' ')})
+                        </span>
+                      </div>
+                      <button onClick={() => setCurrentStep(4)} className="text-[#1769AA] font-bold text-xs underline cursor-pointer">
+                        Edit
+                      </button>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 flex items-start justify-between">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase block">Food &amp; Stays</span>
+                        <span className="font-extrabold text-[#102A56] block mt-0.5">{foodPreference}</span>
+                        <span className="text-[11px] text-slate-500 block truncate max-w-[180px]">
+                          {accommodationTypes.slice(0, 2).join(', ')}
+                        </span>
+                      </div>
+                      <button onClick={() => setCurrentStep(7)} className="text-[#1769AA] font-bold text-xs underline cursor-pointer">
+                        Edit
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            ) : null}
+
+            {/* Final Action Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(7)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+              >
+                Back to Preferences
+              </button>
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={handleGenerateAIItinerary}
+                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-[#F28C28] via-[#ffc857] to-[#F5BD4F] hover:from-[#ffc857] hover:to-[#f59e3b] text-[#102A56] font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-[#102A56]" />
+                <span>{isSaving ? 'Synthesizing Blueprint...' : 'Generate My AI Trip'}</span>
+                <ArrowRight className="w-4 h-4 text-[#102A56]" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* STEP 9: FINAL MASTER ITINERARY READY / CELEBRATION                 */}
+        {/* =================================================================== */}
+        {currentStep === 9 && (
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 shadow-sm space-y-6 text-center animate-in fade-in duration-200">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center shadow-inner">
+              <CheckCircle2 className="w-10 h-10" />
+            </div>
+
+            <div>
+              <span className="inline-block px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-mono font-bold rounded-full uppercase tracking-wider mb-2">
+                Trip ID: #{generatedTrip?.id || 'BY-TRIP-CONFIRMED'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#102A56]">
+                Your Personalized Journey is Ready! 🎉
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto mt-1 leading-relaxed">
+                BharatYatra AI has created a personalized day-by-day itinerary tailored to your group, pace, and preferences.
+              </p>
+            </div>
+
+            {/* Generated Blueprint Highlights */}
+            {generatedBlueprint && (
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/90 text-left max-w-xl mx-auto space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-sm text-[#102A56]">{generatedBlueprint.circuitTitle}</span>
+                  <span className="text-xs font-bold text-amber-700 bg-amber-100/60 px-2 py-0.5 rounded-md">
+                    {generatedBlueprint.totalDays} Days • {generatedBlueprint.totalNights} Nights
+                  </span>
+                </div>
+                <div className="divide-y divide-slate-200/70 text-xs">
+                  {generatedBlueprint.itineraryDays.slice(0, 3).map((d) => (
+                    <div key={d.day} className="py-2 flex items-start gap-3">
+                      <span className="font-mono font-bold text-slate-400 shrink-0">Day {d.day}</span>
+                      <div>
+                        <span className="font-bold text-slate-800 block">{d.dayTitle || d.district}</span>
+                        <span className="text-[11px] text-slate-500 line-clamp-1">
+                          {d.badge ? `[${d.badge}] ` : ''}{d.detail || (d.activities && d.activities[0]?.description) || 'Curated cultural and travel experience'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {generatedBlueprint.totalDays > 3 && (
+                    <div className="pt-2 text-[11px] text-slate-500 italic text-center">
+                      + {generatedBlueprint.totalDays - 3} more tailored days included in master itinerary
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link
+                href={`/trips/${generatedTrip?.id || 'demo'}`}
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#102A56] hover:bg-blue-950 text-white font-black rounded-xl transition shadow-md flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+              >
+                <span>View Full Master Itinerary</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition text-xs"
+              >
+                Go to Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentStep(1);
+                  setDestinations([]);
+                }}
+                className="w-full sm:w-auto px-5 py-3.5 text-xs font-bold text-[#102A56] hover:underline cursor-pointer"
+              >
+                Plan Another Journey
+              </button>
+            </div>
+          </div>
+        )}
+
       </main>
 
-      {/* Footer Branding */}
-      <footer className="w-full border-t border-[#2A3656] py-3 text-center text-[11px] text-slate-500 bg-[#0A1128]">
-        BharatYatra Traveler Intelligence • 100% Verified Geography across 28 States & 8 UTs
+      {/* Footer Copyright */}
+      <footer className="w-full border-t border-slate-200/80 bg-white py-4 px-4 text-center text-xs text-slate-500">
+        <p>© 2026 BharatYatra Travel Technologies. All rights reserved.</p>
       </footer>
+
     </div>
   );
 }
@@ -1583,11 +1850,8 @@ export default function OnboardingPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0A1128] text-white flex items-center justify-center">
-          <div className="flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm font-semibold">Loading BharatYatra Onboarding...</span>
-          </div>
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8 text-xs text-slate-500 font-semibold">
+          Loading BharatYatra Smart Onboarding...
         </div>
       }
     >
@@ -1595,4 +1859,3 @@ export default function OnboardingPage() {
     </Suspense>
   );
 }
-

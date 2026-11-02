@@ -2,17 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Sparkles, Trash2, X, ChevronUp, MapPin, Check, Plus, Globe, ArrowRight } from 'lucide-react';
 import { useDestinationSelection, SelectedDestination } from '@/lib/tourism/destination-selection-context';
-import dynamic from 'next/dynamic';
-const AITripPersonalizationModal = dynamic(
-  () => import('@/components/travel/AITripPersonalizationModal'),
-  { ssr: false }
-);
 
 export default function GlobalDestinationSelectionBar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const {
     selectedDestinations,
@@ -24,8 +20,7 @@ export default function GlobalDestinationSelectionBar() {
   } = useDestinationSelection();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   // Only display the destination selection bar on destinations, plan, my-trips, and dashboard pages
   const isRelevantPage = 
@@ -74,7 +69,7 @@ export default function GlobalDestinationSelectionBar() {
             </button>
 
             <button
-              onClick={() => setIsAIModalOpen(true)}
+              onClick={() => router.push('/onboarding?flow=plan')}
               className="font-black bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 px-4 py-2.5 rounded-xl transition shadow-lg flex items-center space-x-2 text-xs uppercase tracking-wider group cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-slate-950 animate-pulse" />
@@ -206,7 +201,7 @@ export default function GlobalDestinationSelectionBar() {
               <button
                 onClick={() => {
                   setIsDrawerOpen(false);
-                  setIsAIModalOpen(true);
+                  router.push('/onboarding?flow=plan');
                 }}
                 className="w-full font-black bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 py-3 rounded-xl transition shadow-lg flex items-center justify-center space-x-2 text-xs uppercase tracking-wider cursor-pointer"
               >
@@ -219,13 +214,6 @@ export default function GlobalDestinationSelectionBar() {
         </div>
       )}
 
-      {/* AI Trip Personalization Modal */}
-      {isAIModalOpen && (
-        <AITripPersonalizationModal
-          isOpen={isAIModalOpen}
-          onClose={() => setIsAIModalOpen(false)}
-        />
-      )}
-    </>
+          </>
   );
 }
