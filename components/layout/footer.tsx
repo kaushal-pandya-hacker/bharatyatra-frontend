@@ -21,9 +21,11 @@ import {
   FileText,
 } from 'lucide-react';
 import { SMART_QR_CONFIG } from '@/lib/config/smart-qr-config';
+import { useDiwali } from '@/lib/campaigns/diwali-context';
 
 export function Footer() {
   const pathname = usePathname();
+  const { isDiwaliActive } = useDiwali();
   const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
 
   // Mobile accordion state (collapsed by default on small screens)
@@ -322,6 +324,20 @@ export function Footer() {
         </div>
 
         {/* ================================================================== */}
+        {isDiwaliActive && (
+          <div className="py-4 px-6 rounded-2xl bg-[#102A56]/60 border border-[#F5BD4F]/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🪔</span>
+              <span className="text-xs font-black text-[#F5BD4F] uppercase tracking-wider">
+                THIS DIWALI, DON&apos;T JUST CELEBRATE. EXPLORE INDIA.
+              </span>
+            </div>
+            <span className="text-xs text-slate-300 font-medium">
+              Every Destination Has a Story. Make Yours This Diwali.
+            </span>
+          </div>
+        )}
+
         {/* BOTTOM COPYRIGHT & NEXIIFY DEVELOPER CREDIT                         */}
         {/* ================================================================== */}
         <div className="border-t border-slate-800/80 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">

@@ -15,3 +15,4 @@ export async function DELETE(
     message: removed ? 'Device removed.' : 'Device not found.',
   });
 }
+

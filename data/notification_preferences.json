@@ -8,5 +8,15 @@
     "reviewResponses": true,
     "marketingNotifications": false,
     "updatedAt": "2026-11-02T11:07:26.423Z"
+  },
+  {
+    "userId": "usr_1793619835094",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-02T11:43:55.955Z"
   }
 ]

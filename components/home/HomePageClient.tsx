@@ -8,10 +8,15 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { useAccessibility } from '@/lib/accessibility/accessibility-context';
 import dynamic from 'next/dynamic';
 import { VoiceSearchModal } from '@/components/accessibility/VoiceSearchModal';
+import { useDiwali } from '@/lib/campaigns/diwali-context';
+import { DiwaliHeroDeck } from '@/components/festive/DiwaliHeroDeck';
+import { DiwaliOffersSection } from '@/components/festive/DiwaliOffersSection';
+import { DiwaliDestinationsSection } from '@/components/festive/DiwaliDestinationsSection';
 
 export default function HomePageClient() {
   const { user, logout } = useAuth();
   const { t } = useAccessibility();
+  const { isDiwaliActive } = useDiwali();
   const [isVoiceOpen, setIsVoiceOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const router = useRouter();
@@ -37,7 +42,20 @@ export default function HomePageClient() {
       {/* Main Content */}
       <main className="w-full bg-surface min-h-screen">
         <div className="flex flex-col w-full">
-          {/* SECTION 1: IMMERSIVE EDITORIAL HERO DECK */}
+          {isDiwaliActive ? (
+            <>
+              {/* DIWALI FESTIVE HERO DECK */}
+              <DiwaliHeroDeck />
+
+              {/* DIWALI TRAVEL OFFERS SECTION */}
+              <DiwaliOffersSection />
+
+              {/* DIWALI DESTINATIONS DISCOVERY */}
+              <DiwaliDestinationsSection />
+            </>
+          ) : (
+            <>
+              {/* SECTION 1: IMMERSIVE EDITORIAL HERO DECK */}
           <section className="relative w-full overflow-hidden bg-surface-container-lowest">
             {/* Cinematic Full-Bleed Imagery with Scrim */}
             <div className="relative w-full min-h-[520px] sm:min-h-[640px] flex flex-col justify-between pt-16 sm:pt-24 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-12">
@@ -216,6 +234,9 @@ export default function HomePageClient() {
             </div>
           </section>
 
+
+            </>
+          )}
 
           {/* SECTION 5: AI ITINERARY GENERATOR CALLOUT */}
           <section className="w-full bg-[#0b1c30] text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

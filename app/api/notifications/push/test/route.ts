@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
         result.sent > 0
           ? `Test push dispatched to ${result.sent} device(s).`
           : result.totalDevices === 0
-          ? 'No active push subscription found for this browser/device. Please enable notifications first.'
-          : 'Push dispatch completed.',
+            ? 'No active push subscription found for this browser/device. Please enable notifications first.'
+            : 'Push dispatch completed.',
     });
   } catch (err: any) {
     return NextResponse.json(
@@ -34,3 +34,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

@@ -16,6 +16,9 @@ import GlobalDestinationSelectionBar from '@/components/travel/GlobalDestination
 import { AccessibilityModal } from '@/components/accessibility/AccessibilityModal';
 
 import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
+import { DiwaliProvider } from '@/lib/campaigns/diwali-context';
+import { DiwaliTopBanner } from '@/components/festive/DiwaliTopBanner';
+import { DiwaliGreetingModal } from '@/components/festive/DiwaliGreetingModal';
 
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -70,13 +73,17 @@ export function CustomerLayoutWrapper({ children }: { children: React.ReactNode 
         <BookingGuardProvider>
           <DestinationSelectionProvider>
             <NexiProvider>
-              <Header />
-              <div className="flex-1 pb-16 lg:pb-0">{children}</div>
-              <Footer />
-              <MobileBottomNav />
-              <GlobalDestinationSelectionBar />
-              <AccessibilityModal />
-              <NexiChatFloating />
+              <DiwaliProvider>
+                <DiwaliTopBanner />
+                <Header />
+                <div className="flex-1 pb-16 lg:pb-0">{children}</div>
+                <Footer />
+                <MobileBottomNav />
+                <GlobalDestinationSelectionBar />
+                <AccessibilityModal />
+                <NexiChatFloating />
+                <DiwaliGreetingModal />
+              </DiwaliProvider>
             </NexiProvider>
           </DestinationSelectionProvider>
         </BookingGuardProvider>

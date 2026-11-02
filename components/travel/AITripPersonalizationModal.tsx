@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDiwali } from '@/lib/campaigns/diwali-context';
 import {
   Sparkles,
   X,
@@ -51,6 +52,7 @@ type ModalView = 'PREFERENCES' | 'CALCULATING' | 'RECOMMENDATION';
 export default function AITripPersonalizationModal({ isOpen, onClose }: Props) {
   const router = useRouter();
   const { selectedDestinations, selectedCount, uniqueStatesCount } = useDestinationSelection();
+  const { isDiwaliActive } = useDiwali();
 
   // Location & Trip Starting States
   const [startLocation, setStartLocation] = useState<string>('Ahmedabad, Gujarat');
@@ -245,7 +247,14 @@ export default function AITripPersonalizationModal({ isOpen, onClose }: Props) {
               <Sparkles className="w-5 h-5 text-slate-950" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-white">Personalize Your AI Journey</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-black text-white">Personalize Your AI Journey</h2>
+                {isDiwaliActive && (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/60 text-amber-300 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                    <span>🪔 Diwali Special</span>
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-amber-300 font-medium">
                 {selectedCount} selected places across {uniqueStatesCount} {uniqueStatesCount === 1 ? 'state' : 'states'}
               </p>

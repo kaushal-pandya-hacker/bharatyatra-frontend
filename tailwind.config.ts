@@ -56,6 +56,14 @@ const config: Config = {
         'surface-bright': '#fcf8fb',
         'on-tertiary-container': '#386858',
         'on-primary': '#ffffff',
+        diwali: {
+          navy: '#102A56',
+          blue: '#1769AA',
+          teal: '#087E83',
+          gold: '#F5BD4F',
+          saffron: '#F28C28',
+          cream: '#FFF9EF',
+        },
         farva: {
           navy: {
             royal: '#141A32',

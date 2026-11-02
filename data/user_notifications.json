@@ -340,5 +340,25 @@
       "startDate": "2026-12-15",
       "durationDays": 5
     }
+  },
+  {
+    "id": "d2d94ada-17d8-4e91-b2a7-a150c02495dc",
+    "userId": "usr_1793619835094",
+    "recipientEmail": "traveler_1793619835094@test.bharatyatra.in",
+    "title": "Welcome Back, Traveller! ❤️",
+    "message": "We hope you had an amazing journey to White Rann of Kutch with BharatYatra. Share your experience and let us know how we did!",
+    "category": "trips",
+    "type": "TRIP_COMPLETION",
+    "deepLink": "/trips/trip_1793619835094/review",
+    "readAt": null,
+    "createdAt": "2026-11-02T11:43:55.956Z",
+    "metadata": {
+      "tripId": "trip_1793619835094",
+      "destination": "White Rann of Kutch",
+      "actionUrl": "/trips/trip_1793619835094/review",
+      "actionText": "Rate Your Trip",
+      "startDate": "2026-12-15",
+      "durationDays": 5
+    }
   }
 ]

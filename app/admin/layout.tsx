@@ -165,6 +165,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { label: 'Support Desk Tickets', href: '/admin/support', icon: Headphones },
         { label: 'Reviews Moderation', href: '/admin/reviews', icon: Star },
         { label: 'Marketing & Campaigns', href: '/admin/marketing', icon: Megaphone },
+        { label: 'Diwali Festive Campaign', href: '/admin/diwali', icon: Sparkles },
       ],
     },
     {
