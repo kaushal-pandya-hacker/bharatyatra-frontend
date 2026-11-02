@@ -307,6 +307,21 @@ class EnquiryStore {
   }
 
   /**
+   * Get enquiry by reference or ID.
+   */
+  public async getEnquiryByRef(ref: string): Promise<ContactEnquiry | null> {
+    this.ensureLoaded();
+    const clean = ref.trim().toLowerCase();
+    const list = Array.from(this.cache.values());
+    for (const enq of list) {
+      if (enq.enquiryReference.toLowerCase() === clean || enq.id.toLowerCase() === clean) {
+        return enq;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Update enquiry status or notes.
    */
   public async updateEnquiry(

@@ -14,5 +14,21 @@
     "updatedAt": "2026-11-01T15:17:14.683Z",
     "emailNotificationStatus": "NOT_CONFIGURED",
     "whatsappNotificationStatus": "NOT_CONFIGURED"
+  },
+  {
+    "id": "664b6da8-e778-42dc-9ac5-67fc9200fded",
+    "enquiryReference": "BY-ENQ-20261102-002-A9F6",
+    "fullName": "Test Traveler",
+    "email": "test.traveler.1793590437465@example.com",
+    "phone": "+91 9876543210",
+    "inquiryType": "Tour Package Booking",
+    "message": "Hello BharatYatra, I want to book a Gujarat tour with White Rann resort for 4 people.",
+    "status": "NEW",
+    "priority": "NORMAL",
+    "source": "WEBSITE",
+    "createdAt": "2026-11-02T03:33:57.466Z",
+    "updatedAt": "2026-11-02T03:33:57.466Z",
+    "emailNotificationStatus": "NOT_CONFIGURED",
+    "whatsappNotificationStatus": "NOT_CONFIGURED"
   }
 ]

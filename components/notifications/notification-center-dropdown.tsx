@@ -145,7 +145,7 @@ export function NotificationCenterDropdown() {
     }
 
     setIsOpen(false);
-    const ticketMatch = title?.match(/BY-TKT-\d+/)?.[0];
+    const ticketMatch = title?.match(/BY-TKT-\d+/)?.[0] || title?.match(/BY-ENQ-[A-Za-z0-9-]+/)?.[0];
     if (ticketMatch) {
       router.push(`/notifications?ticket=${ticketMatch}`);
     } else if (deepLink) {

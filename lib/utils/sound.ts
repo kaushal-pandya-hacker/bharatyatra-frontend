@@ -227,3 +227,4 @@ export async function testNotificationSound(type: SoundType = 'notification'): P
   // Play sound
   await playNotificationSound(type);
 }
+

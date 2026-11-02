@@ -1237,11 +1237,50 @@ class AdminDataStoreImpl {
     );
   }
 
+  public findOrCreateTicketForEnquiry(enquiry: {
+    id: string;
+    enquiryReference: string;
+    fullName: string;
+    email: string;
+    phone?: string;
+    inquiryType?: string;
+    message: string;
+  }): AdminSupportTicket {
+    this.ensureSupportTicketsLoaded();
+    const cleanRef = enquiry.enquiryReference.toLowerCase();
+    const cleanEmail = enquiry.email.toLowerCase();
+
+    // Check if matching ticket already exists
+    let ticket = this.supportTickets.find(
+      (t) =>
+        (t.subject && t.subject.toLowerCase().includes(cleanRef)) ||
+        (t.description && t.description.toLowerCase().includes(cleanRef)) ||
+        (t.customerEmail.toLowerCase() === cleanEmail && t.subject.toLowerCase().includes('enquiry'))
+    );
+
+    if (!ticket) {
+      ticket = this.createSupportTicket({
+        customerName: enquiry.fullName,
+        customerEmail: enquiry.email,
+        phone: enquiry.phone,
+        category: 'GENERAL',
+        subject: `[${enquiry.inquiryType || 'General Inquiry'}] Enquiry #${enquiry.enquiryReference}`,
+        description: enquiry.message,
+        priority: 'MEDIUM',
+      });
+    }
+
+    return ticket;
+  }
+
   public addCustomerReply(ticketId: string, message: string, senderName?: string): AdminSupportTicket | null {
     this.ensureSupportTicketsLoaded();
     const clean = ticketId.trim().toLowerCase();
     const ticket = this.supportTickets.find(
-      (t) => t.id.toLowerCase() === clean || t.ticketNumber.toLowerCase() === clean
+      (t) =>
+        t.id.toLowerCase() === clean ||
+        t.ticketNumber.toLowerCase() === clean ||
+        (t.subject && t.subject.toLowerCase().includes(clean))
     );
     if (!ticket) return null;
 

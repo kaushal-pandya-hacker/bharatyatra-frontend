@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDataStore } from '@/lib/admin/admin-store';
+import { enquiryStore } from '@/lib/enquiries/enquiry-store';
 import { notificationStore } from '@/lib/notifications/notification-store';
 
 export async function POST(
@@ -17,7 +18,17 @@ export async function POST(
       );
     }
 
-    const updated = adminDataStore.addCustomerReply(params.id, message, senderName);
+    let updated = adminDataStore.addCustomerReply(params.id, message, senderName);
+
+    // Fallback: check if identifier matches an enquiry reference
+    if (!updated) {
+      const enquiry = await enquiryStore.getEnquiryByRef(params.id);
+      if (enquiry) {
+        const tkt = adminDataStore.findOrCreateTicketForEnquiry(enquiry);
+        updated = adminDataStore.addCustomerReply(tkt.id, message, senderName);
+      }
+    }
+
     if (!updated) {
       return NextResponse.json(
         { success: false, message: 'Support ticket not found.' },

@@ -49,5 +49,21 @@
       "customerEmail": "pandyakaushal294@gmail.com",
       "replyMessage": "Thank you for replying! Can you share the pricing for 4 adults?"
     }
+  },
+  {
+    "id": "84bcf136-c241-4dae-8854-d5ee7198026b",
+    "recipientEmail": "test.traveler.1793590437465@example.com",
+    "title": "Reply from BharatYatra Support (#BY-TKT-0003)",
+    "message": "Operations Support Lead: \"Namaste Test Traveler! We have 4 luxury tents available at Rann Utsav. What dates do you prefer?\"",
+    "category": "support",
+    "type": "action",
+    "deepLink": "/notifications?ticket=BY-TKT-0003",
+    "readAt": null,
+    "createdAt": "2026-11-02T03:33:58.138Z",
+    "metadata": {
+      "enquiryId": "664b6da8-e778-42dc-9ac5-67fc9200fded",
+      "ticketNumber": "BY-TKT-0003",
+      "ticketId": "tkt-1793590438135"
+    }
   }
 ]

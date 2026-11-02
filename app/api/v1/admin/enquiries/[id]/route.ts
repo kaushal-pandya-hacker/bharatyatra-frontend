@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminUser } from '@/lib/auth/server-auth';
 import { enquiryStore } from '@/lib/enquiries/enquiry-store';
+import { adminDataStore } from '@/lib/admin/admin-store';
 import { sendSupportReplyEmail } from '@/lib/notifications/email-service';
 import { notificationStore } from '@/lib/notifications/notification-store';
 
@@ -14,7 +15,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ success: false, message: 'Enquiry not found.' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: enquiry });
+    const ticket = adminDataStore.findOrCreateTicketForEnquiry(enquiry);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...enquiry,
+        ticket,
+      },
+    });
   } catch (err: any) {
     return NextResponse.json(
       { success: false, message: err?.message || 'Error loading enquiry details.' },
@@ -42,6 +51,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ success: false, message: 'Enquiry not found.' }, { status: 404 });
     }
 
+    // Also sync status with support ticket if present
+    try {
+      const ticket = adminDataStore.getTicketByIdOrNumber(updated.enquiryReference);
+      if (ticket) {
+        adminDataStore.updateTicketStatus(ticket.id, status, adminNotes, auth.user.email);
+      }
+    } catch {
+      // Non-fatal
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Enquiry updated successfully.',
@@ -63,7 +82,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const body = await req.json();
     const { message, senderName } = body;
 
-    if (!message) {
+    if (!message || !message.trim()) {
       return NextResponse.json({ success: false, message: 'Message content is required.' }, { status: 400 });
     }
 
@@ -72,43 +91,62 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       return NextResponse.json({ success: false, message: 'Enquiry not found.' }, { status: 404 });
     }
 
-    // 1. Send Email to customer
+    // 1. Sync conversation thread in adminDataStore
+    const ticket = adminDataStore.findOrCreateTicketForEnquiry(enquiry);
+    const updatedTicket = adminDataStore.addSupportReply(
+      ticket.id,
+      message.trim(),
+      senderName || auth.user.fullName || 'Operations Support Lead',
+      auth.user.email
+    );
+
+    const ticketRef = updatedTicket?.ticketNumber || enquiry.enquiryReference;
+
+    // 2. Dispatch Email to customer (if email service configured)
     await sendSupportReplyEmail({
-      ticketNumber: enquiry.enquiryReference,
+      ticketNumber: ticketRef,
       customerName: enquiry.fullName,
       customerEmail: enquiry.email,
       subject: `Enquiry #${enquiry.enquiryReference} - ${enquiry.inquiryType}`,
-      replyMessage: message,
-      senderName: senderName || auth.user.fullName || 'Operations Specialist',
+      replyMessage: message.trim(),
+      senderName: senderName || auth.user.fullName || 'Operations Support Lead',
     });
 
-    // 2. Create in-app customer notification
+    // 3. Create in-app customer notification for the client website
     const notif = await notificationStore.createNotification({
       recipientEmail: enquiry.email,
       recipientPhone: enquiry.phone,
-      title: `Response to Inquiry #${enquiry.enquiryReference}`,
-      message: `${senderName || 'Operations Specialist'}: "${message}"`,
+      title: `Reply from BharatYatra Support (#${ticketRef})`,
+      message: `${senderName || 'Operations Support Lead'}: "${message.trim()}"`,
       category: 'support',
       type: 'action',
-      deepLink: '/notifications',
+      deepLink: `/notifications?ticket=${ticketRef}`,
       metadata: {
         enquiryId: enquiry.id,
         enquiryReference: enquiry.enquiryReference,
-        replyMessage: message,
+        ticketId: updatedTicket?.id,
+        ticketNumber: ticketRef,
+        subject: updatedTicket?.subject || enquiry.inquiryType,
+        replyMessage: message.trim(),
+        senderName: senderName || 'Operations Support Lead',
       },
     });
 
-    // 3. Update enquiry notes & status
-    await enquiryStore.updateEnquiry(params.id, {
+    // 4. Update enquiry status to IN_PROGRESS
+    const updatedEnquiry = await enquiryStore.updateEnquiry(params.id, {
       status: 'IN_PROGRESS',
-      adminNotes: `${enquiry.adminNotes ? enquiry.adminNotes + '\n' : ''}[${new Date().toISOString()}] Reply sent: "${message}"`,
+      adminNotes: `${enquiry.adminNotes ? enquiry.adminNotes + '\n' : ''}[${new Date().toISOString()}] Reply sent: "${message.trim()}"`,
       adminEmail: auth.user.email,
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Reply sent and customer notified via email and in-app notification.',
-      notificationId: notif.id,
+      message: 'Reply sent and customer notified via in-app alert and email.',
+      data: {
+        enquiry: updatedEnquiry,
+        ticket: updatedTicket,
+        notificationId: notif.id,
+      },
     });
   } catch (err: any) {
     return NextResponse.json(

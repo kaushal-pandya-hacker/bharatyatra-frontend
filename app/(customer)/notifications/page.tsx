@@ -156,9 +156,11 @@ export default function NotificationsPage() {
     }
 
     const ticketIdOrNumber =
-      notif.metadata?.ticketId ||
       notif.metadata?.ticketNumber ||
+      notif.metadata?.ticketId ||
       notif.title.match(/BY-TKT-\d+/)?.[0] ||
+      notif.metadata?.enquiryReference ||
+      notif.title.match(/BY-ENQ-[A-Za-z0-9-]+/)?.[0] ||
       'BY-TKT-0001';
 
     setLoadingTicket(true);

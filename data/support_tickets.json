@@ -1,5 +1,42 @@
 [
   {
+    "id": "tkt-1793590438135",
+    "ticketNumber": "BY-TKT-0003",
+    "customerName": "Test Traveler",
+    "customerEmail": "test.traveler.1793590437465@example.com",
+    "category": "GENERAL",
+    "subject": "[Tour Package Booking] Enquiry #BY-ENQ-20261102-002-A9F6",
+    "description": "Hello BharatYatra, I want to book a Gujarat tour with White Rann resort for 4 people.",
+    "priority": "MEDIUM",
+    "assignedStaff": "Support Operations Concierge",
+    "status": "OPEN",
+    "createdAt": "2026-11-02T03:33:58.135Z",
+    "updatedAt": "2026-11-02T03:33:58.244Z",
+    "messages": [
+      {
+        "id": "msg-1793590438135",
+        "sender": "CUSTOMER",
+        "senderName": "Test Traveler",
+        "message": "Phone: +91 9876543210\n\nHello BharatYatra, I want to book a Gujarat tour with White Rann resort for 4 people.",
+        "timestamp": "2026-11-02T03:33:58.135Z"
+      },
+      {
+        "id": "msg-1793590438136",
+        "sender": "STAFF",
+        "senderName": "Operations Support Lead",
+        "message": "Namaste Test Traveler! We have 4 luxury tents available at Rann Utsav. What dates do you prefer?",
+        "timestamp": "2026-11-02T03:33:58.136Z"
+      },
+      {
+        "id": "msg-1793590438244",
+        "sender": "CUSTOMER",
+        "senderName": "Test Traveler",
+        "message": "We are planning from 15th December to 19th December. Please share pricing!",
+        "timestamp": "2026-11-02T03:33:58.244Z"
+      }
+    ]
+  },
+  {
     "id": "tkt-1793546235461",
     "ticketNumber": "BY-TKT-0002",
     "customerName": "Kaushal Pandya",

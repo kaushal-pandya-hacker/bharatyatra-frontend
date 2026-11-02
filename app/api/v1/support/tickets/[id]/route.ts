@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDataStore } from '@/lib/admin/admin-store';
+import { enquiryStore } from '@/lib/enquiries/enquiry-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,7 +9,16 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const ticket = adminDataStore.getTicketByIdOrNumber(params.id);
+    let ticket = adminDataStore.getTicketByIdOrNumber(params.id);
+
+    // Fallback: check if identifier matches an enquiry reference
+    if (!ticket) {
+      const enquiry = await enquiryStore.getEnquiryByRef(params.id);
+      if (enquiry) {
+        ticket = adminDataStore.findOrCreateTicketForEnquiry(enquiry);
+      }
+    }
+
     if (!ticket) {
       return NextResponse.json(
         { success: false, message: 'Support ticket not found.' },
