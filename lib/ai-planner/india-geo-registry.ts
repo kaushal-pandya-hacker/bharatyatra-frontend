@@ -1428,6 +1428,16 @@ export function resolveOriginCoordinates(cityInput?: string): { city: string; st
   if (matched) {
     return { city: matched.city, state: matched.state, lat: matched.lat, lng: matched.lng };
   }
+
+  // Handle multi-part strings like "Ahmedabad, Gujarat" or "Dholka, Ahmedabad"
+  const parts = clean.split(',').map((s) => s.trim());
+  for (const part of parts) {
+    if (MAJOR_ORIGIN_HUBS[part]) {
+      const m = MAJOR_ORIGIN_HUBS[part];
+      return { city: m.city, state: m.state, lat: m.lat, lng: m.lng };
+    }
+  }
+
   // Fallback to New Delhi capital coordinates if unrecognized
   return { city: cityInput, state: 'India', lat: 28.6139, lng: 77.2090 };
 }

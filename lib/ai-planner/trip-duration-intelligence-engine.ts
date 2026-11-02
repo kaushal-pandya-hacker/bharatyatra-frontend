@@ -124,6 +124,30 @@ export interface TripDurationRecommendationOutput {
   acclimatizationNotice?: string;
 }
 
+export interface CustomizeDurationInput extends TripDurationRecommendationInput {
+  customDays: number;
+}
+
+export interface CustomizeDurationOutput {
+  isFeasible: boolean;
+  customDays: number;
+  customNights: number;
+  originalRecommendedDays: number;
+  minimumDays: number;
+  relaxedDays: number;
+  status: 'OPTIMAL' | 'MINIMUM_FEASIBLE' | 'EXTENDED' | 'TOO_SHORT' | 'EXCESSIVE';
+  explanation: string;
+  feasibilityWarning?: string;
+  updatedItinerary: DayItineraryPlan[];
+  budgetEstimate: BudgetEstimateResult;
+  changesSummary: {
+    sightseeingDays: number;
+    transitDays: number;
+    freeLeisureDays: number;
+    hotelNights: number;
+  };
+}
+
 // ============================================================================
 // 2. Destination Classification & Geographical Intelligence
 // ============================================================================
@@ -544,6 +568,19 @@ export function calculateTripDurationRecommendation(
     if (recDays < 7) recDays = 7;
   }
 
+  // 3b. Island & Cross-Region Multi-Destination Checks (e.g. Baratang in Andaman & Araku in Andhra Pradesh)
+  const hasIsland = orderedDestinations.some(
+    (d) => d.terrain === 'island' || d.stateOrUt.includes('Andaman') || d.stateOrUt.includes('Lakshadweep')
+  );
+  const uniqueStates = new Set(orderedDestinations.map((d) => d.stateOrUt));
+  const hasCrossRegion = uniqueStates.size > 1 && totalTripRoadKm > 1600;
+
+  if (hasIsland || hasCrossRegion) {
+    if (minDays < 6) minDays = 6;
+    if (recDays < 8) recDays = 8;
+    if (extDays < 10) extDays = 10;
+  }
+
   // 4. Nearby destinations (< 200km single stop): minimum 1-2 days, rec 2-3 days
   if (orderedDestinations.length === 1 && outboundRoadKm <= 200 && !hasHighAltitude) {
     minDays = Math.min(minDays, 1);
@@ -779,6 +816,18 @@ export function calculateTripDurationRecommendation(
     warnings.push(`Permits Required: ${primaryDest.permitsRequired.join(', ')}.`);
   }
 
+  if (hasIsland && (mode === 'car' || mode === 'motorcycle' || mode === 'bus')) {
+    warnings.push(
+      'Island Maritime Notice: Destinations in island territories (Andaman & Nicobar / Lakshadweep) are inaccessible by continuous road travel from mainland India. Flight connectivity to Port Blair and authorized ferry transit is required.'
+    );
+  }
+
+  if (hasCrossRegion) {
+    reasoning.push(
+      `Cross-region journey covers ${uniqueStates.size} distinct states/territories with > 1,600 km corridor. Dedicated multi-leg transit days have been allocated.`
+    );
+  }
+
   return {
     recommendedDuration,
     minimumDuration,
@@ -802,5 +851,171 @@ export function calculateTripDurationRecommendation(
     acclimatizationNotice: hasHighAltitude
       ? `High-altitude physiological safety: Mandatory 48-hour acclimatization and rest at ${primaryDest.canonicalName} (${primaryDest.altitudeMeters}m). Extreme exertion or rapid ascent is medically inadvisable.`
       : undefined,
+  };
+}
+
+// ============================================================================
+// 5. Customize Trip Duration & Dynamic Itinerary Recalculation
+// ============================================================================
+
+export function customizeTripDuration(input: CustomizeDurationInput): CustomizeDurationOutput {
+  const baseResult = calculateTripDurationRecommendation(input);
+  const minDays = baseResult.minimumDuration.days;
+  const recDays = baseResult.recommendedDuration.days;
+  const relDays = baseResult.relaxedDuration.days;
+  const customDays = Math.max(1, Math.round(input.customDays));
+  const customNights = Math.max(1, customDays - 1);
+  const travellers = Math.max(1, input.travellers || 2);
+  const budget = input.budget && input.budget > 0 ? input.budget : 25000;
+
+  const isFeasible = customDays >= minDays;
+  let status: CustomizeDurationOutput['status'] = 'OPTIMAL';
+  let explanation = '';
+  let feasibilityWarning: string | undefined;
+
+  if (customDays < minDays) {
+    status = 'TOO_SHORT';
+    feasibilityWarning = `Selected duration of ${customDays} days is below the minimum feasible threshold of ${minDays} days for these destinations. Travelers will spend excessive time in transit with insufficient rest or attraction hours.`;
+    explanation = `High fatigue risk: Compressing this route to ${customDays} days will eliminate leisure exploration and force touch-and-go travel.`;
+  } else if (customDays === minDays) {
+    status = 'MINIMUM_FEASIBLE';
+    explanation = `Focused highlights itinerary: ${customDays} days / ${customNights} nights covers primary landmarks with fast-paced transitions.`;
+  } else if (customDays === recDays) {
+    status = 'OPTIMAL';
+    explanation = `AI-recommended best balance: ${customDays} days / ${customNights} nights allows balanced sightseeing, local cuisine, and comfortable return transit.`;
+  } else if (customDays <= relDays) {
+    status = 'EXTENDED';
+    explanation = `Relaxed immersion itinerary: ${customDays} days / ${customNights} nights provides slow-paced exploration, buffer days, and offbeat discoveries.`;
+  } else {
+    status = 'EXCESSIVE';
+    explanation = `Extended expedition schedule: ${customDays} days / ${customNights} nights includes extensive leisure and regional immersion.`;
+  }
+
+  // Generate updated itinerary matching customDays
+  const updatedItinerary: DayItineraryPlan[] = [];
+  const originName = (input.origin || 'Ahmedabad').trim();
+  const primaryName = baseResult.destinations[0]?.name || 'Destination';
+  const lastName = baseResult.destinations[baseResult.destinations.length - 1]?.name || primaryName;
+  const mode = baseResult.travelTime.primaryMode;
+  const hasHighAltitude = baseResult.destinations.some((d) => d.isHighAltitude);
+
+  // Day 1
+  updatedItinerary.push({
+    day: 1,
+    title: `${originName} to ${primaryName} — Outbound Journey & Orientation`,
+    location: primaryName,
+    dayType: 'transit_and_explore',
+    morning: `Depart from ${originName} via ${mode.toUpperCase()} (~${baseResult.travelTime.outboundHours.toFixed(1)}h transit). Arrival in ${primaryName}.`,
+    afternoon: `Hotel check-in, unpack, freshen up, and enjoy regional welcome refreshment.`,
+    evening: `Evening orientation walk through ${baseResult.destinations[0]?.keyAttractions[0] || 'local promenade'}, sampling street snacks.`,
+    estimatedSightseeingHours: 2.5,
+    estimatedTransitHours: baseResult.travelTime.outboundHours,
+  });
+
+  let curDay = 2;
+
+  // Altitude day if present
+  if (hasHighAltitude && curDay < customDays) {
+    updatedItinerary.push({
+      day: curDay++,
+      title: `Altitude Acclimatization in ${primaryName}`,
+      location: primaryName,
+      dayType: 'acclimatization',
+      morning: `Rest and hydrate to adapt to high elevation. Leisurely breakfast.`,
+      afternoon: `Gentle local market visit or nearby spiritual site without rapid elevation gain.`,
+      evening: `Restful dinner and early sleep for mountain safety.`,
+      estimatedSightseeingHours: 3.0,
+      estimatedTransitHours: 0.5,
+    });
+  }
+
+  // Middle exploration days
+  const middleDays = Math.max(0, customDays - curDay);
+  const destCount = baseResult.destinations.length;
+  for (let m = 0; m < middleDays; m++) {
+    const targetDest = baseResult.destinations[m % destCount];
+    const sights = targetDest.keyAttractions;
+    const s1 = sights[m % sights.length] || 'Historic Landmark';
+    const s2 = sights[(m + 1) % sights.length] || 'Scenic Viewpoint';
+
+    updatedItinerary.push({
+      day: curDay++,
+      title: `${targetDest.name} — ${m % 2 === 0 ? 'Landmarks & Heritage' : 'Nature & Leisure Trail'}`,
+      location: targetDest.name,
+      dayType: m >= destCount * 2 ? 'leisure' : 'sightseeing',
+      morning: `Morning guided visit to ${s1}. Excellent lighting for photography and cultural insights.`,
+      afternoon: `Authentic regional lunch followed by visit to ${s2} and artisan craft stalls.`,
+      evening: `Scenic sunset point followed by traditional dinner and cultural performance.`,
+      estimatedSightseeingHours: m >= destCount * 2 ? 4.0 : 6.0,
+      estimatedTransitHours: 1.0,
+    });
+  }
+
+  // Final Day
+  if (customDays > 1) {
+    updatedItinerary.push({
+      day: customDays,
+      title: `${lastName} to ${originName} — Return Transit`,
+      location: `${lastName} to ${originName}`,
+      dayType: 'return_transit',
+      morning: `Breakfast, check-out, and commencement of return journey (${baseResult.travelTime.totalDistanceKm} km total corridor).`,
+      afternoon: `Highway/flight transit with scenic refreshment stops.`,
+      evening: `Safe return to ${originName} with unforgettable memories.`,
+      estimatedSightseeingHours: 1.0,
+      estimatedTransitHours: baseResult.travelTime.returnHours,
+    });
+  }
+
+  // Recalculate Budget for custom days
+  const roomsCount = Math.ceil(travellers / 2);
+  const roomRate = budget > 50000 ? 4200 : budget > 28000 ? 2600 : 1800;
+  const accomCost = roomsCount * customNights * roomRate;
+  const transCost = baseResult.budgetEstimate.breakdown.transportation;
+  const actsCost = travellers * Math.max(1, customDays - 1) * 650;
+  const mealsCost = travellers * customDays * 650;
+  const totalGroupCost = transCost + accomCost + actsCost + mealsCost;
+  const perPersonCost = Math.round(totalGroupCost / travellers);
+  const isWithinBudget = totalGroupCost <= budget;
+  const budgetShortfall = Math.max(0, totalGroupCost - budget);
+
+  const budgetEstimate: BudgetEstimateResult = {
+    totalGroupCost,
+    perPersonCost,
+    currency: 'INR',
+    isWithinBudget,
+    budgetShortfall,
+    suggestedAdjustments: budgetShortfall > 0
+      ? [`Customized ${customDays}-day itinerary exceeds allocated budget by ₹${budgetShortfall.toLocaleString('en-IN')}. Consider reducing lodging tier or travel days.`]
+      : undefined,
+    breakdown: {
+      transportation: transCost,
+      accommodation: accomCost,
+      sightseeingAndActivities: actsCost,
+      mealsAndContingency: mealsCost,
+    },
+  };
+
+  const sightseeingDaysCount = updatedItinerary.filter((d) => d.dayType === 'sightseeing').length;
+  const transitDaysCount = updatedItinerary.filter((d) => d.dayType === 'transit_and_explore' || d.dayType === 'return_transit').length;
+  const freeLeisureDaysCount = updatedItinerary.filter((d) => d.dayType === 'leisure' || d.dayType === 'acclimatization').length;
+
+  return {
+    isFeasible,
+    customDays,
+    customNights,
+    originalRecommendedDays: recDays,
+    minimumDays: minDays,
+    relaxedDays: relDays,
+    status,
+    explanation,
+    feasibilityWarning,
+    updatedItinerary,
+    budgetEstimate,
+    changesSummary: {
+      sightseeingDays: sightseeingDaysCount,
+      transitDays: transitDaysCount,
+      freeLeisureDays: freeLeisureDaysCount,
+      hotelNights: customNights,
+    },
   };
 }
