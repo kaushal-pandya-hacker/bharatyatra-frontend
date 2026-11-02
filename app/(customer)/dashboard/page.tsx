@@ -58,8 +58,8 @@ function DashboardContent() {
           setProfile(prof);
           setLoadingProfile(false);
 
-          if (!prof.completed) {
-            router.replace('/onboarding/travel-profile');
+          if (!prof.completed && prof.onboardingStatus !== 'SKIPPED' && prof.onboardingStatus !== 'COMPLETED') {
+            router.replace('/onboarding');
             return;
           }
         }

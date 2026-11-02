@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useAccessibility } from '@/lib/accessibility/accessibility-context';
+import { fetchUserTravelProfile } from '@/lib/profile/travel-profile';
 
 function LoginPageContent() {
   const router = useRouter();
@@ -16,11 +17,32 @@ function LoginPageContent() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Navigation guard if already logged in
+  // Navigation guard with Smart Onboarding Check
   useEffect(() => {
     if (!authLoading && user) {
+      let isCancelled = false;
       const destination = returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/';
-      router.replace(destination);
+
+      fetchUserTravelProfile(user.id)
+        .then((profile) => {
+          if (isCancelled) return;
+          // If customer has not yet completed or skipped onboarding, direct to smart onboarding wizard
+          if (profile.onboardingStatus !== 'COMPLETED' && profile.onboardingStatus !== 'SKIPPED') {
+            const onboardUrl = destination !== '/' ? `/onboarding?returnTo=${encodeURIComponent(destination)}` : '/onboarding';
+            router.replace(onboardUrl);
+          } else {
+            router.replace(destination);
+          }
+        })
+        .catch(() => {
+          if (!isCancelled) {
+            router.replace(destination);
+          }
+        });
+
+      return () => {
+        isCancelled = true;
+      };
     }
   }, [user, authLoading, router, returnTo]);
 

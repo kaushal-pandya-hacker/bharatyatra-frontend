@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **153**  
+> **Total Registered Pages:** **154**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -12,7 +12,7 @@
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
 - [Trip Command Center, Splitter & Telemetry (9 pages)](#trip-command-center-splitter-telemetry)
 - [Bookings, Checkout & Settlement (11 pages)](#bookings-checkout-settlement)
-- [Authentication, Security & Onboarding (7 pages)](#authentication-security-onboarding)
+- [Authentication, Security & Onboarding (8 pages)](#authentication-security-onboarding)
 - [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
 - [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
@@ -117,6 +117,7 @@
 | **SMS / WhatsApp One-Time Password Verification** | `/auth/verify-otp` | [`app/auth/verify-otp/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/auth/verify-otp/page.tsx) | `Public / Traveler` | Mobile phone verification and session restoration |
 | **VIP Early Access & Beta Traveler Onboarding** | `/beta-onboarding` | [`app/beta-onboarding/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/beta-onboarding/page.tsx) | `Invited Travelers` | Early access features, special coupons, and prototype feedback |
 | **Traveler Login & Authentication Portal** | `/login` | [`app/(customer)/login/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/login/page.tsx) | `Public` | Email, OTP, and social sign-in with persistent 30-day session security |
+| **Page: /onboarding** | `/onboarding` | [`app/(customer)/onboarding/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/onboarding/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Traveler Personality & Preference Setup** | `/onboarding/travel-profile` | [`app/(customer)/onboarding/travel-profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/onboarding/travel-profile/page.tsx) | `Authenticated Traveler` | Pacing, food preferences, accessibility requirements, and budget choices |
 | **New Traveler Account Registration** | `/register` | [`app/(customer)/register/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/register/page.tsx) | `Public` | Traveler registration with preferences, home city, and identity info |
 | **Traveler Quick Signup & Welcome Flow** | `/signup` | [`app/(customer)/signup/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_5/app/(customer)/signup/page.tsx) | `Public` | One-click account setup with instant itinerary vault creation |

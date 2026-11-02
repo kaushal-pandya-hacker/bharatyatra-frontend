@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { setAuthSessionCookie, mapSupabaseUserToProfile } from '@/lib/auth/auth-context';
+import { fetchUserTravelProfile } from '@/lib/profile/travel-profile';
 import Link from 'next/link';
 
 function AuthCallbackContent() {
@@ -41,10 +42,20 @@ function AuthCallbackContent() {
           }
           const profile = mapSupabaseUserToProfile(session.user);
           localStorage.setItem('auth_user', JSON.stringify(profile));
+
+          try {
+            const travelProf = await fetchUserTravelProfile(profile.id);
+            if (travelProf.onboardingStatus !== 'COMPLETED' && travelProf.onboardingStatus !== 'SKIPPED') {
+              const onboardUrl = destination !== '/' ? `/onboarding?returnTo=${encodeURIComponent(destination)}` : '/onboarding';
+              router.replace(onboardUrl);
+              return;
+            }
+          } catch {}
+
           router.replace(destination);
         } else {
           // Listen for session detection from URL hash
-          const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
             if (newSession && isSubscribed) {
               setAuthSessionCookie(newSession.access_token, newSession.refresh_token);
               localStorage.setItem('auth_token', newSession.access_token);
@@ -54,6 +65,15 @@ function AuthCallbackContent() {
               if (newSession.user) {
                 const profile = mapSupabaseUserToProfile(newSession.user);
                 localStorage.setItem('auth_user', JSON.stringify(profile));
+
+                try {
+                  const travelProf = await fetchUserTravelProfile(profile.id);
+                  if (travelProf.onboardingStatus !== 'COMPLETED' && travelProf.onboardingStatus !== 'SKIPPED') {
+                    const onboardUrl = destination !== '/' ? `/onboarding?returnTo=${encodeURIComponent(destination)}` : '/onboarding';
+                    router.replace(onboardUrl);
+                    return;
+                  }
+                } catch {}
               }
               router.replace(destination);
             }

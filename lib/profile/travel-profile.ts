@@ -10,6 +10,7 @@ export interface TravelOrigin {
 
 export interface TravelProfile {
   id?: string;
+  userId?: string;
   fullName: string;
   origin: TravelOrigin;
   travelStyle?: string; // Relaxed, Balanced, Adventure, Family, Spiritual, Luxury, Budget
@@ -20,11 +21,43 @@ export interface TravelProfile {
   typicalTravelers?: number;
   preferredLanguage?: string;
   completed: boolean;
+
+  // BharatYatra Smart Onboarding Fields
+  onboardingStatus?: 'NOT_STARTED' | 'IN_PROGRESS' | 'SKIPPED' | 'COMPLETED';
+  onboardingStep?: number;
+  onboardingCompletedAt?: string;
+  groupType?: string; // Solo, Couple, Family, Friends, Group tour, Corporate, Other
+  travelerComposition?: {
+    adults: number;
+    children: number;
+    infants: number;
+    seniors: number;
+  };
+  travelModePreference?: 'road_trip' | 'book_transport' | 'mixed' | 'not_sure';
+  ownVehicleDetails?: {
+    vehicleType?: string;
+    isOwned?: boolean;
+    vehicleCount?: number;
+    longDistanceReady?: boolean;
+    drivingPace?: string;
+  };
+  bookingPreferences?: string[];
+  accommodationTypes?: string[];
+  roomRequirements?: {
+    roomCount?: number;
+    arrangement?: string;
+    accessibility?: string;
+  };
+  budgetScope?: 'per_person' | 'total_group';
+  budgetRange?: string;
+  customBudgetAmount?: number;
+  explorationStyle?: 'fewer_deep' | 'balanced' | 'more_destinations';
+  accessibilityRequirements?: string[];
 }
 
 /**
-  * CANONICAL TRAVEL CONTEXT (Single Source of Truth for User Preferences)
-  */
+ * CANONICAL TRAVEL CONTEXT (Single Source of Truth for User Preferences)
+ */
 export interface TravelContext {
   user: {
     id?: string;
@@ -48,8 +81,8 @@ export interface TravelContext {
 }
 
 /**
-  * TRIP CONTEXT (Layered Trip-Specific Overrides on top of TravelContext)
-  */
+ * TRIP CONTEXT (Layered Trip-Specific Overrides on top of TravelContext)
+ */
 export interface TripContext {
   traveler: {
     id?: string;
@@ -109,22 +142,25 @@ export const DEFAULT_TRAVEL_PROFILE: TravelProfile = {
   typicalTravelers: 2,
   preferredLanguage: 'en',
   completed: false,
+  onboardingStatus: 'NOT_STARTED',
 };
 
 export function calculateProfileCompletionPercentage(profile: Partial<TravelProfile> | null): number {
   if (!profile) return 0;
 
   let score = 0;
-  if (profile.fullName && profile.fullName.trim()) score += 20;
+  if (profile.fullName && profile.fullName.trim()) score += 15;
   if (profile.origin?.city && profile.origin.city.trim()) score += 10;
-  if (profile.origin?.state && profile.origin.state.trim()) score += 10;
+  if (profile.origin?.state && profile.origin.state.trim()) score += 5;
 
-  if (profile.travelStyle) score += 15;
-  if (profile.interests && profile.interests.length > 0) score += 15;
-  if (profile.transport && profile.transport.length > 0) score += 10;
-  if (profile.budget) score += 10;
-  if (profile.pace) score += 5;
-  if (profile.typicalTravelers && profile.typicalTravelers > 0) score += 5;
+  if (profile.groupType) score += 10;
+  if (profile.travelerComposition?.adults) score += 10;
+  if (profile.travelModePreference) score += 10;
+  if (profile.bookingPreferences && profile.bookingPreferences.length > 0) score += 10;
+  if (profile.accommodationTypes && profile.accommodationTypes.length > 0) score += 10;
+  if (profile.budgetRange || profile.budget) score += 10;
+  if (profile.interests && profile.interests.length > 0) score += 10;
+  if (profile.pace) score += 10;
 
   return Math.min(100, score);
 }
@@ -132,7 +168,7 @@ export function calculateProfileCompletionPercentage(profile: Partial<TravelProf
 export function buildTravelContext(profile: TravelProfile): TravelContext {
   return {
     user: {
-      id: profile.id,
+      id: profile.id || profile.userId,
       name: profile.fullName ? profile.fullName.split(' ')[0] : 'Traveler',
     },
     origin: {
@@ -220,7 +256,7 @@ export async function fetchUserTravelProfile(userId?: string): Promise<TravelPro
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (parsed && parsed.fullName && parsed.origin) {
+        if (parsed && parsed.origin) {
           fetchRemoteProfile(userId).catch(() => {});
           return parsed;
         }
@@ -238,29 +274,11 @@ async function fetchRemoteProfile(userId?: string): Promise<TravelProfile> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    // Fetch user preferences from Next.js user API
-    const res = await fetch('/api/v1/me/preferences', { headers });
+    const res = await fetch('/api/user/travel-profile', { headers });
     if (res.ok) {
       const json = await res.json();
       if (json.success && json.data) {
-        const p = json.data;
-        const profile: TravelProfile = {
-          fullName: 'BharatYatra Traveler',
-          origin: {
-            city: p.originCity || 'Ahmedabad',
-            state: p.originState || 'Gujarat',
-            country: p.originCountry || 'India',
-          },
-          travelStyle: p.travelStyle || 'balanced',
-          budget: p.budgetTier || 'moderate',
-          pace: p.travelPace || 'balanced',
-          transport: p.transport || ['train', 'bus'],
-          interests: p.interests || ['heritage', 'nature'],
-          typicalTravelers: p.typicalTravelers || 2,
-          preferredLanguage: p.preferredLanguage || 'en',
-          completed: true,
-        };
-
+        const profile = json.data;
         if (typeof window !== 'undefined') {
           localStorage.setItem(storageKey, JSON.stringify(profile));
         }
@@ -285,17 +303,31 @@ async function fetchRemoteProfile(userId?: string): Promise<TravelProfile> {
 
 export async function saveUserTravelProfile(profile: Partial<TravelProfile>, userId?: string): Promise<TravelProfile> {
   const storageKey = getUserProfileStorageKey(userId);
+  let existing = DEFAULT_TRAVEL_PROFILE;
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem(storageKey);
+    if (cached) {
+      try {
+        existing = JSON.parse(cached);
+      } catch {}
+    }
+  }
+
   const payload: TravelProfile = {
-    fullName: profile.fullName || 'BharatYatra Traveler',
-    origin: profile.origin || DEFAULT_TRAVEL_PROFILE.origin,
-    travelStyle: profile.travelStyle || 'balanced',
-    budget: profile.budget || 'moderate',
-    pace: profile.pace || 'balanced',
-    transport: profile.transport || ['train', 'bus'],
-    interests: profile.interests || ['heritage', 'nature'],
-    typicalTravelers: profile.typicalTravelers || 2,
-    preferredLanguage: profile.preferredLanguage || 'en',
-    completed: true,
+    ...existing,
+    ...profile,
+    fullName: profile.fullName || existing.fullName || 'BharatYatra Traveler',
+    origin: profile.origin || existing.origin || DEFAULT_TRAVEL_PROFILE.origin,
+    travelStyle: profile.travelStyle || existing.travelStyle || 'balanced',
+    budget: profile.budget || existing.budget || 'moderate',
+    pace: profile.pace || existing.pace || 'balanced',
+    transport: profile.transport || existing.transport || ['train', 'bus'],
+    interests: profile.interests || existing.interests || ['heritage', 'nature'],
+    typicalTravelers: profile.typicalTravelers || existing.typicalTravelers || 2,
+    preferredLanguage: profile.preferredLanguage || existing.preferredLanguage || 'en',
+    completed: profile.completed !== undefined ? profile.completed : true,
+    onboardingStatus: profile.onboardingStatus || (profile.completed ? 'COMPLETED' : existing.onboardingStatus || 'IN_PROGRESS'),
+    onboardingCompletedAt: profile.onboardingStatus === 'COMPLETED' || profile.completed ? new Date().toISOString() : existing.onboardingCompletedAt,
   };
 
   if (typeof window !== 'undefined') {
@@ -306,6 +338,12 @@ export async function saveUserTravelProfile(profile: Partial<TravelProfile>, use
     const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    await fetch('/api/user/travel-profile', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
 
     await fetch('/api/v1/me/preferences', {
       method: 'PATCH',
@@ -336,4 +374,22 @@ export async function saveUserTravelProfile(profile: Partial<TravelProfile>, use
   }
 
   return payload;
+}
+
+export async function skipUserOnboarding(userId?: string): Promise<void> {
+  const storageKey = getUserProfileStorageKey(userId);
+  if (typeof window !== 'undefined') {
+    try {
+      const cached = localStorage.getItem(storageKey);
+      const parsed = cached ? JSON.parse(cached) : { ...DEFAULT_TRAVEL_PROFILE };
+      parsed.onboardingStatus = 'SKIPPED';
+      localStorage.setItem(storageKey, JSON.stringify(parsed));
+    } catch {}
+  }
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    await fetch('/api/user/onboarding/skip', { method: 'POST', headers });
+  } catch {}
 }
