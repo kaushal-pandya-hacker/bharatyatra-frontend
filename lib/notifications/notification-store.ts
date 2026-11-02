@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { getSupabaseServerClient } from '@/lib/supabase/client';
+import { webPushEngine } from './web-push-engine';
 
 export interface InAppNotification {
   id: string;
@@ -62,6 +63,7 @@ class NotificationStore {
 
   /**
    * Create and record a new in-app notification.
+   * Also triggers background Web Push if user has active push subscriptions.
    */
   public async createNotification(input: {
     userId?: string;
@@ -86,7 +88,7 @@ class NotificationStore {
       recipientPhone: input.recipientPhone ? input.recipientPhone.trim() : undefined,
       title: input.title,
       message: input.message,
-      category: input.category || 'support',
+      category: input.category || 'trips',
       type: input.type || 'action',
       deepLink: input.deepLink || '/notifications',
       readAt: null,
@@ -120,16 +122,46 @@ class NotificationStore {
       // Local ledger guarantees persistence
     }
 
+    // Trigger Web Push delivery in the background if customer has registered devices
+    if (notif.userId && notif.userId !== 'guest') {
+      try {
+        const cat =
+          notif.category === 'booking'
+            ? 'booking'
+            : notif.category === 'review' || notif.category === 'TRIP_REVIEW'
+            ? 'review'
+            : notif.category === 'marketing'
+            ? 'marketing'
+            : 'trip';
+
+        await webPushEngine.sendPushNotification(notif.userId, {
+          title: notif.title,
+          body: notif.message,
+          url: notif.deepLink,
+          category: cat,
+          data: {
+            notificationId: notif.id,
+            url: notif.deepLink,
+            category: notif.category,
+            ...notif.metadata,
+          },
+        });
+      } catch (err) {
+        console.warn('[NotificationStore] Background push notice:', err);
+      }
+    }
+
     return notif;
   }
 
   /**
-   * Retrieve notifications matching a user ID, email address, or phone.
+   * Retrieve notifications matching a user ID, email address, phone, and optional category filter.
    */
   public getNotifications(filters?: {
     userId?: string;
     email?: string;
     phone?: string;
+    category?: string;
     limit?: number;
   }): InAppNotification[] {
     this.ensureLoaded();
@@ -146,6 +178,11 @@ class NotificationStore {
         const isBroadcast = !n.recipientEmail && !n.userId;
         return matchesEmail || matchesUser || isBroadcast;
       });
+    }
+
+    if (filters?.category && filters.category !== 'all') {
+      const cat = filters.category.toLowerCase();
+      list = list.filter((n) => n.category.toLowerCase() === cat || n.type.toLowerCase().includes(cat));
     }
 
     // Sort newest first
@@ -199,7 +236,40 @@ class NotificationStore {
     }
     return count;
   }
+
+  /**
+   * Delete an individual notification.
+   */
+  public deleteNotification(id: string, userId?: string): boolean {
+    this.ensureLoaded();
+    const item = this.cache.get(id);
+    if (!item) return false;
+    if (userId && item.userId && item.userId !== userId) return false;
+
+    this.cache.delete(id);
+    this.persist();
+    return true;
+  }
+
+  /**
+   * Clear all notification history for a user.
+   */
+  public clearAllNotifications(userId: string, email?: string): number {
+    this.ensureLoaded();
+    let count = 0;
+    for (const [id, item] of Array.from(this.cache.entries())) {
+      const matchUser = userId && item.userId === userId;
+      const matchEmail = email && item.recipientEmail && item.recipientEmail.toLowerCase() === email.toLowerCase();
+      if (matchUser || matchEmail) {
+        this.cache.delete(id);
+        count++;
+      }
+    }
+    if (count > 0) {
+      this.persist();
+    }
+    return count;
+  }
 }
 
 export const notificationStore = new NotificationStore();
-

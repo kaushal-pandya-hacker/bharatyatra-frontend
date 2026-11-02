@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sub_c3408eb1-976",
+    "userId": "usr_1793617645470",
+    "endpoint": "https://fcm.googleapis.com/fcm/send/test_1793617645470",
+    "keys": {
+      "p256dh": "BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QT9AcPP313T59P1W_Hg0QMiLdvSm6nxU0A_dBiHKIs3FsSt8",
+      "auth": "tBHItJI5svbpLNkp0_UQ4Q"
+    },
+    "device": {
+      "deviceType": "Desktop",
+      "browser": "Chrome"
+    },
+    "createdAt": "2026-11-02T11:07:26.422Z",
+    "lastUsedAt": "2026-11-02T11:07:26.422Z",
+    "revokedAt": null
+  }
+]

@@ -20,7 +20,7 @@ export interface NotificationPreferences {
   marketing: boolean;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1';
+const API_BASE = '/api';
 
 // Convert VAPID public key string to Uint8Array
 export function urlBase64ToUint8Array(base64String: string): Uint8Array {

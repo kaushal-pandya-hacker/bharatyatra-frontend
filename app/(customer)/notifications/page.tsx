@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   Bell,
   CheckCheck,
@@ -21,6 +22,9 @@ import {
   CheckCircle2,
   Volume2,
   VolumeX,
+  Trash2,
+  Star,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import {
@@ -36,6 +40,8 @@ export interface InAppNotification {
   title: string;
   message: string;
   deepLink?: string;
+  actionUrl?: string;
+  actionText?: string;
   readAt?: string | null;
   createdAt: string;
   metadata?: Record<string, any>;
@@ -60,8 +66,9 @@ interface SupportTicketData {
   messages: SupportTicketMessage[];
 }
 
-export default function NotificationsPage() {
+function NotificationsContent() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -95,7 +102,7 @@ export default function NotificationsPage() {
       if (email) params.set('email', email);
       params.set('limit', '50');
 
-      const res = await fetch(`/api/v1/notifications?${params.toString()}`);
+      const res = await fetch(`/api/notifications?${params.toString()}`);
       if (res.ok) {
         const json = await res.json();
         const items = Array.isArray(json.data)
@@ -118,7 +125,7 @@ export default function NotificationsPage() {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(`/api/v1/notifications/${id}/read`, { method: 'PATCH' });
+      await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
       setNotifications((prev) =>
         prev.map((item) => (item.id === id ? { ...item, readAt: new Date().toISOString() } : item))
       );
@@ -138,7 +145,7 @@ export default function NotificationsPage() {
         '';
       const uid = user?.id || (email ? `usr_${email}` : 'usr_customer');
 
-      await fetch('/api/v1/notifications/read-all', {
+      await fetch('/api/notifications/read-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, userId: uid }),
@@ -147,6 +154,40 @@ export default function NotificationsPage() {
       showToast('All notifications marked as read');
     } catch {
       // Silent error
+    }
+  };
+
+  const deleteNotification = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    try {
+      await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+      setNotifications((prev) => prev.filter((item) => item.id !== id));
+      showToast('Notification deleted');
+    } catch {
+      showToast('Failed to delete notification');
+    }
+  };
+
+  const clearAllHistory = async () => {
+    if (!confirm('Are you sure you want to clear your entire notification history?')) return;
+    try {
+      const email =
+        user?.email ||
+        (typeof window !== 'undefined'
+          ? localStorage.getItem('by_user_email') || localStorage.getItem('by_last_enquiry_email') || ''
+          : '') ||
+        '';
+      const uid = user?.id || (email ? `usr_${email}` : 'usr_customer');
+
+      await fetch('/api/notifications/clear-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, userId: uid }),
+      });
+      setNotifications([]);
+      showToast('Notification history cleared');
+    } catch {
+      showToast('Failed to clear history');
     }
   };
 
@@ -161,6 +202,7 @@ export default function NotificationsPage() {
       notif.title.match(/BY-TKT-\d+/)?.[0] ||
       notif.metadata?.enquiryReference ||
       notif.title.match(/BY-ENQ-[A-Za-z0-9-]+/)?.[0] ||
+      notif.deepLink?.match(/ticket=([A-Za-z0-9-]+)/)?.[1] ||
       'BY-TKT-0001';
 
     setLoadingTicket(true);
@@ -255,31 +297,33 @@ export default function NotificationsPage() {
   };
 
   // Auto-open ticket if specified in URL query
+  const ticketParam = searchParams?.get('ticket');
   useEffect(() => {
     initAudioUnlocker();
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const ticketParam = params.get('ticket');
-      if (ticketParam) {
-        openSupportThread({
-          id: 'url-param',
-          type: 'support',
-          category: 'support',
-          title: `Support Ticket #${ticketParam}`,
-          message: '',
-          createdAt: new Date().toISOString(),
-          metadata: { ticketNumber: ticketParam, ticketId: ticketParam },
-        });
-      }
+    if (ticketParam) {
+      openSupportThread({
+        id: 'url-param',
+        type: 'support',
+        category: 'support',
+        title: `Support Ticket #${ticketParam}`,
+        message: '',
+        createdAt: new Date().toISOString(),
+        metadata: { ticketNumber: ticketParam, ticketId: ticketParam },
+      });
     }
-  }, []);
+  }, [ticketParam]);
 
   const unreadCount = notifications.filter((n) => !n.readAt).length;
 
   const filteredNotifications = notifications.filter((item) => {
     if (selectedCategory === 'all') return true;
     if (selectedCategory === 'support') {
-      return item.category?.toLowerCase() === 'support' || item.type?.toLowerCase() === 'support';
+      return (
+        item.category?.toLowerCase() === 'support' ||
+        item.type?.toLowerCase() === 'support' ||
+        item.title?.includes('BY-TKT') ||
+        item.title?.includes('BY-ENQ')
+      );
     }
     if (selectedCategory === 'bookings') {
       return item.category?.toLowerCase() === 'booking' || item.type?.toLowerCase() === 'booking';
@@ -289,6 +333,13 @@ export default function NotificationsPage() {
     }
     if (selectedCategory === 'payments') {
       return item.category?.toLowerCase() === 'payment' || item.type?.toLowerCase() === 'payment';
+    }
+    if (selectedCategory === 'reviews') {
+      return (
+        item.category?.toLowerCase() === 'review' ||
+        item.type?.toLowerCase() === 'review' ||
+        item.actionUrl?.includes('/review')
+      );
     }
     return true;
   });
@@ -308,6 +359,9 @@ export default function NotificationsPage() {
     }
     if (category === 'payment') {
       return <CreditCard className="w-5 h-5 text-indigo-600" />;
+    }
+    if (category === 'review' || type === 'review') {
+      return <Star className="w-5 h-5 text-amber-500" />;
     }
     return <Bell className="w-5 h-5 text-slate-600" />;
   };
@@ -477,7 +531,7 @@ export default function NotificationsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <button
               onClick={fetchNotifications}
               className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
@@ -489,13 +543,31 @@ export default function NotificationsPage() {
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition shadow-xs cursor-pointer"
                 type="button"
               >
                 <CheckCheck className="w-4 h-4" />
                 <span>Mark All Read</span>
               </button>
             )}
+            {notifications.length > 0 && (
+              <button
+                onClick={clearAllHistory}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-700 border border-slate-200 text-xs font-bold transition cursor-pointer"
+                type="button"
+                title="Clear all notification history"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Clear All</span>
+              </button>
+            )}
+            <Link
+              href="/profile/notifications"
+              className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+              title="Notification Settings"
+            >
+              <ShieldCheck className="w-4 h-4 text-slate-600" />
+            </Link>
           </div>
         </div>
 
@@ -504,9 +576,10 @@ export default function NotificationsPage() {
           {[
             { id: 'all', label: 'All Alerts' },
             { id: 'support', label: 'Support & Inquiries' },
-            { id: 'bookings', label: 'Bookings' },
             { id: 'trips', label: 'Trips & Circuits' },
+            { id: 'bookings', label: 'Bookings' },
             { id: 'payments', label: 'Payments' },
+            { id: 'reviews', label: 'Reviews & Feedback' },
           ].map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
@@ -558,7 +631,18 @@ export default function NotificationsPage() {
                 notif.category?.toLowerCase() === 'support' ||
                 notif.type?.toLowerCase() === 'support' ||
                 notif.title.includes('BY-TKT') ||
-                Boolean(notif.metadata?.ticketNumber || notif.metadata?.ticketId);
+                notif.title.includes('BY-ENQ') ||
+                Boolean(notif.metadata?.ticketNumber || notif.metadata?.ticketId || notif.metadata?.enquiryReference) ||
+                Boolean(notif.deepLink && notif.deepLink.includes('ticket='));
+
+              const actionTarget = notif.actionUrl || notif.deepLink;
+              const actionLabel =
+                notif.actionText ||
+                (isSupport
+                  ? 'View & Reply'
+                  : actionTarget?.includes('/review')
+                  ? 'Rate Your Trip'
+                  : 'View Details');
 
               return (
                 <div
@@ -615,20 +699,29 @@ export default function NotificationsPage() {
                         className="px-3.5 py-1.5 rounded-lg bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
                         type="button"
                       >
-                        <span>View &amp; Reply</span>
+                        <span>{actionLabel}</span>
                         <ArrowRight className="w-3 h-3" />
                       </button>
                     ) : (
-                      notif.deepLink && (
+                      actionTarget && (
                         <Link
-                          href={notif.deepLink}
+                          href={actionTarget}
                           className="px-3.5 py-1.5 rounded-lg bg-[#102B4E] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1"
                         >
-                          <span>View</span>
+                          <span>{actionLabel}</span>
                           <ArrowRight className="w-3 h-3" />
                         </Link>
                       )
                     )}
+
+                    <button
+                      onClick={(e) => deleteNotification(notif.id, e)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                      title="Delete notification"
+                      type="button"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               );
@@ -637,5 +730,19 @@ export default function NotificationsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NotificationsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8 text-xs text-slate-400 font-semibold">
+          Syncing BharatYatra notifications...
+        </div>
+      }
+    >
+      <NotificationsContent />
+    </Suspense>
   );
 }

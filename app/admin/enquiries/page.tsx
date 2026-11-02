@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Inbox,
   Search,
@@ -81,14 +81,19 @@ export default function AdminEnquiriesPage() {
   const [adminNotes, setAdminNotes] = useState('');
   const [updating, setUpdating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const previousNewCountRef = useRef<number | null>(null);
 
   useEffect(() => {
     initAudioUnlocker();
     fetchEnquiries();
+    const interval = setInterval(() => {
+      fetchEnquiries(true);
+    }, 12000);
+    return () => clearInterval(interval);
   }, [selectedStatus, selectedType]);
 
-  const fetchEnquiries = async () => {
-    setLoading(true);
+  const fetchEnquiries = async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
     setErrorMessage(null);
     try {
       const token = localStorage.getItem('admin_token');
@@ -104,14 +109,23 @@ export default function AdminEnquiriesPage() {
       if (res.ok) {
         const json = await res.json();
         if (json.data) setEnquiries(json.data);
-        if (json.stats) setStats(json.stats);
+        if (json.stats) {
+          if (
+            previousNewCountRef.current !== null &&
+            json.stats.new > previousNewCountRef.current
+          ) {
+            playNotificationSound('notification');
+          }
+          previousNewCountRef.current = json.stats.new;
+          setStats(json.stats);
+        }
       } else {
-        setErrorMessage('Failed to fetch enquiries from server.');
+        if (!isBackground) setErrorMessage('Failed to fetch enquiries from server.');
       }
     } catch (e: any) {
-      setErrorMessage(e?.message || 'Error connecting to database.');
+      if (!isBackground) setErrorMessage(e?.message || 'Error connecting to database.');
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
@@ -294,7 +308,7 @@ export default function AdminEnquiriesPage() {
             <span>Test Sound</span>
           </button>
           <button
-            onClick={fetchEnquiries}
+            onClick={() => fetchEnquiries()}
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -365,7 +379,7 @@ export default function AdminEnquiriesPage() {
             />
           </div>
           <button
-            onClick={fetchEnquiries}
+            onClick={() => fetchEnquiries()}
             className="px-3.5 py-2 rounded-xl bg-[#102B4E] text-white font-bold text-xs hover:bg-blue-950 transition-colors cursor-pointer"
           >
             Filter

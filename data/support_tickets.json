@@ -1,5 +1,42 @@
 [
   {
+    "id": "tkt-1793617646279",
+    "ticketNumber": "BY-TKT-0004",
+    "customerName": "Kaushal Pandya Test 1793617645470",
+    "customerEmail": "traveler_1793617645470@test.bharatyatra.in",
+    "category": "GENERAL",
+    "subject": "[Tour Package Booking] Enquiry #BY-ENQ-20261102-003-22A4",
+    "description": "Need customized Gujarat tour with White Rann resort and Dwarka darshan.",
+    "priority": "MEDIUM",
+    "assignedStaff": "Support Operations Concierge",
+    "status": "OPEN",
+    "createdAt": "2026-11-02T11:07:26.279Z",
+    "updatedAt": "2026-11-02T11:07:26.421Z",
+    "messages": [
+      {
+        "id": "msg-1793617646279",
+        "sender": "CUSTOMER",
+        "senderName": "Kaushal Pandya Test 1793617645470",
+        "message": "Phone: +91 96242 82521\n\nNeed customized Gujarat tour with White Rann resort and Dwarka darshan.",
+        "timestamp": "2026-11-02T11:07:26.279Z"
+      },
+      {
+        "id": "msg-1793617646280",
+        "sender": "STAFF",
+        "senderName": "Operations Support Lead",
+        "message": "Hello Kaushal! We have customized itineraries for White Rann with tent stay. Let us know your preferred dates.",
+        "timestamp": "2026-11-02T11:07:26.280Z"
+      },
+      {
+        "id": "msg-1793617646421",
+        "sender": "CUSTOMER",
+        "senderName": "Kaushal Pandya Test 1793617645470",
+        "message": "Great! We plan to travel from 15th to 20th December for 4 adults.",
+        "timestamp": "2026-11-02T11:07:26.421Z"
+      }
+    ]
+  },
+  {
     "id": "tkt-1793590438135",
     "ticketNumber": "BY-TKT-0003",
     "customerName": "Test Traveler",

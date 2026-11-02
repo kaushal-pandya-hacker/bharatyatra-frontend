@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireServerUser } from '@/lib/auth/server-auth';
 import { UserDataStore } from '@/lib/user/user-store';
+import { TripCompletionNotifier } from '@/lib/trips/completion-notifier';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,10 +36,19 @@ export async function POST(req: NextRequest) {
 
     if (userId) {
       try {
-        await UserDataStore.saveTrip(userId, {
+        const updatedTrip = await UserDataStore.saveTrip(userId, {
           id: tripId,
           status: status as any,
         });
+
+        // Trigger automated trip completion celebration notification
+        if (status === 'COMPLETED' && updatedTrip) {
+          await TripCompletionNotifier.dispatchTripCompletionNotification(
+            updatedTrip as any,
+            userId,
+            auth.user?.email
+          );
+        }
       } catch (e) {
         // Local fallback handled smoothly
       }

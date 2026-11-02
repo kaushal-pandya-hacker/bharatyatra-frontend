@@ -1,0 +1,12 @@
+[
+  {
+    "userId": "usr_1793617645470",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-02T11:07:26.423Z"
+  }
+]
