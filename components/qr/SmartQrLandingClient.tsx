@@ -226,15 +226,15 @@ export function SmartQrLandingClient() {
       </div>
 
       {/* MAIN CONTAINER */}
-      <main className="w-full max-w-md mx-auto px-4 sm:px-6 py-6 sm:py-9 flex-1 flex flex-col">
+      <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex-1 flex flex-col">
         
         {/* BRAND HERO SECTION */}
-        <header className="text-center space-y-4.5 mb-7">
+        <header className="text-center space-y-4 mb-7 sm:mb-9">
           
           {/* Royal Logo Container */}
           <div className="inline-block relative">
-            <div className="p-1 rounded-[28px] bg-gradient-to-br from-amber-400 via-white to-emerald-400 shadow-xl shadow-amber-500/10">
-              <div className="w-24 h-24 sm:w-26 sm:h-26 bg-white rounded-[24px] p-2.5 flex items-center justify-center relative group transition-transform duration-300 hover:scale-105">
+            <div className="p-1 rounded-[26px] sm:rounded-[28px] bg-gradient-to-br from-amber-400 via-white to-emerald-400 shadow-xl shadow-amber-500/10">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-26 md:h-26 bg-white rounded-[22px] sm:rounded-[24px] p-2 sm:p-2.5 flex items-center justify-center relative group transition-transform duration-300 hover:scale-105">
                 <img
                   src={SMART_QR_CONFIG.brand.logoUrl}
                   alt="BharatYatra Official Emblem"
@@ -253,10 +253,10 @@ export function SmartQrLandingClient() {
 
           {/* Brand Name & Cultural Script */}
           <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0A192F] uppercase font-['Outfit',sans-serif]">
+            <h1 className="text-[clamp(1.5rem,4vw,2.5rem)] font-black tracking-tight text-[#0A192F] uppercase font-['Outfit',sans-serif] leading-tight">
               {SMART_QR_CONFIG.brand.name}
             </h1>
-            <p className="text-[12px] font-bold text-[#E65100] tracking-wide">
+            <p className="text-[11px] sm:text-xs md:text-sm font-bold text-[#E65100] tracking-wide">
               {SMART_QR_CONFIG.brand.subNameGujarati} • અધિકૃત સ્માર્ટ ક્યૂઆર
             </p>
           </div>
@@ -264,24 +264,24 @@ export function SmartQrLandingClient() {
           {/* National Tagline Ribbon */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-amber-500/30 shadow-xs backdrop-blur-xs">
             <AshokaChakraIcon size={13} color="#000080" />
-            <span className="text-[11px] font-extrabold tracking-widest text-[#0A192F] uppercase">
+            <span className="text-[10px] sm:text-[11px] font-extrabold tracking-widest text-[#0A192F] uppercase">
               {SMART_QR_CONFIG.brand.tagline}
             </span>
             <AshokaChakraIcon size={13} color="#000080" />
           </div>
 
-          {/* Headline & Subtitle */}
+          {/* Headline & Subtitle with Responsive Fluid Typography */}
           <div className="space-y-1.5 pt-0.5">
-            <h2 className="text-xl sm:text-2xl font-black text-[#0A192F] tracking-tight leading-snug">
+            <h2 className="text-[clamp(1.15rem,2.8vw,1.75rem)] font-black text-[#0A192F] tracking-tight leading-snug">
               {SMART_QR_CONFIG.brand.headline}
             </h2>
-            <p className="text-xs sm:text-[13px] text-slate-600 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base text-slate-600 max-w-lg mx-auto leading-relaxed">
               {SMART_QR_CONFIG.brand.subtitle}
             </p>
           </div>
 
           {/* Verified Official Trust Pill */}
-          <div className="flex items-center justify-center gap-2 pt-0.5 text-[11px] font-semibold text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5 text-[10px] sm:text-[11px] font-semibold text-slate-500">
             <span className="inline-flex items-center gap-1.5 text-[#0F6B06] bg-emerald-50 px-3 py-1 rounded-full border border-[#138808]/25 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Official Business Card QR</span>
@@ -291,9 +291,9 @@ export function SmartQrLandingClient() {
           </div>
         </header>
 
-        {/* 2. EXACT SIX PRIMARY BUTTONS IN SPECIFIED ORDER */}
+        {/* 2. EXACT SIX PRIMARY BUTTONS IN SPECIFIED ORDER - RESPONSIVE GRID */}
         <section
-          className="space-y-3.5 flex-1"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3.5 sm:gap-4 flex-1"
           aria-label="BharatYatra Primary Travel Actions"
         >
           {SMART_QR_CONFIG.buttons.map((btn) => {
@@ -301,11 +301,11 @@ export function SmartQrLandingClient() {
 
             const cardContent = (
               <div
-                className={`group relative w-full p-4 rounded-2xl ${style.cardBg} border ${style.border} shadow-sm ${style.glow} transition-all duration-200 active:scale-[0.98] flex items-center justify-between gap-3 text-left`}
+                className={`group relative w-full h-full p-4 rounded-2xl ${style.cardBg} border ${style.border} shadow-sm ${style.glow} transition-all duration-200 active:scale-[0.98] flex items-center justify-between gap-3 text-left`}
               >
                 {/* Left: Luxury Gradient Icon Container */}
                 <div
-                  className={`w-13 h-13 rounded-2xl flex items-center justify-center shrink-0 ${style.iconBg} ${style.iconShadow} transition-transform duration-200 group-hover:scale-105`}
+                  className={`w-12 h-12 sm:w-13 sm:h-13 rounded-2xl flex items-center justify-center shrink-0 ${style.iconBg} ${style.iconShadow} transition-transform duration-200 group-hover:scale-105`}
                 >
                   {renderIcon(btn.iconName)}
                 </div>
@@ -313,7 +313,7 @@ export function SmartQrLandingClient() {
                 {/* Middle: Title, Badge, Description */}
                 <div className="flex-1 min-w-0 pr-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className={`text-[15px] font-black tracking-tight ${style.titleColor} transition-colors duration-200`}>
+                    <span className={`text-[14px] sm:text-[15px] font-black tracking-tight ${style.titleColor} transition-colors duration-200`}>
                       {btn.label}
                     </span>
                     <span
@@ -346,7 +346,7 @@ export function SmartQrLandingClient() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => trackButtonClick(btn)}
-                  className="block focus:outline-hidden focus:ring-2 focus:ring-[#FF9933] rounded-2xl"
+                  className="block h-full focus:outline-hidden focus:ring-2 focus:ring-[#FF9933] rounded-2xl"
                 >
                   {cardContent}
                 </a>
@@ -358,7 +358,7 @@ export function SmartQrLandingClient() {
                 key={btn.id}
                 href={btn.destinationUrl}
                 onClick={() => trackButtonClick(btn)}
-                className="block focus:outline-hidden focus:ring-2 focus:ring-[#102B4E] rounded-2xl"
+                className="block h-full focus:outline-hidden focus:ring-2 focus:ring-[#102B4E] rounded-2xl"
               >
                 {cardContent}
               </Link>
@@ -367,8 +367,8 @@ export function SmartQrLandingClient() {
         </section>
 
         {/* 3. DIRECT EXECUTIVE CONCIERGE SUPPORT BAR */}
-        <section className="mt-7 pt-5 border-t border-slate-200/70">
-          <div className="p-4.5 rounded-2xl bg-white border border-slate-200/90 shadow-md shadow-slate-900/5 space-y-3.5">
+        <section className="mt-8 pt-6 border-t border-slate-200/70 w-full max-w-3xl mx-auto">
+          <div className="p-4.5 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-md shadow-slate-900/5 space-y-3.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20" />
@@ -381,7 +381,7 @@ export function SmartQrLandingClient() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {/* Direct Phone Call */}
               <a
                 href={`tel:${SMART_QR_CONFIG.contact.phone}`}
@@ -394,7 +394,7 @@ export function SmartQrLandingClient() {
                     }).catch(() => {});
                   } catch {}
                 }}
-                className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0A192F] hover:bg-slate-100 hover:border-slate-300 transition-all shadow-2xs active:scale-95"
+                className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0A192F] hover:bg-slate-100 hover:border-slate-300 transition-all shadow-2xs active:scale-95 min-h-[44px]"
               >
                 <Phone className="w-3.5 h-3.5 text-blue-700" />
                 <span>Call Concierge</span>
@@ -414,36 +414,36 @@ export function SmartQrLandingClient() {
                     }).catch(() => {});
                   } catch {}
                 }}
-                className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-gradient-to-r from-[#138808] to-[#0F6B06] text-white text-xs font-bold hover:brightness-105 transition-all shadow-sm shadow-emerald-700/20 active:scale-95"
+                className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-gradient-to-r from-[#138808] to-[#0F6B06] text-white text-xs font-bold hover:brightness-105 transition-all shadow-sm shadow-emerald-700/20 active:scale-95 min-h-[44px]"
               >
                 <WhatsAppIcon className="w-4 h-4 text-white" />
                 <span>WhatsApp</span>
               </a>
-            </div>
 
-            {/* Share or Bookmark Button */}
-            <button
-              type="button"
-              onClick={handleShare}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-[#0A192F] transition-all flex items-center justify-center gap-2"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4 text-emerald-600" />
-                  <span className="text-emerald-700 font-bold">Smart Card Link Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Share BharatYatra Smart Pass</span>
-                </>
-              )}
-            </button>
+              {/* Share or Bookmark Button */}
+              <button
+                type="button"
+                onClick={handleShare}
+                className="col-span-2 sm:col-span-1 w-full py-3 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-[#0A192F] transition-all flex items-center justify-center gap-2 min-h-[44px]"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span className="text-emerald-700 font-bold">Smart Card Link Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Share BharatYatra Pass</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </section>
 
         {/* 4. CURATED INDIAN DESTINATION VIGNETTES */}
-        <section className="mt-6 space-y-2.5">
+        <section className="mt-8 space-y-3 w-full max-w-3xl mx-auto">
           <div className="flex items-center justify-between text-xs px-1">
             <span className="font-extrabold text-[#0A192F] uppercase tracking-wider text-[11px]">
               Incredible India Awaits
