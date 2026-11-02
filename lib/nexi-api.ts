@@ -25,16 +25,7 @@ export interface NexiChatResponse {
   conversationId: string;
   message: string;
   actions?: Array<{
-    type:
-      | 'OPEN_TRIP'
-      | 'OPEN_BOOKING'
-      | 'OPEN_PROFILE'
-      | 'OPEN_MAP'
-      | 'OPEN_PLANNER'
-      | 'CONFIRM_PROFILE_UPDATE'
-      | 'OPEN_PAYMENT_PAGE'
-      | 'OPEN_DESTINATIONS'
-      | 'OPEN_OFFERS';
+    type: 'OPEN_TRIP' | 'OPEN_BOOKING' | 'OPEN_PROFILE' | 'OPEN_MAP' | 'OPEN_PLANNER' | 'CONFIRM_PROFILE_UPDATE' | 'OPEN_PAYMENT_PAGE';
     label?: string;
     payload?: any;
   }>;
