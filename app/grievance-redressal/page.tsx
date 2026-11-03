@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Grievance Redressal Mechanism — Statutory compliance under Information Technology Rules 2021 and Consumer Protection (E-Commerce) Rules 2020.',
   alternates: {
-    canonical: 'https://bharatyatra.in/grievance-redressal/',
+    canonical: 'https://www.bharatyatra.in/grievance-redressal/',
   },
 };
 

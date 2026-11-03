@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: 'Explore Gujarat & India Destinations — 100+ Iconic Landmarks',
   description: 'Explore Gujarat and India travel destinations. Filter heritage forts, beaches, hill stations, wildlife sanctuaries, and pilgrimage shrines with live AI route planning.',
   alternates: {
-    canonical: '/explore',
+    canonical: 'https://www.bharatyatra.in/explore',
   },
   openGraph: {
     title: 'Explore Gujarat & India Destinations — 100+ Iconic Landmarks | BharatYatra',
     description: 'Explore Gujarat and India travel destinations. Filter heritage forts, beaches, hill stations, wildlife sanctuaries, and pilgrimage shrines with live AI route planning.',
-    url: 'https://www.bharatyatra.com/explore',
+    url: 'https://www.bharatyatra.in/explore',
     siteName: 'BharatYatra',
     images: [
       {

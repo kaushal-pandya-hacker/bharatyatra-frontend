@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Booking Policy — Comprehensive rules regarding traveler identification, confirmation vouchers, check-in mandates, and payment settlement.',
   alternates: {
-    canonical: 'https://bharatyatra.in/booking-policy/',
+    canonical: 'https://www.bharatyatra.in/booking-policy/',
   },
 };
 

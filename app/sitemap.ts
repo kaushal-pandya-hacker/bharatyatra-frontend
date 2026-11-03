@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://bharatyatra.in';
+  const baseUrl = 'https://www.bharatyatra.in';
 
   const gujaratDestinations = [
     'ahmedabad',
@@ -38,7 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const mainPages = [
-    { url: baseUrl, priority: 1.0, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/`, priority: 1.0, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/explore`, priority: 0.9, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/destinations`, priority: 0.9, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/plan`, priority: 0.9, changeFrequency: 'daily' as const },

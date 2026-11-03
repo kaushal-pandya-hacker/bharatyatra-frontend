@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Legal Disclaimer — Technology intermediary disclosures, AI itinerary estimations, third-party supplier boundaries, and verified information notices.',
   alternates: {
-    canonical: 'https://bharatyatra.in/disclaimer/',
+    canonical: 'https://www.bharatyatra.in/disclaimer/',
   },
 };
 

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
@@ -122,6 +123,35 @@ async function fetchDestinationFromApi(slug: string) {
   };
 }
 
+
+export async function generateMetadata({ params }: DestinationDetailPageProps): Promise<Metadata> {
+  const destination = await fetchDestinationFromApi(params.id);
+  if (!destination) {
+    return {
+      title: 'Destination | BharatYatra',
+    };
+  }
+  const title = `${destination.name} Travel Guide | BharatYatra`;
+  const description = destination.description || destination.shortDescription || destination.tagline || `Explore ${destination.name} tourist attractions, tour packages, and travel guides.`;
+  const canonicalUrl = `https://www.bharatyatra.in/destinations/${destination.slug || params.id}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: 'BharatYatra',
+      locale: 'en_IN',
+      type: 'website',
+    },
+  };
+}
+
 export default async function DestinationDetailPage({ params }: DestinationDetailPageProps) {
   const destination = await fetchDestinationFromApi(params.id);
 
@@ -153,7 +183,7 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
     '@type': 'TouristAttraction',
     name: destination.name,
     description: description,
-    url: `https://bharatyatra.com/destinations/${destination.slug}`,
+    url: `https://www.bharatyatra.in/destinations/${destination.slug}`,
     image: bgImage,
     address: {
       '@type': 'PostalAddress',

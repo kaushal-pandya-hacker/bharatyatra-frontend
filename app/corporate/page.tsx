@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description:
     'Tailored corporate travel solutions, team offsites, MICE bookings, and GST-compliant enterprise billing across India.',
   alternates: {
-    canonical: 'https://bharatyatra.in/corporate/',
+    canonical: 'https://www.bharatyatra.in/corporate/',
   },
 };
 

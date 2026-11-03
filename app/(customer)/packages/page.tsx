@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: 'Gujarat & Worldwide Tour Packages — All-Inclusive Travel Deals',
   description: 'Book curated Gujarat & India tour packages with BharatYatra. All-inclusive luxury resort stays, guided transport, zero hidden fees, and instant AI customization.',
   alternates: {
-    canonical: '/packages',
+    canonical: 'https://www.bharatyatra.in/packages',
   },
   openGraph: {
     title: 'Gujarat & Worldwide Tour Packages — All-Inclusive Travel Deals | BharatYatra',
     description: 'Book curated Gujarat & India tour packages with BharatYatra. All-inclusive luxury resort stays, guided transport, zero hidden fees, and instant AI customization.',
-    url: 'https://www.bharatyatra.com/packages',
+    url: 'https://www.bharatyatra.in/packages',
     siteName: 'BharatYatra',
     images: [
       {

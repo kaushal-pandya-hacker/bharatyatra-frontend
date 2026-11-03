@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Refund Policy — Transparent information on refund processing timelines, settlement methods, payment reversals, and consumer procedures.',
   alternates: {
-    canonical: 'https://bharatyatra.in/refund-policy/',
+    canonical: 'https://www.bharatyatra.in/refund-policy/',
   },
 };
 

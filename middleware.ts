@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const host = request.headers.get('host') || request.nextUrl.hostname;
+  const host = (request.headers.get('host') || request.nextUrl.hostname || '').replace(/:\d+$/, '').toLowerCase();
 
-  // Canonical apex domain redirect to www.bharatyatra.in (HTTP 308 permanent redirect)
-  if (host === 'bharatyatra.in') {
+  // Canonical apex domain and legacy domain redirect to www.bharatyatra.in (HTTP 308 permanent redirect)
+  if (host === 'bharatyatra.in' || host === 'bharatyatra.com' || host === 'www.bharatyatra.com') {
     const targetUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, 'https://www.bharatyatra.in');
     return NextResponse.redirect(targetUrl, 308);
   }

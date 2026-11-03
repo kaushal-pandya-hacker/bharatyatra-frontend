@@ -41,9 +41,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const placesCount = stateFolderItem ? stateFolderItem.placesCount : 0;
 
+  const canonicalUrl = `https://www.bharatyatra.in/states/${params.slug}`;
+
   return {
-    title: `${stateName} Tourism — ${placesCount} Official Places, Cover & Itineraries | BharatYatra`,
+    title: `${stateName} Tourism | BharatYatra`,
     description: `Discover all ${placesCount} tourist destinations, attractions, official state cover image, and tour packages for ${stateName}, India.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${stateName} Tourism | BharatYatra`,
+      description: `Discover all ${placesCount} tourist destinations, attractions, and tour packages for ${stateName}, India.`,
+      url: canonicalUrl,
+      siteName: 'BharatYatra',
+      locale: 'en_IN',
+      type: 'website',
+    },
   };
 }
 
@@ -84,7 +97,7 @@ export default async function DynamicStateDetailPage({ params }: Props) {
     '@type': 'AdministrativeArea',
     name: stateName,
     description: description,
-    url: `https://bharatyatra.com/states/${slug}`,
+    url: `https://www.bharatyatra.in/states/${slug}`,
     image: coverImage,
     address: {
       '@type': 'PostalAddress',

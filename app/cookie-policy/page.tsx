@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Cookie Policy — Detailed explanations of cookies, local storage, analytics beacons, and user consent management.',
   alternates: {
-    canonical: 'https://bharatyatra.in/cookie-policy/',
+    canonical: 'https://www.bharatyatra.in/cookie-policy/',
   },
 };
 

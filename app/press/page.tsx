@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Press Room — Press releases, media coverage, brand assets, and media contact inquiries.',
   alternates: {
-    canonical: 'https://bharatyatra.in/press/',
+    canonical: 'https://www.bharatyatra.in/press/',
   },
 };
 

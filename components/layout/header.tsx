@@ -146,7 +146,7 @@ export function Header() {
       <div className="mx-auto flex h-16 w-full max-w-[1536px] items-center justify-between px-3 sm:px-5 lg:px-6 gap-2">
         
         {/* Left: Brand Logo & Title */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group mr-1 xl:mr-3 whitespace-nowrap focus:outline-hidden">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 group mr-1 xl:mr-3 whitespace-nowrap outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-none">
           <img
             src="/logo.png"
             alt="BharatYatra Logo"

@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.bharatyatra.com'),
+  metadataBase: new URL('https://www.bharatyatra.in'),
   title: {
     default: 'BharatYatra — India\'s #1 AI Travel & Itinerary Planner',
     template: '%s | BharatYatra — India AI Travel',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     'State & UT Travel Guide',
     'India Flight & Train Bookings',
   ],
-  authors: [{ name: 'BharatYatra', url: 'https://www.bharatyatra.com' }],
+  authors: [{ name: 'BharatYatra', url: 'https://www.bharatyatra.in' }],
   creator: 'BharatYatra',
   publisher: 'BharatYatra Inc.',
   formatDetection: {
@@ -65,12 +65,12 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: '/',
+    canonical: 'https://www.bharatyatra.in/',
   },
   openGraph: {
     title: 'BharatYatra — India\'s #1 AI Travel & Itinerary Planner',
     description: 'Plan less. Coordinate less. Enjoy more. Explore India with AI itineraries, live bookings, and iconic landmarks.',
-    url: 'https://www.bharatyatra.com',
+    url: 'https://www.bharatyatra.in/',
     siteName: 'BharatYatra',
     images: [
       {
@@ -107,10 +107,10 @@ const jsonLdWebsite = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'BharatYatra',
-  url: 'https://www.bharatyatra.com',
+  url: 'https://www.bharatyatra.in',
   potentialAction: {
     '@type': 'SearchAction',
-    target: 'https://www.bharatyatra.com/explore?q={search_term_string}',
+    target: 'https://www.bharatyatra.in/explore?q={search_term_string}',
     'query-input': 'required name=search_term_string',
   },
 };
@@ -119,8 +119,8 @@ const jsonLdOrganization = {
   '@context': 'https://schema.org',
   '@type': 'TravelAgency',
   name: 'BharatYatra',
-  url: 'https://www.bharatyatra.com',
-  logo: 'https://www.bharatyatra.com/logo.png',
+  url: 'https://www.bharatyatra.in',
+  logo: 'https://www.bharatyatra.in/logo.png',
   description: 'Gujarat-first AI-native travel platform providing end-to-end trip planning, hotel & transport booking, and heritage exploration.',
   address: {
     '@type': 'PostalAddress',

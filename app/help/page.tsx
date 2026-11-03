@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description:
     'BharatYatra Help Centre — Guides, booking assistance, cancellation support, and direct contact options for travelers.',
   alternates: {
-    canonical: 'https://bharatyatra.in/help/',
+    canonical: 'https://www.bharatyatra.in/help/',
   },
 };
 

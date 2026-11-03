@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description:
     'Learn about BharatYatra — our mission, technology innovation, cultural heritage focus, and pan-India travel ecosystem.',
   alternates: {
-    canonical: 'https://bharatyatra.in/about/',
+    canonical: 'https://www.bharatyatra.in/about/',
   },
 };
 

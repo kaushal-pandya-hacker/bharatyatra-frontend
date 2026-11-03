@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description:
     'Join the team building India\'s premier AI-native travel platform. Explore open engineering, product, and operations roles.',
   alternates: {
-    canonical: 'https://bharatyatra.in/careers/',
+    canonical: 'https://www.bharatyatra.in/careers/',
   },
 };
 

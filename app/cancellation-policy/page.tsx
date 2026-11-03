@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Official BharatYatra Cancellation Policy — Detailed guidelines on booking cancellation windows, supplier cancellation terms, timelines, and customer procedures.',
   alternates: {
-    canonical: 'https://bharatyatra.in/cancellation-policy/',
+    canonical: 'https://www.bharatyatra.in/cancellation-policy/',
   },
 };
 

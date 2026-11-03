@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: 'Gujarat & India Master Destinations Directory — 36 States & UTs',
   description: 'Discover destinations across Gujarat and India. Filter by State, City, Category, UNESCO status, or special permits across all 36 States & UTs.',
   alternates: {
-    canonical: '/destinations',
+    canonical: 'https://www.bharatyatra.in/destinations',
   },
   openGraph: {
     title: 'Gujarat & India Master Destinations Directory | BharatYatra',
     description: 'Discover destinations across Gujarat and India. Filter by State, City, Category, UNESCO status, or special permits across all 36 States & UTs.',
-    url: 'https://www.bharatyatra.com/destinations',
+    url: 'https://www.bharatyatra.in/destinations',
     siteName: 'BharatYatra',
     images: [
       {
