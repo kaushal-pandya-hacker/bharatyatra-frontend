@@ -83,12 +83,24 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     type: 'website',
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', type: 'image/png', sizes: '192x192' },
+      { url: '/logo.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: ['/favicon.ico'],
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'BharatYatra — India\'s #1 AI Travel Platform',
     description: 'Plan less. Coordinate less. Enjoy more. Adaptive AI trip planner for India.',
     images: ['/hero-bg.jpg'],
     creator: '@bharatyatra',
+    site: '@bharatyatra',
   },
   robots: {
     index: true,
@@ -107,7 +119,8 @@ const jsonLdWebsite = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'BharatYatra',
-  url: 'https://www.bharatyatra.in',
+  alternateName: 'Bharat Yatra',
+  url: 'https://www.bharatyatra.in/',
   potentialAction: {
     '@type': 'SearchAction',
     target: 'https://www.bharatyatra.in/explore?q={search_term_string}',
@@ -117,19 +130,27 @@ const jsonLdWebsite = {
 
 const jsonLdOrganization = {
   '@context': 'https://schema.org',
-  '@type': 'TravelAgency',
+  '@type': 'Organization',
   name: 'BharatYatra',
-  url: 'https://www.bharatyatra.in',
+  url: 'https://www.bharatyatra.in/',
   logo: 'https://www.bharatyatra.in/logo.png',
-  description: 'Gujarat-first AI-native travel platform providing end-to-end trip planning, hotel & transport booking, and heritage exploration.',
+  description: 'AI-native pan-India travel and tourism platform offering adaptive itinerary planning, hotel and transit reservations, and heritage cultural discovery across 36 States and Union Territories.',
+  sameAs: [
+    'https://www.instagram.com/bharat.yatra29',
+    'https://twitter.com/bharatyatra',
+  ],
   address: {
     '@type': 'PostalAddress',
     addressRegion: 'Gujarat',
     addressCountry: 'IN',
   },
-  telephone: '+919624282521',
-  email: 'pandyakaushal294@gmail.com',
-  priceRange: '₹₹',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: '+919624282521',
+    contactType: 'customer support',
+    areaServed: 'IN',
+    availableLanguage: ['en', 'gu', 'hi'],
+  },
 };
 
 export default function RootLayout({

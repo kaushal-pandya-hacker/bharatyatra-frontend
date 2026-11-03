@@ -24,12 +24,24 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     type: 'website',
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', type: 'image/png', sizes: '192x192' },
+      { url: '/logo.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: ['/favicon.ico'],
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'BharatYatra — India\'s #1 AI Travel Platform',
     description: 'Plan less. Coordinate less. Enjoy more. Adaptive AI trip planner for India.',
     images: ['/hero-bg.jpg'],
     creator: '@bharatyatra',
+    site: '@bharatyatra',
   },
 };
 
