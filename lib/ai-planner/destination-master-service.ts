@@ -951,6 +951,71 @@ export function getIndexedDestinations(): EnrichedDestination[] {
     stateDestinationMap.set(stateNorm, stGroup);
   });
 
+  // Dynamically load approved community-contributed destinations on Node server runtime
+  if (typeof window === 'undefined') {
+    try {
+      const req = eval('require');
+      const fs = req('fs');
+      const path = req('path');
+      const publishedPath = path.resolve(process.cwd(), 'data/community_published_destinations.json');
+      if (fs.existsSync(publishedPath)) {
+        const communityRaw = JSON.parse(fs.readFileSync(publishedPath, 'utf-8'));
+        if (Array.isArray(communityRaw)) {
+          communityRaw.forEach((c: any) => {
+            const stateNorm = normalizeQuery(c.state || 'India');
+            const districtNorm = normalizeQuery(c.district || c.city || '');
+            const nameNorm = normalizeQuery(c.name);
+            const geoAttrs = inferGeographicAttributes(c.category || 'Sightseeing', stateNorm, districtNorm, nameNorm);
+            const stateMeta = ALL_36_STATES_AND_UTS[stateNorm];
+
+            const item: EnrichedDestination = {
+              id: c.id || `comm-${c.slug}`,
+              originalName: c.name,
+              canonicalName: c.name,
+              stateOrUt: c.state,
+              district: c.district || c.city,
+              city: c.city,
+              tourismType: c.category || 'Sightseeing',
+              category: geoAttrs.category,
+              region: geoAttrs.region,
+              latitude: Number(c.latitude) || 28.6139,
+              longitude: Number(c.longitude) || 77.2090,
+              altitudeMeters: geoAttrs.altitudeMeters,
+              isHighAltitude: geoAttrs.isHighAltitude,
+              terrain: geoAttrs.terrain,
+              averageRoadSpeedKmH: geoAttrs.averageRoadSpeedKmH,
+              nearestAirport: stateMeta ? {
+                code: stateMeta.primaryAirport.code,
+                name: stateMeta.primaryAirport.name,
+                distanceKm: 45,
+              } : { code: 'DEL', name: 'Indira Gandhi International', distanceKm: 50 },
+              nearestRailhead: stateMeta ? {
+                code: stateMeta.primaryRailhead.code,
+                name: stateMeta.primaryRailhead.name,
+                distanceKm: 25,
+              } : { code: 'NDLS', name: 'New Delhi Junction', distanceKm: 30 },
+              aliases: [c.name.toLowerCase()],
+              verificationStatus: 'VERIFIED',
+              verificationSource: `Community Contributor (${c.contributedByName || 'Traveler'})`,
+              verificationNotes: 'Verified Community Contribution',
+              recommendedStayDays: { quick: 1, recommended: 2, extended: 3 },
+              bestMonths: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+              permitsRequired: [],
+            };
+            enriched.push(item);
+            destinationIdMap.set(item.id, item);
+            canonicalNameMap.set(nameNorm, item);
+            const stateGrp = stateDestinationMap.get(stateNorm) || [];
+            stateGrp.push(item);
+            stateDestinationMap.set(stateNorm, stateGrp);
+          });
+        }
+      }
+    } catch (err) {
+      // Graceful fallback if data folder not accessible
+    }
+  }
+
   cachedIndexedDestinations = enriched;
   return cachedIndexedDestinations;
 }

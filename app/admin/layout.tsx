@@ -33,6 +33,7 @@ import {
   Menu,
   X,
   CheckCircle2,
+  Share2,
 } from 'lucide-react';
 import { AdminNotificationDropdown } from '@/components/admin/AdminNotificationDropdown';
 
@@ -132,6 +133,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { label: 'Suppliers Directory', href: '/admin/suppliers', icon: Building2 },
         { label: 'Inventory Moderation', href: '/admin/inventory', icon: Boxes },
         { label: 'Destinations CMS', href: '/admin/destinations', icon: Compass },
+        { label: 'Community Contributions', href: '/admin/community-contributions', icon: Share2 },
       ],
     },
     {

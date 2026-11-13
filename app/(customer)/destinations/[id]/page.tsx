@@ -96,6 +96,49 @@ async function fetchDestinationFromApi(slug: string) {
     return masterFallback;
   }
 
+  // Community-Contributed Destinations Fallback Check
+  try {
+    const publishedPath = path.resolve(process.cwd(), 'data/community_published_destinations.json');
+    if (fs.existsSync(publishedPath)) {
+      const raw = fs.readFileSync(publishedPath, 'utf-8');
+      const list = JSON.parse(raw);
+      const found = list.find((p: any) => p.slug?.toLowerCase() === slug.toLowerCase() || p.id === slug);
+      if (found) {
+        return {
+          id: found.id,
+          slug: found.slug,
+          name: found.name,
+          category: found.category,
+          region: found.district || found.city || found.state,
+          state: found.state,
+          country: found.country || 'India',
+          durationHours: 24,
+          recommendedDays: 1,
+          idealDays: 1,
+          estimatedBudget: 3000,
+          tagline: `${found.category} in ${found.state}`,
+          description: found.shortDescription || found.description,
+          overview: found.description,
+          bestTimeToVisit: found.bestTimeToVisit || 'October to March',
+          nearestAirport: 'Regional Airport',
+          nearestRailway: 'Local Station',
+          bgImage: found.primaryImageUrl || (found.images && found.images[0]) || 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=1600&q=80',
+          activities: [],
+          attractions: (found.nearbyAttractions || []).map((a: string) => ({ name: a, isVerified: true })),
+          isCommunityContributed: true,
+          contributedByName: found.contributedByName,
+          contributedById: found.contributedById,
+          travelTips: found.travelTips || [],
+          facilities: found.facilities || [],
+          entryFee: found.entryFee,
+          openingHours: found.openingHours,
+        };
+      }
+    }
+  } catch (err) {
+    // published check fallback
+  }
+
   const local = getDestinationBySlug(slug);
   if (!local) return null;
 
@@ -249,6 +292,12 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
               <span className="bg-amber-400 text-slate-950 text-xs font-black uppercase px-3 py-1 rounded-md tracking-wider shadow">
                 {destination.category || 'Destination'}
               </span>
+              {destination.isCommunityContributed && (
+                <span className="bg-emerald-600 text-white text-xs font-black px-3 py-1 rounded-md shadow flex items-center space-x-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Contributed by {destination.contributedByName || 'Community Traveler'}</span>
+                </span>
+              )}
               {destination.isUNESCO && (
                 <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-md shadow">
                   UNESCO Site
@@ -280,6 +329,26 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
         
         {/* Left 2 Columns */}
         <div className="lg:col-span-2 space-y-10">
+          
+          {/* Community Contributor Recognition Card */}
+          {destination.isCommunityContributed && (
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-3xl p-6 flex items-start gap-4 shadow-sm">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+                <Compass className="w-6 h-6" />
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-black text-slate-900 text-sm">Community Tourism Contribution</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">
+                    Verified &amp; Approved by BharatYatra
+                  </span>
+                </div>
+                <p className="text-slate-600 leading-relaxed font-medium">
+                  This destination was mapped and documented by traveler <strong>{destination.contributedByName || 'Community Explorer'}</strong> to enrich India’s public travel directory.
+                </p>
+              </div>
+            </div>
+          )}
           
           {/* Permit Alert Banner */}
           {destination.permitRequired && (

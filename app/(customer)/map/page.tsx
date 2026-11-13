@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import TripMap, { MapMarker } from '@/components/maps/trip-map';
 
@@ -209,8 +209,40 @@ const WEEKEND_ESCAPE_ROUTE: [number, number][] = [
 
 export default function MapPage() {
   const [viewState, setViewState] = useState<'default' | 'selected' | 'route' | 'optimize' | 'empty'>('default');
+  const [allMarkers, setAllMarkers] = useState<MapMarker[]>(ALL_GUJARAT_MARKERS);
   const [selectedNode, setSelectedNode] = useState<string>('ahmedabad');
   const [selectedMarker, setSelectedMarker] = useState<MapMarker>(ALL_GUJARAT_MARKERS[0]);
+
+  useEffect(() => {
+    fetch('/api/v1/contributions/published')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.success && Array.isArray(data.destinations)) {
+          const communityMarkers: MapMarker[] = data.destinations.map((d: any) => ({
+            id: d.slug || d.id,
+            name: d.name,
+            lat: d.latitude,
+            lng: d.longitude,
+            category: 'ATTRACTION',
+            rating: 4.9,
+            reviewsCount: 8,
+            entryFee: d.entryFee || 'Free',
+            district: d.district || d.city || d.state,
+            description: `${d.category} (Contributed by ${d.contributedByName || 'Community Explorer'})`,
+            image: d.primaryImageUrl || (d.images && d.images[0]) || '/images/default-destination.jpg',
+            highlight: true,
+          }));
+          if (communityMarkers.length > 0) {
+            setAllMarkers((prev) => {
+              const existingIds = new Set(prev.map((p) => p.id));
+              const fresh = communityMarkers.filter((c) => !existingIds.has(c.id));
+              return [...prev, ...fresh];
+            });
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [aiQuery, setAiQueryState] = useState<string>('');
@@ -254,7 +286,7 @@ export default function MapPage() {
   const handleSelectNode = (nodeId: string) => {
     setSelectedNode(nodeId);
     setViewState('selected');
-    const target = ALL_GUJARAT_MARKERS.find((m) => m.id === nodeId);
+    const target = allMarkers.find((m) => m.id === nodeId);
     if (target) {
       setSelectedMarker(target);
       setMapCenter([target.latitude, target.longitude]);
@@ -313,7 +345,7 @@ export default function MapPage() {
   };
 
   // Filter markers based on category and search query
-  const filteredMarkers = ALL_GUJARAT_MARKERS.filter((m) => {
+  const filteredMarkers = allMarkers.filter((m) => {
     if (viewState === 'empty') return false;
 
     let matchesCat = true;

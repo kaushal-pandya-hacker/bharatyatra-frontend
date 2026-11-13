@@ -92,5 +92,39 @@ export async function searchGlobalMarketplace(query: string): Promise<SearchResu
     }
   });
 
+  // Query Approved Community-Contributed Destinations
+  if (typeof window === 'undefined') {
+    try {
+      const req = eval('require');
+      const fs = req('fs');
+      const path = req('path');
+      const publishedPath = path.resolve(process.cwd(), 'data/community_published_destinations.json');
+      if (fs.existsSync(publishedPath)) {
+        const raw = fs.readFileSync(publishedPath, 'utf-8');
+        const communityDests = JSON.parse(raw);
+        communityDests.forEach((d: any) => {
+          if (
+            d.name?.toLowerCase().includes(q) ||
+            d.state?.toLowerCase().includes(q) ||
+            d.category?.toLowerCase().includes(q)
+          ) {
+            results.push({
+              id: `comm-dest-${d.slug || d.id}`,
+              type: 'DESTINATION',
+              title: d.name,
+              subtitle: `${d.state} • ${d.category} (Community Discovered by ${d.contributedByName || 'Traveler'})`,
+              slugOrId: d.slug || d.id,
+              imageUrl: d.primaryImageUrl || (d.images && d.images[0]) || 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800&q=80',
+              tag: '✨ Community Destination',
+              url: `/destinations/${d.slug || d.id}`,
+            });
+          }
+        });
+      }
+    } catch (err) {
+      // community search fallback
+    }
+  }
+
   return results;
 }

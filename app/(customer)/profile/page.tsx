@@ -237,6 +237,13 @@ function ProfilePageContent() {
 
           <div className="flex items-center gap-3">
             <Link
+              href="/profile/contributions"
+              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-extrabold text-xs transition-all flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-base text-amber-600">add_location_alt</span>
+              <span>My Contributions</span>
+            </Link>
+            <Link
               href="/dashboard"
               className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-extrabold text-xs transition-all flex items-center gap-2"
             >
@@ -288,6 +295,37 @@ function ProfilePageContent() {
                 ? 'Your travel profile is ' + completionPct + '% complete'
                 : '100% Complete — Perfect for AI Planning!'}
             </p>
+          </div>
+        </section>
+
+        {/* Community Contributions Quick Card */}
+        <section className="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-200/80 rounded-3xl p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
+          <div className="space-y-1.5 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs">
+              <span className="material-symbols-outlined text-sm text-amber-600">verified</span>
+              <span>Community Tourism Network</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Contribute Places &amp; Hidden Gems
+            </h2>
+            <p className="text-slate-600 text-sm font-medium leading-relaxed">
+              Know an uncharted temple, serene waterfall, royal fort, or local restaurant? Add it to BharatYatra. Once verified by our travel architects, your place will be celebrated with contributor attribution across India.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            <Link
+              href="/profile/contributions"
+              className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-amber-300 text-amber-950 font-extrabold text-xs sm:text-sm shadow-xs transition-all"
+            >
+              My Contributions
+            </Link>
+            <Link
+              href="/places/add"
+              className="px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">add_location_alt</span>
+              <span>Add a Place</span>
+            </Link>
           </div>
         </section>
 

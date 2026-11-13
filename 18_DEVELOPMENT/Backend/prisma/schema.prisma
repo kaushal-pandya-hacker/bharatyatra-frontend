@@ -470,6 +470,10 @@ model Destination {
   aliases             String[]           @default([])
   status              String             @default("ACTIVE") @db.VarChar(50)
   isActive            Boolean            @default(true)
+  contributedById     String?            @db.Uuid
+  contributedByName   String?            @db.VarChar(255)
+  isCommunityContributed Boolean         @default(false)
+  submissionId        String?            @db.Uuid
   createdAt           DateTime           @default(now()) @db.Timestamptz
   updatedAt           DateTime           @updatedAt @db.Timestamptz
 
@@ -1968,6 +1972,111 @@ model NexiMessage {
   @@index([conversationId])
   @@map("nexi_messages")
 }
+
+// ==========================================
+// COMMUNITY DESTINATION CONTRIBUTIONS MODULE
+// ==========================================
+
+model PlaceSubmission {
+  id                     String                    @id @default(uuid()) @db.Uuid
+  contributorId          String                    @db.Uuid
+  contributorName        String                    @db.VarChar(255)
+  contributorEmail       String?                   @db.VarChar(255)
+  placeName              String                    @db.VarChar(255)
+  category               String                    @db.VarChar(100)
+  country                String                    @default("India") @db.VarChar(100)
+  state                  String                    @db.VarChar(100)
+  district               String?                   @db.VarChar(100)
+  city                   String?                   @db.VarChar(100)
+  address                String                    @db.Text
+  latitude               Float
+  longitude              Float
+  shortDescription       String                    @db.Text
+  detailedDescription    String                    @db.Text
+  photos                 Json                      @default("[]")
+  bestTimeToVisit        String?                   @db.VarChar(255)
+  estimatedVisitDuration String?                   @db.VarChar(100)
+  entryFee               String?                   @db.VarChar(100)
+  openingHours           String?                   @db.VarChar(255)
+  contactInfo            String?                   @db.VarChar(255)
+  website                String?                   @db.VarChar(255)
+  accessibility          String?                   @db.VarChar(100)
+  parkingAvailable       Boolean                   @default(false)
+  facilities             Json                      @default("[]")
+  travelTips             Json                      @default("[]")
+  nearbyAttractions      Json                      @default("[]")
+  suitableFor            Json                      @default("[]")
+  status                 String                    @default("PENDING") @db.VarChar(50) // PENDING | UNDER_REVIEW | CHANGES_REQUESTED | APPROVED | REJECTED | WITHDRAWN
+  adminFeedback          String?                   @db.Text
+  rejectionReason        String?                   @db.Text
+  approvedPlaceId        String?                   @db.Uuid
+  reviewedBy             String?                   @db.VarChar(255)
+  aiVerification         Json?                     @default("{}")
+  createdAt              DateTime                  @default(now()) @db.Timestamptz
+  updatedAt              DateTime                  @default(now()) @updatedAt @db.Timestamptz
+  submittedAt            DateTime                  @default(now()) @db.Timestamptz
+  reviewedAt             DateTime?                 @db.Timestamptz
+  approvedAt             DateTime?                 @db.Timestamptz
+
+  photoRecords           PlaceSubmissionPhoto[]
+  reviewRecords          PlaceSubmissionReview[]
+  historyRecords         ContributionHistory[]
+
+  @@index([contributorId])
+  @@index([status])
+  @@index([state])
+  @@index([category])
+  @@index([createdAt])
+  @@map("place_submissions")
+}
+
+model PlaceSubmissionPhoto {
+  id           String          @id @default(uuid()) @db.Uuid
+  submissionId String          @db.Uuid
+  storagePath  String          @db.Text
+  imageUrl     String          @db.Text
+  isPrimary    Boolean         @default(false)
+  uploadedAt   DateTime        @default(now()) @db.Timestamptz
+
+  submission   PlaceSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@map("place_submission_photos")
+}
+
+model PlaceSubmissionReview {
+  id             String          @id @default(uuid()) @db.Uuid
+  submissionId   String          @db.Uuid
+  adminId        String          @db.VarChar(255)
+  adminEmail     String          @db.VarChar(255)
+  action         String          @db.VarChar(50) // CLAIM_REVIEW | REQUEST_CHANGES | REJECT | APPROVE | EDIT
+  previousStatus String          @db.VarChar(50)
+  newStatus      String          @db.VarChar(50)
+  reviewNotes    String?         @db.Text
+  modifications  Json?           @default("{}")
+  createdAt      DateTime        @default(now()) @db.Timestamptz
+
+  submission     PlaceSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@map("place_submission_reviews")
+}
+
+model ContributionHistory {
+  id            String          @id @default(uuid()) @db.Uuid
+  contributorId String          @db.VarChar(255)
+  submissionId  String          @db.Uuid
+  eventType     String          @db.VarChar(50) // SUBMITTED | UPDATED | CHANGES_REQUESTED | RESUBMITTED | APPROVED | REJECTED | WITHDRAWN
+  description   String          @db.Text
+  createdAt     DateTime        @default(now()) @db.Timestamptz
+
+  submission    PlaceSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([contributorId])
+  @@index([submissionId])
+  @@map("contribution_history")
+}
+
 
 
 

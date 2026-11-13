@@ -1,0 +1,110 @@
+[
+  {
+    "id": "6ba4f145-44a6-419e-9258-a1b612178f2c",
+    "slug": "gadhvi-hidden-falls-ahwa",
+    "name": "Gadhvi Hidden Falls",
+    "category": "Waterfalls",
+    "country": "India",
+    "state": "Gujarat",
+    "district": "Dang",
+    "city": "Ahwa",
+    "address": "Deep forest path, Ahwa, Dang, Gujarat",
+    "latitude": 20.763,
+    "longitude": 73.689,
+    "shortDescription": "Untouched perennial waterfall deep in the Dang forest.",
+    "description": "Gadhvi Hidden Falls is a scenic natural cascade nestled inside the dense teak forests of Dang. Accessible via a 2km trek through tribal hamlets, it features crystal clear pools and lush monsoon flora.",
+    "primaryImageUrl": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800",
+    "images": [
+      "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800"
+    ],
+    "facilities": [
+      "Walking Trek",
+      "Natural Pool"
+    ],
+    "travelTips": [
+      "Wear trekking shoes",
+      "Carry drinking water"
+    ],
+    "isCommunityContributed": true,
+    "contributedByName": "Aarav Sharma",
+    "contributedById": "user-arch-001",
+    "submissionId": "test-sub-101",
+    "rating": 4.8,
+    "totalReviews": 1,
+    "isPublished": true,
+    "createdAt": "2026-11-13T14:35:22.449Z",
+    "updatedAt": "2026-11-13T14:35:22.449Z"
+  },
+  {
+    "id": "dfbd7083-6b71-4af5-8410-d5a4db4ad72e",
+    "slug": "polo-forest-ancient-ruins-idar",
+    "name": "Polo Forest Ancient Ruins",
+    "category": "Historical Places",
+    "country": "India",
+    "state": "Gujarat",
+    "district": "Sabarkantha",
+    "city": "Idar",
+    "address": "Polo Forest, Vijayanagar, Sabarkantha, Gujarat",
+    "latitude": 23.978,
+    "longitude": 73.284,
+    "shortDescription": "15th-century Jain and Shiva temples amidst dense dry deciduous forest.",
+    "description": "The ancient Polo forest is spread over 400 square kilometers near Vijayanagar. It was established around the 10th century by the Parihar kings of Idar and subsequently conquered by the Rathod Rajputs. The site features ruins of intricately carved 15th century Jain and Shiva shrines along the Harnav River.",
+    "primaryImageUrl": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800",
+    "images": [
+      "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800"
+    ],
+    "bestTimeToVisit": "September to February",
+    "entryFee": "Free",
+    "facilities": [],
+    "travelTips": [
+      "Nearest railway station is Himmatnagar (60km)"
+    ],
+    "nearbyAttractions": [],
+    "suitableFor": [],
+    "isCommunityContributed": true,
+    "contributedByName": "Pooja Patel",
+    "contributedById": "user-test-777",
+    "submissionId": "aa0aaaaa-c95a-45f4-b01b-5757c1b9b72b",
+    "rating": 4.8,
+    "totalReviews": 1,
+    "isPublished": true,
+    "createdAt": "2026-11-13T14:33:09.177Z",
+    "updatedAt": "2026-11-13T14:33:09.177Z"
+  },
+  {
+    "id": "e750fccc-c88e-490c-9917-7105288dac66",
+    "slug": "polo-forest-ancient-ruins-idar",
+    "name": "Polo Forest Ancient Ruins",
+    "category": "Historical Places",
+    "country": "India",
+    "state": "Gujarat",
+    "district": "Sabarkantha",
+    "city": "Idar",
+    "address": "Polo Forest, Vijayanagar, Sabarkantha, Gujarat",
+    "latitude": 23.978,
+    "longitude": 73.284,
+    "shortDescription": "15th-century Jain and Shiva temples amidst dense dry deciduous forest.",
+    "description": "The ancient Polo forest is spread over 400 square kilometers near Vijayanagar. It was established around the 10th century by the Parihar kings of Idar and subsequently conquered by the Rathod Rajputs. The site features ruins of intricately carved 15th century Jain and Shiva shrines along the Harnav River.",
+    "primaryImageUrl": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800",
+    "images": [
+      "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800"
+    ],
+    "bestTimeToVisit": "September to February",
+    "entryFee": "Free",
+    "facilities": [],
+    "travelTips": [
+      "Nearest railway station is Himmatnagar (60km)"
+    ],
+    "nearbyAttractions": [],
+    "suitableFor": [],
+    "isCommunityContributed": true,
+    "contributedByName": "Pooja Patel",
+    "contributedById": "user-test-777",
+    "submissionId": "aaefec39-a3d9-4714-aad5-d34143e95297",
+    "rating": 4.8,
+    "totalReviews": 1,
+    "isPublished": true,
+    "createdAt": "2026-11-13T14:35:23.185Z",
+    "updatedAt": "2026-11-13T14:35:23.185Z"
+  }
+]

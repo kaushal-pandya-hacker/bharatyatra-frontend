@@ -13,7 +13,8 @@ import {
   Sun, 
   ShieldCheck, 
   Star,
-  CheckCircle2
+  CheckCircle2,
+  PlusCircle
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import IndiaCascadingPlaceSelector from '@/components/travel/IndiaCascadingPlaceSelector';
@@ -88,7 +89,14 @@ export default function ExploreClient() {
                 </div>
 
                 {/* Quick AI Plan CTA */}
-                <div className="shrink-0">
+                <div className="shrink-0 flex items-center gap-3 flex-wrap">
+                  <Link
+                    href="/places/add"
+                    className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm border border-slate-300 shadow-sm hover:shadow transition-all"
+                  >
+                    <PlusCircle className="w-4 h-4 text-emerald-600" />
+                    <span>Add a Place</span>
+                  </Link>
                   <Link
                     href="/plan"
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-md hover:shadow-lg transition-all"

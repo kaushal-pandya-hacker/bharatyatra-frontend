@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **157**  
+> **Total Registered Pages:** **160**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -8,7 +8,7 @@
 
 ## Table of Contents
 
-- [Admin Portal (Super-Admin & Operations) (35 pages)](#admin-portal-super-admin-operations)
+- [Admin Portal (Super-Admin & Operations) (36 pages)](#admin-portal-super-admin-operations)
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
 - [Trip Command Center, Splitter & Telemetry (10 pages)](#trip-command-center-splitter-telemetry)
 - [Bookings, Checkout & Settlement (11 pages)](#bookings-checkout-settlement)
@@ -16,7 +16,7 @@
 - [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
 - [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
-- [Customer Discovery, Itinerary & Travel Products (53 pages)](#customer-discovery-itinerary-travel-products)
+- [Customer Discovery, Itinerary & Travel Products (55 pages)](#customer-discovery-itinerary-travel-products)
 
 ---
 
@@ -31,6 +31,7 @@
 | **Page: /admin/buses** | `/admin/buses` | [`app/admin/buses/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/buses/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/cms** | `/admin/cms` | [`app/admin/cms/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/cms/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Notification Dispatch & Campaign Center** | `/admin/communications` | [`app/admin/communications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/communications/page.tsx) | `Super Admin / Platform Ops` | Bulk WhatsApp, SMS, and email dispatches to travelers and operators |
+| **Page: /admin/community-contributions** | `/admin/community-contributions` | [`app/admin/community-contributions/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/community-contributions/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/destinations** | `/admin/destinations` | [`app/admin/destinations/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/destinations/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/diwali** | `/admin/diwali` | [`app/admin/diwali/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/diwali/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/enquiries** | `/admin/enquiries` | [`app/admin/enquiries/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/enquiries/page.tsx) | `Traveler` | BharatYatra platform page |
@@ -210,10 +211,12 @@
 | **Page: /notifications** | `/notifications` | [`app/(customer)/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/notifications/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Curated Tour Packages Catalog** | `/packages` | [`app/(customer)/packages/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/packages/page.tsx) | `Public / Traveler` | Family tours, honeymoon packages, weekend getaways, and spiritual yatras |
 | **Tour Package Detail, Dates & Pricing Calculator** | `/packages/[slug]` | [`app/(customer)/packages/[slug]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/packages/[slug]/page.tsx) | `Public / Traveler` | Tiered pricing (Budget, Premium, Luxury), date calendar, and inclusions |
+| **Page: /places/add** | `/places/add` | [`app/(customer)/places/add/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/places/add/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Interactive AI Trip Planner & Route Builder** | `/plan` | [`app/(customer)/plan/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/plan/page.tsx) | `Public / Traveler` | Personalized day-by-day planner with custom destinations and instant save |
 | **Page: /press** | `/press` | [`app/press/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/press/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Privacy Policy & Data Sovereign Governance** | `/privacy` | [`app/privacy/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/privacy/page.tsx) | `Public` | Data protection terms, cookie policies, and GDPR / DPDP compliance |
 | **Traveler Profile, Preferences & Security Settings** | `/profile` | [`app/(customer)/profile/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/profile/page.tsx) | `Authenticated Traveler` | Name, contact, travel ID proofs, emergency contact, and language |
+| **Page: /profile/contributions** | `/profile/contributions` | [`app/(customer)/profile/contributions/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/profile/contributions/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Traveler Notification Preferences & History** | `/profile/notifications` | [`app/(customer)/profile/notifications/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/profile/notifications/page.tsx) | `Authenticated Traveler` | WhatsApp trip updates, booking alerts, and marketing preference toggles |
 | **BharatYatra Smart QR Official Landing Portal** | `/qr` | [`app/(customer)/qr/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/qr/page.tsx) | `Public` | Tricolour smart landing page for official business cards and marketing materials with six primary actions |
 | **Page: /refund-policy** | `/refund-policy` | [`app/refund-policy/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/refund-policy/page.tsx) | `Traveler` | BharatYatra platform page |
