@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Offline — BharatYatra</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 36px 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      margin-bottom: 20px;
+      border-radius: 16px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .retry-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .retry-btn:hover {
+      background: #1d4ed8;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      margin-bottom: 16px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="/logo.png" alt="BharatYatra" class="logo">
+    <div class="status-badge">
+      <span class="dot"></span>
+      No Internet Connection
+    </div>
+    <h1>You're Currently Offline</h1>
+    <p>BharatYatra requires an active internet connection to load live itineraries, bookings, and travel guides. Please check your network and try again.</p>
+    <button class="retry-btn" onclick="window.location.href='https://www.bharatyatra.in'">
+      Retry Connection
+    </button>
+  </div>
+  <script>
+    window.addEventListener('online', function() {
+      window.location.href = 'https://www.bharatyatra.in';
+    });
+  </script>
+</body>
+</html>
+
