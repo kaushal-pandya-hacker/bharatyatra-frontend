@@ -143,23 +143,15 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs text-slate-900 pt-safe">
-      <div className="mx-auto flex h-16 w-full max-w-[1536px] items-center justify-between px-3 sm:px-5 lg:px-6 gap-2">
+      <div className="mx-auto flex h-16 sm:h-[72px] w-full max-w-[1536px] items-center justify-between px-3 sm:px-5 lg:px-6 gap-2">
         
-        {/* Left: Brand Logo & Title */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group mr-1 xl:mr-3 whitespace-nowrap outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-none">
+        {/* Left: Official Brand Logo */}
+        <Link href="/" className="flex items-center shrink-0 group mr-2 xl:mr-4 whitespace-nowrap outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 border-none">
           <img
             src="/logo.png"
-            alt="BharatYatra Logo"
-            className="h-9 lg:h-10 w-auto object-contain rounded-md transition-transform group-hover:scale-105 shrink-0"
+            alt="BharatYatra"
+            className="h-12 sm:h-[54px] lg:h-[60px] w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
           />
-          <div className="flex flex-col whitespace-nowrap justify-center">
-            <span className="text-sm lg:text-base font-heading font-black tracking-tight text-slate-900 group-hover:text-blue-700 transition-colors leading-tight">
-              BHARAT YATRA
-            </span>
-            <span className="text-[10px] font-bold text-amber-600 tracking-wide leading-none">
-              ભારત યાત્રા
-            </span>
-          </div>
         </Link>
 
         {/* Center: Desktop Navigation Bar */}

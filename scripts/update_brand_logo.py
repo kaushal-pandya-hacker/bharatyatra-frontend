@@ -23,8 +23,8 @@ def process_and_distribute_logo():
     cropped = cleaned.crop(bbox)
     print(f"   Cropped dimensions: {cropped.size}")
 
-    # Add 8px transparent padding
-    pad = 8
+    # Add minimal 1px transparent padding for maximum visibility
+    pad = 1
     padded_w = cropped.width + (pad * 2)
     padded_h = cropped.height + (pad * 2)
     padded = Image.new("RGBA", (padded_w, padded_h), (0, 0, 0, 0))
