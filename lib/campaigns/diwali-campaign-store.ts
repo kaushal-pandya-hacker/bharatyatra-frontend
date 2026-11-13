@@ -80,12 +80,12 @@ export interface DiwaliCampaignConfig {
 const CAMPAIGN_FILE = path.join(process.cwd(), 'data', 'diwali_campaign.json');
 
 const DEFAULT_CAMPAIGN_CONFIG: DiwaliCampaignConfig = {
-  isEnabled: true,
+  isEnabled: false,
   campaignName: 'BharatYatra Diwali Festive Special 2026',
   startDate: '2026-10-15T00:00:00.000Z',
   endDate: '2026-11-30T23:59:59.000Z',
   banner: {
-    isEnabled: true,
+    isEnabled: false,
     text: '🪔 THIS DIWALI, EXPLORE INDIA. CELEBRATE EVERY JOURNEY.',
     actionText: 'Plan Your Diwali Trip',
     actionHref: '/plan',
@@ -280,7 +280,7 @@ const DEFAULT_CAMPAIGN_CONFIG: DiwaliCampaignConfig = {
     festiveBadge: '🪔 DIWALI FESTIVE EDITION',
   },
   popup: {
-    isEnabled: true,
+    isEnabled: false,
     title: 'Happy Diwali! 🪔',
     message:
       'May every journey bring you happiness, new experiences, and beautiful memories. Celebrate this festive season by exploring the wonders of Incredible India.',

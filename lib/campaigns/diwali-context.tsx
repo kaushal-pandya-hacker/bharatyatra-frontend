@@ -15,7 +15,7 @@ interface DiwaliContextValue {
 }
 
 const DiwaliContext = createContext<DiwaliContextValue>({
-  isDiwaliActive: true,
+  isDiwaliActive: false,
   campaign: null,
   loading: true,
   showGreetingModal: false,
@@ -28,7 +28,7 @@ const GREETING_STORAGE_KEY = 'by_diwali_greeted_2026';
 
 export function DiwaliProvider({ children }: { children: React.ReactNode }) {
   const [campaign, setCampaign] = useState<DiwaliCampaignConfig | null>(null);
-  const [isDiwaliActive, setIsDiwaliActive] = useState<boolean>(true);
+  const [isDiwaliActive, setIsDiwaliActive] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [showGreetingModal, setShowGreetingModal] = useState<boolean>(false);
   const [reducedMotion, setReducedMotion] = useState<boolean>(false);
