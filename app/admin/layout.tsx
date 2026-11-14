@@ -191,7 +191,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <img
               src="/logo.png"
               alt="BharatYatra Logo"
-              className="h-10 w-auto object-contain rounded-md transition-transform group-hover:scale-105 shrink-0"
+              className="h-11 w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
             />
             <div className="flex flex-col whitespace-nowrap justify-center min-w-0">
               <span className="text-sm font-heading font-black tracking-tight text-slate-900 leading-tight">

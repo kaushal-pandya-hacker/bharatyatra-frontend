@@ -153,7 +153,7 @@ export function Header() {
           <img
             src="/logo.png"
             alt="BharatYatra"
-            className="h-12 sm:h-[54px] lg:h-[60px] w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
+            className="h-12 sm:h-14 lg:h-[62px] w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
           />
         </Link>
 

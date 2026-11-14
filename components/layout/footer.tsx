@@ -67,11 +67,13 @@ export function Footer() {
           {/* SECTION A: ABOUT BHARATYATRA (4 cols on lg) */}
           <div className="lg:col-span-4 space-y-5">
             <Link href="/" className="inline-flex items-center gap-3 group">
-              <img
-                src="/logo.png"
-                alt="BharatYatra Logo"
-                className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
-              />
+              <div className="bg-white rounded-xl p-1.5 shadow-xs border border-white/20 flex items-center justify-center shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="BharatYatra Logo"
+                  className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+                />
+              </div>
               <div className="flex flex-col">
                 <span className="text-xl font-extrabold tracking-tight text-white group-hover:text-amber-400 transition-colors uppercase">
                   BHARAT YATRA
