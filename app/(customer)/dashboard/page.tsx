@@ -26,6 +26,9 @@ import {
   Sparkles,
   AlertCircle,
   Check,
+  MapPinPlus,
+  Compass,
+  Clock,
 } from 'lucide-react';
 import { TripCompletionModal } from '@/components/reviews/TripCompletionModal';
 import { TripCompletionHelper } from '@/lib/trips/completion-helper';
@@ -65,6 +68,55 @@ function DashboardContent() {
   const [customerReplyText, setCustomerReplyText] = useState('');
   const [submittingCustomerReply, setSubmittingCustomerReply] = useState(false);
   const [ongoingNotice, setOngoingNotice] = useState<string | null>(null);
+
+  // Contributions State
+  const [contributionStats, setContributionStats] = useState<{
+    total: number;
+    pending: number;
+    underReview: number;
+    approved: number;
+    rejected: number;
+    changesRequested: number;
+  }>({
+    total: 0,
+    pending: 0,
+    underReview: 0,
+    approved: 0,
+    rejected: 0,
+    changesRequested: 0,
+  });
+  const [loadingContributions, setLoadingContributions] = useState(true);
+
+  const fetchContributionStats = async () => {
+    setLoadingContributions(true);
+    try {
+      const token =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('auth_token') || localStorage.getItem('token')
+          : null;
+      const res = await fetch('/api/v1/contributions', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.submissions && Array.isArray(json.submissions)) {
+          const list = json.submissions;
+          setContributionStats({
+            total: list.length,
+            pending: list.filter((s: any) => s.status === 'PENDING').length,
+            underReview: list.filter((s: any) => s.status === 'UNDER_REVIEW').length,
+            approved: list.filter((s: any) => s.status === 'APPROVED').length,
+            rejected: list.filter((s: any) => s.status === 'REJECTED').length,
+            changesRequested: list.filter((s: any) => s.status === 'CHANGES_REQUESTED').length,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Contributions stats loading fallback:', err);
+    } finally {
+      setLoadingContributions(false);
+    }
+  };
 
   // Time-of-day Greeting
   const getGreeting = () => {
@@ -128,6 +180,7 @@ function DashboardContent() {
 
     loadData();
     fetchUserReviews();
+    fetchContributionStats();
 
     return () => {
       isMounted = false;
@@ -351,24 +404,43 @@ function DashboardContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+            <Link
+              href="/dashboard/contribute-place"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-xs shadow-xs transition-all flex items-center gap-1.5"
+            >
+              <MapPinPlus className="w-3.5 h-3.5" />
+              <span>Contribute a Place</span>
+            </Link>
+            <Link
+              href="/dashboard/my-contributions"
+              className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition-all flex items-center gap-1.5 border border-emerald-200"
+            >
+              <Compass className="w-3.5 h-3.5 text-emerald-600" />
+              <span>My Contributions</span>
+              {contributionStats.total > 0 && (
+                <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black leading-none">
+                  {contributionStats.total}
+                </span>
+              )}
+            </Link>
             <a
               href="#reviews"
-              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition-all flex items-center gap-1.5 shadow-2xs border border-amber-200"
+              className="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition-all flex items-center gap-1.5 shadow-2xs border border-amber-200"
             >
               <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-              <span>My Reviews ({userReviews.length})</span>
+              <span>Reviews ({userReviews.length})</span>
             </a>
             <Link
               href="/trips"
-              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all flex items-center gap-1.5"
+              className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-base">work_history</span>
               <span>Trip History</span>
             </Link>
             <Link
               href="/plan"
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-base">add_location_alt</span>
               <span>Plan Next Trip</span>
@@ -466,6 +538,99 @@ function DashboardContent() {
             </div>
           </div>
         )}
+
+        {/* COMMUNITY CONTRIBUTIONS SUMMARY SECTION */}
+        <section className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold shrink-0">
+                <MapPinPlus className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-black text-slate-900 tracking-tight">
+                    Community Destination Contributions
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Live
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Help fellow travelers discover hidden gems, temples, heritage sites, and attractions across Bharat.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+              <Link
+                href="/dashboard/contribute-place"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-xs shadow-xs transition-all"
+              >
+                <MapPinPlus className="w-4 h-4" />
+                <span>Contribute a Place</span>
+              </Link>
+              <Link
+                href="/dashboard/my-contributions"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all"
+              >
+                <span>View Submissions</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* 5-Column Statistics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 pt-5">
+            {/* Total */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-[11px] font-bold uppercase tracking-wider">Total</span>
+                <Compass className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="text-2xl font-black text-slate-900">{contributionStats.total}</div>
+              <p className="text-[11px] text-slate-500 font-medium">Places submitted</p>
+            </div>
+
+            {/* Pending */}
+            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1">
+              <div className="flex items-center justify-between text-amber-700">
+                <span className="text-[11px] font-bold uppercase tracking-wider">Pending</span>
+                <Clock className="w-4 h-4 text-amber-500" />
+              </div>
+              <div className="text-2xl font-black text-amber-900">{contributionStats.pending}</div>
+              <p className="text-[11px] text-amber-700 font-medium">In review queue</p>
+            </div>
+
+            {/* Changes Requested */}
+            <div className="p-4 rounded-2xl bg-orange-50/70 border border-orange-200/80 space-y-1">
+              <div className="flex items-center justify-between text-orange-700">
+                <span className="text-[11px] font-bold uppercase tracking-wider">Changes Needed</span>
+                <AlertCircle className="w-4 h-4 text-orange-500" />
+              </div>
+              <div className="text-2xl font-black text-orange-900">{contributionStats.changesRequested}</div>
+              <p className="text-[11px] text-orange-700 font-medium">Needs user edit</p>
+            </div>
+
+            {/* Approved */}
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1">
+              <div className="flex items-center justify-between text-emerald-700">
+                <span className="text-[11px] font-bold uppercase tracking-wider">Approved</span>
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
+              </div>
+              <div className="text-2xl font-black text-emerald-900">{contributionStats.approved}</div>
+              <p className="text-[11px] text-emerald-700 font-medium">Published live</p>
+            </div>
+
+            {/* Rejected */}
+            <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200/80 space-y-1 col-span-2 sm:col-span-1">
+              <div className="flex items-center justify-between text-rose-700">
+                <span className="text-[11px] font-bold uppercase tracking-wider">Rejected</span>
+                <X className="w-4 h-4 text-rose-500" />
+              </div>
+              <div className="text-2xl font-black text-rose-900">{contributionStats.rejected}</div>
+              <p className="text-[11px] text-rose-700 font-medium">Not published</p>
+            </div>
+          </div>
+        </section>
 
         {/* DASHBOARD SPLIT GRID: LEFT CENTERPIECE MAP & RIGHT TRIP DETAILS */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

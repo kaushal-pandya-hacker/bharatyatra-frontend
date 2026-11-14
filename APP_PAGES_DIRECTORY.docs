@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **160**  
+> **Total Registered Pages:** **162**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -16,7 +16,7 @@
 - [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
 - [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
-- [Customer Discovery, Itinerary & Travel Products (55 pages)](#customer-discovery-itinerary-travel-products)
+- [Customer Discovery, Itinerary & Travel Products (57 pages)](#customer-discovery-itinerary-travel-products)
 
 ---
 
@@ -191,6 +191,8 @@
 | **Page: /cookie-policy** | `/cookie-policy` | [`app/cookie-policy/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/cookie-policy/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /corporate** | `/corporate` | [`app/corporate/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/corporate/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Traveler Personal Dashboard & Travel Vault** | `/dashboard` | [`app/(customer)/dashboard/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/dashboard/page.tsx) | `Authenticated Traveler` | Saved trips, quick booking links, loyalty points, and recent searches |
+| **Page: /dashboard/contribute-place** | `/dashboard/contribute-place` | [`app/(customer)/dashboard/contribute-place/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/dashboard/contribute-place/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /dashboard/my-contributions** | `/dashboard/my-contributions` | [`app/(customer)/dashboard/my-contributions/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/dashboard/my-contributions/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Pan-India Destination Directory (36 States)** | `/destinations` | [`app/(customer)/destinations/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/destinations/page.tsx) | `Public / Traveler` | Explore top cities, spiritual anchors, hill stations, and heritage sites |
 | **Destination Comprehensive Travel Guide** | `/destinations/[id]` | [`app/(customer)/destinations/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/destinations/[id]/page.tsx) | `Public / Traveler` | Weather, best time to visit, top sights, food recommendations, and stays |
 | **Page: /disclaimer** | `/disclaimer` | [`app/disclaimer/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/disclaimer/page.tsx) | `Traveler` | BharatYatra platform page |

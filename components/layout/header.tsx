@@ -27,7 +27,8 @@ import {
   Globe,
   Check,
   Headset,
-  ShoppingBag
+  ShoppingBag,
+  MapPinPlus
 } from 'lucide-react';
 import { useNexi } from '@/lib/nexi/nexi-context';
 
@@ -115,8 +116,9 @@ export function Header() {
     { label: t.nav.flights, href: '/flights', icon: Plane, desc: 'Domestic & international flights' },
     { label: t.nav.dining, href: '/restaurants', icon: UtensilsCrossed, desc: 'Top restaurants & local food' },
     { label: t.nav.experiences, href: '/experiences', icon: Mountain, desc: 'Guided tours & adventures' },
-    { label: t.nav.cart, href: '/cart', icon: ShoppingBag, desc: 'View bookings cart' },
+    { label: '/cart' in {} ? 'Cart' : t.nav.cart, href: '/cart', icon: ShoppingBag, desc: 'View bookings cart' },
     { label: 'Map Discovery', href: '/map', icon: Map, desc: 'Interactive map navigation' },
+    { label: 'Contribute a Place', href: '/dashboard/contribute-place', icon: MapPinPlus, desc: 'Add hidden gems & attractions for approval' },
   ];
 
   const languages = [
@@ -137,8 +139,9 @@ export function Header() {
     { label: t.nav.flights, href: '/flights', icon: Plane, desc: 'Domestic & international flights' },
     { label: t.nav.dining, href: '/restaurants', icon: UtensilsCrossed, desc: 'Top restaurants & local food' },
     { label: t.nav.experiences, href: '/experiences', icon: Mountain, desc: 'Guided tours & adventures' },
-    { label: t.nav.cart, href: '/cart', icon: ShoppingBag, desc: 'View bookings cart' },
+    { label: '/cart' in {} ? 'Cart' : t.nav.cart, href: '/cart', icon: ShoppingBag, desc: 'View bookings cart' },
     { label: 'Map Discovery', href: '/map', icon: Map, desc: 'Interactive map navigation' },
+    { label: 'Contribute a Place', href: '/dashboard/contribute-place', icon: MapPinPlus, desc: 'Add hidden gems & attractions for approval' },
   ];
 
   return (
@@ -400,30 +403,52 @@ export function Header() {
 
           {/* User Sign In / Profile in Mobile Drawer */}
           {mounted && user ? (
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-              <Link
-                href="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 text-xs font-bold text-slate-800"
-              >
-                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-                  <User className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-slate-900">{user.fullName || user.email.split('@')[0]}</div>
-                  <div className="text-[10px] text-slate-500 font-normal">View Account &amp; Settings</div>
-                </div>
-              </Link>
-              <button
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200 hover:bg-rose-100 transition flex items-center gap-1.5"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                <span>{t.nav.signOut}</span>
-              </button>
+            <div className="pt-3 border-t border-slate-100 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-xs font-bold text-slate-800"
+                >
+                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-slate-900">{user.fullName || user.email.split('@')[0]}</div>
+                    <div className="text-[10px] text-slate-500 font-normal">View Account &amp; Settings</div>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200 hover:bg-rose-100 transition flex items-center gap-1.5"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>{t.nav.signOut}</span>
+                </button>
+              </div>
+
+              {/* Mobile Drawer Quick Links for Contributions */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <Link
+                  href="/dashboard/contribute-place"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition"
+                >
+                  <MapPinPlus className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Contribute Place</span>
+                </Link>
+                <Link
+                  href="/dashboard/my-contributions"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 text-slate-800 border border-slate-200 text-xs font-bold hover:bg-slate-100 transition"
+                >
+                  <Compass className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Contributions</span>
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="pt-3 border-t border-slate-100">
