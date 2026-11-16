@@ -1,4 +1,5 @@
 import { apiFetch } from '@/lib/api/client';
+import { TripPreferenceProfile, createDefaultPreferenceProfile } from '@/lib/ai-planner/universal-preference-profile';
 
 export interface TravelOrigin {
   city: string;
@@ -53,6 +54,8 @@ export interface TravelProfile {
   customBudgetAmount?: number;
   explorationStyle?: 'fewer_deep' | 'balanced' | 'more_destinations';
   accessibilityRequirements?: string[];
+  dietaryPreference?: string;
+  lockedKeys?: string[];
 }
 
 /**
@@ -141,6 +144,8 @@ export const DEFAULT_TRAVEL_PROFILE: TravelProfile = {
   interests: ['heritage', 'nature'],
   typicalTravelers: 2,
   preferredLanguage: 'en',
+  dietaryPreference: 'pure-veg',
+  lockedKeys: [],
   completed: false,
   onboardingStatus: 'NOT_STARTED',
 };
@@ -392,4 +397,152 @@ export async function skipUserOnboarding(userId?: string): Promise<void> {
     if (token) headers['Authorization'] = `Bearer ${token}`;
     await fetch('/api/user/onboarding/skip', { method: 'POST', headers });
   } catch {}
+}
+
+
+export interface UnifiedTripOverrides {
+  origin?: Partial<TravelOrigin>;
+  destination: { city: string; state?: string; country?: string; latitude?: number; longitude?: number };
+  destinationList?: string[];
+  travelers?: number;
+  startDate?: string;
+  endDate?: string;
+  durationDays?: number;
+  budgetTotal?: number;
+  travelStyle?: string;
+  pace?: string;
+  transport?: string[];
+  interests?: string[];
+  foodPreference?: string;
+  lockedKeys?: string[];
+}
+
+export interface UnifiedTripContextResult {
+  travelContext: TravelContext;
+  tripContext: TripContext;
+  preferenceProfile: TripPreferenceProfile;
+}
+
+export function buildUnifiedTripContext(
+  profile: TravelProfile,
+  tripOverrides: UnifiedTripOverrides
+): UnifiedTripContextResult {
+  const travelContext = buildTravelContext(profile);
+  const tripContext = buildTripContext(travelContext, tripOverrides);
+
+  const travelersCount =
+    tripOverrides.travelers && tripOverrides.travelers > 0
+      ? tripOverrides.travelers
+      : profile.typicalTravelers || 2;
+
+  const durationDays = tripOverrides.durationDays || 5;
+  const originCity = tripOverrides.origin?.city || profile.origin?.city || 'Ahmedabad';
+  const destinationCity = tripOverrides.destination?.city || 'Goa';
+  const destinationList =
+    tripOverrides.destinationList && tripOverrides.destinationList.length > 0
+      ? tripOverrides.destinationList
+      : [destinationCity];
+
+  const prefProfile = createDefaultPreferenceProfile({
+    origin: originCity,
+    originState: tripOverrides.origin?.state || profile.origin?.state || 'Gujarat',
+    destination: destinationCity,
+    destinationList: destinationList,
+    tripDurationDays: durationDays,
+    travelersCount: travelersCount,
+    startDate: tripOverrides.startDate || '2026-12-24',
+    endDate: tripOverrides.endDate,
+    travelerComposition: profile.travelerComposition || {
+      adults: travelersCount,
+      seniors: 0,
+      children: 0,
+      infants: 0,
+    },
+  });
+
+  if (tripOverrides.budgetTotal && tripOverrides.budgetTotal > 0) {
+    prefProfile.budget.totalBudget = tripOverrides.budgetTotal;
+    prefProfile.budget.perPersonBudget = Math.round(tripOverrides.budgetTotal / travelersCount);
+    prefProfile.budget.dailyBudget = Math.round(tripOverrides.budgetTotal / (durationDays * travelersCount));
+  } else if (profile.customBudgetAmount && profile.customBudgetAmount > 0) {
+    prefProfile.budget.totalBudget = profile.customBudgetAmount;
+    prefProfile.budget.perPersonBudget = Math.round(profile.customBudgetAmount / travelersCount);
+    prefProfile.budget.dailyBudget = Math.round(profile.customBudgetAmount / (durationDays * travelersCount));
+  }
+
+  const travelStyle = tripOverrides.travelStyle || profile.travelStyle;
+  if (travelStyle) {
+    const s = travelStyle.toLowerCase();
+    if (s === 'luxury') prefProfile.budget.pricingCategory = 'luxury';
+    else if (s === 'premium') prefProfile.budget.pricingCategory = 'premium';
+    else if (s === 'budget') prefProfile.budget.pricingCategory = 'budget';
+    else prefProfile.budget.pricingCategory = 'standard';
+  }
+
+  const pace = tripOverrides.pace || profile.pace;
+  if (pace) {
+    const p = pace.toLowerCase();
+    if (p.includes('fast') || p.includes('packed')) {
+      prefProfile.pace.style = 'fast-paced';
+      prefProfile.pace.maxAttractionsPerDay = 5;
+    } else if (p.includes('slow') || p.includes('relaxed')) {
+      prefProfile.pace.style = 'relaxed';
+      prefProfile.pace.maxAttractionsPerDay = 3;
+    } else {
+      prefProfile.pace.style = 'balanced';
+      prefProfile.pace.maxAttractionsPerDay = 4;
+    }
+  }
+
+  const foodPref = tripOverrides.foodPreference || profile.dietaryPreference;
+  if (foodPref) {
+    const f = foodPref.toLowerCase();
+    if (f.includes('jain')) prefProfile.food.preference = 'jain';
+    else if (f.includes('swaminarayan')) prefProfile.food.preference = 'swaminarayan';
+    else if (f.includes('non-veg')) prefProfile.food.preference = 'non-veg';
+    else if (f.includes('vegan')) prefProfile.food.preference = 'vegan';
+    else if (f.includes('halal')) prefProfile.food.preference = 'halal';
+    else prefProfile.food.preference = 'pure-veg';
+  }
+
+  const transport = tripOverrides.transport || profile.transport;
+  if (transport && transport.length > 0) {
+    const t = transport[0].toLowerCase();
+    if (['flight', 'train', 'bus', 'cab', 'self-drive', 'mixed'].includes(t)) {
+      prefProfile.transport.preferredTransport = t as any;
+    }
+  }
+
+  const interests = tripOverrides.interests || profile.interests;
+  if (interests && interests.length > 0) {
+    interests.forEach(i => {
+      const lower = i.toLowerCase();
+      if (lower.includes('adventure')) prefProfile.interests.adventure = true;
+      if (lower.includes('nature')) prefProfile.interests.nature = true;
+      if (lower.includes('heritage')) prefProfile.interests.heritage = true;
+      if (lower.includes('culture')) prefProfile.interests.culture = true;
+      if (lower.includes('food')) prefProfile.interests.food = true;
+      if (lower.includes('photo')) prefProfile.interests.photography = true;
+      if (lower.includes('wildlife')) prefProfile.interests.wildlife = true;
+      if (lower.includes('beach')) prefProfile.interests.beaches = true;
+      if (lower.includes('mountain')) prefProfile.interests.mountains = true;
+      if (lower.includes('religious') || lower.includes('temple') || lower.includes('spiritual')) {
+        prefProfile.interests.religious = true;
+      }
+      if (lower.includes('relax')) prefProfile.interests.relaxation = true;
+      if (lower.includes('shop')) prefProfile.interests.shopping = true;
+    });
+  }
+
+  if (tripOverrides.lockedKeys && tripOverrides.lockedKeys.length > 0) {
+    prefProfile.lockedKeys = Array.from(new Set([...prefProfile.lockedKeys, ...tripOverrides.lockedKeys]));
+  } else if (profile.lockedKeys && profile.lockedKeys.length > 0) {
+    prefProfile.lockedKeys = Array.from(new Set([...prefProfile.lockedKeys, ...profile.lockedKeys]));
+  }
+
+  return {
+    travelContext,
+    tripContext,
+    preferenceProfile: prefProfile,
+  };
 }

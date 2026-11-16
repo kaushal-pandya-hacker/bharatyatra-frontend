@@ -36,6 +36,12 @@ import {
   TravelMode,
   TravelPace,
 } from '@/lib/ai-planner/trip-duration-intelligence-engine';
+import {
+  dynamicItineraryEngine,
+  ItineraryMasterPlan,
+} from '@/lib/ai-planner/dynamic-itinerary-engine';
+import { createDefaultPreferenceProfile } from '@/lib/ai-planner/universal-preference-profile';
+import { DynamicItineraryPlanner } from './DynamicItineraryPlanner';
 
 interface SmartDestinationDurationPlannerProps {
   initialOrigin?: string;
@@ -76,6 +82,25 @@ export function SmartDestinationDurationPlanner({
   const [selectedDayNumber, setSelectedDayNumber] = useState<number>(1);
   const [showCustomizer, setShowCustomizer] = useState<boolean>(false);
   const [customDays, setCustomDays] = useState<number>(5);
+  const [editablePlan, setEditablePlan] = useState<ItineraryMasterPlan | null>(null);
+
+  const handleLaunchEditablePlanner = () => {
+    const mainDest = destinations[0] || 'Dwarka';
+    const profile = createDefaultPreferenceProfile({
+      origin,
+      destination: mainDest,
+      destinationList: destinations.length > 0 ? destinations : [mainDest],
+      tripDurationDays: selectedDurationDays,
+    });
+    profile.pace.style = pace === 'active' ? 'fast-paced' : pace;
+    const plan = dynamicItineraryEngine.generateItinerary({
+      preferenceProfile: profile,
+    });
+    setEditablePlan(plan);
+    setTimeout(() => {
+      document.getElementById('editable-planner-workspace')?.scrollIntoView({ behavior: 'smooth' });
+    }, 150);
+  };
 
   const availablePreferences = [
     'Heritage & Culture',
@@ -821,25 +846,52 @@ export function SmartDestinationDurationPlanner({
             )}
           </div>
 
-          {/* Action CTA: Proceed */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-teal-950/40 via-slate-900 to-blue-950/40 border border-teal-500/30">
+          {/* Action CTA: Launch Editable Planner */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-teal-950/40 border border-emerald-500/30">
             <div>
-              <h4 className="text-base font-bold text-white">Ready to lock in this journey?</h4>
+              <h4 className="text-base font-bold text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" /> Ready to customize this journey?
+              </h4>
               <p className="text-xs text-slate-400 mt-0.5">
-                Proceed with the {selectedTier === 'recommended' ? 'AI Recommended' : selectedTier} plan of{' '}
-                {selectedDurationDays} days.
+                Generate a fully editable plan of {selectedDurationDays} days where you can reorder days, swap stays, and ask AI to optimize.
               </p>
             </div>
-            <a
-              href={`/contact?inquiry=trip-plan&origin=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(
-                destinations.join(',')
-              )}&days=${selectedDurationDays}&mode=${travelMode}`}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-white bg-teal-500 hover:bg-teal-400 text-slate-950 transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-teal-500/20"
-            >
-              <span>Book & Finalize Itinerary</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
+            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={handleLaunchEditablePlanner}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20 cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Customize & Edit Itinerary</span>
+              </button>
+              <a
+                href={`/contact?inquiry=trip-plan&origin=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(
+                  destinations.join(',')
+                )}&days=${selectedDurationDays}&mode=${travelMode}`}
+                className="w-full sm:w-auto px-4 py-3 rounded-xl font-medium text-slate-300 hover:text-white border border-slate-700 hover:bg-slate-800 transition flex items-center justify-center gap-1.5 text-xs text-center"
+              >
+                <span>Expert Help</span>
+              </a>
+            </div>
           </div>
+
+          {/* 4. Active Editable Planner Workspace */}
+          {editablePlan && (
+            <div id="editable-planner-workspace" className="pt-8 border-t border-slate-800 space-y-4 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-emerald-400" /> Interactive Itinerary Workspace
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Drag and drop activities, swap accommodation tiers, reorder transit legs, and chat with Farva AI.
+                  </p>
+                </div>
+              </div>
+              <DynamicItineraryPlanner initialPlan={editablePlan} />
+            </div>
+          )}
         </div>
       )}
     </div>

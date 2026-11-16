@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { ProtectedRoute } from '@/lib/auth/protected-route';
-import { getSavedTrips, TripItem, resolveClientTripStatus } from '@/lib/trips/trip-storage';
+import { getSavedTrips, saveTrip, TripItem, resolveClientTripStatus } from '@/lib/trips/trip-storage';
 import {
   GroupMember,
   TripExpenseItem,
@@ -13,6 +13,12 @@ import {
   computeFullTripExpenseSummary,
   ExpenseCategory,
 } from '@/lib/trips/group-expense-engine';
+import {
+  dynamicItineraryEngine,
+  ItineraryMasterPlan,
+} from '@/lib/ai-planner/dynamic-itinerary-engine';
+import { createDefaultPreferenceProfile } from '@/lib/ai-planner/universal-preference-profile';
+import { DynamicItineraryPlanner } from '@/components/ai/DynamicItineraryPlanner';
 
 export default function TripCommandCenterPage({ params }: { params?: { id?: string } } = {}) {
   return (
@@ -176,6 +182,33 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
   const displayDates = trip?.startDate
     ? `${formatTripDate(trip.startDate)}${trip.endDate ? ` – ${formatTripDate(trip.endDate)}` : ''} (${displayDays} Days / ${displayNights} Nights)`
     : `Dates Unscheduled • ${displayDays} Day Circuit`;
+
+  const [showItineraryWorkspace, setShowItineraryWorkspace] = useState<boolean>(false);
+
+  const activeItineraryPlan = useMemo<ItineraryMasterPlan>(() => {
+    if (trip?.itineraryJson && trip.itineraryJson.currentVersion) {
+      return trip.itineraryJson as ItineraryMasterPlan;
+    }
+    const profile = createDefaultPreferenceProfile({
+      origin: displayOrigin || 'Ahmedabad',
+      destination: displayDest || 'Dwarka',
+      destinationList: [displayDest || 'Dwarka'],
+      tripDurationDays: displayDays || 3,
+    });
+    return dynamicItineraryEngine.generateItinerary({ preferenceProfile: profile });
+  }, [trip?.itineraryJson, displayOrigin, displayDest, displayDays]);
+
+  const handleUpdateItineraryFromWorkspace = (updatedPlan: ItineraryMasterPlan) => {
+    if (trip) {
+      const updatedTrip: TripItem = {
+        ...trip,
+        itineraryJson: updatedPlan,
+        durationDays: updatedPlan.durationDays,
+      };
+      setTrip(updatedTrip);
+      saveTrip(updatedTrip);
+    }
+  };
 
   // Dynamic Day calculation based on actual current date
   const currentDayInfo = useMemo(() => {
@@ -802,6 +835,37 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               </div>
             </section>
 
+            {/* FULL INTERACTIVE EDITABLE ITINERARY WORKSPACE */}
+            {showItineraryWorkspace && (
+              <div className="mb-space-lg p-space-md bg-surface-container-lowest rounded-2xl shadow-sm border border-emerald-500/30 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between pb-space-sm mb-space-sm border-b border-surface-container">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-emerald-600 text-2xl">edit_calendar</span>
+                    <div>
+                      <h2 className="font-title-lg text-title-lg font-bold text-on-surface">
+                        Interactive Itinerary Workspace
+                      </h2>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">
+                        Drag & drop activities, swap accommodation tiers, switch transit modes, and refine with Farva AI.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowItineraryWorkspace(false)}
+                    className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition"
+                    title="Close Workspace"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <DynamicItineraryPlanner
+                  initialPlan={activeItineraryPlan}
+                  onUpdatePlan={handleUpdateItineraryFromWorkspace}
+                  tripId={tripId}
+                />
+              </div>
+            )}
+
             {/* 3-COLUMN MASTER COMMAND GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
               {/* COLUMN 1: TODAY'S LIVE EXPEDITION & TIMELINE (lg:col-span-4) */}
@@ -838,13 +902,22 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                       {stops.length > 0 ? `${stops.length} verified stops planned on this circuit` : 'Itinerary vector active'}
                     </span>
                   </div>
-                  <button
-                    onClick={() => router.push(`/plan?dest=${encodeURIComponent(displayDest)}`)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-on-secondary-fixed text-primary-container font-label-md text-label-md font-bold shadow-md hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base text-primary-container">auto_awesome</span>
-                    Optimize My Day with Farva AI
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => setShowItineraryWorkspace(!showItineraryWorkspace)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-label-md text-label-md font-bold shadow-md hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-base">auto_awesome</span>
+                      {showItineraryWorkspace ? 'Close Workspace' : 'Open Editable Itinerary Workspace'}
+                    </button>
+                    <button
+                      onClick={() => router.push(`/ai-planner?destination=${encodeURIComponent(displayDest)}&origin=${encodeURIComponent(displayOrigin)}&duration=${displayDays}`)}
+                      className="w-full py-1.5 px-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-sm">tune</span>
+                      Duration & Route Intelligence
+                    </button>
+                  </div>
                 </div>
 
                 {/* Chronological Live Expedition Timeline */}

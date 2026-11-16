@@ -247,6 +247,123 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, data: updated }, { status: 200 });
       }
 
+      case 'reorder_activities': {
+        const { plan, dayNumber, slot, fromIndex, toIndex } = body;
+        if (!plan || !dayNumber || !slot || typeof fromIndex !== 'number' || typeof toIndex !== 'number') {
+          return NextResponse.json({ success: false, error: 'Missing parameters for reorder_activities.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.reorderActivitiesInSlot(plan, dayNumber, slot, fromIndex, toIndex);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'move_activity': {
+        const { plan, sourceDay, sourceSlot, targetDay, targetSlot, activityId, targetIndex } = body;
+        if (!plan || !sourceDay || !sourceSlot || !targetDay || !targetSlot || !activityId) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for move_activity.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.moveActivity(plan, sourceDay, sourceSlot, targetDay, targetSlot, activityId, targetIndex);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'duplicate_activity': {
+        const { plan, dayNumber, activityId } = body;
+        if (!plan || !dayNumber || !activityId) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for duplicate_activity.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.duplicateActivity(plan, dayNumber, activityId);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'add_custom_activity': {
+        const { plan, dayNumber, slot, custom } = body;
+        if (!plan || !dayNumber || !slot || !custom || !custom.title) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for add_custom_activity.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.addCustomActivity(plan, dayNumber, slot, custom);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'add_day': {
+        const { plan, afterDayNumber, location } = body;
+        if (!plan) {
+          return NextResponse.json({ success: false, error: 'Missing plan for add_day.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.addDay(plan, afterDayNumber, location);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'remove_day': {
+        const { plan, dayNumber } = body;
+        if (!plan || !dayNumber) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for remove_day.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.removeDay(plan, dayNumber);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'reorder_days': {
+        const { plan, newDayOrder } = body;
+        if (!plan || !Array.isArray(newDayOrder)) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for reorder_days.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.reorderDays(plan, newDayOrder);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'add_destination': {
+        const { plan, destinationName, allocatedDays } = body;
+        if (!plan || !destinationName) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for add_destination.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.addDestination(plan, destinationName, allocatedDays || 1);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'remove_destination': {
+        const { plan, destinationName } = body;
+        if (!plan || !destinationName) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for remove_destination.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.removeDestination(plan, destinationName);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'update_accommodation': {
+        const { plan, dayNumber, accommodation } = body;
+        if (!plan || !dayNumber || !accommodation) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for update_accommodation.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.updateAccommodation(plan, dayNumber, accommodation);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'update_transit': {
+        const { plan, dayNumber, legIndex, updatedMode, updatedCost, updatedDurationMinutes } = body;
+        if (!plan || !dayNumber || typeof legIndex !== 'number' || !updatedMode) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for update_transit.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.updateTransportLeg(plan, dayNumber, legIndex, updatedMode, updatedCost, updatedDurationMinutes);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'update_budget': {
+        const { plan, customBudgetInr } = body;
+        if (!plan || typeof customBudgetInr !== 'number') {
+          return NextResponse.json({ success: false, error: 'Missing parameters for update_budget.' }, { status: 400 });
+        }
+        const updated = dynamicItineraryEngine.updateBudgetCustomization(plan, customBudgetInr);
+        return NextResponse.json({ success: true, data: updated }, { status: 200 });
+      }
+
+      case 'propose_ai_diff': {
+        const { plan, prompt } = body;
+        if (!plan || !prompt) {
+          return NextResponse.json({ success: false, error: 'Missing parameters for propose_ai_diff.' }, { status: 400 });
+        }
+        const proposal = dynamicItineraryEngine.proposeAiDiff(plan, prompt);
+        return NextResponse.json({ success: true, data: proposal }, { status: 200 });
+      }
+
       default:
         return NextResponse.json(
           { success: false, error: `Unsupported itinerary action: ${action}` },

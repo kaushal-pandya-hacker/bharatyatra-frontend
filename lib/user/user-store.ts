@@ -86,6 +86,7 @@ export interface UserPreferencesRecord {
   originState: string;
   originCountry: string;
   typicalTravelers: number;
+  lockedKeys?: string[];
   updatedAt: string;
 }
 
@@ -530,6 +531,8 @@ class InMemoryUserDataStore {
       originState: 'Gujarat',
       originCountry: 'India',
       typicalTravelers: 2,
+      dietaryPreference: 'pure-veg',
+      lockedKeys: [],
       updatedAt: new Date().toISOString(),
     };
     return defaultPrefs;
@@ -1327,6 +1330,7 @@ export class UserDataStore {
           originState: data.origin_state || 'Gujarat',
           originCountry: data.origin_country || 'India',
           typicalTravelers: data.typical_travelers || 2,
+          lockedKeys: data.locked_keys || [],
           updatedAt: data.updated_at,
         };
       }
@@ -1334,12 +1338,12 @@ export class UserDataStore {
         return inMemoryStore.getPreferences(userId);
       }
       if (error) {
-        if (shouldAllowFallback()) return inMemoryStore.getPreferences(userId);
+        if (shouldAllowFallback(error)) return inMemoryStore.getPreferences(userId);
         throw new DatabasePersistenceError(`Database error on user_preferences: ${error.message}`, error);
       }
     } catch (err: any) {
       if (err instanceof DatabasePersistenceError) throw err;
-      if (shouldAllowFallback()) return inMemoryStore.getPreferences(userId);
+      if (shouldAllowFallback(err)) return inMemoryStore.getPreferences(userId);
       throw new DatabasePersistenceError(`Database failure reading preferences: ${err?.message || 'Unknown error'}`, err);
     }
     return inMemoryStore.getPreferences(userId);
@@ -1366,6 +1370,7 @@ export class UserDataStore {
       if (prefs.originState !== undefined) payload.origin_state = prefs.originState;
       if (prefs.originCountry !== undefined) payload.origin_country = prefs.originCountry;
       if (prefs.typicalTravelers !== undefined) payload.typical_travelers = prefs.typicalTravelers;
+      if (prefs.lockedKeys !== undefined) payload.locked_keys = prefs.lockedKeys;
 
       const { data, error } = await supabase
         .from('user_preferences')
@@ -1374,7 +1379,7 @@ export class UserDataStore {
         .single();
 
       if (error) {
-        if (shouldAllowFallback()) return inMemoryStore.savePreferences(userId, prefs);
+        if (shouldAllowFallback(error)) return inMemoryStore.savePreferences(userId, prefs);
         throw new DatabasePersistenceError(`Database write failed for user_preferences: ${error.message}`, error);
       }
 
@@ -1392,13 +1397,14 @@ export class UserDataStore {
           originState: data.origin_state,
           originCountry: data.origin_country,
           typicalTravelers: data.typical_travelers,
+          lockedKeys: data.locked_keys || [],
           updatedAt: data.updated_at,
         };
       }
       throw new DatabasePersistenceError('Failed to return updated preferences');
     } catch (err: any) {
       if (err instanceof DatabasePersistenceError) throw err;
-      if (shouldAllowFallback()) return inMemoryStore.savePreferences(userId, prefs);
+      if (shouldAllowFallback(err)) return inMemoryStore.savePreferences(userId, prefs);
       throw new DatabasePersistenceError(`Database write failure: ${err?.message || 'Unknown error'}`, err);
     }
   }
