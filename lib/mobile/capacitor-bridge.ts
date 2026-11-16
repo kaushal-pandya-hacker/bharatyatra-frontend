@@ -17,6 +17,7 @@ export class CapacitorMobileBridge {
   private static isInitialized = false;
   private static backButtonHandle: any = null;
   private static appStateHandle: any = null;
+  private static urlOpenHandle: any = null;
 
   /**
    * Returns true if the application is currently running inside
@@ -65,6 +66,26 @@ export class CapacitorMobileBridge {
           window.dispatchEvent(new CustomEvent('bharatyatra:app-resumed'));
         }
       });
+
+      // 4. App Deep Link URL Open Listener (e.g. bharatyatra://auth/callback or https://bharatyatra.in/...)
+      this.urlOpenHandle = App.addListener('appUrlOpen', (event) => {
+        try {
+          const url = new URL(event.url);
+          if (url.protocol === 'bharatyatra:') {
+            const internalPath = (url.pathname || '/') + url.search + url.hash;
+            if (typeof window !== 'undefined') {
+              window.location.href = internalPath;
+            }
+          } else if (url.hostname.includes('bharatyatra.in')) {
+            const internalPath = (url.pathname || '/') + url.search + url.hash;
+            if (typeof window !== 'undefined') {
+              window.location.href = internalPath;
+            }
+          }
+        } catch (e) {
+          console.warn('[CapacitorMobileBridge] Failed to handle deep link:', e);
+        }
+      });
     } catch (err) {
       console.warn('[CapacitorMobileBridge] Failed during core initialization:', err);
     }
@@ -85,6 +106,11 @@ export class CapacitorMobileBridge {
         const handle = await this.appStateHandle;
         handle?.remove?.();
         this.appStateHandle = null;
+      }
+      if (this.urlOpenHandle) {
+        const handle = await this.urlOpenHandle;
+        handle?.remove?.();
+        this.urlOpenHandle = null;
       }
     } catch (err) {
       console.warn('[CapacitorMobileBridge] Failed during cleanup:', err);

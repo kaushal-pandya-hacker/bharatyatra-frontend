@@ -31,6 +31,13 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
+# Android Keystores & Signing Credentials (CRITICAL SECURITY)
+*.keystore
+*.jks
+*.p12
+keystore.properties
+google-services.json
+
 # staging evidence & backups
 security-audit/local-staging-evidence/
 

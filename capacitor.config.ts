@@ -18,6 +18,7 @@ const config: CapacitorConfig = {
       'accounts.google.com',
       'api.razorpay.com',
       'checkout.razorpay.com',
+      '*.razorpay.com',
     ],
   },
   android: {
