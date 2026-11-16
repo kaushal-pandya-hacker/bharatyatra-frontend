@@ -90,6 +90,11 @@ def distribute_brand_assets():
         os.path.join(REPO_ROOT, "public", "chalo-farva-logo.png"),
         os.path.join(REPO_ROOT, "public", "images", "logo.png"),
 
+        # Capacitor Mobile Web Distribution (Lightweight Bootstrap)
+        os.path.join(REPO_ROOT, "public-mobile", "logo.png"),
+        os.path.join(REPO_ROOT, "public-mobile", "bharatyatra-logo.png"),
+        os.path.join(REPO_ROOT, "public-mobile", "chalo-farva-logo.png"),
+
         # 18_DEVELOPMENT Frontend
         os.path.join(REPO_ROOT, "18_DEVELOPMENT", "Frontend", "public", "logo.png"),
         os.path.join(REPO_ROOT, "18_DEVELOPMENT", "Frontend", "public", "bharatyatra-logo.png"),
@@ -124,6 +129,7 @@ def distribute_brand_assets():
     # Target ICO file paths
     ico_targets = [
         os.path.join(REPO_ROOT, "public", "favicon.ico"),
+        os.path.join(REPO_ROOT, "public-mobile", "favicon.ico"),
         os.path.join(REPO_ROOT, "app", "favicon.ico"),
         os.path.join(REPO_ROOT, "18_DEVELOPMENT", "Frontend", "public", "favicon.ico"),
         os.path.join(REPO_ROOT, "18_DEVELOPMENT", "Frontend", "app", "favicon.ico"),

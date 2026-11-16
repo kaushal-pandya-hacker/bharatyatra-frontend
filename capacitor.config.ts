@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'in.bharatyatra.app',
   appName: 'BharatYatra',
-  webDir: 'public',
+  webDir: 'public-mobile',
   server: {
     // Production remote delivery URL: Loads the live Next.js App Router application
     url: 'https://www.bharatyatra.in',

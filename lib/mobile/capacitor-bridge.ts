@@ -15,6 +15,8 @@ import { App } from '@capacitor/app';
  */
 export class CapacitorMobileBridge {
   private static isInitialized = false;
+  private static backButtonHandle: any = null;
+  private static appStateHandle: any = null;
 
   /**
    * Returns true if the application is currently running inside
@@ -47,7 +49,7 @@ export class CapacitorMobileBridge {
       }
 
       // 2. Android Hardware Back Button Handling
-      App.addListener('backButton', ({ canGoBack }) => {
+      this.backButtonHandle = App.addListener('backButton', ({ canGoBack }) => {
         if (canGoBack) {
           window.history.back();
         } else {
@@ -57,7 +59,7 @@ export class CapacitorMobileBridge {
       });
 
       // 3. App State Change Listener (Resume / Pause)
-      App.addListener('appStateChange', (state) => {
+      this.appStateHandle = App.addListener('appStateChange', (state) => {
         if (state.isActive) {
           // Trigger any session refresh or network re-check on app foreground
           window.dispatchEvent(new CustomEvent('bharatyatra:app-resumed'));
@@ -66,6 +68,28 @@ export class CapacitorMobileBridge {
     } catch (err) {
       console.warn('[CapacitorMobileBridge] Failed during core initialization:', err);
     }
+  }
+
+  /**
+   * Cleans up native event listeners safely during unmounting.
+   */
+  public static async cleanup(): Promise<void> {
+    if (!this.isNative()) return;
+    try {
+      if (this.backButtonHandle) {
+        const handle = await this.backButtonHandle;
+        handle?.remove?.();
+        this.backButtonHandle = null;
+      }
+      if (this.appStateHandle) {
+        const handle = await this.appStateHandle;
+        handle?.remove?.();
+        this.appStateHandle = null;
+      }
+    } catch (err) {
+      console.warn('[CapacitorMobileBridge] Failed during cleanup:', err);
+    }
+    this.isInitialized = false;
   }
 
   /**

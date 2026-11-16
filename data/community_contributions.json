@@ -259,9 +259,96 @@
       "reviewedAt": "2026-11-13T14:35:23.185Z",
       "approvedPlaceId": "e750fccc-c88e-490c-9917-7105288dac66",
       "approvedAt": "2026-11-13T14:35:23.185Z"
+    },
+    {
+      "id": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "contributorId": "user-test-777",
+      "contributorName": "Pooja Patel",
+      "contributorEmail": "pooja.patel@example.com",
+      "placeName": "Polo Forest Ancient Ruins",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Sabarkantha",
+      "city": "Idar",
+      "address": "Polo Forest, Vijayanagar, Sabarkantha, Gujarat",
+      "latitude": 23.978,
+      "longitude": 73.284,
+      "shortDescription": "15th-century Jain and Shiva temples amidst dense dry deciduous forest.",
+      "detailedDescription": "The ancient Polo forest is spread over 400 square kilometers near Vijayanagar. It was established around the 10th century by the Parihar kings of Idar and subsequently conquered by the Rathod Rajputs. The site features ruins of intricately carved 15th century Jain and Shiva shrines along the Harnav River.",
+      "photos": [
+        "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800"
+      ],
+      "bestTimeToVisit": "September to February",
+      "entryFee": "Free",
+      "parkingAvailable": false,
+      "facilities": [],
+      "travelTips": [
+        "Nearest railway station is Himmatnagar (60km)"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [],
+        "suggestedCorrections": [],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 1,
+          "passedFormatCheck": true,
+          "notes": "1 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-16T05:59:13.979Z"
+      },
+      "createdAt": "2026-11-16T05:59:13.821Z",
+      "updatedAt": "2026-11-16T05:59:13.979Z",
+      "submittedAt": "2026-11-16T05:59:13.821Z",
+      "reviewedBy": "qa@bharatyatra.in",
+      "reviewedAt": "2026-11-16T05:59:13.979Z",
+      "approvedPlaceId": "0cad1c8c-e1e5-4f9c-b139-dc4c56f0c19b",
+      "approvedAt": "2026-11-16T05:59:13.979Z"
     }
   ],
   "reviews": [
+    {
+      "id": "174a9b28-8b86-4477-807b-9c72b102fe78",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "adminId": "admin-qa",
+      "adminEmail": "qa@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Coordinates and details fully verified.",
+      "createdAt": "2026-11-16T05:59:13.979Z"
+    },
+    {
+      "id": "712a10bb-aada-4854-ac07-48c2ee2b4328",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "adminId": "admin-qa",
+      "adminEmail": "qa@bharatyatra.in",
+      "action": "REQUEST_CHANGES",
+      "previousStatus": "UNDER_REVIEW",
+      "newStatus": "CHANGES_REQUESTED",
+      "reviewNotes": "Please clarify nearest railway station distance.",
+      "createdAt": "2026-11-16T05:59:13.898Z"
+    },
+    {
+      "id": "3564dbd9-f790-4e19-8c97-9f69fe46e98c",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "adminId": "admin-qa",
+      "adminEmail": "qa@bharatyatra.in",
+      "action": "CLAIM_REVIEW",
+      "previousStatus": "PENDING",
+      "newStatus": "UNDER_REVIEW",
+      "createdAt": "2026-11-16T05:59:13.896Z"
+    },
     {
       "id": "7a7baac6-b10a-482c-9781-f7708dea802b",
       "submissionId": "aaefec39-a3d9-4714-aad5-d34143e95297",
@@ -349,6 +436,46 @@
     }
   ],
   "history": [
+    {
+      "id": "b83e2183-3500-4b02-898f-a2fb48db5a69",
+      "contributorId": "user-test-777",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "eventType": "APPROVED",
+      "description": "Administrator qa@bharatyatra.in performed action APPROVE: \"Coordinates and details fully verified.\".",
+      "createdAt": "2026-11-16T05:59:13.979Z"
+    },
+    {
+      "id": "c8f437c8-1243-4fe0-971e-189b1fbec7b0",
+      "contributorId": "user-test-777",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "eventType": "RESUBMITTED",
+      "description": "Resubmitted destination \"Polo Forest Ancient Ruins\" with addressed revisions.",
+      "createdAt": "2026-11-16T05:59:13.978Z"
+    },
+    {
+      "id": "afaef270-ca29-4998-a5b0-a938887abaa3",
+      "contributorId": "user-test-777",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "eventType": "UPDATED",
+      "description": "Administrator qa@bharatyatra.in performed action REQUEST_CHANGES: \"Please clarify nearest railway station distance.\".",
+      "createdAt": "2026-11-16T05:59:13.898Z"
+    },
+    {
+      "id": "13e90926-0c5d-4458-9c5c-267f02cf8136",
+      "contributorId": "user-test-777",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "eventType": "UPDATED",
+      "description": "Administrator qa@bharatyatra.in performed action CLAIM_REVIEW.",
+      "createdAt": "2026-11-16T05:59:13.896Z"
+    },
+    {
+      "id": "853c68f1-06d0-4505-9355-02e6e81832e4",
+      "contributorId": "user-test-777",
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"Polo Forest Ancient Ruins\" in Gujarat for verification.",
+      "createdAt": "2026-11-16T05:59:13.821Z"
+    },
     {
       "id": "15ca393f-8987-4a70-95ab-cb5bdc9d1be0",
       "contributorId": "user-test-777",

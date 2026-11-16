@@ -614,5 +614,73 @@
       "slug": "polo-forest-ancient-ruins-idar",
       "placeName": "Polo Forest Ancient Ruins"
     }
+  },
+  {
+    "id": "7f5a5e08-ae90-4adf-88be-1160753d9809",
+    "userId": "user-arch-001",
+    "recipientEmail": "aarav.sharma@example.com",
+    "title": "🎉 Destination Approved & Published!",
+    "message": "Great news! \"Gadhvi Hidden Falls\" has been verified by the BharatYatra team and is now live across Explore, Search, and AI Trip Planner!",
+    "category": "COMMUNITY",
+    "type": "CONTRIBUTION_APPROVED",
+    "deepLink": "/destinations/gadhvi-hidden-falls-ahwa",
+    "readAt": null,
+    "createdAt": "2026-11-16T05:59:13.379Z",
+    "metadata": {
+      "submissionId": "test-sub-101",
+      "destinationId": "d84f7d9e-c431-4814-9ccc-5ee52d0e534f",
+      "slug": "gadhvi-hidden-falls-ahwa",
+      "placeName": "Gadhvi Hidden Falls"
+    }
+  },
+  {
+    "id": "7d04cc21-189c-4136-85aa-26dc82a2a039",
+    "userId": "user-test-777",
+    "recipientEmail": "pooja.patel@example.com",
+    "title": "📍 Destination Submission Received!",
+    "message": "Thank you for contributing \"Polo Forest Ancient Ruins\"! Our curation team has received your submission and will review it shortly.",
+    "category": "COMMUNITY",
+    "type": "CONTRIBUTION_SUBMITTED",
+    "deepLink": "/profile/contributions",
+    "readAt": null,
+    "createdAt": "2026-11-16T05:59:13.824Z",
+    "metadata": {
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "placeName": "Polo Forest Ancient Ruins"
+    }
+  },
+  {
+    "id": "d6a05fb6-0244-479b-a2da-d820479b5c55",
+    "userId": "user-test-777",
+    "recipientEmail": "pooja.patel@example.com",
+    "title": "⚠️ Revisions Requested for Your Destination",
+    "message": "Our review team has requested revisions for \"Polo Forest Ancient Ruins\": Please clarify nearest railway station distance.",
+    "category": "COMMUNITY",
+    "type": "CONTRIBUTION_CHANGES_REQUESTED",
+    "deepLink": "/profile/contributions",
+    "readAt": null,
+    "createdAt": "2026-11-16T05:59:13.898Z",
+    "metadata": {
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "feedback": "Please clarify nearest railway station distance."
+    }
+  },
+  {
+    "id": "574a5f5a-27a4-4248-ad91-7ee2da337855",
+    "userId": "user-test-777",
+    "recipientEmail": "pooja.patel@example.com",
+    "title": "🎉 Destination Approved & Published!",
+    "message": "Great news! \"Polo Forest Ancient Ruins\" has been verified by the BharatYatra team and is now live across Explore, Search, and AI Trip Planner!",
+    "category": "COMMUNITY",
+    "type": "CONTRIBUTION_APPROVED",
+    "deepLink": "/destinations/polo-forest-ancient-ruins-idar",
+    "readAt": null,
+    "createdAt": "2026-11-16T05:59:13.981Z",
+    "metadata": {
+      "submissionId": "3a0a0d73-a0f4-4e97-9db7-9c2e2f789785",
+      "destinationId": "0cad1c8c-e1e5-4f9c-b139-dc4c56f0c19b",
+      "slug": "polo-forest-ancient-ruins-idar",
+      "placeName": "Polo Forest Ancient Ruins"
+    }
   }
 ]

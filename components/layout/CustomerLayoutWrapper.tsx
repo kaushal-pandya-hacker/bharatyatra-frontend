@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/layout/header';
@@ -19,9 +19,17 @@ import { NexiChatFloating } from '@/components/nexi/NexiChatFloating';
 import { DiwaliProvider } from '@/lib/campaigns/diwali-context';
 import { DiwaliTopBanner } from '@/components/festive/DiwaliTopBanner';
 import { DiwaliGreetingModal } from '@/components/festive/DiwaliGreetingModal';
+import { CapacitorMobileBridge } from '@/lib/mobile/capacitor-bridge';
 
 export function CustomerLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    CapacitorMobileBridge.initializeApp();
+    return () => {
+      CapacitorMobileBridge.cleanup();
+    };
+  }, []);
   const cleanPath = pathname ? pathname.replace(/\/+$/, '') : '';
   const isAdminPath = cleanPath.startsWith('/bharatyatra-ops');
   const isTripDashboard = cleanPath !== '/trips' && cleanPath.startsWith('/trips/');

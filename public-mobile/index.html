@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>BharatYatra — Explore India</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+    .container {
+      max-width: 420px;
+      width: 100%;
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 32px;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(245, 158, 11, 0.2);
+      border-radius: 50%;
+      border-top-color: #f59e0b;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .status-text {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .offline-view {
+      display: none;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 32px 20px;
+      width: 100%;
+    }
+    .offline-btn {
+      margin-top: 20px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loading-view">
+    <img src="logo.png" alt="BharatYatra Logo" class="logo">
+    <h1 class="title">BharatYatra</h1>
+    <p class="subtitle">Gujarat-First AI Travel Platform</p>
+    <div class="spinner"></div>
+    <p class="status-text" id="status-message">Connecting to live travel services...</p>
+  </div>
+
+  <div class="container offline-view" id="offline-view">
+    <img src="logo.png" alt="BharatYatra Logo" class="logo">
+    <h2 style="font-size: 20px; margin-bottom: 12px;">Connection Unavailable</h2>
+    <p style="font-size: 14px; color: #94a3b8; line-height: 1.5;">
+      BharatYatra requires an active internet connection to load live itineraries, bookings, and pricing.
+    </p>
+    <button class="offline-btn" onclick="attemptConnection()">Retry Connection</button>
+  </div>
+
+  <script>
+    const TARGET_URL = 'https://www.bharatyatra.in';
+
+    function attemptConnection() {
+      if (navigator.onLine) {
+        document.getElementById('loading-view').style.display = 'flex';
+        document.getElementById('offline-view').style.display = 'none';
+        window.location.replace(TARGET_URL);
+      } else {
+        document.getElementById('loading-view').style.display = 'none';
+        document.getElementById('offline-view').style.display = 'block';
+      }
+    }
+
+    // Attempt immediate connection
+    if (navigator.onLine) {
+      setTimeout(attemptConnection, 300);
+    } else {
+      document.getElementById('loading-view').style.display = 'none';
+      document.getElementById('offline-view').style.display = 'block';
+    }
+
+    window.addEventListener('online', attemptConnection);
+  </script>
+</body>
+</html>
+
