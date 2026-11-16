@@ -18,7 +18,6 @@ import {
   Plane, 
   UtensilsCrossed, 
   Mountain, 
-  Route, 
   MapPin, 
   Sliders, 
   ChevronDown, 
@@ -102,7 +101,6 @@ export function Header() {
   const mainNavItems = [
     { label: t.nav.explore, href: '/explore', icon: Compass },
     { label: t.nav.plan, href: '/plan', icon: Sparkles, highlight: true },
-    { label: t.nav.packages, href: '/packages', icon: Route },
     { label: t.nav.destinations, href: '/destinations', icon: MapPin, collapseOnLg: true },
     { label: t.nav.stays, href: '/stays', icon: Hotel, collapseOnLg: true },
   ];
@@ -132,7 +130,6 @@ export function Header() {
     { label: t.nav.explore, href: '/explore', icon: Compass },
     { label: t.nav.destinations, href: '/destinations', icon: MapPin },
     { label: t.nav.plan, href: '/plan', icon: Sparkles, highlight: true },
-    { label: t.nav.packages, href: '/packages', icon: Route },
     { label: t.nav.stays, href: '/stays', icon: Hotel },
     { label: t.nav.buses, href: '/buses', icon: Bus, desc: 'Intercity bus booking' },
     { label: t.nav.trains, href: '/trains', icon: Train, desc: 'IRCTC train routes & tickets' },
