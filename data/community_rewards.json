@@ -225,9 +225,81 @@
       "validFrom": "2026-11-17T06:54:40.667Z",
       "validUntil": "2027-02-15T06:54:40.667Z",
       "createdAt": "2026-11-17T06:54:40.667Z"
+    },
+    {
+      "id": "rew-1794899813487-b1a6",
+      "code": "BHARAT7-908AAA",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-1794899813487",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T07:16:53.487Z",
+      "validUntil": "2027-02-15T07:16:53.487Z",
+      "createdAt": "2026-11-17T07:16:53.487Z"
+    },
+    {
+      "id": "rew-1794899813685-ee9d",
+      "code": "BHARAT7-B9C325",
+      "contributorId": "qa_user_1794899813486",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T07:16:53.685Z",
+      "validUntil": "2027-02-15T07:16:53.685Z",
+      "createdAt": "2026-11-17T07:16:53.685Z"
     }
   ],
   "auditLogs": [
+    {
+      "id": "log-1794899813985",
+      "couponId": "rew-1794899813685-ee9d",
+      "adminId": "SYSTEM_ROLLBACK",
+      "action": "RELEASED",
+      "reason": "Payment gateway simulation timeout recovery",
+      "timestamp": "2026-11-17T07:16:53.985Z"
+    },
+    {
+      "id": "log-1794899813984",
+      "couponId": "rew-1794899813685-ee9d",
+      "adminId": "qa_user_1794899813486",
+      "action": "REDEEMED",
+      "reason": "Applied to booking #BK-QA-77291 - Saved ₹700",
+      "timestamp": "2026-11-17T07:16:53.984Z"
+    },
+    {
+      "id": "log-1794899813685",
+      "couponId": "rew-1794899813685-ee9d",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: [QA TEST] Lothal Ancient Dockyard Heritage",
+      "timestamp": "2026-11-17T07:16:53.685Z"
+    },
+    {
+      "id": "log-1794899813488",
+      "couponId": "rew-1794899813487-b1a6",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T07:16:53.488Z"
+    },
+    {
+      "id": "log-1794899813488",
+      "couponId": "rew-1794899813487-b1a6",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T07:16:53.487Z"
+    },
     {
       "id": "log-1794898480967",
       "couponId": "rew-1794898480667-b517",
@@ -434,5 +506,5 @@
     ],
     "autoRewardEnabled": true
   },
-  "updatedAt": "2026-11-17T06:54:40.967Z"
+  "updatedAt": "2026-11-17T07:16:53.985Z"
 }

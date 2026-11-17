@@ -1,25 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireServerUser } from '@/lib/auth/server-auth';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import { cloudStorageService } from '@/lib/storage/cloud-storage-service';
 
-const ALLOWED_MIME_TYPES: Record<string, string> = {
-  'image/jpeg': '.jpg',
-  'image/jpg': '.jpg',
-  'image/png': '.png',
-  'image/webp': '.webp',
-};
+export const dynamic = 'force-dynamic';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+const ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+]);
 
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireServerUser(req);
     if (auth.response) return auth.response;
+    const user = auth.user;
 
     const formData = await req.formData();
-    const file = formData.get('photo') as File | null;
+    const file = (formData.get('photo') || formData.get('file')) as File | null;
+    const submissionId = (formData.get('submissionId') as string | null) || undefined;
 
     if (!file) {
       return NextResponse.json(
@@ -28,10 +30,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. MIME Type Validation
-    const mime = file.type?.toLowerCase();
-    const extension = ALLOWED_MIME_TYPES[mime];
-    if (!extension) {
+    // 1. Declared MIME Type check
+    const declaredMime = (file.type || '').toLowerCase();
+    if (!ALLOWED_MIME_TYPES.has(declaredMime)) {
       return NextResponse.json(
         {
           success: false,
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. File Size Validation
+    // 2. Strict File Size Validation (<= 5 MB)
     if (file.size > MAX_FILE_SIZE_BYTES) {
       return NextResponse.json(
         {
@@ -52,49 +53,46 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Convert ArrayBuffer and write to storage
+    // 3. ArrayBuffer & Binary Signature Verification
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Verify PNG/JPEG magic bytes
-    const isJpeg = buffer[0] === 0xff && buffer[1] === 0xd8;
-    const isPng = buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47;
-    const isWebp = buffer.slice(8, 12).toString('ascii') === 'WEBP';
-
-    if (!isJpeg && !isPng && !isWebp) {
+    const validation = cloudStorageService.validateImageBuffer(buffer, declaredMime);
+    if (!validation.valid) {
       return NextResponse.json(
         {
           success: false,
-          message: 'File content failed binary header inspection. Invalid image data.',
+          message: validation.error || 'File failed binary signature inspection. Invalid image data.',
         },
         { status: 400 }
       );
     }
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'contributions');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const uniqueFilename = `${crypto.randomUUID()}${extension}`;
-    const destinationPath = path.join(uploadDir, uniqueFilename);
-
-    fs.writeFileSync(destinationPath, buffer);
-
-    const publicUrl = `/uploads/contributions/${uniqueFilename}`;
+    // 4. Delegate to Production Cloud Storage Engine
+    // (Uploads to Supabase Storage, Cloudinary, AWS S3, or Persistent Database Stream)
+    const uploadResult = await cloudStorageService.uploadImage({
+      userId: user.id,
+      submissionId,
+      originalFilename: file.name,
+      buffer,
+      declaredMimeType: validation.detectedMime || declaredMime,
+    });
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
-      filename: uniqueFilename,
-      size: file.size,
-      mimeType: mime,
+      url: uploadResult.url,
+      filename: uploadResult.filename,
+      size: uploadResult.size,
+      mimeType: uploadResult.mimeType,
+      provider: uploadResult.provider,
+      storagePath: uploadResult.storagePath,
+      photoId: uploadResult.photoId,
     });
   } catch (err: any) {
+    console.error('[ContributionUpload] Upload error:', err);
     return NextResponse.json(
       { success: false, message: err?.message || 'Failed to upload photo.' },
       { status: 500 }
     );
   }
 }
-

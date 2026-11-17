@@ -45,3 +45,4 @@ security-audit/local-staging-evidence/
 *.tsbuildinfo
 dist/
 BharatYatra-Vercel-Frontend/
+public/uploads/

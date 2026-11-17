@@ -78,5 +78,15 @@
     "reviewResponses": true,
     "marketingNotifications": false,
     "updatedAt": "2026-11-17T06:54:40.663Z"
+  },
+  {
+    "userId": "qa_user_1794899813486",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-17T07:16:53.680Z"
   }
 ]

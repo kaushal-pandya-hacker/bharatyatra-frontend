@@ -394,5 +394,50 @@
     "isPublished": true,
     "createdAt": "2026-11-17T06:54:40.665Z",
     "updatedAt": "2026-11-17T06:54:40.665Z"
+  },
+  {
+    "id": "78110b34-4c39-4f35-9861-a3855369dcec",
+    "slug": "qa-test-lothal-ancient-dockyard-heritage-saragwala",
+    "name": "[QA TEST] Lothal Ancient Dockyard Heritage",
+    "category": "Historical Places",
+    "country": "India",
+    "state": "Gujarat",
+    "district": "Ahmedabad",
+    "city": "Saragwala",
+    "address": "Lothal Archaeological Site, Saragwala, Gujarat 382220",
+    "latitude": 22.5224,
+    "longitude": 72.2494,
+    "shortDescription": "One of the most prominent cities of the ancient Indus Valley Civilization with world oldest tidal dockyard.",
+    "description": "Discovered in 1954, Lothal holds the world oldest known port basin connecting the city to an ancient course of the Sabarmati river. Features bead-making factory and drainage system.",
+    "primaryImageUrl": "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80"
+    ],
+    "bestTimeToVisit": "October to March",
+    "estimatedVisitDuration": "3-4 hours",
+    "entryFee": "₹25 for Indian Citizens, ₹300 for Foreigners",
+    "openingHours": "10:00 AM - 5:00 PM (Closed on Fridays)",
+    "facilities": [
+      "Parking",
+      "Drinking Water",
+      "Restrooms",
+      "Museum"
+    ],
+    "travelTips": [
+      "Visit the ASI Archaeological Museum on site",
+      "Hire an authorized ASI guide"
+    ],
+    "nearbyAttractions": [],
+    "suitableFor": [],
+    "isCommunityContributed": true,
+    "contributedByName": "Kaushal Pandya",
+    "contributedById": "qa_user_1794899813486",
+    "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+    "rating": 4.8,
+    "totalReviews": 1,
+    "isPublished": true,
+    "createdAt": "2026-11-17T07:16:53.682Z",
+    "updatedAt": "2026-11-17T07:16:53.682Z"
   }
 ]

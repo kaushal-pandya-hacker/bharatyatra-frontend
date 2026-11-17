@@ -701,9 +701,89 @@
       "approvedAt": "2026-11-17T06:54:40.665Z",
       "reviewedBy": "admin@bharatyatra.in",
       "reviewedAt": "2026-11-17T06:54:40.665Z"
+    },
+    {
+      "id": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "contributorId": "qa_user_1794899813486",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Ahmedabad",
+      "city": "Saragwala",
+      "address": "Lothal Archaeological Site, Saragwala, Gujarat 382220",
+      "latitude": 22.5224,
+      "longitude": 72.2494,
+      "shortDescription": "One of the most prominent cities of the ancient Indus Valley Civilization with world oldest tidal dockyard.",
+      "detailedDescription": "Discovered in 1954, Lothal holds the world oldest known port basin connecting the city to an ancient course of the Sabarmati river. Features bead-making factory and drainage system.",
+      "photos": [
+        "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80"
+      ],
+      "bestTimeToVisit": "October to March",
+      "estimatedVisitDuration": "3-4 hours",
+      "entryFee": "₹25 for Indian Citizens, ₹300 for Foreigners",
+      "openingHours": "10:00 AM - 5:00 PM (Closed on Fridays)",
+      "parkingAvailable": false,
+      "facilities": [
+        "Parking",
+        "Drinking Water",
+        "Restrooms",
+        "Museum"
+      ],
+      "travelTips": [
+        "Visit the ASI Archaeological Museum on site",
+        "Hire an authorized ASI guide"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [
+          "Submission contains suspected placeholder test string: \"test\""
+        ],
+        "suggestedCorrections": [
+          "Provide the authentic official place title and description."
+        ],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 2,
+          "passedFormatCheck": true,
+          "notes": "2 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-17T07:16:53.491Z"
+      },
+      "createdAt": "2026-11-17T07:16:53.493Z",
+      "updatedAt": "2026-11-17T07:16:53.682Z",
+      "submittedAt": "2026-11-17T07:16:53.493Z",
+      "rewardCouponCode": "BHARAT7-B9C325",
+      "approvedPlaceId": "78110b34-4c39-4f35-9861-a3855369dcec",
+      "approvedAt": "2026-11-17T07:16:53.682Z",
+      "reviewedBy": "admin@bharatyatra.in",
+      "reviewedAt": "2026-11-17T07:16:53.682Z"
     }
   ],
   "reviews": [
+    {
+      "id": "df24c9c1-526a-4811-af60-d018e0172267",
+      "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "adminId": "admin_qa_001",
+      "adminEmail": "admin@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Verified authentic ASI heritage landmark with verified geo-coordinates.",
+      "createdAt": "2026-11-17T07:16:53.682Z"
+    },
     {
       "id": "6b32324b-0ab0-4210-a7a3-ee3ac561442e",
       "submissionId": "b70194b1-99cc-4cf5-86cc-1ac69bb8abab",
@@ -931,6 +1011,22 @@
     }
   ],
   "history": [
+    {
+      "id": "f607ff50-8a90-4331-89a9-3ae06946e51d",
+      "contributorId": "qa_user_1794899813486",
+      "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "eventType": "APPROVED",
+      "description": "Administrator admin@bharatyatra.in performed action APPROVE: \"Verified authentic ASI heritage landmark with verified geo-coordinates.\".",
+      "createdAt": "2026-11-17T07:16:53.682Z"
+    },
+    {
+      "id": "27deae45-3a78-4308-802f-1fa718ab0762",
+      "contributorId": "qa_user_1794899813486",
+      "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"[QA TEST] Lothal Ancient Dockyard Heritage\" in Gujarat for verification.",
+      "createdAt": "2026-11-17T07:16:53.493Z"
+    },
     {
       "id": "0d9e63f1-16f9-4170-a035-f3726ee40087",
       "contributorId": "qa_user_1794898480300",

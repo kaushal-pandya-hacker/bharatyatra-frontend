@@ -1,0 +1,66 @@
+[
+  {
+    "id": "photo_1794899735521_53cb4ce8",
+    "userId": "test_voyager_49210",
+    "submissionId": "sub_heritage_001",
+    "storagePath": "public/uploads/contributions/bb8397c9-7210-4c61-819e-62550f2b2e84.jpg",
+    "filename": "bb8397c9-7210-4c61-819e-62550f2b2e84.jpg",
+    "mimeType": "image/jpeg",
+    "size": 27,
+    "provider": "LOCAL",
+    "url": "/uploads/contributions/bb8397c9-7210-4c61-819e-62550f2b2e84.jpg",
+    "createdAt": "2026-11-17T07:15:36.088Z"
+  },
+  {
+    "id": "photo_1794899766487_cc7d16ad",
+    "userId": "test_voyager_49210",
+    "submissionId": "sub_heritage_001",
+    "storagePath": "contributions/test_voyager_49210/sub_heritage_001/e6877706-6b61-4444-a806-c5c2dd9249ca.jpg",
+    "filename": "e6877706-6b61-4444-a806-c5c2dd9249ca.jpg",
+    "mimeType": "image/jpeg",
+    "size": 27,
+    "provider": "LOCAL",
+    "url": "/uploads/contributions/test_voyager_49210/sub_heritage_001/e6877706-6b61-4444-a806-c5c2dd9249ca.jpg",
+    "dataBase64": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP/Z",
+    "createdAt": "2026-11-17T07:16:07.025Z"
+  },
+  {
+    "id": "photo_1794899789492_4b936c74",
+    "userId": "test_voyager_49210",
+    "submissionId": "sub_heritage_001",
+    "storagePath": "contributions/test_voyager_49210/sub_heritage_001/bceb2f07-9075-4b2f-bbf3-6fc45ad423bf.jpg",
+    "filename": "bceb2f07-9075-4b2f-bbf3-6fc45ad423bf.jpg",
+    "mimeType": "image/jpeg",
+    "size": 27,
+    "provider": "LOCAL",
+    "url": "/uploads/contributions/test_voyager_49210/sub_heritage_001/bceb2f07-9075-4b2f-bbf3-6fc45ad423bf.jpg",
+    "dataBase64": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP/Z",
+    "createdAt": "2026-11-17T07:16:30.011Z"
+  },
+  {
+    "id": "photo_1794899805316_60e84e7f",
+    "userId": "test_voyager_49210",
+    "submissionId": "sub_heritage_001",
+    "storagePath": "contributions/test_voyager_49210/sub_heritage_001/ab516c8b-048f-4132-b266-6c4767cd3bbe.jpg",
+    "filename": "ab516c8b-048f-4132-b266-6c4767cd3bbe.jpg",
+    "mimeType": "image/jpeg",
+    "size": 27,
+    "provider": "LOCAL",
+    "url": "/uploads/contributions/test_voyager_49210/sub_heritage_001/ab516c8b-048f-4132-b266-6c4767cd3bbe.jpg",
+    "dataBase64": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP/Z",
+    "createdAt": "2026-11-17T07:16:45.832Z"
+  },
+  {
+    "id": "photo_1794899813494_8315735b",
+    "userId": "test_voyager_49210",
+    "submissionId": "sub_heritage_001",
+    "storagePath": "contributions/test_voyager_49210/sub_heritage_001/d6cf5130-92d5-4481-a925-6397bd412e1c.jpg",
+    "filename": "d6cf5130-92d5-4481-a925-6397bd412e1c.jpg",
+    "mimeType": "image/jpeg",
+    "size": 27,
+    "provider": "LOCAL",
+    "url": "/uploads/contributions/test_voyager_49210/sub_heritage_001/d6cf5130-92d5-4481-a925-6397bd412e1c.jpg",
+    "dataBase64": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP/Z",
+    "createdAt": "2026-11-17T07:16:53.943Z"
+  }
+]

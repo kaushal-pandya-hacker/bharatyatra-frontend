@@ -1122,5 +1122,76 @@
       "validUntil": "2027-02-15T06:54:40.887Z",
       "placeName": "Lothal Ancient Dockyard"
     }
+  },
+  {
+    "id": "569ab9cb-5c97-4d51-a45a-0dec26782c55",
+    "userId": "qa_user_1794899813486",
+    "recipientEmail": "kaushal.pandya@bharatyatra.in",
+    "title": "📍 Destination Submission Received!",
+    "message": "Thank you for contributing \"[QA TEST] Lothal Ancient Dockyard Heritage\"! Our curation team has received your submission and will review it shortly.",
+    "category": "COMMUNITY",
+    "type": "CONTRIBUTION_SUBMITTED",
+    "deepLink": "/profile/contributions",
+    "readAt": null,
+    "createdAt": "2026-11-17T07:16:53.495Z",
+    "metadata": {
+      "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage"
+    }
+  },
+  {
+    "id": "fa615d43-1f35-4340-b610-170dee830714",
+    "userId": "qa_user_1794899813486",
+    "recipientEmail": "kaushal.pandya@bharatyatra.in",
+    "title": "🎉 7% Reward Coupon: BHARAT7-B9C325",
+    "message": "Your place \"[QA TEST] Lothal Ancient Dockyard Heritage\" was approved! Use coupon code BHARAT7-B9C325 at checkout for an instant 7% discount.",
+    "category": "COMMUNITY",
+    "type": "COMMUNITY_REWARD_ISSUED",
+    "deepLink": "/dashboard/my-contributions",
+    "readAt": null,
+    "createdAt": "2026-11-17T07:16:53.698Z",
+    "metadata": {
+      "couponCode": "BHARAT7-B9C325",
+      "discountPercent": 7,
+      "validUntil": "2027-02-15T07:16:53.685Z",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage"
+    }
+  },
+  {
+    "id": "0307740f-db88-4283-a53a-3d299b0e2daf",
+    "userId": "qa_user_1794899813486",
+    "recipientEmail": "kaushal.pandya@bharatyatra.in",
+    "title": "🎉 Destination Approved & Published!",
+    "message": "Great news! \"[QA TEST] Lothal Ancient Dockyard Heritage\" has been verified by the BharatYatra team and is now live across Explore, Search, and AI Trip Planner!",
+    "category": "COMMUNITY",
+    "type": "CONTRIBUTION_APPROVED",
+    "deepLink": "/destinations/qa-test-lothal-ancient-dockyard-heritage-saragwala",
+    "readAt": null,
+    "createdAt": "2026-11-17T07:16:53.755Z",
+    "metadata": {
+      "submissionId": "659f61ba-e328-409b-a187-4e4b8c234686",
+      "destinationId": "78110b34-4c39-4f35-9861-a3855369dcec",
+      "slug": "qa-test-lothal-ancient-dockyard-heritage-saragwala",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "rewardCouponCode": "BHARAT7-B9C325"
+    }
+  },
+  {
+    "id": "c57491cd-c7c5-442e-96a3-681d60854782",
+    "userId": "qa_user_1794899813486",
+    "recipientEmail": "kaushal.pandya@bharatyatra.in",
+    "title": "🎉 7% Reward Coupon: BHARAT7-B9C325",
+    "message": "Your place \"Lothal Ancient Dockyard\" was approved! Use coupon code BHARAT7-B9C325 at checkout for an instant 7% discount.",
+    "category": "COMMUNITY",
+    "type": "COMMUNITY_REWARD_ISSUED",
+    "deepLink": "/dashboard/my-contributions",
+    "readAt": null,
+    "createdAt": "2026-11-17T07:16:53.838Z",
+    "metadata": {
+      "couponCode": "BHARAT7-B9C325",
+      "discountPercent": 7,
+      "validUntil": "2027-02-15T07:16:53.838Z",
+      "placeName": "Lothal Ancient Dockyard"
+    }
   }
 ]
