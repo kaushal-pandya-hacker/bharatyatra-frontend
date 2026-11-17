@@ -59,7 +59,7 @@ export function MobileBottomNav() {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center justify-center min-h-[48px] py-1 px-1 rounded-xl transition-all ${
+              className={`flex flex-col items-center justify-center min-h-[48px] min-w-[56px] py-1 px-1 rounded-xl transition-all ${
                 isActive
                   ? 'text-blue-700 font-extrabold bg-blue-50/80 border-t-2 border-blue-700'
                   : 'text-slate-700 hover:text-slate-900 font-bold active:bg-slate-50'
@@ -104,7 +104,7 @@ export function MobileBottomNav() {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center justify-center min-h-[48px] py-1 px-1 rounded-xl transition-all ${
+              className={`flex flex-col items-center justify-center min-h-[48px] min-w-[56px] py-1 px-1 rounded-xl transition-all ${
                 isActive
                   ? 'text-blue-700 font-extrabold bg-blue-50/80 border-t-2 border-blue-700'
                   : 'text-slate-700 hover:text-slate-900 font-bold active:bg-slate-50'

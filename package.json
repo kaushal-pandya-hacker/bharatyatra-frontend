@@ -9,7 +9,11 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "test": "npx tsx --test __tests__/*.test.ts",
-    "docs:pages": "python scripts/generate_pages_directory.py"
+    "docs:pages": "python scripts/generate_pages_directory.py",
+    "db:backup": "npx tsx scripts/zero-data-loss/db-backup-engine.ts",
+    "db:validate-migrations": "npx tsx scripts/zero-data-loss/migration-safety-analyzer.ts",
+    "db:integrity-check": "npx tsx scripts/zero-data-loss/data-integrity-monitor.ts",
+    "verify:deployment": "npx tsx scripts/zero-data-loss/pre-deployment-gate.ts"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.3",

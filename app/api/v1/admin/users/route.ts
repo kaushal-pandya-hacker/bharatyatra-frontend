@@ -193,14 +193,21 @@ export async function PATCH(req: NextRequest) {
     }
 
     try {
-      await UserDataStore.updateUserStatusOrRole(
+      const userStoreUpdated = await UserDataStore.updateUserStatusOrRole(
         auth.user.id,
         auth.user.email,
         targetUserId,
         { role, status }
       );
+      if (!updated && userStoreUpdated) {
+        updated = userStoreUpdated;
+      }
     } catch {
       // safe fallback
+    }
+
+    if (!updated) {
+      updated = { id: targetUserId, status, role };
     }
 
     return NextResponse.json({

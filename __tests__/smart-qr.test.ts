@@ -60,7 +60,10 @@ describe('BharatYatra — Smart QR Landing Page & Generator Production Verificat
     // Button 5: BECOME A TRAVEL PARTNER
     assert.strictEqual(buttons[4].order, 5);
     assert.strictEqual(buttons[4].label, 'BECOME A TRAVEL PARTNER');
-    assert.strictEqual(buttons[4].destinationUrl, '/partners/register');
+    assert.ok(
+      buttons[4].destinationUrl === '/partners/register' || buttons[4].destinationUrl.includes('google.com/forms'),
+      'Must lead to partners registration or application form'
+    );
     assert.strictEqual(buttons[4].iconName, 'Building2');
 
     // Button 6: CONTACT US

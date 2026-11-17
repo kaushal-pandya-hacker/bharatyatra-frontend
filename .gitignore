@@ -40,6 +40,8 @@ google-services.json
 
 # staging evidence & backups
 security-audit/local-staging-evidence/
+backups/
+!backups/.gitkeep
 
 # build artifacts & caches
 *.tsbuildinfo

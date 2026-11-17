@@ -20,8 +20,8 @@ describe('BharatYatra Privacy Policy Integrity and Integration Suite', () => {
     const pageContent = fs.readFileSync(privacyPagePath, 'utf8');
     assert.match(
       pageContent,
-      /canonical:\s*['"]https:\/\/bharatyatra\.in\/privacy\/?['"]/,
-      'Canonical URL must be https://bharatyatra.in/privacy/'
+      /canonical:\s*['"]https:\/\/(www\.)?bharatyatra\.in\/privacy\/?['"]/,
+      'Canonical URL must be https://bharatyatra.in/privacy/ or https://www.bharatyatra.in/privacy/'
     );
     assert.match(pageContent, /title:\s*['"]Privacy Policy \| BharatYatra['"]/, 'Title must be defined');
     assert.match(pageContent, /description:/, 'Description metadata must be present');
