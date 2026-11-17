@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
 import { ProtectedRoute } from '@/lib/auth/protected-route';
-import { getSavedTrips, TripItem, resolveClientTripStatus } from '@/lib/trips/trip-storage';
+import { getSavedTrips, saveTrip, TripItem, resolveClientTripStatus } from '@/lib/trips/trip-storage';
 import {
   GroupMember,
   TripExpenseItem,
@@ -13,6 +13,12 @@ import {
   computeFullTripExpenseSummary,
   ExpenseCategory,
 } from '@/lib/trips/group-expense-engine';
+import {
+  dynamicItineraryEngine,
+  ItineraryMasterPlan,
+} from '@/lib/ai-planner/dynamic-itinerary-engine';
+import { createDefaultPreferenceProfile } from '@/lib/ai-planner/universal-preference-profile';
+import { DynamicItineraryPlanner } from '@/components/ai/DynamicItineraryPlanner';
 
 export default function TripCommandCenterPage({ params }: { params?: { id?: string } } = {}) {
   return (
@@ -176,6 +182,33 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
   const displayDates = trip?.startDate
     ? `${formatTripDate(trip.startDate)}${trip.endDate ? ` – ${formatTripDate(trip.endDate)}` : ''} (${displayDays} Days / ${displayNights} Nights)`
     : `Dates Unscheduled • ${displayDays} Day Circuit`;
+
+  const [showItineraryWorkspace, setShowItineraryWorkspace] = useState<boolean>(false);
+
+  const activeItineraryPlan = useMemo<ItineraryMasterPlan>(() => {
+    if (trip?.itineraryJson && trip.itineraryJson.currentVersion) {
+      return trip.itineraryJson as ItineraryMasterPlan;
+    }
+    const profile = createDefaultPreferenceProfile({
+      origin: displayOrigin || 'Ahmedabad',
+      destination: displayDest || 'Dwarka',
+      destinationList: [displayDest || 'Dwarka'],
+      tripDurationDays: displayDays || 3,
+    });
+    return dynamicItineraryEngine.generateItinerary({ preferenceProfile: profile });
+  }, [trip?.itineraryJson, displayOrigin, displayDest, displayDays]);
+
+  const handleUpdateItineraryFromWorkspace = (updatedPlan: ItineraryMasterPlan) => {
+    if (trip) {
+      const updatedTrip: TripItem = {
+        ...trip,
+        itineraryJson: updatedPlan,
+        durationDays: updatedPlan.durationDays,
+      };
+      setTrip(updatedTrip);
+      saveTrip(updatedTrip);
+    }
+  };
 
   // Dynamic Day calculation based on actual current date
   const currentDayInfo = useMemo(() => {
@@ -374,8 +407,8 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
   return (
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
       {/* HEADER */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(20,26,50,0.06)]">
-        <div className="h-20 w-full px-4 lg:px-6 xl:px-8 flex items-center justify-between gap-2 lg:gap-4 shrink-0">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(20,26,50,0.06)] overflow-x-clip">
+        <div className="h-20 w-full max-w-full px-3 sm:px-4 lg:px-6 xl:px-8 flex items-center justify-between gap-2 lg:gap-3 overflow-hidden">
           <div className="flex items-center gap-3 xl:gap-space-lg shrink-0">
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group focus:outline-hidden">
               <img
@@ -394,7 +427,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
             </Link>
           </div>
 
-          <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 min-w-0 flex-1 overflow-x-auto no-scrollbar py-1">
+          <nav className="hidden lg:flex items-center justify-start 2xl:justify-center gap-1 xl:gap-1.5 min-w-0 flex-1 overflow-x-auto no-scrollbar py-1">
             <Link
               href={`/trips/${tripId}`}
               className="px-2.5 xl:px-3 py-1.5 xl:py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs whitespace-nowrap shrink-0 shadow-xs"
@@ -405,33 +438,33 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               href="/trips/road-trip"
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Road Trip &amp; Vehicle</span>
-              <span className="2xl:hidden">Road Trip</span>
+              <span className="hidden min-[1680px]:inline">Road Trip &amp; Vehicle</span>
+              <span className="min-[1680px]:hidden">Road Trip</span>
             </Link>
             <Link
               href={`/trips/${tripId}/cost`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Cost &amp; Intelligence</span>
-              <span className="2xl:hidden">Cost &amp; Intel</span>
+              <span className="hidden min-[1680px]:inline">Cost &amp; Intelligence</span>
+              <span className="min-[1680px]:hidden">Cost &amp; Intel</span>
             </Link>
             <Link
               href={`/trips/${tripId}/expenses`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Group Splitter</span>
-              <span className="2xl:hidden">Splitter</span>
+              <span className="hidden min-[1680px]:inline">Group Splitter</span>
+              <span className="min-[1680px]:hidden">Splitter</span>
             </Link>
             <Link
               href={`/trips/${tripId}/settle`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Settlement Optimizer</span>
-              <span className="2xl:hidden">Settlements</span>
+              <span className="hidden min-[1680px]:inline">Settlement Optimizer</span>
+              <span className="min-[1680px]:hidden">Settlements</span>
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto z-10">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto z-10 pr-0.5">
             <a
               className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
               href="tel:+919624282521"
@@ -446,7 +479,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               </div>
             </a>
             <Link href="/profile" className="flex items-center gap-2 group shrink-0 whitespace-nowrap" title="My Profile">
-              <div className="flex flex-col text-right hidden 2xl:flex leading-tight whitespace-nowrap shrink-0">
+              <div className="flex flex-col text-right hidden min-[1680px]:flex leading-tight whitespace-nowrap shrink-0">
                 <span className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors whitespace-nowrap">
                   {user?.fullName || 'Traveler'}
                 </span>
@@ -797,6 +830,37 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               </div>
             </section>
 
+            {/* FULL INTERACTIVE EDITABLE ITINERARY WORKSPACE */}
+            {showItineraryWorkspace && (
+              <div className="mb-space-lg p-space-md bg-surface-container-lowest rounded-2xl shadow-sm border border-emerald-500/30 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between pb-space-sm mb-space-sm border-b border-surface-container">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-emerald-600 text-2xl">edit_calendar</span>
+                    <div>
+                      <h2 className="font-title-lg text-title-lg font-bold text-on-surface">
+                        Interactive Itinerary Workspace
+                      </h2>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">
+                        Drag & drop activities, swap accommodation tiers, switch transit modes, and refine with Farva AI.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowItineraryWorkspace(false)}
+                    className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition"
+                    title="Close Workspace"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <DynamicItineraryPlanner
+                  initialPlan={activeItineraryPlan}
+                  onUpdatePlan={handleUpdateItineraryFromWorkspace}
+                  tripId={tripId}
+                />
+              </div>
+            )}
+
             {/* 3-COLUMN MASTER COMMAND GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
               {/* COLUMN 1: TODAY'S LIVE EXPEDITION & TIMELINE (lg:col-span-4) */}
@@ -833,13 +897,22 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                       {stops.length > 0 ? `${stops.length} verified stops planned on this circuit` : 'Itinerary vector active'}
                     </span>
                   </div>
-                  <button
-                    onClick={() => router.push(`/plan?dest=${encodeURIComponent(displayDest)}`)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-on-secondary-fixed text-primary-container font-label-md text-label-md font-bold shadow-md hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base text-primary-container">auto_awesome</span>
-                    Optimize My Day with Farva AI
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => setShowItineraryWorkspace(!showItineraryWorkspace)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-label-md text-label-md font-bold shadow-md hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-base">auto_awesome</span>
+                      {showItineraryWorkspace ? 'Close Workspace' : 'Open Editable Itinerary Workspace'}
+                    </button>
+                    <button
+                      onClick={() => router.push(`/ai-planner?destination=${encodeURIComponent(displayDest)}&origin=${encodeURIComponent(displayOrigin)}&duration=${displayDays}`)}
+                      className="w-full py-1.5 px-3 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-sm">tune</span>
+                      Duration & Route Intelligence
+                    </button>
+                  </div>
                 </div>
 
                 {/* Chronological Live Expedition Timeline */}

@@ -407,8 +407,8 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
   return (
     <div className="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
       {/* HEADER */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(20,26,50,0.06)]">
-        <div className="h-20 w-full px-3 sm:px-4 lg:px-6 xl:px-8 flex items-center justify-between gap-2 lg:gap-3">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(20,26,50,0.06)] overflow-x-clip">
+        <div className="h-20 w-full max-w-full px-3 sm:px-4 lg:px-6 xl:px-8 flex items-center justify-between gap-2 lg:gap-3 overflow-hidden">
           <div className="flex items-center gap-3 xl:gap-space-lg shrink-0">
             <Link href="/" className="flex items-center gap-2.5 shrink-0 group focus:outline-hidden">
               <img
@@ -427,7 +427,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
             </Link>
           </div>
 
-          <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 min-w-0 flex-1 overflow-x-auto no-scrollbar py-1">
+          <nav className="hidden lg:flex items-center justify-start 2xl:justify-center gap-1 xl:gap-1.5 min-w-0 flex-1 overflow-x-auto no-scrollbar py-1">
             <Link
               href={`/trips/${tripId}`}
               className="px-2.5 xl:px-3 py-1.5 xl:py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs whitespace-nowrap shrink-0 shadow-xs"
@@ -438,33 +438,33 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               href="/trips/road-trip"
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Road Trip &amp; Vehicle</span>
-              <span className="2xl:hidden">Road Trip</span>
+              <span className="hidden min-[1680px]:inline">Road Trip &amp; Vehicle</span>
+              <span className="min-[1680px]:hidden">Road Trip</span>
             </Link>
             <Link
               href={`/trips/${tripId}/cost`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Cost &amp; Intelligence</span>
-              <span className="2xl:hidden">Cost &amp; Intel</span>
+              <span className="hidden min-[1680px]:inline">Cost &amp; Intelligence</span>
+              <span className="min-[1680px]:hidden">Cost &amp; Intel</span>
             </Link>
             <Link
               href={`/trips/${tripId}/expenses`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Group Splitter</span>
-              <span className="2xl:hidden">Splitter</span>
+              <span className="hidden min-[1680px]:inline">Group Splitter</span>
+              <span className="min-[1680px]:hidden">Splitter</span>
             </Link>
             <Link
               href={`/trips/${tripId}/settle`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden 2xl:inline">Settlement Optimizer</span>
-              <span className="2xl:hidden">Settlements</span>
+              <span className="hidden min-[1680px]:inline">Settlement Optimizer</span>
+              <span className="min-[1680px]:hidden">Settlements</span>
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto z-10">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto z-10 pr-0.5">
             <a
               className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
               href="tel:+919624282521"
@@ -479,7 +479,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               </div>
             </a>
             <Link href="/profile" className="flex items-center gap-2 group shrink-0 whitespace-nowrap" title="My Profile">
-              <div className="flex flex-col text-right hidden 2xl:flex leading-tight whitespace-nowrap shrink-0">
+              <div className="flex flex-col text-right hidden min-[1680px]:flex leading-tight whitespace-nowrap shrink-0">
                 <span className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors whitespace-nowrap">
                   {user?.fullName || 'Traveler'}
                 </span>
