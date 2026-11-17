@@ -34,53 +34,50 @@ export default function IntelligentRoadTripPage() {
                 </span>
               </div>
             </Link>
-            <div className="hidden xl:flex items-center gap-space-sm pl-space-md">
-              <div className="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-container/20 text-on-surface">
-                <span className="w-2 h-2 rounded-full bg-primary-container"></span>
-                <span className="font-label-md text-label-md font-semibold">Active Expedition:</span>
-                <span className="font-body-sm text-body-sm text-on-surface font-medium">Kutch &amp; Saurashtra Circuit (10 Travelers)</span>
-              </div>
-            </div>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink min-w-0">
             <Link
               href="/trips/1"
-              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
+              className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
               Command Center
             </Link>
             <Link
               href="/trips/road-trip"
-              className="px-3 py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0 shadow-xs"
+              className="px-2.5 xl:px-3 py-1.5 xl:py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs whitespace-nowrap shrink-0 shadow-xs"
             >
-              Road Trip &amp; Vehicle
+              <span className="hidden 2xl:inline">Road Trip &amp; Vehicle</span>
+              <span className="2xl:hidden">Road Trip</span>
             </Link>
             <Link
               href="/trips/1/cost"
-              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
+              className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              Cost &amp; Intelligence
+              <span className="hidden 2xl:inline">Cost &amp; Intelligence</span>
+              <span className="2xl:hidden">Cost &amp; Intel</span>
             </Link>
             <Link
               href="/trips/1/expenses"
-              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
+              className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              Group Splitter
+              <span className="hidden 2xl:inline">Group Splitter</span>
+              <span className="2xl:hidden">Splitter</span>
             </Link>
             <Link
               href="/trips/1/settle"
-              className="px-2.5 xl:px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs xl:text-sm whitespace-nowrap shrink-0"
+              className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              Settlement Optimizer
+              <span className="hidden 2xl:inline">Settlement Optimizer</span>
+              <span className="2xl:hidden">Settlements</span>
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 xl:gap-space-md shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
             <a
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
               href="tel:+919624282521"
-              title="Call Concierge 24/7"
+              title="Call Concierge 24/7 at +91 96242 82521"
             >
               <div className="w-7 h-7 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
                 <span className="material-symbols-outlined text-base">support_agent</span>
@@ -90,8 +87,8 @@ export default function IntelligentRoadTripPage() {
                 <span className="text-xs font-black tracking-tight text-slate-900 whitespace-nowrap">+91 96242 82521</span>
               </div>
             </a>
-            <div className="flex items-center gap-space-sm pl-space-xs shrink-0 whitespace-nowrap">
-              <Link href="/profile" className="flex flex-col text-right hidden sm:flex leading-tight whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
+              <Link href="/profile" className="flex flex-col text-right hidden 2xl:flex leading-tight whitespace-nowrap shrink-0">
                 <span className="font-label-md text-label-md text-on-surface font-semibold whitespace-nowrap">Lead Sovereign</span>
                 <span className="font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">Verified Guide</span>
               </Link>

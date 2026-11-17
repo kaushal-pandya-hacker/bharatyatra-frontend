@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **162**  
+> **Total Registered Pages:** **168**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -8,7 +8,7 @@
 
 ## Table of Contents
 
-- [Admin Portal (Super-Admin & Operations) (36 pages)](#admin-portal-super-admin-operations)
+- [Admin Portal (Super-Admin & Operations) (42 pages)](#admin-portal-super-admin-operations)
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
 - [Trip Command Center, Splitter & Telemetry (10 pages)](#trip-command-center-splitter-telemetry)
 - [Bookings, Checkout & Settlement (11 pages)](#bookings-checkout-settlement)
@@ -26,6 +26,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Master Admin Platform Executive Dashboard** | `/admin` | [`app/admin/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/page.tsx) | `Super Admin / Platform Ops` | Real-time booking volume, revenue metrics, and operator health telemetry |
 | **Page: /admin/ai-planner** | `/admin/ai-planner` | [`app/admin/ai-planner/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/ai-planner/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /admin/analytics** | `/admin/analytics` | [`app/admin/analytics/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/analytics/page.tsx) | `Traveler` | BharatYatra platform page |
 | **System Security & Access Audit Trails** | `/admin/audit-logs` | [`app/admin/audit-logs/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/audit-logs/page.tsx) | `Super Admin / Platform Ops` | Immutable ledger of administrative actions, permission escalations, and changes |
 | **Global Booking Oversight & Inventory Matrix** | `/admin/bookings` | [`app/admin/bookings/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/bookings/page.tsx) | `Super Admin / Platform Ops` | All platform bookings across buses, trains, stays, and tour circuits |
 | **Page: /admin/buses** | `/admin/buses` | [`app/admin/buses/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/buses/page.tsx) | `Traveler` | BharatYatra platform page |
@@ -45,6 +46,7 @@
 | **Payment Transaction Ledger & Gateway Telemetry** | `/admin/payments` | [`app/admin/payments/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/payments/page.tsx) | `Super Admin / Platform Ops` | Live payment stream, captured orders, UPI intents, and refund reconciliation |
 | **Refund Approvals, Chargebacks & Disputes** | `/admin/refunds` | [`app/admin/refunds/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/refunds/page.tsx) | `Super Admin / Platform Ops` | Manual review queue for cancellation refunds and chargeback arbitration |
 | **Page: /admin/reviews** | `/admin/reviews` | [`app/admin/reviews/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/reviews/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /admin/rewards** | `/admin/rewards` | [`app/admin/rewards/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/rewards/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Partner & Supplier Payout Settlement Engine** | `/admin/settlements` | [`app/admin/settlements/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/settlements/page.tsx) | `Super Admin / Platform Ops` | Net payout calculation, commission withholding, and bank transfers |
 | **Page: /admin/staff** | `/admin/staff` | [`app/admin/staff/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/staff/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Supplier Ecosystem Directory & Management** | `/admin/suppliers` | [`app/admin/suppliers/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/suppliers/page.tsx) | `Super Admin / Platform Ops` | List of onboarded hotel owners, transport fleets, and tour guides |
@@ -59,7 +61,11 @@
 | **Partner Audit Logs & Compliance Verification** | `/admin/travel-partner-audit` | [`app/admin/travel-partner-audit/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/travel-partner-audit/page.tsx) | `Super Admin / Platform Ops` | Audit records of partner tier updates, payouts, and license renewals |
 | **Partner Directory, Verification & Tiers** | `/admin/travel-partners` | [`app/admin/travel-partners/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/travel-partners/page.tsx) | `Super Admin / Platform Ops` | Gold, Silver, Platinum partner status, booking quotas, and ratings |
 | **Partner KYC, Banking & Operational Dossier** | `/admin/travel-partners/[id]` | [`app/admin/travel-partners/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/travel-partners/[id]/page.tsx) | `Super Admin / Platform Ops` | GSTIN verification, bank account details, and compliance records |
+| **Page: /admin/trips** | `/admin/trips` | [`app/admin/trips/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/trips/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /admin/trips/[id]** | `/admin/trips/[id]` | [`app/admin/trips/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/trips/[id]/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /admin/trips/live** | `/admin/trips/live` | [`app/admin/trips/live/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/trips/live/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Customer & Traveler Account Directory** | `/admin/users` | [`app/admin/users/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/users/page.tsx) | `Super Admin / Platform Ops` | User account status, authentication logs, profile data, and roles |
+| **Page: /admin/users/[id]** | `/admin/users/[id]` | [`app/admin/users/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/users/[id]/page.tsx) | `Traveler` | BharatYatra platform page |
 
 
 ## BharatYatra Ops Control Center

@@ -34,6 +34,11 @@ import {
   X,
   CheckCircle2,
   Share2,
+  Radio,
+  Navigation,
+  BarChart3,
+  Gift,
+  Send,
 } from 'lucide-react';
 import { AdminNotificationDropdown } from '@/components/admin/AdminNotificationDropdown';
 
@@ -118,11 +123,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navSections = [
     {
-      title: 'Core Operations',
+      title: 'Overview',
       items: [
         { label: 'Overview Dashboard', href: '/admin', icon: LayoutDashboard },
-        { label: 'Bookings Directory', href: '/admin/bookings', icon: CalendarCheck },
+      ],
+    },
+    {
+      title: 'User & Community',
+      items: [
         { label: 'User Management', href: '/admin/users', icon: Users },
+        { label: 'Community Contributions', href: '/admin/community-contributions', icon: Share2 },
+        { label: 'Rewards & Coupons', href: '/admin/rewards', icon: Gift },
+      ],
+    },
+    {
+      title: 'Travel Operations',
+      items: [
+        { label: 'Live Trips Operations', href: '/admin/trips/live', icon: Radio },
+        { label: 'All Trips Directory', href: '/admin/trips', icon: Navigation },
+        { label: 'Bookings Directory', href: '/admin/bookings', icon: CalendarCheck },
       ],
     },
     {
@@ -133,11 +152,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { label: 'Suppliers Directory', href: '/admin/suppliers', icon: Building2 },
         { label: 'Inventory Moderation', href: '/admin/inventory', icon: Boxes },
         { label: 'Destinations CMS', href: '/admin/destinations', icon: Compass },
-        { label: 'Community Contributions', href: '/admin/community-contributions', icon: Share2 },
       ],
     },
     {
-      title: 'Financials & Accounts',
+      title: 'Financial Management',
       items: [
         { label: 'Payments & Transactions', href: '/admin/payments', icon: CreditCard },
         { label: 'Refund Operations', href: '/admin/refunds', icon: RotateCcw },
@@ -163,11 +181,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       title: 'Customer Experience',
       items: [
-        { label: 'Website Enquiries', href: '/admin/enquiries', icon: Inbox },
         { label: 'Support Desk Tickets', href: '/admin/support', icon: Headphones },
+        { label: 'Communication Center', href: '/admin/communications', icon: Send },
+        { label: 'Website Enquiries', href: '/admin/enquiries', icon: Inbox },
         { label: 'Reviews Moderation', href: '/admin/reviews', icon: Star },
         { label: 'Marketing & Campaigns', href: '/admin/marketing', icon: Megaphone },
-        { label: 'Diwali Festive Campaign', href: '/admin/diwali', icon: Sparkles },
+      ],
+    },
+    {
+      title: 'Analytics & Intelligence',
+      items: [
+        { label: 'Advanced Analytics', href: '/admin/analytics', icon: BarChart3 },
       ],
     },
     {

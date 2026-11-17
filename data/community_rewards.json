@@ -1,0 +1,150 @@
+{
+  "coupons": [
+    {
+      "id": "rew-seed-001",
+      "code": "BHARAT7-DWARKA",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "sub-001",
+      "placeName": "Bet Dwarka Marine Heritage",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-07T06:18:45.935Z",
+      "validUntil": "2027-02-05T06:18:45.935Z",
+      "createdAt": "2026-11-07T06:18:45.935Z"
+    },
+    {
+      "id": "rew-seed-002",
+      "code": "BHARAT7-SAPUTARA",
+      "contributorId": "usr-test-02",
+      "contributorName": "Aarav Mehta",
+      "contributorEmail": "aarav@bharatyatra.in",
+      "submissionId": "sub-002",
+      "placeName": "Gira Waterfalls Eco Trail",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REDEEMED",
+      "validFrom": "2026-10-18T06:18:45.935Z",
+      "validUntil": "2027-01-16T06:18:45.935Z",
+      "redeemedAt": "2026-11-12T06:18:45.935Z",
+      "redeemedBookingId": "bk-saputara-892",
+      "createdAt": "2026-10-18T06:18:45.935Z"
+    },
+    {
+      "id": "rew-1794896443363-6ec0",
+      "code": "BHARAT7-97C9F9",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-999",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T06:20:43.363Z",
+      "validUntil": "2027-02-15T06:20:43.363Z",
+      "createdAt": "2026-11-17T06:20:43.363Z"
+    },
+    {
+      "id": "rew-1794896530717-706b",
+      "code": "BHARAT7-8B96FD",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-1794896530717",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T06:22:10.717Z",
+      "validUntil": "2027-02-15T06:22:10.717Z",
+      "createdAt": "2026-11-17T06:22:10.717Z"
+    },
+    {
+      "id": "rew-1794896577292-3133",
+      "code": "BHARAT7-608B26",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-1794896577292",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T06:22:57.292Z",
+      "validUntil": "2027-02-15T06:22:57.292Z",
+      "createdAt": "2026-11-17T06:22:57.292Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log-1794896577293",
+      "couponId": "rew-1794896577292-3133",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T06:22:57.293Z"
+    },
+    {
+      "id": "log-1794896577292",
+      "couponId": "rew-1794896577292-3133",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T06:22:57.292Z"
+    },
+    {
+      "id": "log-1794896530718",
+      "couponId": "rew-1794896530717-706b",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T06:22:10.718Z"
+    },
+    {
+      "id": "log-1794896530717",
+      "couponId": "rew-1794896530717-706b",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T06:22:10.717Z"
+    },
+    {
+      "id": "log-1794896443363",
+      "couponId": "rew-1794896443363-6ec0",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T06:20:43.363Z"
+    },
+    {
+      "id": "log-1794896443363",
+      "couponId": "rew-1794896443363-6ec0",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T06:20:43.363Z"
+    }
+  ],
+  "settings": {
+    "discountPercent": 7,
+    "defaultValidityDays": 90,
+    "minBookingInr": 2500,
+    "maxDiscountInr": 2000,
+    "eligibleCategories": [
+      "HOTEL",
+      "PACKAGE",
+      "ROAD_TRIP",
+      "ACTIVITY"
+    ],
+    "autoRewardEnabled": true
+  },
+  "updatedAt": "2026-11-17T06:22:57.293Z"
+}

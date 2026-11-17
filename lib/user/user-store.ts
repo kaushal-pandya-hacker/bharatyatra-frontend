@@ -553,6 +553,23 @@ class InMemoryUserDataStore {
   // --- ADMIN OPERATIONS ---
   public async getAdminUsers(filters: { search?: string; role?: string; status?: string; limit?: number; offset?: number } = {}) {
     let list = Array.from(this.profiles.values());
+    if (list.length === 0) {
+      try {
+        const { adminDataStore } = require('@/lib/admin/admin-store');
+        const adminUsers = adminDataStore.getUsers();
+        list = adminUsers.map((au: any) => ({
+          id: au.id,
+          email: au.email,
+          fullName: au.fullName,
+          phoneNumber: au.phoneNumber,
+          role: 'CUSTOMER' as const,
+          status: au.accountStatus as any,
+          isPhoneVerified: au.kycVerified,
+          createdAt: au.registrationDate,
+          updatedAt: au.lastLogin,
+        }));
+      } catch {}
+    }
     if (filters.role) list = list.filter((u) => u.role === filters.role);
     if (filters.status) list = list.filter((u) => u.status === filters.status);
     if (filters.search) {
@@ -563,6 +580,35 @@ class InMemoryUserDataStore {
     const offset = filters.offset || 0;
     const limit = filters.limit || 50;
     return { users: list.slice(offset, offset + limit), total };
+  }
+
+  public async getAllTripsAdmin(filters?: { status?: string; search?: string }) {
+    let list = Array.from(this.trips.values());
+    if (list.length === 0) {
+      try {
+        const { adminDataStore } = require('@/lib/admin/admin-store');
+        return adminDataStore.getTrips(filters);
+      } catch {}
+    }
+    if (filters?.status && filters.status !== 'ALL') {
+      list = list.filter((t) => t.status === filters.status);
+    }
+    if (filters?.search) {
+      const q = filters.search.toLowerCase();
+      list = list.filter((t) => t.title.toLowerCase().includes(q) || t.destination.toLowerCase().includes(q));
+    }
+    return list;
+  }
+
+  public async getAllBookingsAdmin(filters?: { status?: string; search?: string }) {
+    let list = Array.from(this.bookings.values());
+    if (list.length === 0) {
+      try {
+        const { adminDataStore } = require('@/lib/admin/admin-store');
+        return adminDataStore.getBookings(filters);
+      } catch {}
+    }
+    return list;
   }
 
   public async updateUserStatusOrRole(
@@ -1452,6 +1498,14 @@ export class UserDataStore {
       throw new DatabasePersistenceError(`Error querying users: ${err?.message || 'Unknown database error'}`, err);
     }
     return inMemoryStore.getAdminUsers(filters);
+  }
+
+  public static async getAllTripsAdmin(filters?: { status?: string; search?: string }) {
+    return inMemoryStore.getAllTripsAdmin(filters);
+  }
+
+  public static async getAllBookingsAdmin(filters?: { status?: string; search?: string }) {
+    return inMemoryStore.getAllBookingsAdmin(filters);
   }
 
   public static async updateUserStatusOrRole(

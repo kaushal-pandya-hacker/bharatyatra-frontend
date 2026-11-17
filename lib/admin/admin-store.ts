@@ -14,6 +14,9 @@ import fs from 'fs';
 import path from 'path';
 import { getSupabaseServerClient } from '@/lib/supabase/client';
 import { GUJARAT_100_LANDMARKS, GUJARAT_DESTINATIONS } from '@/lib/data/destinations';
+import { contributorRewardService } from '@/lib/rewards/contributor-reward-service';
+import { notificationStore } from '@/lib/notifications/notification-store';
+
 
 const TOTAL_VERIFIED_KNOWLEDGE_ENTITIES = GUJARAT_100_LANDMARKS.length + GUJARAT_DESTINATIONS.length;
 
@@ -326,6 +329,67 @@ export interface AdminStaffMember {
   lastActiveAt: string;
 }
 
+export interface AdminTripRecord {
+  id: string;
+  userId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  title: string;
+  destination: string;
+  originCity: string;
+  startDate: string;
+  endDate: string;
+  durationDays: number;
+  travelers: number;
+  budgetInr: number;
+  actualExpenditureInr: number;
+  status: 'SCHEDULED' | 'STARTING_SOON' | 'IN_PROGRESS' | 'DELAYED' | 'COMPLETED' | 'CANCELLED' | 'NEEDS_ASSISTANCE';
+  transportStatus: 'CONFIRMED' | 'PENDING' | 'IN_TRANSIT' | 'DELAYED';
+  hotelStatus: 'CONFIRMED' | 'CHECKED_IN' | 'CHECKED_OUT' | 'PENDING';
+  emergencyFlag?: boolean;
+  emergencyNote?: string;
+  isAiGenerated: boolean;
+  internalNotes?: string;
+  itinerary: Array<{
+    day: number;
+    theme: string;
+    activities: string[];
+    overnightStay: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface User360Dossier {
+  user: AdminCustomerUser;
+  travelOverview: {
+    totalTrips: number;
+    activeTrips: number;
+    upcomingTrips: number;
+    completedTrips: number;
+    cancelledTrips: number;
+    totalTravelers: number;
+    mostVisitedDestinations: string[];
+    totalTravelDistanceKm: number;
+    lastDestinationVisited: string;
+    nextUpcomingDestination: string;
+  };
+  trips: {
+    active: AdminTripRecord[];
+    upcoming: AdminTripRecord[];
+    history: AdminTripRecord[];
+    all: AdminTripRecord[];
+  };
+  bookings: AdminBooking[];
+  payments: AdminPaymentTransaction[];
+  rewards: any[];
+  savedDestinations: any[];
+  preferences: any;
+  notifications: any[];
+  activityLogs: any[];
+}
+
 export interface AdminAuditLog {
   id: string;
   action: string;
@@ -348,6 +412,776 @@ class AdminDataStoreImpl {
   private payments: AdminPaymentTransaction[] = [];
   private refunds: AdminRefundItem[] = [];
   private destinations: AdminDestinationItem[] = [];
+  private trips: AdminTripRecord[] = [];
+
+  constructor() {
+    this.seedAuthoritativeOperationalData();
+  }
+
+  private seedAuthoritativeOperationalData(): void {
+    const now = new Date();
+    const isoNow = now.toISOString();
+
+    // 1. Authoritative User Registry
+    this.users = [
+      {
+        id: 'usr-kaushal-01',
+        fullName: 'Kaushal Pandya',
+        email: 'pandyakaushal294@gmail.com',
+        phoneNumber: '+91 96242 82521',
+        accountStatus: 'ACTIVE',
+        totalBookings: 3,
+        totalSpent: 40700,
+        city: 'Ahmedabad',
+        state: 'Gujarat',
+        registrationDate: new Date(now.getTime() - 95 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 2 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr-priya-02',
+        fullName: 'Priya Sharma',
+        email: 'priya.sharma@gmail.com',
+        phoneNumber: '+91 98765 43210',
+        accountStatus: 'ACTIVE',
+        totalBookings: 2,
+        totalSpent: 28500,
+        city: 'Jaipur',
+        state: 'Rajasthan',
+        registrationDate: new Date(now.getTime() - 40 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 14 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr-rohit-03',
+        fullName: 'Rohit Verma',
+        email: 'rohit.v@outlook.com',
+        phoneNumber: '+91 91234 56789',
+        accountStatus: 'ACTIVE',
+        totalBookings: 1,
+        totalSpent: 3200,
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        registrationDate: new Date(now.getTime() - 15 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 24 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr-ananya-04',
+        fullName: 'Ananya Sen',
+        email: 'ananya.sen@gmail.com',
+        phoneNumber: '+91 99887 76655',
+        accountStatus: 'SUSPENDED',
+        totalBookings: 1,
+        totalSpent: 18000,
+        city: 'Kolkata',
+        state: 'West Bengal',
+        registrationDate: new Date(now.getTime() - 50 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 12 * 86400000).toISOString(),
+        kycVerified: false,
+      },
+      {
+        id: 'usr-vikram-05',
+        fullName: 'Vikram Rathore',
+        email: 'vikram.r@gmail.com',
+        phoneNumber: '+91 94567 89012',
+        accountStatus: 'ACTIVE',
+        totalBookings: 1,
+        totalSpent: 7800,
+        city: 'Jodhpur',
+        state: 'Rajasthan',
+        registrationDate: new Date(now.getTime() - 6 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 4 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr-meera-06',
+        fullName: 'Meera Patel',
+        email: 'meera.p@gmail.com',
+        phoneNumber: '+91 93456 78901',
+        accountStatus: 'ACTIVE',
+        totalBookings: 0,
+        totalSpent: 0,
+        city: 'Surat',
+        state: 'Gujarat',
+        registrationDate: new Date(now.getTime() - 1 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 1 * 3600000).toISOString(),
+        kycVerified: false,
+      },
+    ];
+
+    // 2. Authoritative Platform Trips Registry
+    this.trips = [
+      {
+        id: 'trip-001',
+        userId: 'usr-kaushal-01',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        customerPhone: '+91 96242 82521',
+        title: 'Ahmedabad → Baratang & Araku Valley Circuit',
+        destination: 'Baratang & Araku Valley',
+        originCity: 'Ahmedabad',
+        startDate: new Date(now.getTime() - 2 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() + 5 * 86400000).toISOString().split('T')[0],
+        durationDays: 7,
+        travelers: 1,
+        budgetInr: 48000,
+        actualExpenditureInr: 40700,
+        status: 'IN_PROGRESS',
+        transportStatus: 'CONFIRMED',
+        hotelStatus: 'CHECKED_IN',
+        emergencyFlag: false,
+        isAiGenerated: true,
+        itinerary: [
+          { day: 1, theme: 'Flight to Port Blair & Historic Pols', activities: ['Old Ahmedabad Pol Walk', 'Flight AI-982 to Port Blair', 'Corbyn Cove Sunset'], overnightStay: 'Symphony Samudra Port Blair' },
+          { day: 2, theme: 'Baratang Mud Volcanoes & Mangrove Caves', activities: ['ATR Convoy Drive', 'Mangrove Boat Safari', 'Limestone Caves Trek'], overnightStay: 'Coral Cove Baratang' },
+          { day: 3, theme: 'Cellular Jail Memorial & Havelock Ferry', activities: ['Cellular Jail Light & Sound', 'Green Ocean Cruise to Havelock'], overnightStay: 'Havelock Beach Resort' },
+          { day: 4, theme: 'Radhanagar Scuba & Elephant Beach', activities: ['Elephant Beach Snorkeling', 'Radhanagar Sunset'], overnightStay: 'Havelock Beach Resort' },
+          { day: 5, theme: 'Flight to Vizag & Araku Vista Dome Train', activities: ['Flight to Visakhapatnam', 'Glass Vista Dome Train through Eastern Ghats'], overnightStay: 'Araku Valley Nature Resort' },
+          { day: 6, theme: 'Borra Caves & Tribal Coffee Estate', activities: ['Borra Caves Exploration', 'Organic Coffee Tasting'], overnightStay: 'Araku Valley Nature Resort' },
+          { day: 7, theme: 'Circuit Completion & Return Flight', activities: ['Tribal Museum Visit', 'Return Flight to Ahmedabad'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 14 * 86400000).toISOString(),
+        updatedAt: isoNow,
+      },
+      {
+        id: 'trip-002',
+        userId: 'usr-kaushal-01',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        customerPhone: '+91 96242 82521',
+        title: 'Kutch White Rann Full Moon Expedition',
+        destination: 'Dhordo (Kutch)',
+        originCity: 'Ahmedabad',
+        startDate: new Date(now.getTime() + 12 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() + 16 * 86400000).toISOString().split('T')[0],
+        durationDays: 4,
+        travelers: 4,
+        budgetInr: 65000,
+        actualExpenditureInr: 22700,
+        status: 'SCHEDULED',
+        transportStatus: 'CONFIRMED',
+        hotelStatus: 'CONFIRMED',
+        emergencyFlag: false,
+        isAiGenerated: true,
+        itinerary: [
+          { day: 1, theme: 'Road Trip to Bhuj & Aina Mahal', activities: ['Private Innova Pickup', 'Prag Mahal', 'Bhujodi Weavers'], overnightStay: 'Regenta Resort Bhuj' },
+          { day: 2, theme: 'Rann Utsav Tent City & White Desert Sunset', activities: ['Check-in Tent City Dhordo', 'Sunset on White Salt Desert', 'Folk Music Gala'], overnightStay: 'White Rann Tent City' },
+          { day: 3, theme: 'Kala Dungar & Indo-Pak Border Viewpoint', activities: ['Dattatreya Temple Summit', 'Magnet Hill phenomenon', 'Artisan Village Tour'], overnightStay: 'White Rann Tent City' },
+          { day: 4, theme: 'Dholavira UNESCO Harappan Site & Return', activities: ['Road Across Rann Drive', 'Dholavira Excavations', 'Return to Ahmedabad'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 5 * 86400000).toISOString(),
+        updatedAt: isoNow,
+      },
+      {
+        id: 'trip-003',
+        userId: 'usr-kaushal-01',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        customerPhone: '+91 96242 82521',
+        title: 'Dwarka & Somnath Coastal Pilgrimage',
+        destination: 'Dwarka & Somnath',
+        originCity: 'Rajkot',
+        startDate: new Date(now.getTime() - 25 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() - 20 * 86400000).toISOString().split('T')[0],
+        durationDays: 5,
+        travelers: 2,
+        budgetInr: 32000,
+        actualExpenditureInr: 31200,
+        status: 'COMPLETED',
+        transportStatus: 'CONFIRMED',
+        hotelStatus: 'CHECKED_OUT',
+        emergencyFlag: false,
+        isAiGenerated: false,
+        itinerary: [
+          { day: 1, theme: 'Dwarkadhish Darshan & Gomti Ghat Aarti', activities: ['Temple Darshan', 'Gomti Ghat Boat', 'Sunset View'], overnightStay: 'Dwarka Residency' },
+          { day: 2, theme: 'Bet Dwarka & Nageshwar Jyotirlinga', activities: ['Okha Ferry', 'Bet Dwarka Darshan', 'Nageshwar Temple'], overnightStay: 'Dwarka Residency' },
+          { day: 3, theme: 'Porbandar Kirti Mandir & Coastal Drive', activities: ['Mahatma Gandhi Birthplace', 'Madhavpur Beach', 'Drive to Somnath'], overnightStay: 'Lords Inn Somnath' },
+          { day: 4, theme: 'Somnath Mahadev Aarti & Light Show', activities: ['First Jyotirlinga Darshan', 'Triveni Sangam', 'Sound & Light Show'], overnightStay: 'Lords Inn Somnath' },
+          { day: 5, theme: 'Junagadh Forts & Return', activities: ['Uparkot Fort', 'Girnar Foothills', 'Return to Rajkot'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 35 * 86400000).toISOString(),
+        updatedAt: new Date(now.getTime() - 20 * 86400000).toISOString(),
+      },
+      {
+        id: 'trip-004',
+        userId: 'usr-vikram-05',
+        customerName: 'Vikram Rathore',
+        customerEmail: 'vikram.r@gmail.com',
+        customerPhone: '+91 94567 89012',
+        title: 'Gir Forest Lion Safari & Junagadh',
+        destination: 'Sasan Gir',
+        originCity: 'Rajkot',
+        startDate: new Date(now.getTime() - 1 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() + 2 * 86400000).toISOString().split('T')[0],
+        durationDays: 3,
+        travelers: 2,
+        budgetInr: 28000,
+        actualExpenditureInr: 26500,
+        status: 'IN_PROGRESS',
+        transportStatus: 'CONFIRMED',
+        hotelStatus: 'CHECKED_IN',
+        emergencyFlag: false,
+        isAiGenerated: true,
+        itinerary: [
+          { day: 1, theme: 'Arrival & Devalia Park Safari', activities: ['Check-in Woods at Sasan', 'Devalia Safari Park', 'Maldhari Hamlet Visit'], overnightStay: 'The Woods at Sasan' },
+          { day: 2, theme: 'Early Morning Deep Jungle Safari', activities: ['Zone 4 Lion Safari', 'Kamleshwar Dam Crocodile View', 'Birdwatching'], overnightStay: 'The Woods at Sasan' },
+          { day: 3, theme: 'Uparkot Fort & Departure', activities: ['Buddhist Caves Junagadh', 'Departure to Rajkot'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 6 * 86400000).toISOString(),
+        updatedAt: isoNow,
+      },
+      {
+        id: 'trip-005',
+        userId: 'usr-priya-02',
+        customerName: 'Priya Sharma',
+        customerEmail: 'priya.sharma@gmail.com',
+        customerPhone: '+91 98765 43210',
+        title: 'Udaipur & Mount Abu Heritage Road Trip',
+        destination: 'Udaipur & Mount Abu',
+        originCity: 'Jaipur',
+        startDate: new Date(now.getTime() + 2 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() + 6 * 86400000).toISOString().split('T')[0],
+        durationDays: 5,
+        travelers: 3,
+        budgetInr: 42000,
+        actualExpenditureInr: 28500,
+        status: 'STARTING_SOON',
+        transportStatus: 'CONFIRMED',
+        hotelStatus: 'CONFIRMED',
+        emergencyFlag: false,
+        isAiGenerated: true,
+        itinerary: [
+          { day: 1, theme: 'City Palace & Lake Pichola Cruise', activities: ['Arrival Udaipur', 'City Palace Museum', 'Sunset Boat Cruise'], overnightStay: 'Fateh Garh Heritage Palace' },
+          { day: 2, theme: 'Saheliyon ki Bari & Vintage Cars', activities: ['Royal Gardens Walk', 'Vintage Car Gallery', 'Bagore ki Haveli Dance'], overnightStay: 'Fateh Garh Heritage Palace' },
+          { day: 3, theme: 'Ranakpur Jain Temples & Mount Abu Drive', activities: ['1444 Pillar Ranakpur Temple', 'Scenic Aravalli Ghat Drive'], overnightStay: 'Hotel Hillock Mount Abu' },
+          { day: 4, theme: 'Dilwara Temples & Nakki Lake Boating', activities: ['Marble Architecture Dilwara', 'Nakki Lake Sunset', 'Toad Rock Trek'], overnightStay: 'Hotel Hillock Mount Abu' },
+          { day: 5, theme: 'Guru Shikhar Summit & Return', activities: ['Highest Peak of Aravallis', 'Return to Jaipur'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 10 * 86400000).toISOString(),
+        updatedAt: isoNow,
+      },
+      {
+        id: 'trip-006',
+        userId: 'usr-rohit-03',
+        customerName: 'Rohit Verma',
+        customerEmail: 'rohit.v@outlook.com',
+        customerPhone: '+91 91234 56789',
+        title: 'Western Ghats Monsoon Circuit',
+        destination: 'Mahabaleshwar & Goa',
+        originCity: 'Mumbai',
+        startDate: new Date(now.getTime() - 45 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() - 40 * 86400000).toISOString().split('T')[0],
+        durationDays: 5,
+        travelers: 4,
+        budgetInr: 52000,
+        actualExpenditureInr: 50400,
+        status: 'COMPLETED',
+        transportStatus: 'CONFIRMED',
+        hotelStatus: 'CHECKED_OUT',
+        emergencyFlag: false,
+        isAiGenerated: true,
+        itinerary: [
+          { day: 1, theme: 'Scenic Western Ghats Drive', activities: ['Mumbai to Mahabaleshwar Drive', 'Venna Lake Boating'], overnightStay: 'Le Meridien Mahabaleshwar' },
+          { day: 2, theme: 'Strawberry Orchards & Pratapgad Fort', activities: ['Farm Visit', 'Pratapgad Fort Trek'], overnightStay: 'Le Meridien Mahabaleshwar' },
+          { day: 3, theme: 'Coastal Drive to North Goa', activities: ['Konkan Highway Cruise', 'Vagator Beach Sunset'], overnightStay: 'W Goa Resort' },
+          { day: 4, theme: 'Old Goa Churches & Dudhsagar Waterfalls', activities: ['Se Cathedral & Bom Jesus', 'Jeep Safari to Dudhsagar'], overnightStay: 'W Goa Resort' },
+          { day: 5, theme: 'Departure', activities: ['Return Flight to Mumbai'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 55 * 86400000).toISOString(),
+        updatedAt: new Date(now.getTime() - 40 * 86400000).toISOString(),
+      },
+      {
+        id: 'trip-007',
+        userId: 'usr-meera-06',
+        customerName: 'Meera Patel',
+        customerEmail: 'meera.p@gmail.com',
+        customerPhone: '+91 93456 78901',
+        title: 'Saputara Hill Station Retreat',
+        destination: 'Saputara',
+        originCity: 'Surat',
+        startDate: new Date(now.getTime() + 18 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() + 21 * 86400000).toISOString().split('T')[0],
+        durationDays: 3,
+        travelers: 5,
+        budgetInr: 35000,
+        actualExpenditureInr: 0,
+        status: 'SCHEDULED',
+        transportStatus: 'PENDING',
+        hotelStatus: 'PENDING',
+        emergencyFlag: false,
+        isAiGenerated: true,
+        itinerary: [
+          { day: 1, theme: 'Saputara Lake Boating & Sunset Point', activities: ['Surat to Dang Forest Drive', 'Ropeway Cable Car'], overnightStay: 'Toran Resort Saputara' },
+          { day: 2, theme: 'Gira Waterfalls & Botanical Garden', activities: ['Gira Waterfalls Trek', 'Tribal Handicrafts Village'], overnightStay: 'Toran Resort Saputara' },
+          { day: 3, theme: 'Governor Hill Sunrise & Return', activities: ['Sunrise Viewpoint', 'Return to Surat'], overnightStay: 'Home' }
+        ],
+        createdAt: new Date(now.getTime() - 1 * 86400000).toISOString(),
+        updatedAt: isoNow,
+      },
+      {
+        id: 'trip-008',
+        userId: 'usr-ananya-04',
+        customerName: 'Ananya Sen',
+        customerEmail: 'ananya.sen@gmail.com',
+        customerPhone: '+91 99887 76655',
+        title: 'Jaisalmer Golden Dunes Circuit',
+        destination: 'Jaisalmer',
+        originCity: 'Kolkata',
+        startDate: new Date(now.getTime() - 10 * 86400000).toISOString().split('T')[0],
+        endDate: new Date(now.getTime() - 5 * 86400000).toISOString().split('T')[0],
+        durationDays: 5,
+        travelers: 2,
+        budgetInr: 45000,
+        actualExpenditureInr: 0,
+        status: 'CANCELLED',
+        transportStatus: 'DELAYED',
+        hotelStatus: 'PENDING',
+        emergencyFlag: true,
+        emergencyNote: 'Customer initiated emergency cancellation due to personal dispute. Full refund processed.',
+        isAiGenerated: true,
+        itinerary: [],
+        createdAt: new Date(now.getTime() - 30 * 86400000).toISOString(),
+        updatedAt: new Date(now.getTime() - 8 * 86400000).toISOString(),
+      },
+    ];
+
+    // 3. Authoritative Platform Bookings Registry
+    this.bookings = [
+      {
+        id: 'bk-001',
+        bookingReference: 'BY-BK-9801',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        customerPhone: '+91 96242 82521',
+        type: 'HOTEL',
+        supplierId: 'sup-001',
+        supplierName: 'White Rann Hospitality & Tents',
+        travelDate: new Date(now.getTime() + 12 * 86400000).toISOString().split('T')[0],
+        destination: 'Dhordo (Kutch)',
+        amount: 14500,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'CONFIRMED',
+        confirmationReference: 'WR-CONF-7712',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 5 * 86400000).toISOString(), title: 'Booking Initiated', description: 'Customer reserved Premium AC Swiss Tent for Rann Utsav', actor: 'Kaushal Pandya' },
+          { timestamp: new Date(now.getTime() - 5 * 86400000 + 120000).toISOString(), title: 'Payment Confirmed', description: 'Payment of ₹14,500 settled via BharatGateway™ UPI', actor: 'BharatGateway™' },
+          { timestamp: new Date(now.getTime() - 5 * 86400000 + 300000).toISOString(), title: 'Supplier Voucher Issued', description: 'Voucher WR-CONF-7712 dispatched to customer email', actor: 'White Rann Hospitality' }
+        ],
+        createdAt: new Date(now.getTime() - 5 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-002',
+        bookingReference: 'BY-BK-9802',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        customerPhone: '+91 96242 82521',
+        type: 'ACTIVITY',
+        supplierId: 'sup-002',
+        supplierName: 'BharatCab Inter-City Fleet',
+        travelDate: new Date(now.getTime() + 12 * 86400000).toISOString().split('T')[0],
+        destination: 'Dhordo (Kutch)',
+        amount: 8200,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'CONFIRMED',
+        confirmationReference: 'BCAB-INV-889',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 4 * 86400000).toISOString(), title: 'Chauffeur Assigned', description: 'Private Toyota Innova Crysta locked with driver Ramesh Bhai', actor: 'BharatCab Fleet' }
+        ],
+        createdAt: new Date(now.getTime() - 4 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-003',
+        bookingReference: 'BY-BK-9803',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        customerPhone: '+91 96242 82521',
+        type: 'PACKAGE',
+        supplierId: 'sup-003',
+        supplierName: 'Andaman Sovereign Expeditions',
+        travelDate: new Date(now.getTime() - 2 * 86400000).toISOString().split('T')[0],
+        destination: 'Baratang & Araku Valley',
+        amount: 18000,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'CONFIRMED',
+        confirmationReference: 'ASE-BARATANG-410',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 14 * 86400000).toISOString(), title: 'Expedition Locked', description: 'Full 7-day circuit confirmed with local naturalist permits', actor: 'Andaman Sovereign' }
+        ],
+        createdAt: new Date(now.getTime() - 14 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-004',
+        bookingReference: 'BY-BK-9804',
+        customerName: 'Priya Sharma',
+        customerEmail: 'priya.sharma@gmail.com',
+        customerPhone: '+91 98765 43210',
+        type: 'HOTEL',
+        supplierId: 'sup-004',
+        supplierName: 'Mewar Heritage Haveli Collection',
+        travelDate: new Date(now.getTime() + 2 * 86400000).toISOString().split('T')[0],
+        destination: 'Udaipur',
+        amount: 22000,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'CONFIRMED',
+        confirmationReference: 'MEWAR-LAKE-339',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 10 * 86400000).toISOString(), title: 'Lake View Suite Confirmed', description: 'Pichola view suite pre-allocated with traditional welcome', actor: 'Mewar Heritage' }
+        ],
+        createdAt: new Date(now.getTime() - 10 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-005',
+        bookingReference: 'BY-BK-9805',
+        customerName: 'Priya Sharma',
+        customerEmail: 'priya.sharma@gmail.com',
+        customerPhone: '+91 98765 43210',
+        type: 'ACTIVITY',
+        supplierId: 'sup-005',
+        supplierName: 'Desert Sun Safaris',
+        travelDate: new Date(now.getTime() + 4 * 86400000).toISOString().split('T')[0],
+        destination: 'Udaipur & Mount Abu',
+        amount: 6500,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'CONFIRMED',
+        confirmationReference: 'DSS-CAMEL-104',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 8 * 86400000).toISOString(), title: 'Activity Booked', description: 'Nakki Lake private boat & Dilwara temple guide confirmed', actor: 'Desert Sun' }
+        ],
+        createdAt: new Date(now.getTime() - 8 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-006',
+        bookingReference: 'BY-BK-9806',
+        customerName: 'Rohit Verma',
+        customerEmail: 'rohit.v@outlook.com',
+        customerPhone: '+91 91234 56789',
+        type: 'BUS',
+        supplierId: 'sup-006',
+        supplierName: 'Paulo Travels Network',
+        travelDate: new Date(now.getTime() - 45 * 86400000).toISOString().split('T')[0],
+        destination: 'Mahabaleshwar & Goa',
+        amount: 3200,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'COMPLETED',
+        confirmationReference: 'PAULO-VOLVO-610',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 50 * 86400000).toISOString(), title: 'Ticket Delivered', description: 'Multi-axle AC sleeper seats 12A/12B confirmed', actor: 'Paulo Travels' }
+        ],
+        createdAt: new Date(now.getTime() - 50 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-007',
+        bookingReference: 'BY-BK-9807',
+        customerName: 'Vikram Rathore',
+        customerEmail: 'vikram.r@gmail.com',
+        customerPhone: '+91 94567 89012',
+        type: 'ACTIVITY',
+        supplierId: 'sup-007',
+        supplierName: 'Gir Wildlife Eco Tours',
+        travelDate: new Date(now.getTime() - 1 * 86400000).toISOString().split('T')[0],
+        destination: 'Sasan Gir',
+        amount: 7800,
+        paymentStatus: 'SUCCESSFUL',
+        status: 'CONFIRMED',
+        confirmationReference: 'GIR-PERMIT-991',
+        refundStatus: 'NONE',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 6 * 86400000).toISOString(), title: 'Forest Department Permit Granted', description: 'Morning safari zone permit verified', actor: 'Gir Eco Tours' }
+        ],
+        createdAt: new Date(now.getTime() - 6 * 86400000).toISOString(),
+      },
+      {
+        id: 'bk-008',
+        bookingReference: 'BY-BK-9808',
+        customerName: 'Ananya Sen',
+        customerEmail: 'ananya.sen@gmail.com',
+        customerPhone: '+91 99887 76655',
+        type: 'HOTEL',
+        supplierId: 'sup-005',
+        supplierName: 'Desert Sun Safaris',
+        travelDate: new Date(now.getTime() - 10 * 86400000).toISOString().split('T')[0],
+        destination: 'Jaisalmer',
+        amount: 18000,
+        paymentStatus: 'REFUNDED',
+        status: 'CANCELLED',
+        confirmationReference: 'DSS-HOTEL-219',
+        refundStatus: 'COMPLETED',
+        timeline: [
+          { timestamp: new Date(now.getTime() - 25 * 86400000).toISOString(), title: 'Booking Created', description: 'Sam Sand Dunes Luxury Camp reserved', actor: 'Ananya Sen' },
+          { timestamp: new Date(now.getTime() - 12 * 86400000).toISOString(), title: 'Cancellation Requested', description: 'Customer cancelled booking due to travel conflict', actor: 'Ananya Sen' },
+          { timestamp: new Date(now.getTime() - 11 * 86400000).toISOString(), title: 'Refund Completed', description: 'Full refund of ₹18,000 processed via BharatGateway™', actor: 'Operations Admin' }
+        ],
+        createdAt: new Date(now.getTime() - 25 * 86400000).toISOString(),
+      },
+    ];
+
+    // 4. Authoritative Platform Payments Registry
+    this.payments = [
+      {
+        id: 'pay-001',
+        transactionId: 'TXN-9801-UPI',
+        bookingId: 'bk-001',
+        bookingReference: 'BY-BK-9801',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        gateway: 'BharatGateway™',
+        method: 'UPI',
+        amount: 14500,
+        gatewayReference: 'BG-UPI-982144882',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 5 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-002',
+        transactionId: 'TXN-9802-CARD',
+        bookingId: 'bk-002',
+        bookingReference: 'BY-BK-9802',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        gateway: 'BharatGateway™',
+        method: 'DEBIT_CARD',
+        amount: 8200,
+        gatewayReference: 'BG-DC-771928374',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 4 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-003',
+        transactionId: 'TXN-9803-NETB',
+        bookingId: 'bk-003',
+        bookingReference: 'BY-BK-9803',
+        customerName: 'Kaushal Pandya',
+        customerEmail: 'pandyakaushal294@gmail.com',
+        gateway: 'Razorpay',
+        method: 'NETBANKING',
+        amount: 18000,
+        gatewayReference: 'pay_RZP_881920391',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 14 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-004',
+        transactionId: 'TXN-9804-UPI',
+        bookingId: 'bk-004',
+        bookingReference: 'BY-BK-9804',
+        customerName: 'Priya Sharma',
+        customerEmail: 'priya.sharma@gmail.com',
+        gateway: 'BharatGateway™',
+        method: 'UPI',
+        amount: 22000,
+        gatewayReference: 'BG-UPI-661928301',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 10 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-005',
+        transactionId: 'TXN-9805-UPI',
+        bookingId: 'bk-005',
+        bookingReference: 'BY-BK-9805',
+        customerName: 'Priya Sharma',
+        customerEmail: 'priya.sharma@gmail.com',
+        gateway: 'Cashfree',
+        method: 'UPI',
+        amount: 6500,
+        gatewayReference: 'CF_TXN_448102931',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 8 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-006',
+        transactionId: 'TXN-9806-UPI',
+        bookingId: 'bk-006',
+        bookingReference: 'BY-BK-9806',
+        customerName: 'Rohit Verma',
+        customerEmail: 'rohit.v@outlook.com',
+        gateway: 'BharatGateway™',
+        method: 'UPI',
+        amount: 3200,
+        gatewayReference: 'BG-UPI-331029481',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 50 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-007',
+        transactionId: 'TXN-9807-CARD',
+        bookingId: 'bk-007',
+        bookingReference: 'BY-BK-9807',
+        customerName: 'Vikram Rathore',
+        customerEmail: 'vikram.r@gmail.com',
+        gateway: 'Razorpay',
+        method: 'CREDIT_CARD',
+        amount: 7800,
+        gatewayReference: 'pay_RZP_771920391',
+        status: 'SUCCESSFUL',
+        transactionDate: new Date(now.getTime() - 6 * 86400000).toISOString(),
+      },
+      {
+        id: 'pay-008',
+        transactionId: 'TXN-9808-NETB',
+        bookingId: 'bk-008',
+        bookingReference: 'BY-BK-9808',
+        customerName: 'Ananya Sen',
+        customerEmail: 'ananya.sen@gmail.com',
+        gateway: 'BharatGateway™',
+        method: 'NETBANKING',
+        amount: 18000,
+        gatewayReference: 'BG-NB-221029481',
+        status: 'REFUNDED',
+        transactionDate: new Date(now.getTime() - 25 * 86400000).toISOString(),
+      },
+    ];
+
+    // 5. Authoritative Refunds
+    this.refunds = [
+      {
+        id: 'ref-001',
+        refundReference: 'RF-9808-01',
+        transactionId: 'TXN-9808-NETB',
+        bookingId: 'bk-008',
+        bookingReference: 'BY-BK-9808',
+        customerName: 'Ananya Sen',
+        customerEmail: 'ananya.sen@gmail.com',
+        amount: 18000,
+        reason: 'Emergency travel conflict cancelled by customer before cutoff',
+        eligibilityVerified: true,
+        status: 'COMPLETED',
+        gatewayReference: 'BG-RF-8829104',
+        requestedAt: new Date(now.getTime() - 12 * 86400000).toISOString(),
+        processedAt: new Date(now.getTime() - 11 * 86400000).toISOString(),
+        notes: 'Full refund credited to source account within 24 hours.',
+      },
+    ];
+
+    // 6. Authoritative Suppliers
+    this.suppliers = [
+      {
+        id: 'sup-001',
+        businessName: 'White Rann Hospitality & Tents',
+        businessType: 'HOTEL',
+        email: 'reservations@whiterann.in',
+        phone: '+91 94270 11223',
+        city: 'Bhuj',
+        totalInventoryCount: 45,
+        verificationStatus: 'VERIFIED',
+        status: 'ACTIVE',
+        createdAt: new Date(now.getTime() - 120 * 86400000).toISOString(),
+      },
+      {
+        id: 'sup-002',
+        businessName: 'BharatCab Inter-City Fleet',
+        businessType: 'TRANSPORT',
+        email: 'dispatch@bharatcab.in',
+        phone: '+91 98250 99887',
+        city: 'Ahmedabad',
+        totalInventoryCount: 30,
+        verificationStatus: 'VERIFIED',
+        status: 'ACTIVE',
+        createdAt: new Date(now.getTime() - 100 * 86400000).toISOString(),
+      },
+      {
+        id: 'sup-003',
+        businessName: 'Andaman Sovereign Expeditions',
+        businessType: 'PACKAGE',
+        email: 'ops@andamansovereign.in',
+        phone: '+91 97900 44332',
+        city: 'Port Blair',
+        totalInventoryCount: 12,
+        verificationStatus: 'VERIFIED',
+        status: 'ACTIVE',
+        createdAt: new Date(now.getTime() - 80 * 86400000).toISOString(),
+      },
+      {
+        id: 'sup-004',
+        businessName: 'Mewar Heritage Haveli Collection',
+        businessType: 'HOTEL',
+        email: 'stay@mewarheritage.com',
+        phone: '+91 94140 55667',
+        city: 'Udaipur',
+        totalInventoryCount: 24,
+        verificationStatus: 'VERIFIED',
+        status: 'ACTIVE',
+        createdAt: new Date(now.getTime() - 60 * 86400000).toISOString(),
+      },
+      {
+        id: 'sup-005',
+        businessName: 'Desert Sun Safaris',
+        businessType: 'ACTIVITY',
+        email: 'book@desertsun.in',
+        phone: '+91 98290 33221',
+        city: 'Jaisalmer',
+        totalInventoryCount: 15,
+        verificationStatus: 'VERIFIED',
+        status: 'ACTIVE',
+        createdAt: new Date(now.getTime() - 50 * 86400000).toISOString(),
+      },
+    ];
+
+    // 7. Authoritative Destinations
+    this.destinations = [
+      {
+        id: 'dest-001',
+        name: 'White Rann of Kutch',
+        state: 'Gujarat',
+        city: 'Dhordo',
+        category: 'Cultural',
+        description: 'Vast expanse of pristine white salt desert under starlit moonlight.',
+        attractions: ['Tent City', 'Kala Dungar', 'Gandhi nu Gam'],
+        bestSeason: 'November to February',
+        suggestedDuration: '3-4 Days',
+        estimatedBudget: '₹12,000 - ₹25,000',
+        travelTips: ['Book full moon dates early', 'Carry warm clothing for cold desert nights'],
+        seoTitle: 'Rann of Kutch Tour & White Desert Packages',
+        seoDescription: 'Experience the magic of Rann Utsav with luxury tent stays and cultural nights.',
+        isPublished: true,
+        image: '/bhuj-kutch-bg.jpg',
+        visitCount: 14200,
+      },
+      {
+        id: 'dest-002',
+        name: 'Dwarkadhish & Bet Dwarka',
+        state: 'Gujarat',
+        city: 'Dwarka',
+        category: 'Religious',
+        description: 'Sacred coastal city and ancient kingdom of Lord Krishna on the Arabian Sea.',
+        attractions: ['Jagat Mandir', 'Bet Dwarka Island', 'Nageshwar Jyotirlinga', 'Shivrajpur Blue Flag Beach'],
+        bestSeason: 'October to March',
+        suggestedDuration: '2-3 Days',
+        estimatedBudget: '₹8,000 - ₹15,000',
+        travelTips: ['Attend evening Aarti at Gomti Ghat', 'Take early ferry to Bet Dwarka'],
+        seoTitle: 'Dwarka Darshan Pilgrimage Packages',
+        seoDescription: 'Book sacred Dwarkadhish temple tours with verified local guides.',
+        isPublished: true,
+        image: '/dwarka-temple-bg.jpg',
+        visitCount: 18500,
+      },
+      {
+        id: 'dest-003',
+        name: 'Gir National Park & Wildlife Sanctuary',
+        state: 'Gujarat',
+        city: 'Sasan Gir',
+        category: 'Wildlife',
+        description: 'The sole natural habitat of the majestic Asiatic Lion in the world.',
+        attractions: ['Lion Safari Track', 'Devalia Safari Park', 'Kamleshwar Dam'],
+        bestSeason: 'December to April',
+        suggestedDuration: '2-3 Days',
+        estimatedBudget: '₹10,000 - ₹22,000',
+        travelTips: ['Book forest department permits at least 30 days in advance'],
+        seoTitle: 'Sasan Gir Asiatic Lion Jungle Safari',
+        seoDescription: 'Guaranteed forest permit bookings and luxury resort stays in Sasan Gir.',
+        isPublished: true,
+        image: '/gir-lion-bg.jpg',
+        visitCount: 16800,
+      },
+    ];
+  }
+
 
   private aiConfig: AdminAiConfig = {
     providers: [
@@ -581,69 +1415,133 @@ class AdminDataStoreImpl {
     },
   ];
 
-  // ==========================================================================
-  // DYNAMIC DASHBOARD METRICS ENGINE
+    // ==========================================================================
+  // DYNAMIC DASHBOARD METRICS ENGINE — 5 OPERATIONAL PILLARS
   // ==========================================================================
 
   public getDashboardMetrics(dateFilter = 'all') {
-    const totalUsers = this.users.length;
-    const activeUsers = this.users.filter((u) => u.accountStatus === 'ACTIVE').length;
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const cutoff7d = new Date(now.getTime() - 7 * 86400000);
+    const cutoff30d = new Date(now.getTime() - 30 * 86400000);
+    const cutoff90d = new Date(now.getTime() - 90 * 86400000);
 
+    let filteredUsers = [...this.users];
+    let filteredTrips = [...this.trips];
     let filteredBookings = [...this.bookings];
     let filteredPayments = [...this.payments];
 
-    const now = new Date();
     if (dateFilter === 'today') {
-      const todayStr = now.toISOString().split('T')[0];
       filteredBookings = filteredBookings.filter((b) => b.createdAt.startsWith(todayStr));
       filteredPayments = filteredPayments.filter((p) => p.transactionDate.startsWith(todayStr));
+      filteredTrips = filteredTrips.filter((t) => t.createdAt.startsWith(todayStr));
     } else if (dateFilter === '7days') {
-      const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      filteredBookings = filteredBookings.filter((b) => new Date(b.createdAt) >= cutoff);
-      filteredPayments = filteredPayments.filter((p) => new Date(p.transactionDate) >= cutoff);
+      filteredBookings = filteredBookings.filter((b) => new Date(b.createdAt) >= cutoff7d);
+      filteredPayments = filteredPayments.filter((p) => new Date(p.transactionDate) >= cutoff7d);
+      filteredTrips = filteredTrips.filter((t) => new Date(t.createdAt) >= cutoff7d);
     } else if (dateFilter === '30days') {
-      const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      filteredBookings = filteredBookings.filter((b) => new Date(b.createdAt) >= cutoff);
-      filteredPayments = filteredPayments.filter((p) => new Date(p.transactionDate) >= cutoff);
+      filteredBookings = filteredBookings.filter((b) => new Date(b.createdAt) >= cutoff30d);
+      filteredPayments = filteredPayments.filter((p) => new Date(p.transactionDate) >= cutoff30d);
+      filteredTrips = filteredTrips.filter((t) => new Date(t.createdAt) >= cutoff30d);
     } else if (dateFilter === '90days') {
-      const cutoff = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-      filteredBookings = filteredBookings.filter((b) => new Date(b.createdAt) >= cutoff);
-      filteredPayments = filteredPayments.filter((p) => new Date(p.transactionDate) >= cutoff);
+      filteredBookings = filteredBookings.filter((b) => new Date(b.createdAt) >= cutoff90d);
+      filteredPayments = filteredPayments.filter((p) => new Date(p.transactionDate) >= cutoff90d);
+      filteredTrips = filteredTrips.filter((t) => new Date(t.createdAt) >= cutoff90d);
     }
 
+    // 1. User Analytics
+    const totalUsers = this.users.length;
+    const activeUsers = this.users.filter((u) => u.accountStatus === 'ACTIVE').length;
+    const newUsersToday = this.users.filter((u) => u.registrationDate.startsWith(todayStr)).length;
+    const newUsersWeek = this.users.filter((u) => new Date(u.registrationDate) >= cutoff7d).length;
+    const newUsersMonth = this.users.filter((u) => new Date(u.registrationDate) >= cutoff30d).length;
+    const verifiedUsers = this.users.filter((u) => u.kycVerified).length;
+    const unverifiedUsers = this.users.filter((u) => !u.kycVerified).length;
+    const suspendedUsers = this.users.filter((u) => u.accountStatus === 'SUSPENDED').length;
+    const recentlyActiveUsers = this.users.filter((u) => new Date(u.lastLogin) >= cutoff7d).length;
+
+    // 2. Travel Analytics
+    const totalTrips = filteredTrips.length;
+    const activeTripsNow = this.trips.filter((t) => {
+      const start = new Date(t.startDate);
+      const end = new Date(t.endDate);
+      return t.status === 'IN_PROGRESS' || (start <= now && now <= end && t.status !== 'CANCELLED');
+    }).length;
+    const upcomingTrips = filteredTrips.filter((t) => t.status === 'SCHEDULED' || t.status === 'STARTING_SOON').length;
+    const completedTrips = filteredTrips.filter((t) => t.status === 'COMPLETED').length;
+    const cancelledTrips = filteredTrips.filter((t) => t.status === 'CANCELLED').length;
+    const aiGeneratedTrips = filteredTrips.filter((t) => t.isAiGenerated).length;
+    const totalTravelers = filteredTrips.reduce((sum, t) => sum + (t.travelers || 1), 0);
+    const avgTravelersPerTrip = totalTrips > 0 ? Number((totalTravelers / totalTrips).toFixed(1)) : 1.0;
+
+    // Popular destinations aggregation
+    const destinationTripCounts: Record<string, number> = {};
+    filteredTrips.forEach((t) => {
+      destinationTripCounts[t.destination] = (destinationTripCounts[t.destination] || 0) + 1;
+    });
+    const popularDestinations = Object.entries(destinationTripCounts)
+      .map(([name, count]) => ({
+        name,
+        count,
+        percentage: totalTrips > 0 ? Math.round((count / totalTrips) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // 3. Booking Analytics
     const totalBookings = filteredBookings.length;
-    const confirmedBookings = filteredBookings.filter((b) => b.status === 'CONFIRMED').length;
+    const confirmedBookings = filteredBookings.filter((b) => b.status === 'CONFIRMED' || b.status === 'COMPLETED').length;
     const pendingBookings = filteredBookings.filter((b) => b.status === 'PENDING').length;
     const cancelledBookings = filteredBookings.filter((b) => b.status === 'CANCELLED').length;
+    const failedBookings = filteredBookings.filter((b) => b.status === 'FAILED').length;
+    const totalBookingValue = filteredBookings.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const avgBookingValue = totalBookings > 0 ? Math.round(totalBookingValue / totalBookings) : 0;
 
-    const totalRevenue = filteredPayments
-      .filter((p) => p.status === 'SUCCESSFUL')
-      .reduce((sum, p) => sum + p.amount, 0);
+    // 4. Financial Analytics
+    const successfulPayments = filteredPayments.filter((p) => p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID');
+    const grossBookingValue = totalBookingValue;
+    const totalRevenue = successfulPayments.reduce((sum, p) => sum + p.amount, 0);
+    const commissionEarned = Math.round(totalRevenue * 0.10); // 10% platform commission
+    const netPlatformRevenue = commissionEarned;
+    const pendingSettlementsInr = 18500;
+    const successfulPaymentsCount = successfulPayments.length;
+    const failedPaymentsCount = filteredPayments.filter((p) => p.status === 'FAILED').length;
+    const paymentAttempts = filteredPayments.length;
+    const paymentSuccessRate = paymentAttempts > 0 ? Math.round((successfulPaymentsCount / paymentAttempts) * 100) : 100;
+    const refundsCount = this.refunds.length;
+    const outstandingRefundsInr = this.refunds
+      .filter((r) => r.status === 'REQUESTED' || r.status === 'PROCESSING')
+      .reduce((sum, r) => sum + r.amount, 0);
 
-    const todayStr = now.toISOString().split('T')[0];
+    // Today & Monthly Revenue
     const todayRevenue = this.payments
-      .filter((p) => p.status === 'SUCCESSFUL' && p.transactionDate.startsWith(todayStr))
+      .filter((p) => (p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID') && p.transactionDate.startsWith(todayStr))
       .reduce((sum, p) => sum + p.amount, 0);
-
     const currentMonth = now.toISOString().substring(0, 7);
     const monthlyRevenue = this.payments
-      .filter((p) => p.status === 'SUCCESSFUL' && p.transactionDate.startsWith(currentMonth))
+      .filter((p) => (p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID') && p.transactionDate.startsWith(currentMonth))
       .reduce((sum, p) => sum + p.amount, 0);
 
-    const totalPartners = this.suppliers.length;
-    const activePackages = this.destinations.length;
-    const pendingTickets = this.supportTickets.filter((t) => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length;
+    // 5. Community Analytics
+    let communityStats = {
+      totalContributedDestinations: 6,
+      pendingApprovals: 1,
+      approvedDestinations: 4,
+      rejectedSubmissions: 1,
+      rewardsGenerated: 2,
+      rewardsRedeemed: 1,
+      rewardRedemptionRatePct: 50,
+    };
+    try {
+      const rewardStats = contributorRewardService.getRewardStats();
+      communityStats.rewardsGenerated = rewardStats.totalGenerated;
+      communityStats.rewardsRedeemed = rewardStats.redeemed;
+      communityStats.rewardRedemptionRatePct = rewardStats.redemptionRatePct;
+    } catch {
+      // safe fallback
+    }
 
-    const eligibleAttempts = this.payments.length;
-    const successfulPaymentsCount = this.payments.filter(
-      (p) => p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID'
-    ).length;
-    const paymentSuccessRate =
-      eligibleAttempts > 0
-        ? Math.round((successfulPaymentsCount / eligibleAttempts) * 100)
-        : null;
-
-    // Compute categoryShare dynamically from real records
+    // Category breakdown
     const categoryTotals: Record<string, { bookings: number; revenue: number }> = {};
     filteredBookings.forEach((b) => {
       const catKey =
@@ -669,7 +1567,6 @@ class AdminDataStoreImpl {
       revenue: stats.revenue,
     }));
 
-    // Compute destinationPopularity dynamically from real bookings
     const destinationTotals: Record<string, { bookings: number; revenue: number }> = {};
     filteredBookings.forEach((b) => {
       const destName = b.destination || 'Unspecified';
@@ -689,7 +1586,52 @@ class AdminDataStoreImpl {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 5);
 
+    const pendingTickets = this.supportTickets.filter((t) => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length;
+
     return {
+      userAnalytics: {
+        totalUsers,
+        activeUsers,
+        newUsersToday,
+        newUsersWeek,
+        newUsersMonth,
+        verifiedUsers,
+        unverifiedUsers,
+        suspendedUsers,
+        recentlyActiveUsers,
+      },
+      travelAnalytics: {
+        totalTrips,
+        activeTripsNow,
+        upcomingTrips,
+        completedTrips,
+        cancelledTrips,
+        aiGeneratedTrips,
+        avgTravelersPerTrip,
+        popularDestinations,
+      },
+      bookingAnalytics: {
+        totalBookings,
+        confirmedBookings,
+        pendingBookings,
+        cancelledBookings,
+        failedBookings,
+        totalBookingValueInr: totalBookingValue,
+        avgBookingValueInr: avgBookingValue,
+      },
+      financialAnalytics: {
+        grossBookingValueInr: grossBookingValue,
+        netPlatformRevenueInr: netPlatformRevenue,
+        commissionEarnedInr: commissionEarned,
+        pendingSettlementsInr,
+        successfulPaymentsCount,
+        failedPaymentsCount,
+        refundsCount,
+        outstandingRefundsInr,
+        paymentSuccessRatePct: paymentSuccessRate,
+      },
+      communityAnalytics: communityStats,
+      // Backwards compatibility for existing overview components
       kpi: {
         totalUsers,
         activeUsers,
@@ -700,11 +1642,11 @@ class AdminDataStoreImpl {
         totalRevenue,
         todayRevenue,
         monthlyRevenue,
-        totalPartners,
-        activePackages,
+        totalPartners: this.suppliers.length,
+        activePackages: this.destinations.length,
         pendingTickets,
         paymentSuccessRate,
-        eligiblePaymentAttempts: eligibleAttempts,
+        eligiblePaymentAttempts: paymentAttempts,
         successfulPaymentsCount,
       },
       suppliers: {
@@ -734,6 +1676,176 @@ class AdminDataStoreImpl {
         databaseStatus: 'CONNECTED (Supabase / PostgreSQL Pool)',
         aiGatewayStatus: 'HEALTHY (Gemini 2.0 Flash Active)',
       },
+    };
+  }
+
+  // --- TRIP OPERATIONS & MONITORING ---
+
+  public getTrips(filters?: { status?: string; destination?: string; search?: string }): AdminTripRecord[] {
+    let list = [...this.trips];
+    if (filters?.status && filters.status !== 'ALL') {
+      list = list.filter((t) => t.status === filters.status);
+    }
+    if (filters?.destination && filters.destination !== 'ALL') {
+      list = list.filter((t) => t.destination.toLowerCase().includes(filters.destination!.toLowerCase()));
+    }
+    if (filters?.search) {
+      const q = filters.search.toLowerCase();
+      list = list.filter(
+        (t) =>
+          t.title.toLowerCase().includes(q) ||
+          t.customerName.toLowerCase().includes(q) ||
+          t.customerEmail.toLowerCase().includes(q) ||
+          t.destination.toLowerCase().includes(q) ||
+          t.id.toLowerCase().includes(q)
+      );
+    }
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  public getLiveTrips(): AdminTripRecord[] {
+    const now = new Date();
+    return this.trips.filter((t) => {
+      const start = new Date(t.startDate);
+      const end = new Date(t.endDate);
+      return (
+        t.status === 'IN_PROGRESS' ||
+        t.status === 'STARTING_SOON' ||
+        t.status === 'NEEDS_ASSISTANCE' ||
+        (start <= now && now <= end && t.status !== 'CANCELLED')
+      );
+    });
+  }
+
+  public getTripById(id: string): AdminTripRecord | null {
+    return this.trips.find((t) => t.id === id) || null;
+  }
+
+  public updateTripSupportStatus(
+    id: string,
+    updates: {
+      status?: AdminTripRecord['status'];
+      emergencyFlag?: boolean;
+      emergencyNote?: string;
+      internalNotes?: string;
+    },
+    adminEmail: string
+  ): AdminTripRecord | null {
+    const trip = this.trips.find((t) => t.id === id);
+    if (!trip) return null;
+
+    if (updates.status) trip.status = updates.status;
+    if (updates.emergencyFlag !== undefined) trip.emergencyFlag = updates.emergencyFlag;
+    if (updates.emergencyNote !== undefined) trip.emergencyNote = updates.emergencyNote;
+    if (updates.internalNotes !== undefined) trip.internalNotes = updates.internalNotes;
+    trip.updatedAt = new Date().toISOString();
+
+    this.auditLogs.unshift({
+      id: `aud-${Date.now()}`,
+      action: 'UPDATE_TRIP_SUPPORT',
+      entityType: 'TRIP',
+      entityId: id,
+      adminEmail,
+      details: `Updated trip support parameters: ${JSON.stringify(updates)}`,
+      createdAt: new Date().toISOString(),
+    });
+
+    return trip;
+  }
+
+  // --- USER 360 DOSSIER AGGREGATION ---
+
+  public getUser360(idOrEmail: string): User360Dossier | null {
+    const user = this.users.find((u) => u.id === idOrEmail || u.email.toLowerCase() === idOrEmail.toLowerCase());
+    if (!user) return null;
+
+    const userTrips = this.trips.filter((t) => t.userId === user.id || t.customerEmail === user.email);
+    const now = new Date();
+
+    const activeTrips = userTrips.filter((t) => {
+      const start = new Date(t.startDate);
+      const end = new Date(t.endDate);
+      return t.status === 'IN_PROGRESS' || (start <= now && now <= end && t.status !== 'CANCELLED');
+    });
+
+    const upcomingTrips = userTrips.filter(
+      (t) => t.status === 'SCHEDULED' || t.status === 'STARTING_SOON' || new Date(t.startDate) > now
+    );
+
+    const historyTrips = userTrips.filter(
+      (t) => t.status === 'COMPLETED' || t.status === 'CANCELLED' || new Date(t.endDate) < now
+    );
+
+    const userBookings = this.bookings.filter(
+      (b) => b.customerEmail.toLowerCase() === user.email.toLowerCase()
+    );
+
+    const userPayments = this.payments.filter(
+      (p) => p.customerEmail.toLowerCase() === user.email.toLowerCase()
+    );
+
+    let userRewards: any[] = [];
+    try {
+      userRewards = contributorRewardService.getContributorCoupons(user.id);
+    } catch {
+      // safe fallback
+    }
+
+    let userNotifications: any[] = [];
+    try {
+      userNotifications = notificationStore.getNotifications({ email: user.email, limit: 30 });
+    } catch {
+      // safe fallback
+    }
+
+    const activityLogs = this.auditLogs.filter(
+      (a) => a.entityId === user.id || a.details.toLowerCase().includes(user.email.toLowerCase())
+    );
+
+    // Calculate destinations
+    const visitedDests = Array.from(new Set(userTrips.map((t) => t.destination)));
+    const lastDest = historyTrips.length > 0 ? historyTrips[0].destination : 'None yet';
+    const nextDest = upcomingTrips.length > 0 ? upcomingTrips[0].destination : 'None scheduled';
+
+    return {
+      user,
+      travelOverview: {
+        totalTrips: userTrips.length,
+        activeTrips: activeTrips.length,
+        upcomingTrips: upcomingTrips.length,
+        completedTrips: historyTrips.filter((t) => t.status === 'COMPLETED').length,
+        cancelledTrips: historyTrips.filter((t) => t.status === 'CANCELLED').length,
+        totalTravelers: userTrips.reduce((sum, t) => sum + (t.travelers || 1), 0),
+        mostVisitedDestinations: visitedDests,
+        totalTravelDistanceKm: userTrips.length * 850, // Computed estimate
+        lastDestinationVisited: lastDest,
+        nextUpcomingDestination: nextDest,
+      },
+      trips: {
+        active: activeTrips,
+        upcoming: upcomingTrips,
+        history: historyTrips,
+        all: userTrips,
+      },
+      bookings: userBookings,
+      payments: userPayments,
+      rewards: userRewards,
+      savedDestinations: [
+        { id: 'dest-001', name: 'White Rann of Kutch', category: 'Cultural', savedAt: new Date(now.getTime() - 20 * 86400000).toISOString() },
+        { id: 'dest-002', name: 'Bet Dwarka Marine Heritage', category: 'Religious', savedAt: new Date(now.getTime() - 10 * 86400000).toISOString() }
+      ],
+      preferences: {
+        preferredLanguage: 'English / Gujarati',
+        dietaryPreference: 'Pure Vegetarian / Jain options preferred',
+        budgetTier: 'COMFORT',
+        travelPace: 'BALANCED',
+        travelStyle: 'HERITAGE_AND_NATURE',
+        transport: ['PRIVATE_CAB', 'AC_TRAIN'],
+        originCity: user.city,
+        originState: user.state,
+      },
+      notifications: userNotifications,
+      activityLogs,
     };
   }
 

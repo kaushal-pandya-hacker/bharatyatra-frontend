@@ -1,6 +1,6 @@
 [
   {
-    "id": "d84f7d9e-c431-4814-9ccc-5ee52d0e534f",
+    "id": "c62a5ee5-8a89-43b4-be63-3bcb4dc804a0",
     "slug": "gadhvi-hidden-falls-ahwa",
     "name": "Gadhvi Hidden Falls",
     "category": "Waterfalls",
@@ -32,8 +32,8 @@
     "rating": 4.8,
     "totalReviews": 1,
     "isPublished": true,
-    "createdAt": "2026-11-16T05:59:13.376Z",
-    "updatedAt": "2026-11-16T05:59:13.376Z"
+    "createdAt": "2026-11-17T06:23:03.171Z",
+    "updatedAt": "2026-11-17T06:23:03.171Z"
   },
   {
     "id": "dfbd7083-6b71-4af5-8410-d5a4db4ad72e",
@@ -142,5 +142,41 @@
     "isPublished": true,
     "createdAt": "2026-11-16T05:59:13.979Z",
     "updatedAt": "2026-11-16T05:59:13.979Z"
+  },
+  {
+    "id": "df80ea8f-a280-445e-a93c-3eb48fabebba",
+    "slug": "polo-forest-ancient-ruins-idar",
+    "name": "Polo Forest Ancient Ruins",
+    "category": "Historical Places",
+    "country": "India",
+    "state": "Gujarat",
+    "district": "Sabarkantha",
+    "city": "Idar",
+    "address": "Polo Forest, Vijayanagar, Sabarkantha, Gujarat",
+    "latitude": 23.978,
+    "longitude": 73.284,
+    "shortDescription": "15th-century Jain and Shiva temples amidst dense dry deciduous forest.",
+    "description": "The ancient Polo forest is spread over 400 square kilometers near Vijayanagar. It was established around the 10th century by the Parihar kings of Idar and subsequently conquered by the Rathod Rajputs. The site features ruins of intricately carved 15th century Jain and Shiva shrines along the Harnav River.",
+    "primaryImageUrl": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800",
+    "images": [
+      "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800"
+    ],
+    "bestTimeToVisit": "September to February",
+    "entryFee": "Free",
+    "facilities": [],
+    "travelTips": [
+      "Nearest railway station is Himmatnagar (60km)"
+    ],
+    "nearbyAttractions": [],
+    "suitableFor": [],
+    "isCommunityContributed": true,
+    "contributedByName": "Pooja Patel",
+    "contributedById": "user-test-777",
+    "submissionId": "4b17fdbc-5704-456e-88f3-103780ef1604",
+    "rating": 4.8,
+    "totalReviews": 1,
+    "isPublished": true,
+    "createdAt": "2026-11-17T06:23:04.324Z",
+    "updatedAt": "2026-11-17T06:23:04.324Z"
   }
 ]
