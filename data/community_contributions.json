@@ -369,9 +369,417 @@
       "reviewedAt": "2026-11-17T06:23:04.324Z",
       "approvedPlaceId": "df80ea8f-a280-445e-a93c-3eb48fabebba",
       "approvedAt": "2026-11-17T06:23:04.324Z"
+    },
+    {
+      "id": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "contributorId": "user-test-777",
+      "contributorName": "Pooja Patel",
+      "contributorEmail": "pooja.patel@example.com",
+      "placeName": "Polo Forest Ancient Ruins",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Sabarkantha",
+      "city": "Idar",
+      "address": "Polo Forest, Vijayanagar, Sabarkantha, Gujarat",
+      "latitude": 23.978,
+      "longitude": 73.284,
+      "shortDescription": "15th-century Jain and Shiva temples amidst dense dry deciduous forest.",
+      "detailedDescription": "The ancient Polo forest is spread over 400 square kilometers near Vijayanagar. It was established around the 10th century by the Parihar kings of Idar and subsequently conquered by the Rathod Rajputs. The site features ruins of intricately carved 15th century Jain and Shiva shrines along the Harnav River.",
+      "photos": [
+        "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800"
+      ],
+      "bestTimeToVisit": "September to February",
+      "entryFee": "Free",
+      "parkingAvailable": false,
+      "facilities": [],
+      "travelTips": [
+        "Nearest railway station is Himmatnagar (60km)"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [],
+        "suggestedCorrections": [],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 1,
+          "passedFormatCheck": true,
+          "notes": "1 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-17T06:49:33.968Z"
+      },
+      "createdAt": "2026-11-17T06:49:33.793Z",
+      "updatedAt": "2026-11-17T06:49:33.970Z",
+      "submittedAt": "2026-11-17T06:49:33.793Z",
+      "reviewedBy": "qa@bharatyatra.in",
+      "reviewedAt": "2026-11-17T06:49:33.970Z",
+      "rewardCouponCode": "BHARAT7-F1424E",
+      "approvedPlaceId": "23a83631-6c37-4c1d-bd93-c5e8ac1c2151",
+      "approvedAt": "2026-11-17T06:49:33.970Z"
+    },
+    {
+      "id": "a1185f7f-c86e-40c6-80dd-37993897bc85",
+      "contributorId": "qa_user_1794898413933",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Ahmedabad",
+      "city": "Saragwala",
+      "address": "Lothal Archaeological Site, Saragwala, Gujarat 382220",
+      "latitude": 22.5224,
+      "longitude": 72.2494,
+      "shortDescription": "One of the most prominent cities of the ancient Indus Valley Civilization with world oldest tidal dockyard.",
+      "detailedDescription": "Discovered in 1954, Lothal holds the world oldest known port basin connecting the city to an ancient course of the Sabarmati river. Features bead-making factory and drainage system.",
+      "photos": [
+        "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80"
+      ],
+      "bestTimeToVisit": "October to March",
+      "estimatedVisitDuration": "3-4 hours",
+      "entryFee": "₹25 for Indian Citizens, ₹300 for Foreigners",
+      "openingHours": "10:00 AM - 5:00 PM (Closed on Fridays)",
+      "parkingAvailable": false,
+      "facilities": [
+        "Parking",
+        "Drinking Water",
+        "Restrooms",
+        "Museum"
+      ],
+      "travelTips": [
+        "Visit the ASI Archaeological Museum on site",
+        "Hire an authorized ASI guide"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [
+          "Submission contains suspected placeholder test string: \"test\""
+        ],
+        "suggestedCorrections": [
+          "Provide the authentic official place title and description."
+        ],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 2,
+          "passedFormatCheck": true,
+          "notes": "2 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-17T06:53:33.953Z"
+      },
+      "createdAt": "2026-11-17T06:53:33.954Z",
+      "updatedAt": "2026-11-17T06:53:34.368Z",
+      "submittedAt": "2026-11-17T06:53:33.954Z",
+      "rewardCouponCode": "BHARAT7-20077C",
+      "approvedPlaceId": "1cef5d90-efbd-4fbd-a7cf-8009138a0884",
+      "approvedAt": "2026-11-17T06:53:34.368Z",
+      "reviewedBy": "admin@bharatyatra.in",
+      "reviewedAt": "2026-11-17T06:53:34.368Z"
+    },
+    {
+      "id": "fdf0929d-b09a-4d54-ac54-9c6ff8f527d0",
+      "contributorId": "qa_user_1794898458712",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Ahmedabad",
+      "city": "Saragwala",
+      "address": "Lothal Archaeological Site, Saragwala, Gujarat 382220",
+      "latitude": 22.5224,
+      "longitude": 72.2494,
+      "shortDescription": "One of the most prominent cities of the ancient Indus Valley Civilization with world oldest tidal dockyard.",
+      "detailedDescription": "Discovered in 1954, Lothal holds the world oldest known port basin connecting the city to an ancient course of the Sabarmati river. Features bead-making factory and drainage system.",
+      "photos": [
+        "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80"
+      ],
+      "bestTimeToVisit": "October to March",
+      "estimatedVisitDuration": "3-4 hours",
+      "entryFee": "₹25 for Indian Citizens, ₹300 for Foreigners",
+      "openingHours": "10:00 AM - 5:00 PM (Closed on Fridays)",
+      "parkingAvailable": false,
+      "facilities": [
+        "Parking",
+        "Drinking Water",
+        "Restrooms",
+        "Museum"
+      ],
+      "travelTips": [
+        "Visit the ASI Archaeological Museum on site",
+        "Hire an authorized ASI guide"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [
+          "Submission contains suspected placeholder test string: \"test\""
+        ],
+        "suggestedCorrections": [
+          "Provide the authentic official place title and description."
+        ],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 2,
+          "passedFormatCheck": true,
+          "notes": "2 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-17T06:54:18.719Z"
+      },
+      "createdAt": "2026-11-17T06:54:18.720Z",
+      "updatedAt": "2026-11-17T06:54:19.120Z",
+      "submittedAt": "2026-11-17T06:54:18.720Z",
+      "rewardCouponCode": "BHARAT7-AD3A82",
+      "approvedPlaceId": "f0c82022-b9ac-409b-a914-c37539f1b415",
+      "approvedAt": "2026-11-17T06:54:19.120Z",
+      "reviewedBy": "admin@bharatyatra.in",
+      "reviewedAt": "2026-11-17T06:54:19.120Z"
+    },
+    {
+      "id": "74933568-6023-48d7-ae11-4e7c719e4ca1",
+      "contributorId": "qa_user_1794898473513",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Ahmedabad",
+      "city": "Saragwala",
+      "address": "Lothal Archaeological Site, Saragwala, Gujarat 382220",
+      "latitude": 22.5224,
+      "longitude": 72.2494,
+      "shortDescription": "One of the most prominent cities of the ancient Indus Valley Civilization with world oldest tidal dockyard.",
+      "detailedDescription": "Discovered in 1954, Lothal holds the world oldest known port basin connecting the city to an ancient course of the Sabarmati river. Features bead-making factory and drainage system.",
+      "photos": [
+        "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80"
+      ],
+      "bestTimeToVisit": "October to March",
+      "estimatedVisitDuration": "3-4 hours",
+      "entryFee": "₹25 for Indian Citizens, ₹300 for Foreigners",
+      "openingHours": "10:00 AM - 5:00 PM (Closed on Fridays)",
+      "parkingAvailable": false,
+      "facilities": [
+        "Parking",
+        "Drinking Water",
+        "Restrooms",
+        "Museum"
+      ],
+      "travelTips": [
+        "Visit the ASI Archaeological Museum on site",
+        "Hire an authorized ASI guide"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [
+          "Submission contains suspected placeholder test string: \"test\""
+        ],
+        "suggestedCorrections": [
+          "Provide the authentic official place title and description."
+        ],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 2,
+          "passedFormatCheck": true,
+          "notes": "2 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-17T06:54:33.517Z"
+      },
+      "createdAt": "2026-11-17T06:54:33.517Z",
+      "updatedAt": "2026-11-17T06:54:34.048Z",
+      "submittedAt": "2026-11-17T06:54:33.517Z",
+      "rewardCouponCode": "BHARAT7-5CACE2",
+      "approvedPlaceId": "4add36f8-eab0-4782-9ec6-0fac60e2e8ba",
+      "approvedAt": "2026-11-17T06:54:34.048Z",
+      "reviewedBy": "admin@bharatyatra.in",
+      "reviewedAt": "2026-11-17T06:54:34.048Z"
+    },
+    {
+      "id": "b70194b1-99cc-4cf5-86cc-1ac69bb8abab",
+      "contributorId": "qa_user_1794898480300",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "category": "Historical Places",
+      "country": "India",
+      "state": "Gujarat",
+      "district": "Ahmedabad",
+      "city": "Saragwala",
+      "address": "Lothal Archaeological Site, Saragwala, Gujarat 382220",
+      "latitude": 22.5224,
+      "longitude": 72.2494,
+      "shortDescription": "One of the most prominent cities of the ancient Indus Valley Civilization with world oldest tidal dockyard.",
+      "detailedDescription": "Discovered in 1954, Lothal holds the world oldest known port basin connecting the city to an ancient course of the Sabarmati river. Features bead-making factory and drainage system.",
+      "photos": [
+        "https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80"
+      ],
+      "bestTimeToVisit": "October to March",
+      "estimatedVisitDuration": "3-4 hours",
+      "entryFee": "₹25 for Indian Citizens, ₹300 for Foreigners",
+      "openingHours": "10:00 AM - 5:00 PM (Closed on Fridays)",
+      "parkingAvailable": false,
+      "facilities": [
+        "Parking",
+        "Drinking Water",
+        "Restrooms",
+        "Museum"
+      ],
+      "travelTips": [
+        "Visit the ASI Archaeological Museum on site",
+        "Hire an authorized ASI guide"
+      ],
+      "nearbyAttractions": [],
+      "suitableFor": [],
+      "status": "APPROVED",
+      "aiVerification": {
+        "riskLevel": "LOW",
+        "confidenceScore": 90,
+        "completenessScore": 100,
+        "detectedIssues": [
+          "Submission contains suspected placeholder test string: \"test\""
+        ],
+        "suggestedCorrections": [
+          "Provide the authentic official place title and description."
+        ],
+        "duplicateCandidates": [],
+        "locationSanity": {
+          "withinIndiaBounds": true,
+          "stateCoordinatesMatch": true
+        },
+        "imageSanity": {
+          "validCount": 2,
+          "passedFormatCheck": true,
+          "notes": "2 photo(s) uploaded and verified"
+        },
+        "generatedAt": "2026-11-17T06:54:40.304Z"
+      },
+      "createdAt": "2026-11-17T06:54:40.305Z",
+      "updatedAt": "2026-11-17T06:54:40.665Z",
+      "submittedAt": "2026-11-17T06:54:40.305Z",
+      "rewardCouponCode": "BHARAT7-FA2C71",
+      "approvedPlaceId": "c7d257a9-d103-4dfd-855f-b6f4ba7a412a",
+      "approvedAt": "2026-11-17T06:54:40.665Z",
+      "reviewedBy": "admin@bharatyatra.in",
+      "reviewedAt": "2026-11-17T06:54:40.665Z"
     }
   ],
   "reviews": [
+    {
+      "id": "6b32324b-0ab0-4210-a7a3-ee3ac561442e",
+      "submissionId": "b70194b1-99cc-4cf5-86cc-1ac69bb8abab",
+      "adminId": "admin_qa_001",
+      "adminEmail": "admin@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Verified authentic ASI heritage landmark with verified geo-coordinates.",
+      "createdAt": "2026-11-17T06:54:40.665Z"
+    },
+    {
+      "id": "0bcc3372-8913-42ab-9c95-17fc0afd2590",
+      "submissionId": "74933568-6023-48d7-ae11-4e7c719e4ca1",
+      "adminId": "admin_qa_001",
+      "adminEmail": "admin@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Verified authentic ASI heritage landmark with verified geo-coordinates.",
+      "createdAt": "2026-11-17T06:54:34.048Z"
+    },
+    {
+      "id": "58b3da0e-cbd8-41ed-b943-58a5281b2044",
+      "submissionId": "fdf0929d-b09a-4d54-ac54-9c6ff8f527d0",
+      "adminId": "admin_qa_001",
+      "adminEmail": "admin@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Verified authentic ASI heritage landmark with verified geo-coordinates.",
+      "createdAt": "2026-11-17T06:54:19.120Z"
+    },
+    {
+      "id": "aca7287f-2811-4c29-9846-54eaf5721dd9",
+      "submissionId": "a1185f7f-c86e-40c6-80dd-37993897bc85",
+      "adminId": "admin_qa_001",
+      "adminEmail": "admin@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Verified authentic ASI heritage landmark with verified geo-coordinates.",
+      "createdAt": "2026-11-17T06:53:34.368Z"
+    },
+    {
+      "id": "037c6583-3d25-4d65-9d60-5fbc97f88234",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "adminId": "admin-qa",
+      "adminEmail": "qa@bharatyatra.in",
+      "action": "APPROVE",
+      "previousStatus": "PENDING",
+      "newStatus": "APPROVED",
+      "reviewNotes": "Coordinates and details fully verified.",
+      "createdAt": "2026-11-17T06:49:33.970Z"
+    },
+    {
+      "id": "de6a5f50-4b6b-4114-8b8c-06ff17729138",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "adminId": "admin-qa",
+      "adminEmail": "qa@bharatyatra.in",
+      "action": "REQUEST_CHANGES",
+      "previousStatus": "UNDER_REVIEW",
+      "newStatus": "CHANGES_REQUESTED",
+      "reviewNotes": "Please clarify nearest railway station distance.",
+      "createdAt": "2026-11-17T06:49:33.868Z"
+    },
+    {
+      "id": "ea73aacb-3bc8-4665-9022-e00c83fb2adb",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "adminId": "admin-qa",
+      "adminEmail": "qa@bharatyatra.in",
+      "action": "CLAIM_REVIEW",
+      "previousStatus": "PENDING",
+      "newStatus": "UNDER_REVIEW",
+      "createdAt": "2026-11-17T06:49:33.867Z"
+    },
     {
       "id": "02b29fbe-2d53-4ec7-b0bf-d0e0949a773f",
       "submissionId": "4b17fdbc-5704-456e-88f3-103780ef1604",
@@ -523,6 +931,110 @@
     }
   ],
   "history": [
+    {
+      "id": "0d9e63f1-16f9-4170-a035-f3726ee40087",
+      "contributorId": "qa_user_1794898480300",
+      "submissionId": "b70194b1-99cc-4cf5-86cc-1ac69bb8abab",
+      "eventType": "APPROVED",
+      "description": "Administrator admin@bharatyatra.in performed action APPROVE: \"Verified authentic ASI heritage landmark with verified geo-coordinates.\".",
+      "createdAt": "2026-11-17T06:54:40.665Z"
+    },
+    {
+      "id": "d46f013a-07c1-4681-b3a1-f552d406d044",
+      "contributorId": "qa_user_1794898480300",
+      "submissionId": "b70194b1-99cc-4cf5-86cc-1ac69bb8abab",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"[QA TEST] Lothal Ancient Dockyard Heritage\" in Gujarat for verification.",
+      "createdAt": "2026-11-17T06:54:40.305Z"
+    },
+    {
+      "id": "401bf6d5-9c21-43aa-a3c5-87ed5f9e5603",
+      "contributorId": "qa_user_1794898473513",
+      "submissionId": "74933568-6023-48d7-ae11-4e7c719e4ca1",
+      "eventType": "APPROVED",
+      "description": "Administrator admin@bharatyatra.in performed action APPROVE: \"Verified authentic ASI heritage landmark with verified geo-coordinates.\".",
+      "createdAt": "2026-11-17T06:54:34.048Z"
+    },
+    {
+      "id": "8c3973ce-d928-4651-8629-042c915d5e94",
+      "contributorId": "qa_user_1794898473513",
+      "submissionId": "74933568-6023-48d7-ae11-4e7c719e4ca1",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"[QA TEST] Lothal Ancient Dockyard Heritage\" in Gujarat for verification.",
+      "createdAt": "2026-11-17T06:54:33.517Z"
+    },
+    {
+      "id": "c5c470f3-a82c-4786-b956-d10aa9ee85b3",
+      "contributorId": "qa_user_1794898458712",
+      "submissionId": "fdf0929d-b09a-4d54-ac54-9c6ff8f527d0",
+      "eventType": "APPROVED",
+      "description": "Administrator admin@bharatyatra.in performed action APPROVE: \"Verified authentic ASI heritage landmark with verified geo-coordinates.\".",
+      "createdAt": "2026-11-17T06:54:19.120Z"
+    },
+    {
+      "id": "1de7805e-9608-485e-9c06-0a37e7a00447",
+      "contributorId": "qa_user_1794898458712",
+      "submissionId": "fdf0929d-b09a-4d54-ac54-9c6ff8f527d0",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"[QA TEST] Lothal Ancient Dockyard Heritage\" in Gujarat for verification.",
+      "createdAt": "2026-11-17T06:54:18.720Z"
+    },
+    {
+      "id": "3accf78c-1c1b-4481-82e1-440bdc5f6bec",
+      "contributorId": "qa_user_1794898413933",
+      "submissionId": "a1185f7f-c86e-40c6-80dd-37993897bc85",
+      "eventType": "APPROVED",
+      "description": "Administrator admin@bharatyatra.in performed action APPROVE: \"Verified authentic ASI heritage landmark with verified geo-coordinates.\".",
+      "createdAt": "2026-11-17T06:53:34.368Z"
+    },
+    {
+      "id": "a58daf8a-1c03-40c9-b16c-309b7a3f6167",
+      "contributorId": "qa_user_1794898413933",
+      "submissionId": "a1185f7f-c86e-40c6-80dd-37993897bc85",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"[QA TEST] Lothal Ancient Dockyard Heritage\" in Gujarat for verification.",
+      "createdAt": "2026-11-17T06:53:33.954Z"
+    },
+    {
+      "id": "d39d77a0-90fd-4e6c-b552-65878f5e9b56",
+      "contributorId": "user-test-777",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "eventType": "APPROVED",
+      "description": "Administrator qa@bharatyatra.in performed action APPROVE: \"Coordinates and details fully verified.\".",
+      "createdAt": "2026-11-17T06:49:33.970Z"
+    },
+    {
+      "id": "ed72c3e7-804a-4be8-8e4c-33180ae39c5e",
+      "contributorId": "user-test-777",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "eventType": "RESUBMITTED",
+      "description": "Resubmitted destination \"Polo Forest Ancient Ruins\" with addressed revisions.",
+      "createdAt": "2026-11-17T06:49:33.967Z"
+    },
+    {
+      "id": "f8858848-9342-489a-b178-0a1067b46b82",
+      "contributorId": "user-test-777",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "eventType": "UPDATED",
+      "description": "Administrator qa@bharatyatra.in performed action REQUEST_CHANGES: \"Please clarify nearest railway station distance.\".",
+      "createdAt": "2026-11-17T06:49:33.868Z"
+    },
+    {
+      "id": "030853ea-4f9a-4b51-bbef-d06d9251b9ec",
+      "contributorId": "user-test-777",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "eventType": "UPDATED",
+      "description": "Administrator qa@bharatyatra.in performed action CLAIM_REVIEW.",
+      "createdAt": "2026-11-17T06:49:33.867Z"
+    },
+    {
+      "id": "85df2e25-6b42-4823-a894-85ad81deb058",
+      "contributorId": "user-test-777",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "eventType": "SUBMITTED",
+      "description": "Submitted new place \"Polo Forest Ancient Ruins\" in Gujarat for verification.",
+      "createdAt": "2026-11-17T06:49:33.793Z"
+    },
     {
       "id": "ab25bb4b-97b3-496a-abc8-94f86274c45d",
       "contributorId": "user-test-777",

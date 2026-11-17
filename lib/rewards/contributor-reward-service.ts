@@ -201,6 +201,12 @@ class ContributorRewardService {
     return coupon;
   }
 
+  public getCouponByCode(code: string): ContributorRewardCoupon | undefined {
+    this.ensureLoaded();
+    const cleanCode = (code || '').trim().toUpperCase();
+    return this.coupons.get(cleanCode);
+  }
+
   public getContributorCoupons(userId: string): ContributorRewardCoupon[] {
     this.ensureLoaded();
     const now = new Date();
@@ -274,6 +280,147 @@ class ContributorRewardService {
       couponId: coupon.id,
       adminId,
       action: 'REVOKED',
+      reason,
+      timestamp: new Date().toISOString(),
+    });
+
+    this.persist();
+    return true;
+  }
+
+  public validateCoupon(params: {
+    code: string;
+    userId?: string;
+    userEmail?: string;
+    bookingAmountInr: number;
+    category?: string;
+  }): {
+    valid: boolean;
+    error?: string;
+    coupon?: ContributorRewardCoupon;
+    discountPercent?: number;
+    discountAmountInr?: number;
+    finalAmountInr?: number;
+  } {
+    this.ensureLoaded();
+    const cleanCode = (params.code || '').trim().toUpperCase();
+    const coupon = this.coupons.get(cleanCode);
+
+    if (!coupon) {
+      return { valid: false, error: 'Invalid coupon code. Please verify the code entered.' };
+    }
+
+    const now = new Date();
+    if (new Date(coupon.validUntil) < now) {
+      coupon.status = 'EXPIRED';
+      this.persist();
+      return { valid: false, error: `Coupon ${cleanCode} expired on ${new Date(coupon.validUntil).toLocaleDateString('en-IN')}.` };
+    }
+
+    if (coupon.status === 'REDEEMED') {
+      return { valid: false, error: `Coupon ${cleanCode} has already been redeemed.` };
+    }
+
+    if (coupon.status === 'REVOKED') {
+      return { valid: false, error: `Coupon ${cleanCode} is no longer valid.` };
+    }
+
+    if (coupon.status !== 'ACTIVE') {
+      return { valid: false, error: `Coupon ${cleanCode} is not active (${coupon.status}).` };
+    }
+
+    // Ownership check (if userId or userEmail provided)
+    if (params.userId && coupon.contributorId) {
+      const matchId = coupon.contributorId.toLowerCase() === params.userId.toLowerCase();
+      const matchEmail = params.userEmail && coupon.contributorEmail
+        ? coupon.contributorEmail.toLowerCase() === params.userEmail.toLowerCase()
+        : false;
+      if (!matchId && !matchEmail) {
+        return {
+          valid: false,
+          error: `This 7% Contributor Reward is personal to ${coupon.contributorName} and cannot be used on another account.`,
+        };
+      }
+    }
+
+    // Minimum booking value
+    if (params.bookingAmountInr < coupon.minBookingInr) {
+      return {
+        valid: false,
+        error: `Minimum booking value of ₹${coupon.minBookingInr.toLocaleString('en-IN')} is required to apply this coupon.`,
+      };
+    }
+
+    // Calculate discount
+    const rawDiscount = Math.round((params.bookingAmountInr * coupon.discountPercent) / 100);
+    const discountAmountInr = Math.min(rawDiscount, coupon.maxDiscountInr);
+    const finalAmountInr = Math.max(0, params.bookingAmountInr - discountAmountInr);
+
+    return {
+      valid: true,
+      coupon,
+      discountPercent: coupon.discountPercent,
+      discountAmountInr,
+      finalAmountInr,
+    };
+  }
+
+  public redeemCoupon(params: {
+    code: string;
+    userId: string;
+    userEmail?: string;
+    bookingId: string;
+    bookingAmountInr: number;
+  }): { success: boolean; error?: string; discountSavedInr?: number; coupon?: ContributorRewardCoupon } {
+    this.ensureLoaded();
+    const val = this.validateCoupon({
+      code: params.code,
+      userId: params.userId,
+      userEmail: params.userEmail,
+      bookingAmountInr: params.bookingAmountInr,
+    });
+
+    if (!val.valid || !val.coupon) {
+      return { success: false, error: val.error || 'Coupon validation failed' };
+    }
+
+    const coupon = val.coupon;
+    const nowIso = new Date().toISOString();
+    coupon.status = 'REDEEMED';
+    coupon.redeemedAt = nowIso;
+    coupon.redeemedBookingId = params.bookingId;
+
+    this.auditLogs.unshift({
+      id: `log-${Date.now()}`,
+      couponId: coupon.id,
+      adminId: params.userId,
+      action: 'REDEEMED',
+      reason: `Applied to booking #${params.bookingId} - Saved ₹${val.discountAmountInr}`,
+      timestamp: nowIso,
+    });
+
+    this.persist();
+    return {
+      success: true,
+      discountSavedInr: val.discountAmountInr,
+      coupon,
+    };
+  }
+
+  public releaseCoupon(code: string, reason: string): boolean {
+    this.ensureLoaded();
+    const coupon = this.coupons.get(code.trim().toUpperCase());
+    if (!coupon || coupon.status !== 'REDEEMED') return false;
+
+    coupon.status = 'ACTIVE';
+    delete coupon.redeemedAt;
+    delete coupon.redeemedBookingId;
+
+    this.auditLogs.unshift({
+      id: `log-${Date.now()}`,
+      couponId: coupon.id,
+      adminId: 'SYSTEM_ROLLBACK',
+      action: 'RELEASED',
       reason,
       timestamp: new Date().toISOString(),
     });

@@ -5,6 +5,8 @@
 
 import { PlaceSubmission, PlaceReviewRecord, ContributionHistoryRecord } from './types';
 import { notificationStore } from '@/lib/notifications/notification-store';
+import { contributorRewardService } from '@/lib/rewards/contributor-reward-service';
+import { dispatchApprovalRewardNotifications } from '@/lib/notifications/reward-notification';
 import crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -83,6 +85,8 @@ export class DestinationPublishingEngine {
     destination: PublishedDestinationRecord;
     reviewRecord: PlaceReviewRecord;
     historyRecord: ContributionHistoryRecord;
+    rewardCoupon?: any;
+    notificationResult?: any;
   }> {
     // 1. Idempotency Check: Already approved
     if (submission.status === 'APPROVED' && submission.approvedPlaceId) {
@@ -227,7 +231,43 @@ export class DestinationPublishingEngine {
       createdAt: nowIso,
     };
 
-    // 6. Send In-App Notification to Contributor
+    // 6. Automatically Issue 7% Contributor Reward Coupon
+    let rewardCoupon: any = null;
+    try {
+      rewardCoupon = contributorRewardService.issueApprovalReward({
+        id: submission.id,
+        contributorId: submission.contributorId,
+        contributorName: submission.contributorName,
+        contributorEmail: submission.contributorEmail || 'traveler@bharatyatra.in',
+        placeName: submission.placeName,
+      });
+      // Attach reward code to submission
+      submission.rewardCouponCode = rewardCoupon.code;
+    } catch (rewErr) {
+      console.warn('[PublishingEngine] Reward issuance error (non-fatal):', rewErr);
+    }
+
+    // 7. Dispatch Multi-Channel Notifications (In-App, WhatsApp, Email)
+    let notificationResult: any = null;
+    if (rewardCoupon) {
+      try {
+        notificationResult = await dispatchApprovalRewardNotifications({
+          contributorId: submission.contributorId,
+          contributorName: submission.contributorName,
+          contributorEmail: submission.contributorEmail || 'traveler@bharatyatra.in',
+          contributorPhone: submission.contributorPhone,
+          placeName: submission.placeName,
+          couponCode: rewardCoupon.code,
+          discountPercent: rewardCoupon.discountPercent || 7,
+          validUntil: rewardCoupon.validUntil,
+          destinationSlug: slug,
+        });
+      } catch (notifErr) {
+        console.warn('[PublishingEngine] Reward notification dispatch error (non-fatal):', notifErr);
+      }
+    }
+
+    // 8. Send General Publication In-App Notification
     try {
       await notificationStore.createNotification({
         userId: submission.contributorId,
@@ -242,6 +282,7 @@ export class DestinationPublishingEngine {
           destinationId,
           slug,
           placeName: submission.placeName,
+          rewardCouponCode: rewardCoupon?.code,
         },
       });
     } catch (notifErr) {
@@ -253,6 +294,8 @@ export class DestinationPublishingEngine {
       destination: publishedRecord,
       reviewRecord,
       historyRecord,
+      rewardCoupon,
+      notificationResult,
     };
   }
 }

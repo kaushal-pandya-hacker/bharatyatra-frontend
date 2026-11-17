@@ -69,6 +69,7 @@ export interface PlaceSubmission {
   contributorId: string;
   contributorName: string;
   contributorEmail?: string;
+  contributorPhone?: string;
   placeName: string;
   category: ContributionCategory;
   country: string;
@@ -97,6 +98,7 @@ export interface PlaceSubmission {
   adminFeedback?: string;
   rejectionReason?: string;
   approvedPlaceId?: string;
+  rewardCouponCode?: string;
   reviewedBy?: string;
   aiVerification?: AiVerificationReport;
   createdAt: string;
@@ -208,8 +210,9 @@ export interface PlaceSubmissionSummary {
   photo_count: number;
   is_hidden_gem?: boolean;
   rejection_reason?: string;
-  approved_at?: string;
   approved_place_id?: string;
+  reward_coupon_code?: string;
+  approved_at?: string;
 }
 
 export interface PlaceSubmissionDossier {

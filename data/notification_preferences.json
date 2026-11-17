@@ -38,5 +38,45 @@
     "reviewResponses": true,
     "marketingNotifications": false,
     "updatedAt": "2026-11-13T14:30:46.288Z"
+  },
+  {
+    "userId": "qa_user_1794898413933",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-17T06:53:34.367Z"
+  },
+  {
+    "userId": "qa_user_1794898458712",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-17T06:54:19.119Z"
+  },
+  {
+    "userId": "qa_user_1794898473513",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-17T06:54:34.047Z"
+  },
+  {
+    "userId": "qa_user_1794898480300",
+    "pushEnabled": true,
+    "tripNotifications": true,
+    "bookingNotifications": true,
+    "tripCompletion": true,
+    "reviewResponses": true,
+    "marketingNotifications": false,
+    "updatedAt": "2026-11-17T06:54:40.663Z"
   }
 ]

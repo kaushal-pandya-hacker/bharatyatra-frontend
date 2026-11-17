@@ -81,9 +81,297 @@
       "validFrom": "2026-11-17T06:22:57.292Z",
       "validUntil": "2027-02-15T06:22:57.292Z",
       "createdAt": "2026-11-17T06:22:57.292Z"
+    },
+    {
+      "id": "rew-1794898172920-bcf5",
+      "code": "BHARAT7-193CF4",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-1794898172920",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T06:49:32.920Z",
+      "validUntil": "2027-02-15T06:49:32.920Z",
+      "createdAt": "2026-11-17T06:49:32.920Z"
+    },
+    {
+      "id": "rew-1794898173067-91be",
+      "code": "BHARAT7-0BE498",
+      "contributorId": "user-arch-001",
+      "contributorName": "Aarav Sharma",
+      "contributorEmail": "aarav.sharma@example.com",
+      "submissionId": "test-sub-101",
+      "placeName": "Gadhvi Hidden Falls",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T06:49:33.067Z",
+      "validUntil": "2027-02-15T06:49:33.067Z",
+      "createdAt": "2026-11-17T06:49:33.067Z"
+    },
+    {
+      "id": "rew-1794898173971-8950",
+      "code": "BHARAT7-F1424E",
+      "contributorId": "user-test-777",
+      "contributorName": "Pooja Patel",
+      "contributorEmail": "pooja.patel@example.com",
+      "submissionId": "eba64522-7883-4890-9fc5-585d9b081ce7",
+      "placeName": "Polo Forest Ancient Ruins",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T06:49:33.971Z",
+      "validUntil": "2027-02-15T06:49:33.971Z",
+      "createdAt": "2026-11-17T06:49:33.971Z"
+    },
+    {
+      "id": "rew-1794898183786-b238",
+      "code": "BHARAT7-832671",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-1794898183786",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T06:49:43.786Z",
+      "validUntil": "2027-02-15T06:49:43.786Z",
+      "createdAt": "2026-11-17T06:49:43.786Z"
+    },
+    {
+      "id": "rew-1794898414370-d9d8",
+      "code": "BHARAT7-20077C",
+      "contributorId": "qa_user_1794898413933",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "submissionId": "a1185f7f-c86e-40c6-80dd-37993897bc85",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T06:53:34.370Z",
+      "validUntil": "2027-02-15T06:53:34.370Z",
+      "createdAt": "2026-11-17T06:53:34.370Z"
+    },
+    {
+      "id": "rew-1794898459123-89cd",
+      "code": "BHARAT7-AD3A82",
+      "contributorId": "qa_user_1794898458712",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "submissionId": "fdf0929d-b09a-4d54-ac54-9c6ff8f527d0",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T06:54:19.123Z",
+      "validUntil": "2027-02-15T06:54:19.123Z",
+      "createdAt": "2026-11-17T06:54:19.123Z"
+    },
+    {
+      "id": "rew-1794898474050-8550",
+      "code": "BHARAT7-5CACE2",
+      "contributorId": "qa_user_1794898473513",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "submissionId": "74933568-6023-48d7-ae11-4e7c719e4ca1",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T06:54:34.050Z",
+      "validUntil": "2027-02-15T06:54:34.050Z",
+      "createdAt": "2026-11-17T06:54:34.050Z"
+    },
+    {
+      "id": "rew-1794898480298-8220",
+      "code": "BHARAT7-DC339D",
+      "contributorId": "usr-kaushal-01",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "pandyakaushal294@gmail.com",
+      "submissionId": "plc-test-1794898480298",
+      "placeName": "Saputara Sunset Point",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "REVOKED",
+      "validFrom": "2026-11-17T06:54:40.298Z",
+      "validUntil": "2027-02-15T06:54:40.298Z",
+      "createdAt": "2026-11-17T06:54:40.298Z"
+    },
+    {
+      "id": "rew-1794898480667-b517",
+      "code": "BHARAT7-FA2C71",
+      "contributorId": "qa_user_1794898480300",
+      "contributorName": "Kaushal Pandya",
+      "contributorEmail": "kaushal.pandya@bharatyatra.in",
+      "submissionId": "b70194b1-99cc-4cf5-86cc-1ac69bb8abab",
+      "placeName": "[QA TEST] Lothal Ancient Dockyard Heritage",
+      "discountPercent": 7,
+      "maxDiscountInr": 2000,
+      "minBookingInr": 2500,
+      "status": "ACTIVE",
+      "validFrom": "2026-11-17T06:54:40.667Z",
+      "validUntil": "2027-02-15T06:54:40.667Z",
+      "createdAt": "2026-11-17T06:54:40.667Z"
     }
   ],
   "auditLogs": [
+    {
+      "id": "log-1794898480967",
+      "couponId": "rew-1794898480667-b517",
+      "adminId": "SYSTEM_ROLLBACK",
+      "action": "RELEASED",
+      "reason": "Payment gateway simulation timeout recovery",
+      "timestamp": "2026-11-17T06:54:40.967Z"
+    },
+    {
+      "id": "log-1794898480967",
+      "couponId": "rew-1794898480667-b517",
+      "adminId": "qa_user_1794898480300",
+      "action": "REDEEMED",
+      "reason": "Applied to booking #BK-QA-77291 - Saved ₹700",
+      "timestamp": "2026-11-17T06:54:40.967Z"
+    },
+    {
+      "id": "log-1794898480667",
+      "couponId": "rew-1794898480667-b517",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: [QA TEST] Lothal Ancient Dockyard Heritage",
+      "timestamp": "2026-11-17T06:54:40.667Z"
+    },
+    {
+      "id": "log-1794898480299",
+      "couponId": "rew-1794898480298-8220",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T06:54:40.299Z"
+    },
+    {
+      "id": "log-1794898480298",
+      "couponId": "rew-1794898480298-8220",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T06:54:40.298Z"
+    },
+    {
+      "id": "log-1794898474317",
+      "couponId": "rew-1794898474050-8550",
+      "adminId": "SYSTEM_ROLLBACK",
+      "action": "RELEASED",
+      "reason": "Payment gateway simulation timeout recovery",
+      "timestamp": "2026-11-17T06:54:34.317Z"
+    },
+    {
+      "id": "log-1794898474316",
+      "couponId": "rew-1794898474050-8550",
+      "adminId": "qa_user_1794898473513",
+      "action": "REDEEMED",
+      "reason": "Applied to booking #BK-QA-77291 - Saved ₹700",
+      "timestamp": "2026-11-17T06:54:34.316Z"
+    },
+    {
+      "id": "log-1794898474050",
+      "couponId": "rew-1794898474050-8550",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: [QA TEST] Lothal Ancient Dockyard Heritage",
+      "timestamp": "2026-11-17T06:54:34.050Z"
+    },
+    {
+      "id": "log-1794898459387",
+      "couponId": "rew-1794898459123-89cd",
+      "adminId": "SYSTEM_ROLLBACK",
+      "action": "RELEASED",
+      "reason": "Payment gateway simulation timeout recovery",
+      "timestamp": "2026-11-17T06:54:19.387Z"
+    },
+    {
+      "id": "log-1794898459386",
+      "couponId": "rew-1794898459123-89cd",
+      "adminId": "qa_user_1794898458712",
+      "action": "REDEEMED",
+      "reason": "Applied to booking #BK-QA-77291 - Saved ₹700",
+      "timestamp": "2026-11-17T06:54:19.386Z"
+    },
+    {
+      "id": "log-1794898459123",
+      "couponId": "rew-1794898459123-89cd",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: [QA TEST] Lothal Ancient Dockyard Heritage",
+      "timestamp": "2026-11-17T06:54:19.123Z"
+    },
+    {
+      "id": "log-1794898414370",
+      "couponId": "rew-1794898414370-d9d8",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: [QA TEST] Lothal Ancient Dockyard Heritage",
+      "timestamp": "2026-11-17T06:53:34.370Z"
+    },
+    {
+      "id": "log-1794898183787",
+      "couponId": "rew-1794898183786-b238",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T06:49:43.787Z"
+    },
+    {
+      "id": "log-1794898183786",
+      "couponId": "rew-1794898183786-b238",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T06:49:43.786Z"
+    },
+    {
+      "id": "log-1794898173971",
+      "couponId": "rew-1794898173971-8950",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Polo Forest Ancient Ruins",
+      "timestamp": "2026-11-17T06:49:33.971Z"
+    },
+    {
+      "id": "log-1794898173067",
+      "couponId": "rew-1794898173067-91be",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Gadhvi Hidden Falls",
+      "timestamp": "2026-11-17T06:49:33.067Z"
+    },
+    {
+      "id": "log-1794898172921",
+      "couponId": "rew-1794898172920-bcf5",
+      "adminId": "admin@bharatyatra.com",
+      "action": "REVOKED",
+      "reason": "Duplicate place entry detected by verification committee",
+      "timestamp": "2026-11-17T06:49:32.921Z"
+    },
+    {
+      "id": "log-1794898172920",
+      "couponId": "rew-1794898172920-bcf5",
+      "adminId": "SYSTEM_APPROVAL",
+      "action": "ISSUED",
+      "reason": "Approved place contribution: Saputara Sunset Point",
+      "timestamp": "2026-11-17T06:49:32.920Z"
+    },
     {
       "id": "log-1794896577293",
       "couponId": "rew-1794896577292-3133",
@@ -146,5 +434,5 @@
     ],
     "autoRewardEnabled": true
   },
-  "updatedAt": "2026-11-17T06:22:57.293Z"
+  "updatedAt": "2026-11-17T06:54:40.967Z"
 }

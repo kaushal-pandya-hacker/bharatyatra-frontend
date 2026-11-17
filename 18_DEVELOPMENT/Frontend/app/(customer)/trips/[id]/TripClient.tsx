@@ -394,7 +394,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
             </Link>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink min-w-0">
+          <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 min-w-0 flex-1 overflow-x-auto no-scrollbar py-1">
             <Link
               href={`/trips/${tripId}`}
               className="px-2.5 xl:px-3 py-1.5 xl:py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs whitespace-nowrap shrink-0 shadow-xs"
@@ -431,7 +431,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto z-10">
             <a
               className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-800 border border-slate-200 shrink-0 whitespace-nowrap shadow-xs"
               href="tel:+919624282521"

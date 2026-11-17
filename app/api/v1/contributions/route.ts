@@ -39,10 +39,30 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status') as ContributionStatus | null;
 
-    const submissions = await contributionService.getUserContributions(
+    const rawSubmissions = await contributionService.getUserContributions(
       user.id,
       statusParam || undefined
     );
+
+    const submissions = rawSubmissions.map((s) => ({
+      ...s,
+      id: s.id,
+      name: s.placeName,
+      category: s.category,
+      state: s.state,
+      district: s.district,
+      city: s.city,
+      contributor_name: s.contributorName,
+      contributor_email: s.contributorEmail,
+      submitted_at: s.createdAt,
+      status: s.status,
+      primary_photo_url: s.photos?.[0] || '',
+      photo_count: s.photos?.length || 0,
+      rejection_reason: s.rejectionReason,
+      approved_place_id: s.approvedPlaceId,
+      reward_coupon_code: s.rewardCouponCode,
+      approved_at: s.updatedAt,
+    }));
 
     return NextResponse.json({
       success: true,

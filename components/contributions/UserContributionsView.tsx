@@ -419,6 +419,32 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
                         </div>
                       )}
 
+                      {/* Reward Coupon Card */}
+                      {item.status === 'APPROVED' && (item.reward_coupon_code || (item as any).rewardCouponCode) && (
+                        <div className="mb-2 p-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 flex items-center justify-between gap-2 shadow-2xs">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-base shrink-0">🎁</span>
+                            <div className="min-w-0">
+                              <div className="text-[10px] uppercase font-black text-amber-800 tracking-wider">7% Contributor Reward</div>
+                              <code className="text-xs font-black font-mono text-slate-900 bg-white/90 px-1.5 py-0.5 rounded border border-amber-300 block truncate">
+                                {item.reward_coupon_code || (item as any).rewardCouponCode}
+                              </code>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const code = item.reward_coupon_code || (item as any).rewardCouponCode || '';
+                              navigator.clipboard.writeText(code);
+                              alert(`Coupon ${code} copied! Apply at checkout for 7% off your next booking.`);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg shadow-2xs transition-colors shrink-0 cursor-pointer"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      )}
+
                       {/* Dates Ledger */}
                       <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold pt-2 border-t border-slate-100">
                         <span>Submitted: {new Date(item.submitted_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
@@ -520,6 +546,30 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
                       <Image src={p} alt={`Photo ${idx + 1}`} fill className="object-cover" />
                     </div>
                   ))}
+                </div>
+              )}
+
+              {inspectSubmission.status === 'APPROVED' && (inspectSubmission.rewardCouponCode || inspectSubmission.reward_coupon_code) && (
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 text-amber-950 flex items-center justify-between gap-3 shadow-xs">
+                  <div>
+                    <div className="font-black text-amber-900 flex items-center gap-1.5 text-xs">
+                      <span>🎁 7% Contributor Discount Reward Activated</span>
+                    </div>
+                    <div className="text-[11px] text-amber-800 mt-0.5">
+                      Code: <code className="font-mono font-black text-slate-900 bg-white px-2 py-0.5 rounded border border-amber-300">{inspectSubmission.rewardCouponCode || inspectSubmission.reward_coupon_code}</code>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const code = inspectSubmission.rewardCouponCode || inspectSubmission.reward_coupon_code;
+                      navigator.clipboard.writeText(code);
+                      alert(`Coupon ${code} copied!`);
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl shadow-xs transition-colors shrink-0"
+                  >
+                    Copy Code
+                  </button>
                 </div>
               )}
 
