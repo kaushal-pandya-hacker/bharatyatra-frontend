@@ -425,15 +425,6 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                 </span>
               </div>
             </Link>
-            <div className="hidden min-[1680px]:flex items-center gap-space-sm pl-space-md shrink-0">
-              <div className="flex items-center gap-space-xs px-3 py-1 rounded-full bg-amber-400/20 text-slate-900 border border-amber-400/30 whitespace-nowrap">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                <span className="text-xs font-bold whitespace-nowrap">Active Expedition:</span>
-                <span className="text-xs text-slate-800 font-medium truncate max-w-xs">
-                  {displayTitle} ({travelersCount} Traveler{travelersCount === 1 ? '' : 's'})
-                </span>
-              </div>
-            </div>
           </div>
 
           <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink min-w-0">
@@ -447,28 +438,29 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
               href="/trips/road-trip"
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden xl:inline">Road Trip &amp; Vehicle</span>
-              <span className="xl:hidden">Road Trip</span>
+              <span className="hidden 2xl:inline">Road Trip &amp; Vehicle</span>
+              <span className="2xl:hidden">Road Trip</span>
             </Link>
             <Link
               href={`/trips/${tripId}/cost`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden xl:inline">Cost &amp; Intelligence</span>
-              <span className="xl:hidden">Cost &amp; Intel</span>
+              <span className="hidden 2xl:inline">Cost &amp; Intelligence</span>
+              <span className="2xl:hidden">Cost &amp; Intel</span>
             </Link>
             <Link
               href={`/trips/${tripId}/expenses`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              Group Splitter
+              <span className="hidden 2xl:inline">Group Splitter</span>
+              <span className="2xl:hidden">Splitter</span>
             </Link>
             <Link
               href={`/trips/${tripId}/settle`}
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden xl:inline">Settlement Optimizer</span>
-              <span className="xl:hidden">Settlements</span>
+              <span className="hidden 2xl:inline">Settlement Optimizer</span>
+              <span className="2xl:hidden">Settlements</span>
             </Link>
           </nav>
 
@@ -486,7 +478,7 @@ function TripCommandCenterContent({ params }: { params?: { id?: string } } = {})
                 <span className="text-xs font-black tracking-tight text-slate-900 whitespace-nowrap">+91 96242 82521</span>
               </div>
             </a>
-            <Link href="/profile" className="flex items-center gap-2 group shrink-0 whitespace-nowrap">
+            <Link href="/profile" className="flex items-center gap-2 group shrink-0 whitespace-nowrap" title="My Profile">
               <div className="flex flex-col text-right hidden 2xl:flex leading-tight whitespace-nowrap shrink-0">
                 <span className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors whitespace-nowrap">
                   {user?.fullName || 'Traveler'}

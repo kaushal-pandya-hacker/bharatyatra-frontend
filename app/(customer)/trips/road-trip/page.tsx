@@ -34,13 +34,6 @@ export default function IntelligentRoadTripPage() {
                 </span>
               </div>
             </Link>
-            <div className="hidden min-[1680px]:flex items-center gap-space-sm pl-space-md shrink-0">
-              <div className="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-container/20 text-on-surface">
-                <span className="w-2 h-2 rounded-full bg-primary-container"></span>
-                <span className="font-label-md text-label-md font-semibold">Active Expedition:</span>
-                <span className="font-body-sm text-body-sm text-on-surface font-medium">Kutch &amp; Saurashtra Circuit (10 Travelers)</span>
-              </div>
-            </div>
           </div>
 
           <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink min-w-0">
@@ -54,28 +47,29 @@ export default function IntelligentRoadTripPage() {
               href="/trips/road-trip"
               className="px-2.5 xl:px-3 py-1.5 xl:py-2 transition-colors bg-amber-400 text-slate-950 font-bold rounded-lg text-xs whitespace-nowrap shrink-0 shadow-xs"
             >
-              <span className="hidden xl:inline">Road Trip &amp; Vehicle</span>
-              <span className="xl:hidden">Road Trip</span>
+              <span className="hidden 2xl:inline">Road Trip &amp; Vehicle</span>
+              <span className="2xl:hidden">Road Trip</span>
             </Link>
             <Link
               href="/trips/1/cost"
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden xl:inline">Cost &amp; Intelligence</span>
-              <span className="xl:hidden">Cost &amp; Intel</span>
+              <span className="hidden 2xl:inline">Cost &amp; Intelligence</span>
+              <span className="2xl:hidden">Cost &amp; Intel</span>
             </Link>
             <Link
               href="/trips/1/expenses"
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              Group Splitter
+              <span className="hidden 2xl:inline">Group Splitter</span>
+              <span className="2xl:hidden">Splitter</span>
             </Link>
             <Link
               href="/trips/1/settle"
               className="px-2 xl:px-2.5 py-1.5 xl:py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium rounded-lg text-xs whitespace-nowrap shrink-0"
             >
-              <span className="hidden xl:inline">Settlement Optimizer</span>
-              <span className="xl:hidden">Settlements</span>
+              <span className="hidden 2xl:inline">Settlement Optimizer</span>
+              <span className="2xl:hidden">Settlements</span>
             </Link>
           </nav>
 
