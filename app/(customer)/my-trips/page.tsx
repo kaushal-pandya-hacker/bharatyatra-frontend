@@ -36,7 +36,7 @@ export default function MyTripsPage() {
 }
 
 function MyTripsContent() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [trips, setTrips] = useState<TripItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showGuide, setShowGuide] = useState(true);
@@ -50,14 +50,14 @@ function MyTripsContent() {
         const pendingRaw = localStorage.getItem('chalo_farva_pending_trip');
         if (pendingRaw) {
           const pendingTrip: TripItem = JSON.parse(pendingRaw);
-          saveTrip(pendingTrip);
+          saveTrip(pendingTrip, user?.id);
           localStorage.removeItem('chalo_farva_pending_trip');
         }
       } catch {}
 
       // 2. Fetch authenticated user trips from API or local storage
       try {
-        const loaded = await fetchUserTripsFromApi((user as any)?.token);
+        const loaded = await fetchUserTripsFromApi(token || undefined, user?.id);
         if (isMounted) {
           const cleanTrips = loaded.filter(
             (t) => t && t.tripId && !t.tripId.startsWith('demo-trip-') && !t.title?.includes('Sabarkantha')
@@ -66,7 +66,7 @@ function MyTripsContent() {
         }
       } catch (err) {
         if (isMounted) {
-          setTrips(getSavedTrips());
+          setTrips(getSavedTrips(user?.id));
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -78,10 +78,10 @@ function MyTripsContent() {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user?.id, token]);
 
   const handleDelete = (tripId: string) => {
-    const updated = deleteSavedTrip(tripId);
+    const updated = deleteSavedTrip(tripId, user?.id);
     setTrips(updated);
   };
 

@@ -1,0 +1,642 @@
+{
+  "profiles": [
+    [
+      "usr_alpha_1795016070968",
+      {
+        "id": "usr_alpha_1795016070968",
+        "email": "usr_alpha_1795016070968@bharatyatra.in",
+        "fullName": "Aarav Mehta",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-18T15:34:31.650Z",
+        "updatedAt": "2026-11-18T15:34:31.650Z",
+        "phoneNumber": "+91 9876543210"
+      }
+    ],
+    [
+      "usr_returning_30d_1795016073157",
+      {
+        "id": "usr_returning_30d_1795016073157",
+        "email": "usr_returning_30d_1795016073157@bharatyatra.in",
+        "fullName": "Vikramaditya Solanki",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-18T15:34:33.233Z",
+        "updatedAt": "2026-11-18T15:34:33.233Z"
+      }
+    ],
+    [
+      "usr_alpha_1795016175149",
+      {
+        "id": "usr_alpha_1795016175149",
+        "email": "usr_alpha_1795016175149@bharatyatra.in",
+        "fullName": "Aarav Mehta",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-18T15:36:15.810Z",
+        "updatedAt": "2026-11-18T15:36:15.810Z",
+        "phoneNumber": "+91 9876543210"
+      }
+    ],
+    [
+      "usr_returning_30d_1795016177208",
+      {
+        "id": "usr_returning_30d_1795016177208",
+        "email": "usr_returning_30d_1795016177208@bharatyatra.in",
+        "fullName": "Vikramaditya Solanki",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-18T15:36:17.294Z",
+        "updatedAt": "2026-11-18T15:36:17.294Z"
+      }
+    ],
+    [
+      "usr_alpha_1795016350396",
+      {
+        "id": "usr_alpha_1795016350396",
+        "email": "usr_alpha_1795016350396@bharatyatra.in",
+        "fullName": "Aarav Mehta",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-18T15:39:11.081Z",
+        "updatedAt": "2026-11-18T15:39:11.081Z",
+        "phoneNumber": "+91 9876543210"
+      }
+    ],
+    [
+      "usr_returning_30d_1795016352987",
+      {
+        "id": "usr_returning_30d_1795016352987",
+        "email": "usr_returning_30d_1795016352987@bharatyatra.in",
+        "fullName": "Vikramaditya Solanki",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-18T15:39:13.092Z",
+        "updatedAt": "2026-11-18T15:39:13.092Z"
+      }
+    ]
+  ],
+  "trips": [
+    [
+      "trip-deploy-1795016071893",
+      {
+        "id": "trip-deploy-1795016071893",
+        "userId": "usr_alpha_1795016070968",
+        "title": "Pre-Deployment Pilgrimage",
+        "destination": "Palitana",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:34:31.994Z",
+        "updatedAt": "2026-11-18T15:34:31.994Z"
+      }
+    ],
+    [
+      "trip-legacy-v1-1795016072098",
+      {
+        "id": "trip-legacy-v1-1795016072098",
+        "userId": "usr_alpha_1795016070968",
+        "title": "Legacy Ahmedabad Heritage Walk",
+        "destination": "Ahmedabad",
+        "durationDays": 1,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "COMPLETED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:34:32.195Z",
+        "updatedAt": "2026-11-18T15:34:32.195Z"
+      }
+    ],
+    [
+      "trip-cross-dev-1795016072276",
+      {
+        "id": "trip-cross-dev-1795016072276",
+        "userId": "usr_alpha_1795016070968",
+        "title": "Device A Created: Champaner UNESCO Tour",
+        "destination": "Champaner",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": 9500,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:34:32.432Z",
+        "updatedAt": "2026-11-18T15:34:32.432Z"
+      }
+    ],
+    [
+      "trip-alpha-private-1795016072565",
+      {
+        "id": "trip-alpha-private-1795016072565",
+        "userId": "usr_alpha_1795016070968",
+        "title": "Confidential Honeymoon in Udaipur",
+        "destination": "Udaipur",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:34:32.665Z",
+        "updatedAt": "2026-11-18T15:34:32.665Z"
+      }
+    ],
+    [
+      "trip-beta-private-1795016072666",
+      {
+        "id": "trip-beta-private-1795016072666",
+        "userId": "usr_beta_1795016070968",
+        "title": "Solo Trek in Himalayas",
+        "destination": "Manali",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:34:32.785Z",
+        "updatedAt": "2026-11-18T15:34:32.785Z"
+      }
+    ],
+    [
+      "trip-1795016176024-xtuyq",
+      {
+        "id": "trip-1795016176024-xtuyq",
+        "userId": "usr_alpha_1795016175149",
+        "title": "Gir Lion Safari & Diu Beach",
+        "destination": "Sasan Gir",
+        "destinationCity": "Sasan Gir",
+        "originCity": "Surat",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": 32000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {
+          "days": [
+            {
+              "day": 1,
+              "title": "Arrival at Sasan Gir",
+              "activity": "Jeep Safari Booking"
+            },
+            {
+              "day": 2,
+              "title": "Asiatic Lion Trail",
+              "activity": "Morning Wilderness Safari"
+            }
+          ]
+        },
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:36:16.024Z",
+        "updatedAt": "2026-11-18T15:36:16.024Z"
+      }
+    ],
+    [
+      "trip-deploy-1795016176027",
+      {
+        "id": "trip-deploy-1795016176027",
+        "userId": "usr_alpha_1795016175149",
+        "title": "Pre-Deployment Pilgrimage",
+        "destination": "Palitana",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:36:16.114Z",
+        "updatedAt": "2026-11-18T15:36:16.114Z"
+      }
+    ],
+    [
+      "trip-legacy-v1-1795016176225",
+      {
+        "id": "trip-legacy-v1-1795016176225",
+        "userId": "usr_alpha_1795016175149",
+        "title": "Legacy Ahmedabad Heritage Walk",
+        "destination": "Ahmedabad",
+        "durationDays": 1,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "COMPLETED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:36:16.314Z",
+        "updatedAt": "2026-11-18T15:36:16.314Z"
+      }
+    ],
+    [
+      "trip-cross-dev-1795016176387",
+      {
+        "id": "trip-cross-dev-1795016176387",
+        "userId": "usr_alpha_1795016175149",
+        "title": "Device A Created: Champaner UNESCO Tour",
+        "destination": "Champaner",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": 9500,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:36:16.468Z",
+        "updatedAt": "2026-11-18T15:36:16.468Z"
+      }
+    ],
+    [
+      "trip-alpha-private-1795016176564",
+      {
+        "id": "trip-alpha-private-1795016176564",
+        "userId": "usr_alpha_1795016175149",
+        "title": "Confidential Honeymoon in Udaipur",
+        "destination": "Udaipur",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:36:16.647Z",
+        "updatedAt": "2026-11-18T15:36:16.647Z"
+      }
+    ],
+    [
+      "trip-beta-private-1795016176648",
+      {
+        "id": "trip-beta-private-1795016176648",
+        "userId": "usr_beta_1795016175149",
+        "title": "Solo Trek in Himalayas",
+        "destination": "Manali",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:36:16.740Z",
+        "updatedAt": "2026-11-18T15:36:16.740Z"
+      }
+    ],
+    [
+      "trip-1795016351538-xdfgj",
+      {
+        "id": "trip-1795016351538-xdfgj",
+        "userId": "usr_alpha_1795016350396",
+        "title": "Gir Lion Safari & Diu Beach",
+        "destination": "Sasan Gir",
+        "destinationCity": "Sasan Gir",
+        "originCity": "Surat",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": 32000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {
+          "days": [
+            {
+              "day": 1,
+              "title": "Arrival at Sasan Gir",
+              "activity": "Jeep Safari Booking"
+            },
+            {
+              "day": 2,
+              "title": "Asiatic Lion Trail",
+              "activity": "Morning Wilderness Safari"
+            }
+          ]
+        },
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:39:11.538Z",
+        "updatedAt": "2026-11-18T15:39:11.538Z"
+      }
+    ],
+    [
+      "trip-deploy-1795016351541",
+      {
+        "id": "trip-deploy-1795016351541",
+        "userId": "usr_alpha_1795016350396",
+        "title": "Pre-Deployment Pilgrimage",
+        "destination": "Palitana",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:39:11.666Z",
+        "updatedAt": "2026-11-18T15:39:11.666Z"
+      }
+    ],
+    [
+      "trip-legacy-v1-1795016351771",
+      {
+        "id": "trip-legacy-v1-1795016351771",
+        "userId": "usr_alpha_1795016350396",
+        "title": "Legacy Ahmedabad Heritage Walk",
+        "destination": "Ahmedabad",
+        "durationDays": 1,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "COMPLETED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:39:11.907Z",
+        "updatedAt": "2026-11-18T15:39:11.907Z"
+      }
+    ],
+    [
+      "trip-cross-dev-1795016352044",
+      {
+        "id": "trip-cross-dev-1795016352044",
+        "userId": "usr_alpha_1795016350396",
+        "title": "Device A Created: Champaner UNESCO Tour",
+        "destination": "Champaner",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": 9500,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:39:12.196Z",
+        "updatedAt": "2026-11-18T15:39:12.196Z"
+      }
+    ],
+    [
+      "trip-alpha-private-1795016352332",
+      {
+        "id": "trip-alpha-private-1795016352332",
+        "userId": "usr_alpha_1795016350396",
+        "title": "Confidential Honeymoon in Udaipur",
+        "destination": "Udaipur",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:39:12.456Z",
+        "updatedAt": "2026-11-18T15:39:12.456Z"
+      }
+    ],
+    [
+      "trip-beta-private-1795016352459",
+      {
+        "id": "trip-beta-private-1795016352459",
+        "userId": "usr_beta_1795016350396",
+        "title": "Solo Trek in Himalayas",
+        "destination": "Manali",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-18T15:39:12.556Z",
+        "updatedAt": "2026-11-18T15:39:12.556Z"
+      }
+    ]
+  ],
+  "bookings": [
+    [
+      "bk-1795016073433-ob73y",
+      {
+        "id": "bk-1795016073433-ob73y",
+        "bookingReference": "BY-HTL-2026-52185",
+        "userId": "usr_returning_30d_1795016073157",
+        "bookingType": "HOTEL",
+        "inventoryType": "HOTEL",
+        "inventoryTitle": "Heritage Haveli Suite",
+        "status": "CONFIRMED",
+        "startDate": "2026-12-25",
+        "endDate": "2026-12-28",
+        "adultCount": 2,
+        "childCount": 0,
+        "guestCount": 2,
+        "totalAmountInr": 14500,
+        "currency": "INR",
+        "hotelDetail": {},
+        "createdAt": "2026-11-18T15:34:33.433Z",
+        "updatedAt": "2026-11-18T15:34:33.433Z"
+      }
+    ],
+    [
+      "bk-1795016177464-xk87q",
+      {
+        "id": "bk-1795016177464-xk87q",
+        "bookingReference": "BY-HTL-2026-98372",
+        "userId": "usr_returning_30d_1795016177208",
+        "bookingType": "HOTEL",
+        "inventoryType": "HOTEL",
+        "inventoryTitle": "Heritage Haveli Suite",
+        "status": "CONFIRMED",
+        "startDate": "2026-12-25",
+        "endDate": "2026-12-28",
+        "adultCount": 2,
+        "childCount": 0,
+        "guestCount": 2,
+        "totalAmountInr": 14500,
+        "currency": "INR",
+        "hotelDetail": {},
+        "createdAt": "2026-11-18T15:36:17.465Z",
+        "updatedAt": "2026-11-18T15:36:17.465Z"
+      }
+    ],
+    [
+      "bk-1795016353307-dpkl1",
+      {
+        "id": "bk-1795016353307-dpkl1",
+        "bookingReference": "BY-HTL-2026-83357",
+        "userId": "usr_returning_30d_1795016352987",
+        "bookingType": "HOTEL",
+        "inventoryType": "HOTEL",
+        "inventoryTitle": "Heritage Haveli Suite",
+        "status": "CONFIRMED",
+        "startDate": "2026-12-25",
+        "endDate": "2026-12-28",
+        "adultCount": 2,
+        "childCount": 0,
+        "guestCount": 2,
+        "totalAmountInr": 14500,
+        "currency": "INR",
+        "hotelDetail": {},
+        "createdAt": "2026-11-18T15:39:13.307Z",
+        "updatedAt": "2026-11-18T15:39:13.307Z"
+      }
+    ]
+  ],
+  "savedDestinations": [],
+  "preferences": [
+    [
+      "usr_alpha_1795016070968",
+      {
+        "userId": "usr_alpha_1795016070968",
+        "preferredLanguage": "en",
+        "budgetTier": "luxury",
+        "travelPace": "relaxed",
+        "travelStyle": "balanced",
+        "transport": [
+          "flight",
+          "suv"
+        ],
+        "interests": [
+          "wildlife",
+          "heritage"
+        ],
+        "originCity": "Surat",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-18T15:34:31.769Z"
+      }
+    ],
+    [
+      "usr_returning_30d_1795016073157",
+      {
+        "userId": "usr_returning_30d_1795016073157",
+        "preferredLanguage": "en",
+        "budgetTier": "balanced",
+        "travelPace": "balanced",
+        "travelStyle": "balanced",
+        "transport": [
+          "train",
+          "bus"
+        ],
+        "interests": [
+          "heritage",
+          "nature"
+        ],
+        "originCity": "Vadodara",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-18T15:34:33.333Z"
+      }
+    ],
+    [
+      "usr_alpha_1795016175149",
+      {
+        "userId": "usr_alpha_1795016175149",
+        "preferredLanguage": "en",
+        "budgetTier": "luxury",
+        "travelPace": "relaxed",
+        "travelStyle": "balanced",
+        "transport": [
+          "flight",
+          "suv"
+        ],
+        "interests": [
+          "wildlife",
+          "heritage"
+        ],
+        "originCity": "Surat",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-18T15:36:15.929Z"
+      }
+    ],
+    [
+      "usr_returning_30d_1795016177208",
+      {
+        "userId": "usr_returning_30d_1795016177208",
+        "preferredLanguage": "en",
+        "budgetTier": "balanced",
+        "travelPace": "balanced",
+        "travelStyle": "balanced",
+        "transport": [
+          "train",
+          "bus"
+        ],
+        "interests": [
+          "heritage",
+          "nature"
+        ],
+        "originCity": "Vadodara",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-18T15:36:17.377Z"
+      }
+    ],
+    [
+      "usr_alpha_1795016350396",
+      {
+        "userId": "usr_alpha_1795016350396",
+        "preferredLanguage": "en",
+        "budgetTier": "luxury",
+        "travelPace": "relaxed",
+        "travelStyle": "balanced",
+        "transport": [
+          "flight",
+          "suv"
+        ],
+        "interests": [
+          "wildlife",
+          "heritage"
+        ],
+        "originCity": "Surat",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-18T15:39:11.423Z"
+      }
+    ],
+    [
+      "usr_returning_30d_1795016352987",
+      {
+        "userId": "usr_returning_30d_1795016352987",
+        "preferredLanguage": "en",
+        "budgetTier": "balanced",
+        "travelPace": "balanced",
+        "travelStyle": "balanced",
+        "transport": [
+          "train",
+          "bus"
+        ],
+        "interests": [
+          "heritage",
+          "nature"
+        ],
+        "originCity": "Vadodara",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-18T15:39:13.205Z"
+      }
+    ]
+  ],
+  "tripMembers": [],
+  "tripExpenses": [],
+  "tripSettlements": [],
+  "updatedAt": "2026-11-18T15:39:13.307Z"
+}

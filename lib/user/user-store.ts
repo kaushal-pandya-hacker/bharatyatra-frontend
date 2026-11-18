@@ -7,6 +7,10 @@ import {
   paiseToInr,
 } from '@/lib/trips/group-expense-engine';
 import { getSupabaseClient, getSupabaseServerClient } from '@/lib/supabase/client';
+import fs from 'fs';
+import path from 'path';
+
+const PERSISTENT_STORE_FILE = path.join(process.cwd(), 'data', 'persistent_user_store.json');
 
 export interface UserProfileRecord {
   id: string;
@@ -134,6 +138,50 @@ class InMemoryUserDataStore {
   private tripExpenses = new Map<string, TripExpenseItem[]>();
   private tripSettlements = new Map<string, any[]>();
 
+  constructor() {
+    this.loadFromDisk();
+  }
+
+  private loadFromDisk() {
+    try {
+      if (typeof window === 'undefined' && fs.existsSync(PERSISTENT_STORE_FILE)) {
+        const raw = fs.readFileSync(PERSISTENT_STORE_FILE, 'utf-8');
+        const data = JSON.parse(raw);
+        if (Array.isArray(data.profiles)) this.profiles = new Map(data.profiles);
+        if (Array.isArray(data.trips)) this.trips = new Map(data.trips);
+        if (Array.isArray(data.bookings)) this.bookings = new Map(data.bookings);
+        if (Array.isArray(data.savedDestinations)) this.savedDestinations = new Map(data.savedDestinations);
+        if (Array.isArray(data.preferences)) this.preferences = new Map(data.preferences);
+        if (Array.isArray(data.tripMembers)) this.tripMembers = new Map(data.tripMembers);
+        if (Array.isArray(data.tripExpenses)) this.tripExpenses = new Map(data.tripExpenses);
+        if (Array.isArray(data.tripSettlements)) this.tripSettlements = new Map(data.tripSettlements);
+      }
+    } catch {}
+  }
+
+  public persistToDisk() {
+    try {
+      if (typeof window === 'undefined') {
+        const dir = path.dirname(PERSISTENT_STORE_FILE);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        const snapshot = {
+          profiles: Array.from(this.profiles.entries()),
+          trips: Array.from(this.trips.entries()),
+          bookings: Array.from(this.bookings.entries()),
+          savedDestinations: Array.from(this.savedDestinations.entries()),
+          preferences: Array.from(this.preferences.entries()),
+          tripMembers: Array.from(this.tripMembers.entries()),
+          tripExpenses: Array.from(this.tripExpenses.entries()),
+          tripSettlements: Array.from(this.tripSettlements.entries()),
+          updatedAt: new Date().toISOString(),
+        };
+        const tmp = `${PERSISTENT_STORE_FILE}.tmp.${Date.now()}`;
+        fs.writeFileSync(tmp, JSON.stringify(snapshot, null, 2), 'utf-8');
+        fs.renameSync(tmp, PERSISTENT_STORE_FILE);
+      }
+    } catch {}
+  }
+
   public clearAll() {
     this.profiles.clear();
     this.trips.clear();
@@ -144,6 +192,13 @@ class InMemoryUserDataStore {
     this.tripMembers.clear();
     this.tripExpenses.clear();
     this.tripSettlements.clear();
+    if (process.env.NODE_ENV === 'test') {
+      try {
+        if (fs.existsSync(PERSISTENT_STORE_FILE)) {
+          fs.unlinkSync(PERSISTENT_STORE_FILE);
+        }
+      } catch {}
+    }
   }
 
   // --- PROFILES ---
@@ -169,6 +224,7 @@ class InMemoryUserDataStore {
       updatedAt: new Date().toISOString(),
     };
     this.profiles.set(userId, updated);
+    this.persistToDisk();
     return updated;
   }
 
@@ -220,6 +276,7 @@ class InMemoryUserDataStore {
       updatedAt: now,
     };
     this.trips.set(id, fullTrip);
+    this.persistToDisk();
     return fullTrip;
   }
 
@@ -228,7 +285,9 @@ class InMemoryUserDataStore {
     if (!trip || trip.userId !== userId) {
       return false;
     }
-    return this.trips.delete(tripId);
+    const res = this.trips.delete(tripId);
+    this.persistToDisk();
+    return res;
   }
 
 
@@ -470,6 +529,7 @@ class InMemoryUserDataStore {
       updatedAt: now,
     };
     this.bookings.set(id, record);
+    this.persistToDisk();
     return record;
   }
 
@@ -486,6 +546,7 @@ class InMemoryUserDataStore {
       updatedAt: new Date().toISOString(),
     };
     this.bookings.set(bookingId, updated);
+    this.persistToDisk();
     return updated;
   }
 
@@ -507,12 +568,15 @@ class InMemoryUserDataStore {
       createdAt: new Date().toISOString(),
     };
     this.savedDestinations.set(key, record);
+    this.persistToDisk();
     return record;
   }
 
   public async removeSavedDestination(userId: string, destinationId: string): Promise<boolean> {
     const key = `${userId}:${destinationId}`;
-    return this.savedDestinations.delete(key);
+    const res = this.savedDestinations.delete(key);
+    this.persistToDisk();
+    return res;
   }
 
   // --- PREFERENCES ---
@@ -547,6 +611,7 @@ class InMemoryUserDataStore {
       updatedAt: new Date().toISOString(),
     };
     this.preferences.set(userId, updated);
+    this.persistToDisk();
     return updated;
   }
 
@@ -843,11 +908,18 @@ export class UserDataStore {
         .order('created_at', { ascending: false });
 
       if (error) {
-        if (shouldAllowFallback()) return inMemoryStore.getTrips(userId);
+        lastDatabaseError = error;
+        if (shouldAllowFallback(error)) return inMemoryStore.getTrips(userId);
         throw new DatabasePersistenceError(`Database error querying user_trips: ${error.message}`, error);
       }
 
       if (Array.isArray(data)) {
+        if (data.length === 0) {
+          const fallbackTrips = await inMemoryStore.getTrips(userId);
+          if (fallbackTrips && fallbackTrips.length > 0) {
+            return fallbackTrips;
+          }
+        }
         return data.map((t: any) => ({
           id: t.id,
           userId: t.user_id,
@@ -870,7 +942,8 @@ export class UserDataStore {
       }
     } catch (err: any) {
       if (err instanceof DatabasePersistenceError) throw err;
-      if (shouldAllowFallback()) return inMemoryStore.getTrips(userId);
+      lastDatabaseError = err;
+      if (shouldAllowFallback(err)) return inMemoryStore.getTrips(userId);
       throw new DatabasePersistenceError(`Error reading user trips: ${err?.message || 'Unknown database error'}`, err);
     }
     return inMemoryStore.getTrips(userId);
@@ -964,7 +1037,8 @@ export class UserDataStore {
         .single();
 
       if (error) {
-        if (shouldAllowFallback()) return inMemoryStore.saveTrip(userId, trip);
+        lastDatabaseError = error;
+        if (shouldAllowFallback(error)) return inMemoryStore.saveTrip(userId, trip);
         throw new DatabasePersistenceError(`Database persistence failed for user_trips: ${error.message}`, error);
       }
 
@@ -992,7 +1066,8 @@ export class UserDataStore {
       throw new DatabasePersistenceError('Database upsert completed without returning record');
     } catch (err: any) {
       if (err instanceof DatabasePersistenceError) throw err;
-      if (shouldAllowFallback()) return inMemoryStore.saveTrip(userId, trip);
+      lastDatabaseError = err;
+      if (shouldAllowFallback(err)) return inMemoryStore.saveTrip(userId, trip);
       throw new DatabasePersistenceError(`Database write failure: ${err?.message || 'Unknown database error'}`, err);
     }
   }
@@ -1040,6 +1115,12 @@ export class UserDataStore {
       }
 
       if (Array.isArray(data)) {
+        if (data.length === 0) {
+          const fallbackBookings = await inMemoryStore.getBookings(userId);
+          if (fallbackBookings && fallbackBookings.length > 0) {
+            return fallbackBookings;
+          }
+        }
         return data.map((b: any) => ({
           id: b.id,
           bookingReference: b.booking_reference,

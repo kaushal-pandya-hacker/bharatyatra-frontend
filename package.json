@@ -13,6 +13,7 @@
     "db:backup": "npx tsx scripts/zero-data-loss/db-backup-engine.ts",
     "db:validate-migrations": "npx tsx scripts/zero-data-loss/migration-safety-analyzer.ts",
     "db:integrity-check": "npx tsx scripts/zero-data-loss/data-integrity-monitor.ts",
+    "test:persistence": "npx tsx scripts/zero-data-loss/test-user-data-persistence-e2e.ts",
     "verify:deployment": "npx tsx scripts/zero-data-loss/pre-deployment-gate.ts"
   },
   "dependencies": {

@@ -76,26 +76,41 @@ export default function MyTripsPage() {
 }
 
 function MyTripsContent() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [trips, setTrips] = useState<TripItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'ALL' | 'UPCOMING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
     async function loadTrips() {
-      const data = await fetchUserTripsFromApi((user as any)?.token);
-      setTrips(data);
-      setLoading(false);
+      try {
+        const data = await fetchUserTripsFromApi(token || undefined, user?.id);
+        if (isMounted) {
+          setTrips(data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setTrips(getSavedTrips(user?.id));
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
     }
     loadTrips();
-  }, [user]);
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id, token]);
 
   const handleDeleteTrip = (tripIdToDelete: string) => {
     if (typeof window !== 'undefined' && !window.confirm('Are you sure you want to remove this trip from your vault?')) {
       return;
     }
-    const updated = deleteSavedTrip(tripIdToDelete);
+    const updated = deleteSavedTrip(tripIdToDelete, user?.id);
     setTrips(updated);
   };
 

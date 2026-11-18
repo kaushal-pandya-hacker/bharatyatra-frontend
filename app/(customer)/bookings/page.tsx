@@ -43,6 +43,7 @@ function MyBookingsPageContent() {
   const fetchBookings = async () => {
     setLoading(true);
     setError(null);
+    const cacheKey = `chalo_farva_user_bookings_${user?.id || 'guest'}`;
 
     try {
       const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
@@ -53,12 +54,34 @@ function MyBookingsPageContent() {
 
       if (res.ok) {
         const json = await res.json();
-        setBookings(json.data || []);
+        const records = json.data || [];
+        setBookings(records);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(cacheKey, JSON.stringify(records));
+        }
       } else {
-        // Zero demo mock booking injection — clean empty state
+        // Fallback to locally cached bookings if backend temporarily unavailable
+        if (typeof window !== 'undefined') {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            try {
+              setBookings(JSON.parse(cached));
+              return;
+            } catch {}
+          }
+        }
         setBookings([]);
       }
     } catch (err: any) {
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          try {
+            setBookings(JSON.parse(cached));
+            return;
+          } catch {}
+        }
+      }
       setBookings([]);
     } finally {
       setLoading(false);
@@ -67,7 +90,7 @@ function MyBookingsPageContent() {
 
   useEffect(() => {
     fetchBookings();
-  }, [token]);
+  }, [token, user?.id]);
 
   const handleCancelBooking = async (e: React.FormEvent) => {
     e.preventDefault();

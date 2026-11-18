@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { apiFetch } from '@/lib/api/client';
+import { claimGuestTrips } from '@/lib/trips/trip-storage';
 
 export interface UserProfile {
   id: string;
@@ -144,29 +145,12 @@ export function recoverPersistedRefreshToken(): string | null {
 
 export function clearUserLocalCache() {
   if (typeof window === 'undefined') return;
+  // Non-destructive auth cleanup: ONLY purge session tokens and temporary contexts.
+  // NEVER delete user trips (chalo_farva_saved_trips*) or user travel profiles (bharatyatra_travel_profile*).
   localStorage.removeItem('auth_token');
   localStorage.removeItem('auth_refresh_token');
   localStorage.removeItem('auth_user');
-  localStorage.removeItem('chalo_farva_saved_trips');
-  localStorage.removeItem('chalo_farva_selected_destinations');
-  localStorage.removeItem('bharatyatra_travel_profile');
   localStorage.removeItem('bharatyatra_active_booking_context');
-
-  try {
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (
-        key &&
-        (key.startsWith('chalo_farva_saved_trips') ||
-          key.startsWith('bharatyatra_travel_profile') ||
-          key.startsWith('cf_'))
-      ) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach((k) => localStorage.removeItem(k));
-  } catch {}
 
   if (typeof document !== 'undefined') {
     const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
@@ -385,6 +369,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem('auth_refresh_token', session.refresh_token);
         }
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
+        // Claim any trips saved during guest browsing session
+        claimGuestTrips(session.user.id, session.access_token).catch(() => {});
       } else if (event === 'SIGNED_OUT') {
         setToken(null);
         setUser(null);
@@ -472,9 +458,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, passwordHash: string) => {
-    // Clean old user cache on new login attempt
-    clearUserLocalCache();
-
     try {
       // First try Supabase login if available
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -495,6 +478,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem('auth_refresh_token', refreshToken);
         }
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
+        claimGuestTrips(userProfile.id, authToken).catch(() => {});
         return;
       }
     } catch (e) {}
@@ -521,6 +505,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(userProfile);
         localStorage.setItem('auth_token', authToken);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
+        claimGuestTrips(userProfile.id, authToken).catch(() => {});
         return;
       }
     } catch (err: any) {
@@ -529,8 +514,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (fullName: string, email: string, passwordHash: string, phoneNumber?: string) => {
-    clearUserLocalCache();
-
     try {
       const res = await apiFetch<{ success: boolean; data: { token: string; user: any } }>('/auth/register', {
         method: 'POST',
@@ -552,6 +535,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(userProfile);
         localStorage.setItem('auth_token', authToken);
         localStorage.setItem('auth_user', JSON.stringify(userProfile));
+        claimGuestTrips(userProfile.id, authToken).catch(() => {});
         return;
       }
     } catch (e) {}
@@ -585,6 +569,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('auth_refresh_token', refreshToken);
       }
       localStorage.setItem('auth_user', JSON.stringify(userProfile));
+      claimGuestTrips(userProfile.id, authToken).catch(() => {});
     }
   };
 
