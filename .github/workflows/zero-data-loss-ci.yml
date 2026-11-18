@@ -22,7 +22,11 @@ jobs:
           cache: 'npm'
 
       - name: 3. Install Dependencies
-        run: npm ci --prefer-offline || npm install
+        run: |
+          npm ci --prefer-offline || npm install
+          if [ -d "18_DEVELOPMENT/Backend" ]; then
+            cd 18_DEVELOPMENT/Backend && (npm ci --prefer-offline || npm install) && cd ../..
+          fi
 
       - name: 4. TypeScript Type Checking
         run: npm run type-check
@@ -38,6 +42,8 @@ jobs:
 
       - name: 8. Execute Automated Test Suites
         run: npm test
+        env:
+          NODE_PATH: ./node_modules:./18_DEVELOPMENT/Backend/node_modules
 
       - name: 9. Next.js Production Build Validation
         run: npm run build
