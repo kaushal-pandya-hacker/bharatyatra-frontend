@@ -151,4 +151,66 @@ test('BharatYatra Production Cloud Storage Engine & Upload Security Suite', asyn
       process.env.VERCEL = originalVercel;
     }
   });
+
+  await t.test('11. Anonymous access to pending unapproved photo is strictly denied', async () => {
+    assert.ok(uploadedJpegResult?.photoId);
+    await assert.rejects(
+      async () => {
+        await cloudStorageService.getSecurePhotoUrl(uploadedJpegResult.photoId, {
+          isApproved: false,
+          userId: undefined, // Anonymous
+          isAdmin: false,
+        });
+      },
+      {
+        message: /ACCESS_DENIED/,
+      }
+    );
+  });
+
+  await t.test('12. Cross-contributor access (IDOR) to pending photo is strictly denied', async () => {
+    assert.ok(uploadedJpegResult?.photoId);
+    await assert.rejects(
+      async () => {
+        await cloudStorageService.getSecurePhotoUrl(uploadedJpegResult.photoId, {
+          isApproved: false,
+          userId: 'attacker_user_666', // Different user
+          isAdmin: false,
+        });
+      },
+      {
+        message: /ACCESS_DENIED/,
+      }
+    );
+  });
+
+  await t.test('13. Authenticated owner can access their pending photo via secure URL', async () => {
+    assert.ok(uploadedJpegResult?.photoId);
+    const secureUrl = await cloudStorageService.getSecurePhotoUrl(uploadedJpegResult.photoId, {
+      isApproved: false,
+      userId: testUserId, // Legitimate owner
+      isAdmin: false,
+    });
+    assert.ok(secureUrl, 'Owner must receive valid photo URL');
+  });
+
+  await t.test('14. Administrator can access any pending photo for moderation review', async () => {
+    assert.ok(uploadedJpegResult?.photoId);
+    const adminUrl = await cloudStorageService.getSecurePhotoUrl(uploadedJpegResult.photoId, {
+      isApproved: false,
+      userId: 'admin_user_001',
+      isAdmin: true,
+    });
+    assert.ok(adminUrl, 'Admin must be granted access to pending photo');
+  });
+
+  await t.test('15. Approved destination photo is publicly accessible to any client', async () => {
+    assert.ok(uploadedJpegResult?.photoId);
+    const publicUrl = await cloudStorageService.getSecurePhotoUrl(uploadedJpegResult.photoId, {
+      isApproved: true,
+      userId: undefined, // Anonymous visitor
+      isAdmin: false,
+    });
+    assert.ok(publicUrl, 'Approved destination photo must be publicly delivered');
+  });
 });

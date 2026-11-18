@@ -10,6 +10,7 @@ import { dispatchApprovalRewardNotifications } from '@/lib/notifications/reward-
 import crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getSupabaseServerClient } from '@/lib/supabase/client';
 
 export interface PublishedDestinationRecord {
   id: string;
@@ -206,6 +207,45 @@ export class DestinationPublishingEngine {
       fs.writeFileSync(this.publishedPath, JSON.stringify(filtered, null, 2), 'utf-8');
     } catch (persistErr) {
       console.warn('[PublishingEngine] Local file cache persist warning:', persistErr);
+    }
+
+    // Persist to Supabase PostgreSQL shared persistent database
+    try {
+      const supabase = getSupabaseServerClient();
+      await supabase.from('published_destinations').insert({
+        id: publishedRecord.id,
+        slug: publishedRecord.slug,
+        name: publishedRecord.name,
+        category: publishedRecord.category,
+        country: publishedRecord.country,
+        state: publishedRecord.state,
+        district: publishedRecord.district,
+        city: publishedRecord.city,
+        address: publishedRecord.address,
+        latitude: publishedRecord.latitude,
+        longitude: publishedRecord.longitude,
+        short_description: publishedRecord.shortDescription,
+        description: publishedRecord.description,
+        primary_image_url: publishedRecord.primaryImageUrl,
+        images: publishedRecord.images || [],
+        best_time_to_visit: publishedRecord.bestTimeToVisit,
+        estimated_visit_duration: publishedRecord.estimatedVisitDuration,
+        entry_fee: publishedRecord.entryFee,
+        opening_hours: publishedRecord.openingHours,
+        facilities: publishedRecord.facilities || [],
+        travel_tips: publishedRecord.travelTips || [],
+        is_community_contributed: publishedRecord.isCommunityContributed,
+        contributed_by_name: publishedRecord.contributedByName,
+        contributed_by_id: publishedRecord.contributedById,
+        submission_id: publishedRecord.submissionId,
+        rating: publishedRecord.rating,
+        total_reviews: publishedRecord.totalReviews,
+        is_published: publishedRecord.isPublished,
+        created_at: publishedRecord.createdAt,
+        updated_at: publishedRecord.updatedAt,
+      });
+    } catch (dbErr: any) {
+      console.warn('[PublishingEngine] Supabase persistence notice:', dbErr?.message || dbErr);
     }
 
     // 4. Create Review Audit Record

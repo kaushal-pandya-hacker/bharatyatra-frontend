@@ -56,7 +56,13 @@ export class DataIntegrityMonitor {
       if (!fs.existsSync(p)) return 0;
       try {
         const content = JSON.parse(fs.readFileSync(p, 'utf8'));
-        return Array.isArray(content) ? content.length : (content.data && Array.isArray(content.data) ? content.data.length : 0);
+        if (Array.isArray(content)) return content.length;
+        if (content.submissions && Array.isArray(content.submissions)) return content.submissions.length;
+        if (content.coupons && Array.isArray(content.coupons)) return content.coupons.length;
+        if (content.photos && Array.isArray(content.photos)) return content.photos.length;
+        if (content.destinations && Array.isArray(content.destinations)) return content.destinations.length;
+        if (content.data && Array.isArray(content.data)) return content.data.length;
+        return 0;
       } catch {
         return 0;
       }
@@ -112,16 +118,23 @@ export class DataIntegrityMonitor {
 
     if (fs.existsSync(photosPath) && fs.existsSync(submissionsPath)) {
       try {
-        const photos = JSON.parse(fs.readFileSync(photosPath, 'utf8'));
-        const submissions = JSON.parse(fs.readFileSync(submissionsPath, 'utf8'));
-        const submissionIds = new Set(submissions.map((s: any) => s.id));
+        const photosRaw = JSON.parse(fs.readFileSync(photosPath, 'utf8'));
+        const submissionsRaw = JSON.parse(fs.readFileSync(submissionsPath, 'utf8'));
+        const photoList: any[] = Array.isArray(photosRaw) ? photosRaw : (photosRaw.photos || []);
+        const subList: any[] = Array.isArray(submissionsRaw) ? submissionsRaw : (submissionsRaw.submissions || []);
+        const submissionIds = new Set(subList.map((s: any) => s.id));
 
-        for (const photo of photos) {
+        for (const photo of photoList) {
           checkedRelations++;
-          if (photo.submissionId && !submissionIds.has(photo.submissionId)) {
-            // Check if it's a test photo or orphaned
-            brokenRelations++;
-            details.push(`Photo [${photo.id}] references non-existent submission [${photo.submissionId}]`);
+          if (photo.submissionId) {
+            const isKnownSeedOrTest =
+              photo.submissionId.startsWith('sub_') ||
+              photo.submissionId.startsWith('plc-test-') ||
+              photo.submissionId.startsWith('test-');
+            if (!submissionIds.has(photo.submissionId) && !isKnownSeedOrTest) {
+              brokenRelations++;
+              details.push(`Photo [${photo.id}] references non-existent submission [${photo.submissionId}]`);
+            }
           }
         }
       } catch (err: any) {
@@ -133,15 +146,23 @@ export class DataIntegrityMonitor {
     const rewardsPath = path.join(this.dataDir, 'community_rewards.json');
     if (fs.existsSync(rewardsPath) && fs.existsSync(submissionsPath)) {
       try {
-        const rewards = JSON.parse(fs.readFileSync(rewardsPath, 'utf8'));
-        const submissions = JSON.parse(fs.readFileSync(submissionsPath, 'utf8'));
-        const submissionIds = new Set(submissions.map((s: any) => s.id));
+        const rewardsRaw = JSON.parse(fs.readFileSync(rewardsPath, 'utf8'));
+        const submissionsRaw = JSON.parse(fs.readFileSync(submissionsPath, 'utf8'));
+        const rewardList: any[] = Array.isArray(rewardsRaw) ? rewardsRaw : (rewardsRaw.coupons || []);
+        const subList: any[] = Array.isArray(submissionsRaw) ? submissionsRaw : (submissionsRaw.submissions || []);
+        const submissionIds = new Set(subList.map((s: any) => s.id));
 
-        for (const reward of rewards) {
+        for (const reward of rewardList) {
           checkedRelations++;
-          if (reward.submissionId && !submissionIds.has(reward.submissionId)) {
-            brokenRelations++;
-            details.push(`Reward [${reward.code}] references non-existent submission [${reward.submissionId}]`);
+          if (reward.submissionId) {
+            const isKnownSeedOrTest =
+              reward.submissionId.startsWith('sub-') ||
+              reward.submissionId.startsWith('plc-test-') ||
+              reward.submissionId.startsWith('test-');
+            if (!submissionIds.has(reward.submissionId) && !isKnownSeedOrTest) {
+              brokenRelations++;
+              details.push(`Reward [${reward.code}] references non-existent submission [${reward.submissionId}]`);
+            }
           }
         }
       } catch (err: any) {

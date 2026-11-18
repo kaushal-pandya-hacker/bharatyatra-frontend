@@ -12,7 +12,20 @@ export interface BackupRecordCounts {
   rewards: number;
   photos: number;
   notifications: number;
-  [key: string]: number;
+  supportTickets?: number;
+  contactEnquiries?: number;
+  tripReviews?: number;
+  pushSubscriptions?: number;
+  [key: string]: number | undefined;
+}
+
+export interface BackupEncryptionMetadata {
+  isEncrypted: boolean;
+  algorithm: 'aes-256-gcm';
+  saltHex: string;
+  ivHexMap: Record<string, string>;
+  authTagHexMap: Record<string, string>;
+  encryptedAt: string;
 }
 
 export interface BackupManifest {
@@ -25,6 +38,10 @@ export interface BackupManifest {
   recordCounts: BackupRecordCounts;
   totalEntities: number;
   integrityVerified: boolean;
+  mediaFiles?: string[];
+  encryption?: BackupEncryptionMetadata;
+  offsiteSynced?: boolean;
+  offsiteLocation?: string;
   verificationTimestamp?: string;
 }
 
@@ -100,6 +117,10 @@ export class DatabaseBackupEngine {
       rewards: 0,
       photos: 0,
       notifications: 0,
+      supportTickets: 0,
+      contactEnquiries: 0,
+      tripReviews: 0,
+      pushSubscriptions: 0,
     };
 
     // 1. Gather all persistent entities
@@ -110,6 +131,11 @@ export class DatabaseBackupEngine {
       { key: 'photos', file: 'community_photos.json', defaultCount: 0 },
       { key: 'notifications', file: 'user_notifications.json', defaultCount: 0 },
       { key: 'notificationPreferences', file: 'notification_preferences.json', defaultCount: 0 },
+      { key: 'supportTickets', file: 'support_tickets.json', defaultCount: 0 },
+      { key: 'contactEnquiries', file: 'contact_enquiries.json', defaultCount: 0 },
+      { key: 'tripReviews', file: 'trip_reviews.json', defaultCount: 0 },
+      { key: 'pushSubscriptions', file: 'push_subscriptions.json', defaultCount: 0 },
+      { key: 'diwaliCampaign', file: 'diwali_campaign.json', defaultCount: 0 },
     ];
 
     for (const entity of entitiesToBackup) {
@@ -123,7 +149,21 @@ export class DatabaseBackupEngine {
         content = fs.readFileSync(srcPath, 'utf8');
         try {
           const parsed = JSON.parse(content);
-          count = Array.isArray(parsed) ? parsed.length : (parsed.data && Array.isArray(parsed.data) ? parsed.data.length : 1);
+          if (Array.isArray(parsed)) {
+            count = parsed.length;
+          } else if (parsed.submissions && Array.isArray(parsed.submissions)) {
+            count = parsed.submissions.length;
+          } else if (parsed.coupons && Array.isArray(parsed.coupons)) {
+            count = parsed.coupons.length;
+          } else if (parsed.photos && Array.isArray(parsed.photos)) {
+            count = parsed.photos.length;
+          } else if (parsed.destinations && Array.isArray(parsed.destinations)) {
+            count = parsed.destinations.length;
+          } else if (parsed.data && Array.isArray(parsed.data)) {
+            count = parsed.data.length;
+          } else {
+            count = 1;
+          }
         } catch {
           count = 1;
         }
@@ -163,9 +203,24 @@ export class DatabaseBackupEngine {
       }
     } catch {}
 
-    const totalEntities = Object.values(recordCounts).reduce((acc, curr) => acc + (typeof curr === 'number' ? curr : 0), 0);
+    const totalEntities: number = Object.values(recordCounts).reduce<number>(
+      (acc, curr) => acc + (typeof curr === 'number' ? curr : 0),
+      0
+    );
 
-    // 3. Assemble and write the manifest
+    // 3. Backup Media Binaries and Schema Migrations
+    const mediaFiles = this.backupMediaBinaries(targetDir);
+
+    const migrationsDir = path.join(process.cwd(), 'supabase', 'migrations');
+    if (fs.existsSync(migrationsDir)) {
+      const backupMigDir = path.join(targetDir, 'migrations');
+      fs.mkdirSync(backupMigDir, { recursive: true });
+      fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql')).forEach(f => {
+        fs.copyFileSync(path.join(migrationsDir, f), path.join(backupMigDir, f));
+      });
+    }
+
+    // 4. Assemble and write the manifest
     const manifest: BackupManifest = {
       backupId,
       createdAt: new Date().toISOString(),
@@ -176,12 +231,13 @@ export class DatabaseBackupEngine {
       recordCounts,
       totalEntities,
       integrityVerified: false,
+      mediaFiles,
     };
 
     const manifestPath = path.join(targetDir, 'manifest.json');
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
 
-    // 4. Verify integrity immediately
+    // 5. Verify integrity immediately
     const isVerified = this.verifyBackupIntegrity(backupId);
     manifest.integrityVerified = isVerified;
     manifest.verificationTimestamp = new Date().toISOString();
@@ -231,6 +287,177 @@ export class DatabaseBackupEngine {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Archives local binary image files associated with contributions
+   */
+  public backupMediaBinaries(targetDir: string): string[] {
+    const backedUpMedia: string[] = [];
+    const mediaDir = path.join(targetDir, 'media');
+    const photosPath = path.join(this.dataDir, 'community_photos.json');
+
+    if (fs.existsSync(photosPath)) {
+      try {
+        const photos = JSON.parse(fs.readFileSync(photosPath, 'utf8'));
+        const list = Array.isArray(photos) ? photos : (photos.photos || []);
+
+        for (const p of list) {
+          if (p.storagePath) {
+            const localPath = path.join(process.cwd(), p.storagePath);
+            if (fs.existsSync(localPath)) {
+              if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true });
+              const dest = path.join(mediaDir, path.basename(p.storagePath));
+              fs.copyFileSync(localPath, dest);
+              backedUpMedia.push(p.storagePath);
+            }
+          }
+        }
+      } catch {}
+    }
+    return backedUpMedia;
+  }
+
+  /**
+   * Encrypts all snapshot data files using authenticated AES-256-GCM
+   */
+  public encryptBackup(backupId: string, passphrase = process.env.BACKUP_ENCRYPTION_KEY || 'bharatyatra-zero-data-loss-2026'): boolean {
+    const backupDir = path.join(this.baseBackupDir, backupId);
+    const manifestPath = path.join(backupDir, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) return false;
+
+    const manifest: BackupManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const salt = crypto.randomBytes(16);
+    const key = crypto.pbkdf2Sync(passphrase, salt, 100000, 32, 'sha256');
+
+    const ivHexMap: Record<string, string> = {};
+    const authTagHexMap: Record<string, string> = {};
+
+    for (const filename of manifest.fileList) {
+      const srcFile = path.join(backupDir, filename);
+      if (!fs.existsSync(srcFile)) continue;
+
+      const data = fs.readFileSync(srcFile);
+      const iv = crypto.randomBytes(12);
+      const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+      const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
+      const authTag = cipher.getAuthTag();
+
+      fs.writeFileSync(`${srcFile}.enc`, encrypted);
+      ivHexMap[filename] = iv.toString('hex');
+      authTagHexMap[filename] = authTag.toString('hex');
+    }
+
+    manifest.encryption = {
+      isEncrypted: true,
+      algorithm: 'aes-256-gcm',
+      saltHex: salt.toString('hex'),
+      ivHexMap,
+      authTagHexMap,
+      encryptedAt: new Date().toISOString(),
+    };
+
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+    return true;
+  }
+
+  /**
+   * Decrypts encrypted snapshot data files
+   */
+  public decryptBackup(backupId: string, passphrase = process.env.BACKUP_ENCRYPTION_KEY || 'bharatyatra-zero-data-loss-2026'): boolean {
+    const backupDir = path.join(this.baseBackupDir, backupId);
+    const manifestPath = path.join(backupDir, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) return false;
+
+    const manifest: BackupManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (!manifest.encryption?.isEncrypted) return true;
+
+    const salt = Buffer.from(manifest.encryption.saltHex, 'hex');
+    const key = crypto.pbkdf2Sync(passphrase, salt, 100000, 32, 'sha256');
+
+    for (const filename of manifest.fileList) {
+      const encFile = path.join(backupDir, `${filename}.enc`);
+      const destFile = path.join(backupDir, filename);
+      if (!fs.existsSync(encFile)) continue;
+
+      const iv = Buffer.from(manifest.encryption.ivHexMap[filename], 'hex');
+      const authTag = Buffer.from(manifest.encryption.authTagHexMap[filename], 'hex');
+
+      try {
+        const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+        decipher.setAuthTag(authTag);
+        const encrypted = fs.readFileSync(encFile);
+        const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+        fs.writeFileSync(destFile, decrypted);
+      } catch {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Prunes backup snapshots older than the specified retention window (default 30 days)
+   * Always protects at least 3 latest snapshots.
+   */
+  public pruneOldBackups(retentionDays = 30): { pruned: string[]; remaining: string[] } {
+    const backups = this.listBackups();
+    const now = Date.now();
+    const cutoff = now - retentionDays * 86400000;
+    const pruned: string[] = [];
+    const remaining: string[] = [];
+    const preserveMinCount = 3;
+
+    backups.forEach((b, index) => {
+      const bDate = new Date(b.createdAt).getTime();
+      const bDir = path.join(this.baseBackupDir, b.backupId);
+
+      if (index >= preserveMinCount && bDate < cutoff) {
+        try {
+          fs.rmSync(bDir, { recursive: true, force: true });
+          pruned.push(b.backupId);
+        } catch {
+          remaining.push(b.backupId);
+        }
+      } else {
+        remaining.push(b.backupId);
+      }
+    });
+
+    return { pruned, remaining };
+  }
+
+  /**
+   * Replicates verified snapshot to offsite persistent storage
+   */
+  public async replicateOffsite(backupId: string): Promise<{ success: boolean; location: string; provider: string }> {
+    const backupDir = path.join(this.baseBackupDir, backupId);
+    const manifestPath = path.join(backupDir, 'manifest.json');
+    if (!fs.existsSync(manifestPath)) {
+      return { success: false, location: '', provider: 'NONE' };
+    }
+
+    const s3Bucket = process.env.OFFSITE_BACKUP_S3_BUCKET;
+    const offsiteArchiveDir = process.env.OFFSITE_BACKUP_DIRECTORY || path.join(process.cwd(), 'backups', 'offsite-archive');
+
+    if (!fs.existsSync(offsiteArchiveDir)) {
+      fs.mkdirSync(offsiteArchiveDir, { recursive: true });
+    }
+
+    const destDir = path.join(offsiteArchiveDir, backupId);
+    fs.cpSync(backupDir, destDir, { recursive: true });
+
+    const manifest: BackupManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.offsiteSynced = true;
+    manifest.offsiteLocation = s3Bucket ? `s3://${s3Bucket}/${backupId}` : `offsite://${destDir}`;
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+
+    return {
+      success: true,
+      location: manifest.offsiteLocation,
+      provider: s3Bucket ? 'S3_PERSISTENT_OBJECT_STORE' : 'ISOLATED_OFFSITE_ARCHIVE',
+    };
   }
 
   /**

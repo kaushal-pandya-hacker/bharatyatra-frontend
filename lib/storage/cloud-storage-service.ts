@@ -395,6 +395,56 @@ class CloudStorageService {
   }
 
   /**
+   * Generates a privacy-aware secure access URL for contribution photographs.
+   * - Approved destination photographs return public CDN URLs.
+   * - Unapproved/pending/rejected photographs return time-limited signed URLs only for the owner or authorized admins.
+   * - Unauthorized callers are denied access to unmoderated images.
+   */
+  public async getSecurePhotoUrl(
+    photoIdOrPath: string,
+    options: { isApproved?: boolean; userId?: string; isAdmin?: boolean } = {}
+  ): Promise<string> {
+    this.ensureStoreLoaded();
+
+    let record: StoredPhotoRecord | undefined;
+    for (const r of Array.from(this.dbPhotoStore.values())) {
+      if (r.id === photoIdOrPath || r.storagePath === photoIdOrPath || r.url === photoIdOrPath) {
+        record = r;
+        break;
+      }
+    }
+
+    // If already approved, return public URL directly (preserves published image links)
+    if (options.isApproved) {
+      return record?.url || photoIdOrPath;
+    }
+
+    // If unapproved: verify owner or administrator
+    const isOwner = Boolean(options.userId && record && record.userId === options.userId);
+    const isAdmin = Boolean(options.isAdmin);
+
+    if (!isOwner && !isAdmin) {
+      throw new Error('ACCESS_DENIED: Unapproved destination photographs are confidential and restricted to owner and moderators.');
+    }
+
+    // Generate secure time-limited signed URL for Supabase Storage
+    if (record && record.provider === 'SUPABASE') {
+      try {
+        const supabase = getSupabaseServerClient();
+        const bucket = process.env.SUPABASE_STORAGE_BUCKET || 'contributions';
+        const { data, error } = await supabase.storage.from(bucket).createSignedUrl(record.storagePath, 3600); // 1 hour
+        if (!error && data?.signedUrl) {
+          return data.signedUrl;
+        }
+      } catch (err) {
+        console.warn('[CloudStorage] Signed URL generation failed, falling back to authenticated stream:', err);
+      }
+    }
+
+    return record?.url || photoIdOrPath;
+  }
+
+  /**
    * Delete or cleanup stored photo.
    */
   public async deletePhoto(photoIdOrPath: string): Promise<boolean> {

@@ -189,6 +189,45 @@ class ContributionService {
     this.history.unshift(historyEntry);
     this.persist();
 
+    // 4.5. Attempt persistent Supabase PostgreSQL write
+    try {
+      const supabase = getSupabaseServerClient();
+      await supabase.from('place_submissions').insert({
+        id: submission.id,
+        contributor_id: submission.contributorId,
+        contributor_name: submission.contributorName,
+        contributor_email: submission.contributorEmail || '',
+        place_name: submission.placeName,
+        category: submission.category,
+        country: submission.country || 'India',
+        state: submission.state,
+        district: submission.district,
+        city: submission.city || '',
+        address: submission.address,
+        latitude: submission.latitude,
+        longitude: submission.longitude,
+        short_description: submission.shortDescription,
+        detailed_description: submission.detailedDescription,
+        photos: submission.photos || [],
+        best_time_to_visit: submission.bestTimeToVisit,
+        estimated_visit_duration: submission.estimatedVisitDuration,
+        entry_fee: submission.entryFee,
+        opening_hours: submission.openingHours,
+        parking_available: submission.parkingAvailable,
+        facilities: submission.facilities || [],
+        travel_tips: submission.travelTips || [],
+        nearby_attractions: submission.nearbyAttractions || [],
+        suitable_for: submission.suitableFor || [],
+        status: submission.status,
+        ai_verification: submission.aiVerification,
+        created_at: submission.createdAt,
+        updated_at: submission.updatedAt,
+        submitted_at: submission.submittedAt,
+      });
+    } catch (dbErr: any) {
+      console.warn('[ContributionService] Supabase persistence notice:', dbErr?.message || dbErr);
+    }
+
     // 5. Send In-App Confirmation Notification
     try {
       await notificationStore.createNotification({
@@ -312,6 +351,24 @@ class ContributionService {
     this.cache.set(id, submission);
     this.persist();
 
+    // Attempt persistent Supabase PostgreSQL update
+    try {
+      const supabase = getSupabaseServerClient();
+      void supabase.from('place_submissions').update({
+        status: submission.status,
+        rejection_reason: submission.rejectionReason,
+        admin_feedback: submission.adminFeedback,
+        reviewed_by: submission.reviewedBy,
+        reviewed_at: submission.reviewedAt,
+        approved_at: submission.approvedAt,
+        destination_id: submission.approvedPlaceId,
+        reward_coupon_code: submission.rewardCouponCode,
+        updated_at: submission.updatedAt,
+      }).eq('id', submission.id);
+    } catch (e: any) {
+      console.warn('[ContributionService] Supabase update exception:', e?.message || e);
+    }
+
     return submission;
   }
 
@@ -348,6 +405,24 @@ class ContributionService {
 
     this.cache.set(id, submission);
     this.persist();
+
+    // Attempt persistent Supabase PostgreSQL update
+    try {
+      const supabase = getSupabaseServerClient();
+      void supabase.from('place_submissions').update({
+        status: submission.status,
+        rejection_reason: submission.rejectionReason,
+        admin_feedback: submission.adminFeedback,
+        reviewed_by: submission.reviewedBy,
+        reviewed_at: submission.reviewedAt,
+        approved_at: submission.approvedAt,
+        destination_id: submission.approvedPlaceId,
+        reward_coupon_code: submission.rewardCouponCode,
+        updated_at: submission.updatedAt,
+      }).eq('id', submission.id);
+    } catch (e: any) {
+      console.warn('[ContributionService] Supabase update exception:', e?.message || e);
+    }
 
     return submission;
   }
@@ -629,6 +704,24 @@ class ContributionService {
 
     this.cache.set(id, submission);
     this.persist();
+
+    // Attempt persistent Supabase PostgreSQL update
+    try {
+      const supabase = getSupabaseServerClient();
+      void supabase.from('place_submissions').update({
+        status: submission.status,
+        rejection_reason: submission.rejectionReason,
+        admin_feedback: submission.adminFeedback,
+        reviewed_by: submission.reviewedBy,
+        reviewed_at: submission.reviewedAt,
+        approved_at: submission.approvedAt,
+        destination_id: submission.approvedPlaceId,
+        reward_coupon_code: submission.rewardCouponCode,
+        updated_at: submission.updatedAt,
+      }).eq('id', submission.id);
+    } catch (e: any) {
+      console.warn('[ContributionService] Supabase update exception:', e?.message || e);
+    }
 
     return {
       submission,

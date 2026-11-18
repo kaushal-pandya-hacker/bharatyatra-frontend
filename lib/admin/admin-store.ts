@@ -422,7 +422,7 @@ class AdminDataStoreImpl {
     const now = new Date();
     const isoNow = now.toISOString();
 
-    // 1. Authoritative User Registry
+    // 1. Authoritative User Registry (Merged with Genuine Persistent Store Identities)
     this.users = [
       {
         id: 'usr-kaushal-01',
@@ -439,13 +439,41 @@ class AdminDataStoreImpl {
         kycVerified: true,
       },
       {
-        id: 'usr-priya-02',
-        fullName: 'Priya Sharma',
-        email: 'priya.sharma@gmail.com',
-        phoneNumber: '+91 98765 43210',
+        id: 'user-test-777',
+        fullName: 'Pooja Patel',
+        email: 'pooja.patel@example.com',
+        phoneNumber: '+91 98251 12345',
         accountStatus: 'ACTIVE',
         totalBookings: 2,
-        totalSpent: 28500,
+        totalSpent: 16500,
+        city: 'Idar',
+        state: 'Gujarat',
+        registrationDate: new Date(now.getTime() - 30 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 8 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr-test-02',
+        fullName: 'Aarav Mehta',
+        email: 'aarav@bharatyatra.in',
+        phoneNumber: '+91 98250 54321',
+        accountStatus: 'ACTIVE',
+        totalBookings: 2,
+        totalSpent: 24000,
+        city: 'Surat',
+        state: 'Gujarat',
+        registrationDate: new Date(now.getTime() - 45 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 12 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr_happy_004',
+        fullName: 'Aarav Sharma',
+        email: 'aarav.sharma@example.com',
+        phoneNumber: '+91 97123 45678',
+        accountStatus: 'ACTIVE',
+        totalBookings: 2,
+        totalSpent: 18200,
         city: 'Jaipur',
         state: 'Rajasthan',
         registrationDate: new Date(now.getTime() - 40 * 86400000).toISOString(),
@@ -464,6 +492,20 @@ class AdminDataStoreImpl {
         state: 'Maharashtra',
         registrationDate: new Date(now.getTime() - 15 * 86400000).toISOString(),
         lastLogin: new Date(now.getTime() - 24 * 3600000).toISOString(),
+        kycVerified: true,
+      },
+      {
+        id: 'usr-priya-02',
+        fullName: 'Priya Sharma',
+        email: 'priya.sharma@gmail.com',
+        phoneNumber: '+91 98765 43210',
+        accountStatus: 'ACTIVE',
+        totalBookings: 2,
+        totalSpent: 28500,
+        city: 'Jaipur',
+        state: 'Rajasthan',
+        registrationDate: new Date(now.getTime() - 40 * 86400000).toISOString(),
+        lastLogin: new Date(now.getTime() - 14 * 3600000).toISOString(),
         kycVerified: true,
       },
       {
@@ -1522,17 +1564,26 @@ class AdminDataStoreImpl {
       .filter((p) => (p.status === 'SUCCESSFUL' || (p.status as any) === 'PAID') && p.transactionDate.startsWith(currentMonth))
       .reduce((sum, p) => sum + p.amount, 0);
 
-    // 5. Community Analytics
+    // 5. Community Analytics (Live Aggregated from Authoritative Community Stores)
     let communityStats = {
-      totalContributedDestinations: 6,
-      pendingApprovals: 1,
-      approvedDestinations: 4,
-      rejectedSubmissions: 1,
-      rewardsGenerated: 2,
-      rewardsRedeemed: 1,
-      rewardRedemptionRatePct: 50,
+      totalContributedDestinations: 13,
+      pendingApprovals: 7,
+      approvedDestinations: 6,
+      rejectedSubmissions: 0,
+      rewardsGenerated: 16,
+      rewardsRedeemed: 0,
+      rewardRedemptionRatePct: 0,
     };
     try {
+      const contribPath = path.join(process.cwd(), 'data', 'community_contributions.json');
+      if (fs.existsSync(contribPath)) {
+        const raw = JSON.parse(fs.readFileSync(contribPath, 'utf8'));
+        const subs = raw.submissions || [];
+        communityStats.totalContributedDestinations = subs.length;
+        communityStats.approvedDestinations = subs.filter((s: any) => s.status === 'APPROVED').length;
+        communityStats.pendingApprovals = subs.filter((s: any) => s.status === 'PENDING').length;
+        communityStats.rejectedSubmissions = subs.filter((s: any) => s.status === 'REJECTED').length;
+      }
       const rewardStats = contributorRewardService.getRewardStats();
       communityStats.rewardsGenerated = rewardStats.totalGenerated;
       communityStats.rewardsRedeemed = rewardStats.redeemed;
@@ -1673,7 +1724,9 @@ class AdminDataStoreImpl {
         uptime: '100%',
         activeNodes: 1,
         backendStatus: 'HEALTHY',
-        databaseStatus: 'CONNECTED (Supabase / PostgreSQL Pool)',
+        databaseStatus: process.env.DATABASE_URL
+          ? 'CONNECTED (Prisma Core Engine)'
+          : 'SCHEMA_PENDING (Supabase Remote — PostgreSQL Tables Pending Migration)',
         aiGatewayStatus: 'HEALTHY (Gemini 2.0 Flash Active)',
       },
     };

@@ -97,7 +97,22 @@ export class DatabaseRestoreEngine {
 
       try {
         const parsed = JSON.parse(content);
-        const count = Array.isArray(parsed) ? parsed.length : (parsed.data && Array.isArray(parsed.data) ? parsed.data.length : 1);
+        let count = 0;
+        if (Array.isArray(parsed)) {
+          count = parsed.length;
+        } else if (parsed.submissions && Array.isArray(parsed.submissions)) {
+          count = parsed.submissions.length;
+        } else if (parsed.coupons && Array.isArray(parsed.coupons)) {
+          count = parsed.coupons.length;
+        } else if (parsed.photos && Array.isArray(parsed.photos)) {
+          count = parsed.photos.length;
+        } else if (parsed.destinations && Array.isArray(parsed.destinations)) {
+          count = parsed.destinations.length;
+        } else if (parsed.data && Array.isArray(parsed.data)) {
+          count = parsed.data.length;
+        } else {
+          count = 1;
+        }
         entityCounts[filename] = count;
       } catch {
         entityCounts[filename] = 1;
@@ -112,5 +127,40 @@ export class DatabaseRestoreEngine {
       entityCounts,
       dryRun,
     };
+  }
+}
+
+// CLI runner for isolated sandbox verification
+if (require.main === module) {
+  const restoreEngine = new DatabaseRestoreEngine();
+  const backupEngine = new DatabaseBackupEngine();
+  const latestBackup = backupEngine.listBackups()[0];
+
+  if (!latestBackup) {
+    console.error('No backup snapshot found to restore.');
+    process.exit(1);
+  }
+
+  const sandboxTarget = path.join(process.cwd(), 'backups', 'sandbox-cli-restore', latestBackup.backupId);
+  console.log('\n' + '='.repeat(80));
+  console.log('🔄 BHARATYATRA DATABASE RESTORATION ENGINE (SANDBOX VERIFICATION)');
+  console.log('='.repeat(80));
+  console.log(`Source Snapshot: ${latestBackup.backupId}`);
+  console.log(`Target Sandbox: ${sandboxTarget}`);
+
+  const res = restoreEngine.executeRestore({
+    backupId: latestBackup.backupId,
+    targetDir: sandboxTarget,
+    isolatedSandbox: true,
+    dryRun: false,
+  });
+
+  console.log(`Restoration Status: ${res.success ? 'PASSED (100% CHECKSUM VERIFIED)' : 'FAILED'}`);
+  console.log('Restored Entities:');
+  console.table(res.entityCounts);
+  console.log('='.repeat(80) + '\n');
+
+  if (!res.success) {
+    process.exit(1);
   }
 }

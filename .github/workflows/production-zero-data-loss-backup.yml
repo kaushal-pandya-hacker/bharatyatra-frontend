@@ -1,0 +1,62 @@
+name: BharatYatra Automated Scheduled Zero Data Loss Backup & DR Verification
+
+on:
+  schedule:
+    # Runs automatically every day at 02:00 UTC (07:30 AM IST)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Manual Trigger Justification'
+        required: false
+        default: 'Production Maintenance & Zero Data Loss Snapshot'
+
+jobs:
+  automated-backup-and-verify:
+    name: Execute Daily Point-In-Time Backup & Sandbox Disaster Recovery Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛡️ Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install Application Dependencies
+        run: npm ci
+
+      - name: 🔍 Pre-Backup Migration Safety Analysis
+        run: npm run db:validate-migrations
+
+      - name: 📊 Pre-Backup Data Integrity Verification
+        run: npm run db:integrity-check
+
+      - name: 🗄️ Execute Authoritative Point-in-Time Database Backup
+        run: npm run db:backup
+        env:
+          NODE_ENV: production
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY || 'bharatyatra-production-backup-secret' }}
+
+      - name: 🔄 Execute Isolated Sandbox Disaster Recovery Verification
+        run: npx tsx scripts/zero-data-loss/test-restore-runner.ts
+        env:
+          NODE_ENV: production
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY || 'bharatyatra-production-backup-secret' }}
+
+      - name: ☁️ Archive Verified Encrypted Snapshot Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bharatyatra-verified-backup-snapshot
+          path: backups/db/
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: 🚨 Alert on Disaster Recovery Failure
+        if: failure()
+        run: |
+          echo "::error::CRITICAL: Daily BharatYatra Zero Data Loss Backup or Sandbox Restoration FAILED!"
+          echo "Immediate operator investigation required to protect traveler data."

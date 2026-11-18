@@ -6,6 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { getSupabaseServerClient } from '@/lib/supabase/client';
 
 export interface ContributorRewardCoupon {
   id: string;
@@ -198,6 +199,30 @@ class ContributorRewardService {
     });
 
     this.persist();
+
+    // Persist to Supabase PostgreSQL shared persistent database
+    try {
+      const supabase = getSupabaseServerClient();
+      void supabase.from('contributor_rewards').insert({
+        id: coupon.id,
+        code: coupon.code,
+        contributor_id: coupon.contributorId,
+        contributor_name: coupon.contributorName,
+        contributor_email: coupon.contributorEmail,
+        submission_id: coupon.submissionId,
+        place_name: coupon.placeName,
+        discount_percent: coupon.discountPercent,
+        max_discount_inr: coupon.maxDiscountInr,
+        min_booking_inr: coupon.minBookingInr,
+        status: coupon.status,
+        valid_from: coupon.validFrom,
+        valid_until: coupon.validUntil,
+        created_at: coupon.createdAt,
+      });
+    } catch (e: any) {
+      console.warn('[ContributorRewardService] Supabase insert exception:', e?.message || e);
+    }
+
     return coupon;
   }
 
@@ -400,6 +425,19 @@ class ContributorRewardService {
     });
 
     this.persist();
+
+    // Persist to Supabase PostgreSQL shared persistent database
+    try {
+      const supabase = getSupabaseServerClient();
+      void supabase.from('contributor_rewards').update({
+        status: 'REDEEMED',
+        redeemed_at: nowIso,
+        redeemed_booking_id: params.bookingId,
+      }).eq('code', coupon.code);
+    } catch (e: any) {
+      console.warn('[ContributorRewardService] Supabase redeem exception:', e?.message || e);
+    }
+
     return {
       success: true,
       discountSavedInr: val.discountAmountInr,
