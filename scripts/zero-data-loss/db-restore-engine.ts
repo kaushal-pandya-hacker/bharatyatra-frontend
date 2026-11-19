@@ -100,6 +100,8 @@ export class DatabaseRestoreEngine {
         let count = 0;
         if (Array.isArray(parsed)) {
           count = parsed.length;
+        } else if (parsed.profiles && Array.isArray(parsed.profiles)) {
+          count = (parsed.profiles?.length || 0) + (parsed.trips?.length || 0) + (parsed.bookings?.length || 0);
         } else if (parsed.submissions && Array.isArray(parsed.submissions)) {
           count = parsed.submissions.length;
         } else if (parsed.coupons && Array.isArray(parsed.coupons)) {

@@ -125,6 +125,7 @@ export class DatabaseBackupEngine {
 
     // 1. Gather all persistent entities
     const entitiesToBackup = [
+      { key: 'userStore', file: 'persistent_user_store.json', defaultCount: 0 },
       { key: 'contributions', file: 'community_contributions.json', defaultCount: 0 },
       { key: 'publishedDestinations', file: 'community_published_destinations.json', defaultCount: 0 },
       { key: 'rewards', file: 'community_rewards.json', defaultCount: 0 },
@@ -151,6 +152,11 @@ export class DatabaseBackupEngine {
           const parsed = JSON.parse(content);
           if (Array.isArray(parsed)) {
             count = parsed.length;
+          } else if (parsed.profiles && Array.isArray(parsed.profiles)) {
+            count = (parsed.profiles?.length || 0) + (parsed.trips?.length || 0) + (parsed.bookings?.length || 0);
+            recordCounts.users += (parsed.profiles?.length || 0);
+            recordCounts.trips += (parsed.trips?.length || 0);
+            recordCounts.bookings += (parsed.bookings?.length || 0);
           } else if (parsed.submissions && Array.isArray(parsed.submissions)) {
             count = parsed.submissions.length;
           } else if (parsed.coupons && Array.isArray(parsed.coupons)) {
