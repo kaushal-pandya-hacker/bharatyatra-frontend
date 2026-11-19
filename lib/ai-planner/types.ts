@@ -27,9 +27,14 @@ export interface TripPlanningRequest {
   preferenceProfile?: import('./universal-preference-profile').TripPreferenceProfile;
   origin?: LocationSpec;
   destinations?: Array<{
+    destinationId?: string;
+    name?: string;
+    displayName?: string;
     city?: string;
     place?: string;
     state?: string;
+    type?: string;
+    selectionOrder?: number;
   }>;
   startDate?: string;
   endDate?: string;

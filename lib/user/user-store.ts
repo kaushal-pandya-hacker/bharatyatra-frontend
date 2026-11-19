@@ -2121,6 +2121,47 @@ export class UserDataStore {
     }
   }
 
+  public static async saveTripDraft(userId: string, draftState: any): Promise<UserTripRecord> {
+    const draftTrip: Partial<UserTripRecord> = {
+      id: draftState.tripId || `draft-${userId}-${Date.now()}`,
+      userId,
+      title: draftState.destinations && draftState.destinations.length > 0
+        ? `Draft: ${draftState.destinations.map((d: any) => d.name).join(', ')}`
+        : 'Draft Trip',
+      destination: draftState.destinations && draftState.destinations.length > 0
+        ? draftState.destinations.map((d: any) => d.name).join(', ')
+        : 'India',
+      destinationCity: draftState.destinations?.[0]?.city || 'India',
+      originCity: draftState.startingLocation?.city || 'Ahmedabad',
+      durationDays: draftState.travelDates?.durationDays || 4,
+      status: 'DRAFT',
+      tripContextJson: draftState,
+    };
+    return this.saveTrip(userId, draftTrip);
+  }
+
+  public static async getTripDraft(userId: string): Promise<any | null> {
+    try {
+      const trips = await this.getUserTrips(userId);
+      const drafts = trips.filter((t) => t.status === 'DRAFT');
+      if (drafts.length === 0) return null;
+      drafts.sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
+      return drafts[0].tripContextJson || null;
+    } catch {
+      return null;
+    }
+  }
+
+  public static async clearTripDraft(userId: string): Promise<void> {
+    try {
+      const trips = await this.getUserTrips(userId);
+      const drafts = trips.filter((t) => t.status === 'DRAFT');
+      for (const d of drafts) {
+        await this.deleteTrip(d.id, userId);
+      }
+    } catch {}
+  }
+
   public static async getSettlements(tripId: string, userId: string): Promise<SettlementSuggestion[] | null> {
     if (simulateDatabaseFailure) {
       throw new DatabasePersistenceError('Simulated database read failure for settlements.');

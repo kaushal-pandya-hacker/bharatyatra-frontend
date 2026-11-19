@@ -184,10 +184,15 @@ export function parseTripIntent(request: TripPlanningRequest): ParsedIntent {
   // 6. Extract Target Destinations
   const targetDestinations: string[] = [];
   if (request.destinations && request.destinations.length > 0) {
-    request.destinations.forEach(d => {
-      if (d.city) targetDestinations.push(d.city);
-      else if (d.state) targetDestinations.push(d.state);
-      else if (d.place) targetDestinations.push(d.place);
+    request.destinations.forEach((d: any) => {
+      if (typeof d === 'string' && d.trim()) {
+        targetDestinations.push(d.trim());
+      } else if (d && typeof d === 'object') {
+        const candidate = d.name || d.displayName || d.place || d.city || d.state || d.destinationId;
+        if (candidate && typeof candidate === 'string' && candidate.trim()) {
+          targetDestinations.push(candidate.trim());
+        }
+      }
     });
   }
 

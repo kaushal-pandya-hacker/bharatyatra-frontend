@@ -1,3 +1,4 @@
+import { validateTripPayload } from '@/lib/trips/trip-planning-state';
 /**
  * BharatYatra — Generate AI Itinerary API
  * POST /api/trips/generate-itinerary
@@ -36,6 +37,22 @@ export async function POST(req: NextRequest) {
       : ['Jaipur'];
 
     const durationDays = parseInt(body.durationDays || body.duration || body.days || '0', 10);
+
+    const validation = validateTripPayload({
+      originCity: origin,
+      destinations,
+      durationDays: durationDays > 0 ? durationDays : undefined,
+    });
+    if (!validation.valid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: validation.errors.join('; '),
+          errors: validation.errors,
+        },
+        { status: 400 }
+      );
+    }
     const travelMode = body.travelMode || body.mode || 'car';
     const travelPace = body.travelPace || body.pace || 'balanced';
     const travellers = body.travellers || body.travelers || body.adults || 2;

@@ -1,4 +1,10 @@
 /**
+ * Authoritative AI Itinerary Generation System Instruction (Section 5 Standard)
+ */
+export const AI_SYSTEM_ITINERARY_INSTRUCTION =
+  "Generate the itinerary using the user's confirmed destination selections. Every selected destination must be represented appropriately in the itinerary. Never silently substitute, remove, or replace a selected destination with an unrelated destination. You may recommend nearby attractions as additional optional activities, but clearly distinguish them from the user's selected destinations. If the selected destinations cannot reasonably fit the requested duration, explain the conflict and request an adjustment rather than silently changing the destination list.";
+
+/**
  * BharatYatra AI 2.0 — Pure AI Travel Intelligence & Itinerary Engine
  *
  * Dedicated exclusively to travel intelligence — ZERO FINANCIAL CALCULATIONS.
@@ -218,6 +224,7 @@ export interface PureItineraryResult {
   seasonalScore: number;
   warnings: string[];
   preferenceProfile: TripPreferenceProfile;
+  systemInstruction?: string;
 }
 
 // ============================================================================
@@ -434,6 +441,7 @@ export class PureItineraryService {
       seasonalScore: seasonal.isSuitable ? 95 : 70,
       warnings: [...durationRec.validationAlerts, ...seasonal.warnings],
       preferenceProfile: sanitizedProfile,
+      systemInstruction: AI_SYSTEM_ITINERARY_INSTRUCTION,
     };
   }
 
@@ -502,9 +510,11 @@ export class PureItineraryService {
         primaryTransportMode = 'cab';
       }
 
+      const isLocalOriginCity = distToDestKm <= 35 || (primaryNode.city && primaryNode.city.toLowerCase() === intent.originCity.toLowerCase());
+
       // 1. Morning Activities
       const morning: PureActivity[] = [];
-      if (isFirstDay) {
+      if (isFirstDay && !isLocalOriginCity) {
         morning.push({
           id: `act-${dayIndex}-1`,
           name: `Departure from ${intent.originCity} to ${locationName}`,
@@ -565,7 +575,7 @@ export class PureItineraryService {
           reason: 'Gentle walk on flat terrain; avoid physical exertion while your body adapts to elevation.',
         });
       } else {
-        const secNode = dayNodes[1] || dayNodes[0] || primaryNode;
+        const secNode = dayNodes.length > 1 ? dayNodes[1] : (dayNodes[0] || primaryNode);
         afternoon.push({
           id: `act-${dayIndex}-2`,
           name: secNode.name !== morning[0]?.name ? secNode.name : `${locationName} Heritage & Cultural Exploration`,
@@ -620,7 +630,7 @@ export class PureItineraryService {
 
       // 5. Travel Segments (Pure transit specifications, zero pricing)
       const travelSegments: PureTravelSegment[] = [];
-      if (isFirstDay) {
+      if (isFirstDay && !isLocalOriginCity) {
         const rawSeg = createTravelSegment(
           intent.originCity,
           origin.lat,
@@ -640,7 +650,7 @@ export class PureItineraryService {
           arrivalTime: rawSeg.arrivalTime,
           notes: rawSeg.notes,
         });
-      } else if (isLastDay) {
+      } else if (isLastDay && !isLocalOriginCity) {
         const rawSeg = createTravelSegment(
           locationName,
           primaryNode.latitude || origin.lat,

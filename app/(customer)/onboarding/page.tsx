@@ -58,7 +58,14 @@ function OnboardingContent() {
   const isEditMode = searchParams ? searchParams.get('edit') === 'true' : false;
   const flowParam = searchParams ? searchParams.get('flow') : null; // 'plan' if triggered from selection bar
   const { user } = useAuth();
-  const { selectedDestinations, clearSelection } = useDestinationSelection();
+  const {
+    selectedDestinations,
+    clearSelection,
+    addDestination,
+    removeDestination,
+    startNewTrip,
+    canonicalTripState,
+  } = useDestinationSelection();
 
   // Wizard Step: 0 = Welcome, 1..7 = Core Questions, 8 = AI Duration & Summary, 9 = Final Itinerary Ready
   const [currentStep, setCurrentStep] = useState<number>(isEditMode ? 8 : (flowParam === 'plan' ? 1 : 0));
@@ -125,14 +132,12 @@ function OnboardingContent() {
     initAudioUnlocker();
   }, []);
 
-  // Hydrate destinations from context if available
+  // Hydrate destinations from context as authoritative single source of truth
   useEffect(() => {
     if (selectedDestinations && selectedDestinations.length > 0) {
       const names = selectedDestinations.map((d) => d.name);
-      setDestinations((prev) => Array.from(new Set([...prev, ...names])));
-      if (selectedDestinations.length > 1) {
-        setIsMultiDestination(true);
-      }
+      setDestinations(names);
+      setIsMultiDestination(names.length > 1);
     }
   }, [selectedDestinations]);
 
@@ -149,7 +154,10 @@ function OnboardingContent() {
             if (draft.children) setChildren(draft.children);
             if (draft.childAgeGroups) setChildAgeGroups(draft.childAgeGroups);
             if (draft.originCity) setOriginCity(draft.originCity);
-            if (draft.destinations && draft.destinations.length > 0) setDestinations(draft.destinations);
+            // Only restore draft destinations if NOT in plan flow and no active context picks
+            if (!flowParam && (!selectedDestinations || selectedDestinations.length === 0)) {
+              if (draft.destinations && draft.destinations.length > 0) setDestinations(draft.destinations);
+            }
             if (draft.dateMode) setDateMode(draft.dateMode);
             if (draft.preferredTransport) setPreferredTransport(draft.preferredTransport);
             if (draft.budgetTier) setBudgetTier(draft.budgetTier);
@@ -250,15 +258,20 @@ function OnboardingContent() {
       const updated = [...destinations, clean];
       setDestinations(updated);
       if (updated.length > 1) setIsMultiDestination(true);
+      addDestination(clean);
     }
     setDestInput('');
     setShowDestDropdown(false);
   };
 
   const handleRemoveDest = (index: number) => {
+    const destToRemove = destinations[index];
     const updated = destinations.filter((_, i) => i !== index);
     setDestinations(updated);
     if (updated.length <= 1) setIsMultiDestination(false);
+    if (destToRemove) {
+      removeDestination(destToRemove);
+    }
   };
 
   const toggleArrayItem = (list: string[], setList: (v: string[]) => void, item: string) => {
@@ -909,6 +922,7 @@ function OnboardingContent() {
                       onClick={() => {
                         if (isSelected) {
                           setDestinations(destinations.filter((x) => x !== preset.name));
+                          removeDestination(preset.name);
                         } else {
                           handleAddDestination(preset.name);
                         }
@@ -1661,7 +1675,7 @@ function OnboardingContent() {
                       <div>
                         <span className="text-[10px] text-slate-400 font-bold uppercase block">Destinations</span>
                         <span className="font-extrabold text-[#102A56] block mt-0.5">
-                          {destinations.slice(0, 3).join(', ') || 'Custom Selection'}
+                          {destinations.join(' • ') || 'Custom Selection'}
                         </span>
                         <span className="text-[11px] text-slate-500 block">{destinations.length} places selected</span>
                       </div>
@@ -1826,6 +1840,8 @@ function OnboardingContent() {
                 onClick={() => {
                   setCurrentStep(1);
                   setDestinations([]);
+                  clearSelection();
+                  startNewTrip();
                 }}
                 className="w-full sm:w-auto px-5 py-3.5 text-xs font-bold text-[#102A56] hover:underline cursor-pointer"
               >

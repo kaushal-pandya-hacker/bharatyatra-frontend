@@ -95,97 +95,210 @@ export function resolveDestinationCoordinates(name: string, stateName?: string):
 }
 
 /**
- * Loads and enriches destination intelligence nodes based on target destination queries
+ * Loads and enriches destination intelligence nodes based on target destination queries.
+ * Evaluates Destination Master (1,162 verified items), Geo Registry, and State Folders.
+ * Never drops user-selected destinations or attractions.
  */
 export function getDestinationsForTarget(targetDestinations: string[], originCity: string): DestinationNode[] {
   const allFolderStates = getAllStateFolderItems();
   const nodes: DestinationNode[] = [];
 
-  const normalizedTargets = targetDestinations.map(t => t.toLowerCase().trim());
+  const normalizedTargets = targetDestinations.map(t => t.toLowerCase().trim()).filter(Boolean);
+  if (normalizedTargets.length === 0) return nodes;
 
-  // 1. First add direct high-fidelity matches from INDIA_DESTINATIONS_REGISTRY
-  Object.values(INDIA_DESTINATIONS_REGISTRY).forEach(regItem => {
-    const isTarget = normalizedTargets.some(t => 
-      regItem.name.toLowerCase().includes(t) ||
-      regItem.displayName.toLowerCase().includes(t) ||
-      regItem.stateOrUt.toLowerCase().includes(t) ||
-      t.includes(regItem.name.toLowerCase()) ||
-      t.includes(regItem.stateOrUt.toLowerCase())
-    );
+  // Track added node keys and matched targets
+  const addedKeys = new Set<string>();
+  const resolvedTargets = new Set<string>();
 
-    if (isTarget || normalizedTargets.includes('all')) {
+  // 1. Direct Resolution via Destination Master (Primary High-Fidelity Index)
+  for (const rawTarget of targetDestinations) {
+    const cleanTarget = rawTarget.trim();
+    if (!cleanTarget) continue;
+
+    const master = findDestinationMaster(cleanTarget);
+    if (master && !addedKeys.has(master.canonicalName.toLowerCase())) {
+      addedKeys.add(master.canonicalName.toLowerCase());
+      addedKeys.add(master.id.toLowerCase());
+      resolvedTargets.add(cleanTarget.toLowerCase());
+
+      const isTemple = master.category?.toLowerCase().includes('temple') ||
+                       master.category?.toLowerCase().includes('religious') ||
+                       master.tourismType?.toLowerCase().includes('religious') ||
+                       master.canonicalName.toLowerCase().includes('temple');
+      const isSafari = master.category?.toLowerCase().includes('safari') ||
+                       master.category?.toLowerCase().includes('wildlife');
+
       nodes.push({
-        id: regItem.id,
-        name: regItem.name,
-        displayName: regItem.displayName,
-        city: regItem.district || regItem.name,
-        district: regItem.district,
-        state: regItem.stateOrUt,
+        id: master.id,
+        name: master.canonicalName,
+        displayName: master.canonicalName,
+        city: master.city || master.district || (master.terrain === 'island' ? master.canonicalName : master.stateOrUt),
+        district: master.district || master.city,
+        state: master.stateOrUt,
         country: 'India',
-        latitude: regItem.latitude,
-        longitude: regItem.longitude,
-        categories: [regItem.category],
-        averageVisitDurationMinutes: regItem.isHighAltitude ? 240 : 150,
-        openingTime: '08:00',
-        closingTime: '19:00',
-        bestMonths: regItem.bestMonths,
-        seasonalRestrictions: regItem.seasonalAlerts?.notice ? [regItem.seasonalAlerts.notice] : [],
-        estimatedEntryFeeInr: 100,
+        latitude: master.latitude,
+        longitude: master.longitude,
+        categories: [master.category || master.tourismType || 'Cultural Landmark'],
+        averageVisitDurationMinutes: master.isHighAltitude ? 240 : isSafari ? 240 : isTemple ? 90 : 150,
+        openingTime: isTemple ? '06:00' : '08:30',
+        closingTime: isTemple ? '21:00' : '18:30',
+        bestMonths: master.bestMonths && master.bestMonths.length > 0 ? master.bestMonths : ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+        seasonalRestrictions: master.isHighAltitude ? ['Winter High Altitude Pass Alert (Nov-Apr)'] : [],
+        estimatedEntryFeeInr: isSafari ? 1200 : isTemple ? 0 : 100,
         popularityScore: 95,
-        familyFriendly: !regItem.isHighAltitude,
-        seniorFriendly: !regItem.isHighAltitude,
-        accessibilityScore: regItem.isHighAltitude ? 60 : 85,
-        estimatedDailyCostInr: regItem.isHighAltitude ? 3500 : 2000,
+        familyFriendly: !master.isHighAltitude,
+        seniorFriendly: !master.isHighAltitude,
+        accessibilityScore: master.isHighAltitude ? 60 : 85,
+        estimatedDailyCostInr: master.isHighAltitude ? 3500 : 2000,
+        imageUrl: '/hero-bg.jpg',
       });
     }
-  });
+  }
 
-  // 2. Supplement from the 1,162 verified state destination folder items
-  allFolderStates.forEach(st => {
-    const isTargetState = normalizedTargets.some(t => 
-      st.name.toLowerCase().includes(t) || 
-      st.slug.toLowerCase().includes(t) ||
-      t.includes(st.name.toLowerCase())
-    );
+  // Remaining unresolved targets that need macro hub or state folder resolution
+  const unresolvedTargets = normalizedTargets.filter(t => !resolvedTargets.has(t) && t !== 'all');
 
-    if (isTargetState || normalizedTargets.includes('all')) {
-      const stateCentroid = STATE_CENTROIDS[st.name.toLowerCase().trim()] || { lat: 28.6139, lng: 77.2090 };
+  // 2. Match unresolved targets from INDIA_DESTINATIONS_REGISTRY
+  if (unresolvedTargets.length > 0 || normalizedTargets.includes('all')) {
+    Object.values(INDIA_DESTINATIONS_REGISTRY).forEach(regItem => {
+      if (addedKeys.has(regItem.name.toLowerCase()) || addedKeys.has(regItem.id.toLowerCase())) return;
 
-      st.places.forEach(p => {
-        // Prevent duplicate IDs
-        if (nodes.some(n => n.name.toLowerCase() === p.name.toLowerCase())) return;
+      const isTarget = unresolvedTargets.some(t => 
+        regItem.name.toLowerCase() === t ||
+        regItem.displayName.toLowerCase() === t ||
+        regItem.id.toLowerCase() === t ||
+        (t.length >= 4 && regItem.name.toLowerCase().includes(t)) ||
+        (regItem.name.length >= 4 && t.includes(regItem.name.toLowerCase()))
+      );
 
-        const coords = resolveDestinationCoordinates(p.name, st.name);
-        const isTemple = p.category?.toLowerCase().includes('temple') || p.category?.toLowerCase().includes('religious') || p.name.toLowerCase().includes('temple');
-        const isSafari = p.category?.toLowerCase().includes('safari') || p.category?.toLowerCase().includes('wildlife');
+      if (isTarget || normalizedTargets.includes('all')) {
+        addedKeys.add(regItem.name.toLowerCase());
+        addedKeys.add(regItem.id.toLowerCase());
 
         nodes.push({
-          id: `${st.slug}-${p.slug}`,
-          name: p.name,
-          displayName: p.displayName || p.name,
-          city: p.city || p.district || st.name,
-          district: p.district,
-          state: st.name,
+          id: regItem.id,
+          name: regItem.name,
+          displayName: regItem.displayName,
+          city: regItem.district || regItem.name,
+          district: regItem.district,
+          state: regItem.stateOrUt,
           country: 'India',
-          latitude: coords.lat,
-          longitude: coords.lng,
-          categories: [p.category || (isTemple ? 'Religious & Pilgrimage' : 'Tourist Attraction')],
-          averageVisitDurationMinutes: isSafari ? 240 : isTemple ? 90 : 120,
-          openingTime: isTemple ? '06:00' : '09:00',
-          closingTime: isTemple ? '21:00' : '18:00',
-          bestMonths: isSafari ? ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'] : ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-          seasonalRestrictions: (p.name.includes('Kedarnath') || p.name.includes('Badrinath')) ? ['Monsoon High Risk', 'Winter Closure (Nov-Apr)'] : [],
-          estimatedEntryFeeInr: isSafari ? 1200 : isTemple ? 0 : 100,
-          popularityScore: ((p as any).priority === 1) ? 95 : ((p as any).priority === 2) ? 80 : 75,
-          familyFriendly: true,
-          seniorFriendly: !p.name.includes('Trek') && !p.name.includes('Peak'),
-          accessibilityScore: isTemple ? 85 : 90,
-          estimatedDailyCostInr: isSafari ? 3500 : 1800,
-          imageUrl: p.imageUrl,
+          latitude: regItem.latitude,
+          longitude: regItem.longitude,
+          categories: [regItem.category],
+          averageVisitDurationMinutes: regItem.isHighAltitude ? 240 : 150,
+          openingTime: '08:00',
+          closingTime: '19:00',
+          bestMonths: regItem.bestMonths,
+          seasonalRestrictions: regItem.seasonalAlerts?.notice ? [regItem.seasonalAlerts.notice] : [],
+          estimatedEntryFeeInr: 100,
+          popularityScore: 95,
+          familyFriendly: !regItem.isHighAltitude,
+          seniorFriendly: !regItem.isHighAltitude,
+          accessibilityScore: regItem.isHighAltitude ? 60 : 85,
+          estimatedDailyCostInr: regItem.isHighAltitude ? 3500 : 2000,
         });
+      }
+    });
+  }
+
+  // 3. Match from 1,162 verified state destination folder items
+  if (unresolvedTargets.length > 0 || normalizedTargets.includes('all')) {
+    allFolderStates.forEach(st => {
+      const isTargetState = unresolvedTargets.some(t => 
+        st.name.toLowerCase() === t || 
+        st.slug.toLowerCase() === t ||
+        (t.length >= 4 && st.name.toLowerCase().includes(t))
+      );
+
+      st.places.forEach(p => {
+        const pNameLower = p.name.toLowerCase();
+        const pSlugLower = p.slug.toLowerCase();
+        const isDirectPlaceMatch = unresolvedTargets.some(t =>
+          pNameLower === t ||
+          pSlugLower === t ||
+          (t.length >= 4 && pNameLower.includes(t)) ||
+          (p.displayName && p.displayName.toLowerCase() === t)
+        );
+
+        if ((isDirectPlaceMatch || isTargetState || normalizedTargets.includes('all')) && !addedKeys.has(pNameLower)) {
+          addedKeys.add(pNameLower);
+
+          const coords = resolveDestinationCoordinates(p.name, st.name);
+          const isTemple = p.category?.toLowerCase().includes('temple') || p.category?.toLowerCase().includes('religious') || pNameLower.includes('temple');
+          const isSafari = p.category?.toLowerCase().includes('safari') || p.category?.toLowerCase().includes('wildlife');
+
+          nodes.push({
+            id: `${st.slug}-${p.slug}`,
+            name: p.name,
+            displayName: p.displayName || p.name,
+            city: p.city || p.district || st.name,
+            district: p.district,
+            state: st.name,
+            country: 'India',
+            latitude: coords.lat,
+            longitude: coords.lng,
+            categories: [p.category || (isTemple ? 'Religious & Pilgrimage' : 'Tourist Attraction')],
+            averageVisitDurationMinutes: isSafari ? 240 : isTemple ? 90 : 120,
+            openingTime: isTemple ? '06:00' : '09:00',
+            closingTime: isTemple ? '21:00' : '18:00',
+            bestMonths: isSafari ? ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'] : ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+            seasonalRestrictions: (p.name.includes('Kedarnath') || p.name.includes('Badrinath')) ? ['Monsoon High Risk', 'Winter Closure (Nov-Apr)'] : [],
+            estimatedEntryFeeInr: isSafari ? 1200 : isTemple ? 0 : 100,
+            popularityScore: ((p as any).priority === 1) ? 95 : ((p as any).priority === 2) ? 80 : 75,
+            familyFriendly: true,
+            seniorFriendly: !p.name.includes('Trek') && !p.name.includes('Peak'),
+            accessibilityScore: isTemple ? 85 : 90,
+            estimatedDailyCostInr: isSafari ? 3500 : 1800,
+            imageUrl: p.imageUrl,
+          });
+        }
+      });
+    });
+  }
+
+  // 4. Guarantee Fallback: Ensure NO requested target is ever omitted
+  for (const rawTarget of targetDestinations) {
+    const cleanTarget = rawTarget.trim();
+    const cleanLower = cleanTarget.toLowerCase();
+    if (!cleanTarget || cleanLower === 'all') continue;
+
+    const alreadyRepresented = nodes.some(n =>
+      n.name.toLowerCase().includes(cleanLower) ||
+      cleanLower.includes(n.name.toLowerCase()) ||
+      (n.displayName && n.displayName.toLowerCase().includes(cleanLower)) ||
+      (n.city && n.city.toLowerCase() === cleanLower)
+    );
+
+    if (!alreadyRepresented) {
+      const coords = resolveDestinationCoordinates(cleanTarget, originCity);
+      const isIsland = cleanLower.includes('island') || cleanLower.includes('baratang') || cleanLower.includes('havelock');
+      nodes.push({
+        id: `target-${cleanLower.replace(/[^a-z0-9]+/g, '-')}`,
+        name: cleanTarget,
+        displayName: cleanTarget,
+        city: cleanTarget,
+        district: cleanTarget,
+        state: isIsland ? 'Andaman & Nicobar' : 'India',
+        country: 'India',
+        latitude: coords.lat,
+        longitude: coords.lng,
+        categories: ['Selected Destination'],
+        averageVisitDurationMinutes: 180,
+        openingTime: '08:30',
+        closingTime: '18:30',
+        bestMonths: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+        seasonalRestrictions: [],
+        estimatedEntryFeeInr: 100,
+        popularityScore: 90,
+        familyFriendly: true,
+        seniorFriendly: true,
+        accessibilityScore: 85,
+        estimatedDailyCostInr: 2000,
+        imageUrl: '/hero-bg.jpg',
       });
     }
-  });
+  }
 
   return nodes;
 }

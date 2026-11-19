@@ -1,3 +1,4 @@
+import { validateTripPayload } from '@/lib/trips/trip-planning-state';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateMasterTripPlan } from '@/lib/ai-planner/planner-service';
 import { PureItineraryService } from '@/lib/ai-planner/pure-itinerary-service';
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
     // By default GET on /trips/plan provides Pure Travel Intelligence (12-section response format)
     const pureItinerary = PureItineraryService.generatePureItinerary({
       origin: { city: originCity, country: 'India' },
-      destinations: destinations.map((d) => ({ state: d })),
+      destinations: destinations.map((d) => ({ name: d, state: d })),
       durationDays,
       pace: pace as any,
       startDate,
@@ -67,8 +68,23 @@ export async function POST(req: NextRequest) {
       planningRequest.origin = typeof body.origin === 'string' ? { city: body.origin, country: 'India' } : body.origin;
     }
     if (body.destinations) {
+      const validation = validateTripPayload({
+        originCity: typeof body.origin === 'string' ? body.origin : body.origin?.city || 'Ahmedabad',
+        destinations: body.destinations,
+        durationDays: body.durationDays,
+      });
+      if (!validation.valid) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: validation.errors.join('; '),
+            errors: validation.errors,
+          },
+          { status: 400 }
+        );
+      }
       planningRequest.destinations = Array.isArray(body.destinations) 
-        ? body.destinations.map((d: any) => typeof d === 'string' ? { state: d } : d) 
+        ? body.destinations.map((d: any) => typeof d === 'string' ? { name: d, state: d } : d) 
         : body.destinations;
     }
     if (body.durationDays) planningRequest.durationDays = Number(body.durationDays);
