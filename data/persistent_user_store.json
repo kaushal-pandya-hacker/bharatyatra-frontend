@@ -74,6 +74,31 @@
         "createdAt": "2026-11-18T15:39:13.092Z",
         "updatedAt": "2026-11-18T15:39:13.092Z"
       }
+    ],
+    [
+      "usr_alpha_1795077166227",
+      {
+        "id": "usr_alpha_1795077166227",
+        "email": "usr_alpha_1795077166227@bharatyatra.in",
+        "fullName": "Aarav Mehta",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-19T08:32:46.619Z",
+        "updatedAt": "2026-11-19T08:32:46.619Z",
+        "phoneNumber": "+91 9876543210"
+      }
+    ],
+    [
+      "usr_returning_30d_1795077169148",
+      {
+        "id": "usr_returning_30d_1795077169148",
+        "email": "usr_returning_30d_1795077169148@bharatyatra.in",
+        "fullName": "Vikramaditya Solanki",
+        "role": "CUSTOMER",
+        "status": "ACTIVE",
+        "createdAt": "2026-11-19T08:32:49.257Z",
+        "updatedAt": "2026-11-19T08:32:49.257Z"
+      }
     ]
   ],
   "trips": [
@@ -412,6 +437,422 @@
         "createdAt": "2026-11-18T15:39:12.556Z",
         "updatedAt": "2026-11-18T15:39:12.556Z"
       }
+    ],
+    [
+      "trip-t1-1795077166620",
+      {
+        "id": "trip-t1-1795077166620",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Gir Lion Safari & Diu Beach",
+        "destination": "Sasan Gir",
+        "destinationCity": "Sasan Gir",
+        "originCity": "Surat",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": 32000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:46.705Z",
+        "updatedAt": "2026-11-19T08:32:46.705Z"
+      }
+    ],
+    [
+      "trip-2-01-1795077167053",
+      {
+        "id": "trip-2-01-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Somnath Sunset Aarti",
+        "destination": "Somnath",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.182Z",
+        "updatedAt": "2026-11-19T08:32:47.182Z"
+      }
+    ],
+    [
+      "trip-2-02-1795077167053",
+      {
+        "id": "trip-2-02-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Dwarka Temple Darshan",
+        "destination": "Dwarka",
+        "durationDays": 3,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.321Z",
+        "updatedAt": "2026-11-19T08:32:47.321Z"
+      }
+    ],
+    [
+      "trip-2-03-1795077167053",
+      {
+        "id": "trip-2-03-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "White Rann Salt Desert",
+        "destination": "Dhordo",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.422Z",
+        "updatedAt": "2026-11-19T08:32:47.422Z"
+      }
+    ],
+    [
+      "trip-2-04-1795077167053",
+      {
+        "id": "trip-2-04-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Gir Asiatic Lion Trail",
+        "destination": "Sasan Gir",
+        "durationDays": 3,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.577Z",
+        "updatedAt": "2026-11-19T08:32:47.577Z"
+      }
+    ],
+    [
+      "trip-2-05-1795077167053",
+      {
+        "id": "trip-2-05-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Palitana 863 Temples",
+        "destination": "Palitana",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.701Z",
+        "updatedAt": "2026-11-19T08:32:47.701Z"
+      }
+    ],
+    [
+      "trip-2-06-1795077167053",
+      {
+        "id": "trip-2-06-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Saputara Hill Trek",
+        "destination": "Saputara",
+        "durationDays": 3,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.795Z",
+        "updatedAt": "2026-11-19T08:32:47.795Z"
+      }
+    ],
+    [
+      "trip-2-07-1795077167053",
+      {
+        "id": "trip-2-07-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Modhera Sun Temple",
+        "destination": "Modhera",
+        "durationDays": 1,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:47.912Z",
+        "updatedAt": "2026-11-19T08:32:47.912Z"
+      }
+    ],
+    [
+      "trip-2-08-1795077167053",
+      {
+        "id": "trip-2-08-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Statue of Unity Vista",
+        "destination": "Kevadia",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:48.022Z",
+        "updatedAt": "2026-11-19T08:32:48.022Z"
+      }
+    ],
+    [
+      "trip-2-09-1795077167053",
+      {
+        "id": "trip-2-09-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Mandvi Palace Beach",
+        "destination": "Mandvi",
+        "durationDays": 3,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:48.143Z",
+        "updatedAt": "2026-11-19T08:32:48.143Z"
+      }
+    ],
+    [
+      "trip-2-10-1795077167053",
+      {
+        "id": "trip-2-10-1795077167053",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Champaner Heritage Fort",
+        "destination": "Champaner",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:48.241Z",
+        "updatedAt": "2026-11-19T08:32:48.241Z"
+      }
+    ],
+    [
+      "trip-deploy-1795077168347",
+      {
+        "id": "trip-deploy-1795077168347",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Pre-Deployment Pilgrimage",
+        "destination": "Palitana",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:48.453Z",
+        "updatedAt": "2026-11-19T08:32:48.453Z"
+      }
+    ],
+    [
+      "trip-backend-build-1795077168525",
+      {
+        "id": "trip-backend-build-1795077168525",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Backend Build Deployment Test",
+        "destination": "Ahmedabad",
+        "durationDays": 3,
+        "travelers": 2,
+        "budgetInr": 25000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:48.635Z",
+        "updatedAt": "2026-11-19T08:32:48.635Z"
+      }
+    ],
+    [
+      "trip-backend-restart-1795077168745",
+      {
+        "id": "trip-backend-restart-1795077168745",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Kevadia Statue of Unity Tour",
+        "destination": "Kevadia",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": 15000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:48.821Z",
+        "updatedAt": "2026-11-19T08:32:48.821Z"
+      }
+    ],
+    [
+      "trip-db-restart-1795077168967",
+      {
+        "id": "trip-db-restart-1795077168967",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Patan Stepwell & Sun Temple",
+        "destination": "Patan",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:49.056Z",
+        "updatedAt": "2026-11-19T08:32:49.056Z"
+      }
+    ],
+    [
+      "trip-1795077169588-64ke8",
+      {
+        "id": "trip-1795077169588-64ke8",
+        "userId": "usr_returning_30d_1795077169148",
+        "title": "Pawa Garh Ropeway & Temple",
+        "destination": "Champaner",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:49.588Z",
+        "updatedAt": "2026-11-19T08:32:49.588Z"
+      }
+    ],
+    [
+      "trip-cross-dev-1795077169971",
+      {
+        "id": "trip-cross-dev-1795077169971",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Device A Created: Champaner UNESCO Tour",
+        "destination": "Champaner",
+        "durationDays": 2,
+        "travelers": 2,
+        "budgetInr": 9500,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:50.061Z",
+        "updatedAt": "2026-11-19T08:32:50.061Z"
+      }
+    ],
+    [
+      "trip-isolate-a-1795077170129",
+      {
+        "id": "trip-isolate-a-1795077170129",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Updated Trip A: Polo Forest Luxury Glamping",
+        "destination": "India",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": 16000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:50.451Z",
+        "updatedAt": "2026-11-19T08:32:50.451Z"
+      }
+    ],
+    [
+      "trip-isolate-b-1795077170129",
+      {
+        "id": "trip-isolate-b-1795077170129",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Original Trip B: Mandvi Coastal Drive",
+        "destination": "Mandvi",
+        "durationDays": 3,
+        "travelers": 2,
+        "budgetInr": 22000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:50.361Z",
+        "updatedAt": "2026-11-19T08:32:50.361Z"
+      }
+    ],
+    [
+      "trip-alpha-priv-1795077170693",
+      {
+        "id": "trip-alpha-priv-1795077170693",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Confidential Family Pilgrimage",
+        "destination": "Dwarka",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:50.772Z",
+        "updatedAt": "2026-11-19T08:32:50.772Z"
+      }
+    ],
+    [
+      "trip-beta-priv-1795077170773",
+      {
+        "id": "trip-beta-priv-1795077170773",
+        "userId": "usr_beta_1795077166227",
+        "title": "Solo Exploration in Himalayas",
+        "destination": "Spiti",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:50.857Z",
+        "updatedAt": "2026-11-19T08:32:50.857Z"
+      }
+    ],
+    [
+      "trip-legacy-v1-1795077171189",
+      {
+        "id": "trip-legacy-v1-1795077171189",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Legacy Ahmedabad Heritage Walk",
+        "destination": "Ahmedabad",
+        "durationDays": 1,
+        "travelers": 2,
+        "budgetInr": null,
+        "status": "COMPLETED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:51.347Z",
+        "updatedAt": "2026-11-19T08:32:51.347Z"
+      }
+    ],
+    [
+      "trip-dedup-1795077171529",
+      {
+        "id": "trip-dedup-1795077171529",
+        "userId": "usr_alpha_1795077166227",
+        "title": "Retried Trip Submission (Same ID)",
+        "destination": "Dwarka",
+        "durationDays": 4,
+        "travelers": 2,
+        "budgetInr": 10000,
+        "status": "SAVED",
+        "routeJson": {},
+        "itineraryJson": {},
+        "tripContextJson": {},
+        "createdAt": "2026-11-19T08:32:51.730Z",
+        "updatedAt": "2026-11-19T08:32:51.730Z"
+      }
     ]
   ],
   "bookings": [
@@ -479,6 +920,70 @@
         "hotelDetail": {},
         "createdAt": "2026-11-18T15:39:13.307Z",
         "updatedAt": "2026-11-18T15:39:13.307Z"
+      }
+    ],
+    [
+      "bk-1795077169464-wardo",
+      {
+        "id": "bk-1795077169464-wardo",
+        "bookingReference": "BY-HTL-2026-70992",
+        "userId": "usr_returning_30d_1795077169148",
+        "bookingType": "HOTEL",
+        "inventoryType": "HOTEL",
+        "inventoryTitle": "Heritage Haveli Suite",
+        "status": "CONFIRMED",
+        "startDate": "2026-12-25",
+        "endDate": "2026-12-28",
+        "adultCount": 2,
+        "childCount": 0,
+        "guestCount": 2,
+        "totalAmountInr": 14500,
+        "currency": "INR",
+        "hotelDetail": {},
+        "createdAt": "2026-11-19T08:32:49.464Z",
+        "updatedAt": "2026-11-19T08:32:49.464Z"
+      }
+    ],
+    [
+      "bk-dedup-1795077171529",
+      {
+        "id": "bk-dedup-1795077171529",
+        "bookingReference": "BY-HTL-DEDUP-1795077171529",
+        "userId": "usr_alpha_1795077166227",
+        "bookingType": "HOTEL",
+        "inventoryType": "HOTEL",
+        "inventoryTitle": "Dwarka Grand Beach Resort",
+        "status": "CONFIRMED",
+        "adultCount": 2,
+        "childCount": 0,
+        "guestCount": 2,
+        "totalAmountInr": 12000,
+        "currency": "INR",
+        "hotelDetail": {},
+        "createdAt": "2026-11-19T08:32:52.003Z",
+        "updatedAt": "2026-11-19T08:32:52.003Z"
+      }
+    ],
+    [
+      "bk-atomic-1795077172291",
+      {
+        "id": "bk-atomic-1795077172291",
+        "bookingReference": "BY-HTL-ATOMIC-1795077172291",
+        "userId": "usr_alpha_1795077166227",
+        "bookingType": "HOTEL",
+        "inventoryType": "HOTEL",
+        "inventoryTitle": "Diu Cliffside Resort Suite",
+        "status": "CANCELLED",
+        "adultCount": 2,
+        "childCount": 0,
+        "guestCount": 2,
+        "totalAmountInr": 21000,
+        "currency": "INR",
+        "hotelDetail": {},
+        "createdAt": "2026-11-19T08:32:52.454Z",
+        "updatedAt": "2026-11-19T08:32:52.570Z",
+        "cancellationReason": "Rollback: Payment processing failed or was declined",
+        "cancelledAt": "2026-11-19T08:32:52.570Z"
       }
     ]
   ],
@@ -633,10 +1138,35 @@
         "lockedKeys": [],
         "updatedAt": "2026-11-18T15:39:13.205Z"
       }
+    ],
+    [
+      "usr_returning_30d_1795077169148",
+      {
+        "userId": "usr_returning_30d_1795077169148",
+        "preferredLanguage": "en",
+        "budgetTier": "balanced",
+        "travelPace": "balanced",
+        "travelStyle": "balanced",
+        "transport": [
+          "train",
+          "bus"
+        ],
+        "interests": [
+          "heritage",
+          "nature"
+        ],
+        "originCity": "Vadodara",
+        "originState": "Gujarat",
+        "originCountry": "India",
+        "typicalTravelers": 2,
+        "dietaryPreference": "pure-veg",
+        "lockedKeys": [],
+        "updatedAt": "2026-11-19T08:32:49.365Z"
+      }
     ]
   ],
   "tripMembers": [],
   "tripExpenses": [],
   "tripSettlements": [],
-  "updatedAt": "2026-11-18T15:39:13.307Z"
+  "updatedAt": "2026-11-19T08:32:52.570Z"
 }

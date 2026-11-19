@@ -508,6 +508,17 @@ class InMemoryUserDataStore {
     const ref = booking.bookingReference || `BY-HTL-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
     const now = new Date().toISOString();
 
+    // Idempotency: return existing booking if matching ID or reference already exists
+    if (booking.id && this.bookings.has(booking.id)) {
+      return this.bookings.get(booking.id)!;
+    }
+    if (booking.bookingReference) {
+      const existing = Array.from(this.bookings.values()).find(
+        (b) => b.bookingReference === booking.bookingReference && b.userId === userId
+      );
+      if (existing) return existing;
+    }
+
     const record: UserBookingRecord = {
       id,
       bookingReference: ref,
@@ -516,7 +527,7 @@ class InMemoryUserDataStore {
       inventoryType: booking.inventoryType || 'HOTEL',
       inventoryId: booking.inventoryId,
       inventoryTitle: booking.inventoryTitle || 'Hotel Reservation',
-      status: 'CONFIRMED',
+      status: (booking.status as any) || 'CONFIRMED',
       startDate: booking.startDate,
       endDate: booking.endDate,
       adultCount: booking.adultCount || 2,
@@ -1212,6 +1223,13 @@ export class UserDataStore {
     if (simulateDatabaseFailure) {
       throw new DatabasePersistenceError('Simulated database write failure.');
     }
+    // Idempotency: return existing booking if matching ID already exists
+    if (booking.id) {
+      try {
+        const existing = await this.getBookingById(booking.id, userId);
+        if (existing) return existing;
+      } catch {}
+    }
     try {
       const supabase = getSupabaseServerClient();
       const payload = {
@@ -1330,6 +1348,28 @@ export class UserDataStore {
       if (err instanceof DatabasePersistenceError) throw err;
       if (shouldAllowFallback()) return inMemoryStore.cancelBooking(bookingId, userId, reason);
       throw new DatabasePersistenceError(`Database cancellation failure: ${err?.message || 'Unknown database error'}`, err);
+    }
+  }
+
+  /**
+   * Compound transaction executor with automatic rollback if any sub-task fails.
+   */
+  public static async executeAtomicBookingTransaction(
+    userId: string,
+    bookingData: Partial<UserBookingRecord>,
+    paymentTask: (booking: UserBookingRecord) => Promise<boolean>
+  ): Promise<{ success: boolean; booking?: UserBookingRecord; error?: string }> {
+    const booking = await this.createBooking(userId, { ...bookingData, status: 'PENDING' });
+    try {
+      const paymentOk = await paymentTask(booking);
+      if (!paymentOk) {
+        throw new Error('Payment processing failed or was declined');
+      }
+      return { success: true, booking };
+    } catch (err: any) {
+      // Transaction rollback: cancel pending booking to maintain relational consistency
+      await this.cancelBooking(booking.id, userId, `Rollback: ${err?.message || 'Payment failure'}`);
+      return { success: false, error: err?.message || 'Transaction aborted' };
     }
   }
 
