@@ -10,6 +10,7 @@ import { dispatchApprovalRewardNotifications } from '@/lib/notifications/reward-
 import crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import { getSupabaseServerClient } from '@/lib/supabase/client';
 
 export interface PublishedDestinationRecord {
@@ -60,17 +61,40 @@ export function generateDestinationSlug(name: string, state: string, city?: stri
 
 export class DestinationPublishingEngine {
   private publishedPath = path.resolve(process.cwd(), 'data/community_published_destinations.json');
+  private tmpPublishedPath = path.resolve(os.tmpdir(), 'bharatyatra_published_destinations.json');
 
   public getAllPublishedDestinations(): PublishedDestinationRecord[] {
+    const listMap = new Map<string, PublishedDestinationRecord>();
     try {
       if (fs.existsSync(this.publishedPath)) {
         const raw = fs.readFileSync(this.publishedPath, 'utf-8');
-        return JSON.parse(raw);
+        const items: PublishedDestinationRecord[] = JSON.parse(raw);
+        if (Array.isArray(items)) {
+          items.forEach((item) => listMap.set(item.id, item));
+        }
       }
     } catch (e) {
       // fallback
     }
-    return [];
+
+    try {
+      if (fs.existsSync(this.tmpPublishedPath)) {
+        const rawTmp = fs.readFileSync(this.tmpPublishedPath, 'utf-8');
+        const itemsTmp: PublishedDestinationRecord[] = JSON.parse(rawTmp);
+        if (Array.isArray(itemsTmp)) {
+          itemsTmp.forEach((item) => {
+            const existing = listMap.get(item.id);
+            if (!existing || new Date(item.updatedAt).getTime() >= new Date(existing.updatedAt).getTime()) {
+              listMap.set(item.id, item);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      // fallback
+    }
+
+    return Array.from(listMap.values());
   }
 
   /**
@@ -202,9 +226,23 @@ export class DestinationPublishingEngine {
       const existing = this.getAllPublishedDestinations();
       const filtered = existing.filter((e) => e.id !== destinationId && e.submissionId !== submission.id);
       filtered.unshift(publishedRecord);
-      const dir = path.dirname(this.publishedPath);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(this.publishedPath, JSON.stringify(filtered, null, 2), 'utf-8');
+      const jsonStr = JSON.stringify(filtered, null, 2);
+
+      // 1. Primary write to data/
+      try {
+        const dir = path.dirname(this.publishedPath);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        const tmp = `${this.publishedPath}.tmp.${Date.now()}`;
+        fs.writeFileSync(tmp, jsonStr, 'utf-8');
+        fs.renameSync(tmp, this.publishedPath);
+      } catch (err) {}
+
+      // 2. Secondary write to os.tmpdir() for serverless persistence
+      try {
+        const tmp2 = `${this.tmpPublishedPath}.tmp.${Date.now()}`;
+        fs.writeFileSync(tmp2, jsonStr, 'utf-8');
+        fs.renameSync(tmp2, this.tmpPublishedPath);
+      } catch (err) {}
     } catch (persistErr) {
       console.warn('[PublishingEngine] Local file cache persist warning:', persistErr);
     }

@@ -49,6 +49,14 @@ const STATUS_PILLS: Record<
 export default function AdminCommunityContributionsPage() {
   const [, startTransition] = useTransition();
 
+  const getAdminToken = () => {
+    return typeof window !== 'undefined'
+      ? localStorage.getItem('admin_token') ||
+        localStorage.getItem('auth_token') ||
+        localStorage.getItem('sb_auth_token')
+      : null;
+  };
+
   const [submissions, setSubmissions] = useState<PlaceSubmissionSummary[]>([]);
   const [stats, setStats] = useState<ContributionStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,7 +92,11 @@ export default function AdminCommunityContributionsPage() {
       if (statusFilter !== 'ALL') params.set('status', statusFilter);
       if (categoryFilter !== 'ALL') params.set('category', categoryFilter);
 
-      const res = await fetch(`/api/v1/admin/contributions?${params.toString()}`);
+      const token = getAdminToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`/api/v1/admin/contributions?${params.toString()}`, { headers });
       if (!res.ok) throw new Error('Failed to fetch contributions');
       const data = await res.json();
       if (data.success) {
@@ -114,7 +126,11 @@ export default function AdminCommunityContributionsPage() {
     setActionType(null);
     setFeedbackInput('');
     try {
-      const res = await fetch(`/api/v1/admin/contributions/${id}`);
+      const token = getAdminToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`/api/v1/admin/contributions/${id}`, { headers });
       const data = await res.json();
       if (data.success && data.dossier) {
         setSelectedDossier(data.dossier);
@@ -147,14 +163,22 @@ export default function AdminCommunityContributionsPage() {
     try {
       setActionLoading(true);
       const payload: any = { action };
-      if (feedbackInput.trim()) payload.feedback = feedbackInput.trim();
+      if (feedbackInput.trim()) {
+        payload.feedback = feedbackInput.trim();
+        payload.notes = feedbackInput.trim();
+      }
       if (action === 'EDIT' && editFields) {
         payload.editedFields = editFields;
+        payload.modifications = editFields;
       }
+
+      const token = getAdminToken();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const res = await fetch(`/api/v1/admin/contributions/${selectedDossier.submission.id}/action`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload),
       });
 

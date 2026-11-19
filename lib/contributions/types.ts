@@ -210,6 +210,7 @@ export interface PlaceSubmissionSummary {
   photo_count: number;
   is_hidden_gem?: boolean;
   rejection_reason?: string;
+  admin_feedback?: string;
   approved_place_id?: string;
   reward_coupon_code?: string;
   approved_at?: string;

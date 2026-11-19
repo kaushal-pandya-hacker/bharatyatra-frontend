@@ -14,12 +14,12 @@ export async function POST(
 
     const body = await req.json();
     const action = body.action as AdminReviewAction;
-    const notes = body.notes as string | undefined;
-    const modifications = body.modifications as any | undefined;
+    const notes = (body.notes || body.feedback) as string | undefined;
+    const modifications = (body.modifications || body.editedFields) as any | undefined;
 
     if (!action) {
       return NextResponse.json(
-        { success: false, message: 'Action field is required.' },
+        { success: false, error: 'Action field is required.', message: 'Action field is required.' },
         { status: 400 }
       );
     }
@@ -42,8 +42,9 @@ export async function POST(
       ...result,
     });
   } catch (err: any) {
+    const errorMsg = err?.message || 'Failed to execute admin action.';
     return NextResponse.json(
-      { success: false, message: err?.message || 'Failed to execute admin action.' },
+      { success: false, error: errorMsg, message: errorMsg },
       { status: 400 }
     );
   }

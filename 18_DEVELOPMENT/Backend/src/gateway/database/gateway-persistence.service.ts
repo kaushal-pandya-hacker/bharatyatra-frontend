@@ -193,7 +193,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
         await client.query('COMMIT');
         return { isCached: false };
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => { });
         throw err;
       } finally {
         client.release();
@@ -331,7 +331,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
           [orderId],
         );
         if (res.rows.length > 0) return res.rows;
-      } catch {}
+      } catch { }
     }
     return this.memoryStateTransitions.filter(s => s.orderId === orderId);
   }
@@ -396,7 +396,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
             params.attempt.status,
             params.attempt.signature || 'sig_verified',
           ],
-        ).catch(() => {});
+        ).catch(() => { });
 
         // 4. Record Double-Entry Balanced Ledger Transaction
         await client.query(
@@ -410,7 +410,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
             params.ledgerParams.referenceId,
             params.ledgerParams.description,
           ],
-        ).catch(() => {});
+        ).catch(() => { });
 
         // 5. Record State Transition Audit
         await client.query(
@@ -418,12 +418,12 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
            (order_id, merchant_id, from_status, to_status, reason, actor, created_at) 
            VALUES ($1, $2, 'PENDING', 'CAPTURED', 'PAYMENT_CAPTURE_SUCCESS', 'GATEWAY_CORE', NOW())`,
           [params.orderId, params.merchantId],
-        ).catch(() => {});
+        ).catch(() => { });
 
         await client.query('COMMIT');
         return;
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => { });
         throw err;
       } finally {
         client.release();
@@ -500,7 +500,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
             params.ledgerParams.referenceId,
             params.ledgerParams.description,
           ],
-        ).catch(() => {});
+        ).catch(() => { });
 
         // 3. State Transition Log
         await client.query(
@@ -508,12 +508,12 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
            (order_id, merchant_id, from_status, to_status, reason, actor, created_at) 
            VALUES ($1, $2, 'CAPTURED', 'REFUND_PROCESSED', 'REFUND_COMPENSATING_ENTRY', 'GATEWAY_REFUND', NOW())`,
           [params.orderId, params.merchantId],
-        ).catch(() => {});
+        ).catch(() => { });
 
         await client.query('COMMIT');
         return;
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => { });
         throw err;
       } finally {
         client.release();
@@ -551,7 +551,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
             order.createdAt,
             order.updatedAt,
           ],
-        ).catch(() => {});
+        ).catch(() => { });
       } catch (err: any) {
         this.logger.warn(`[ORDER DB] Failed to persist order ${order.orderId}: ${err.message}`);
       }
@@ -707,12 +707,12 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
             params.reason,
             params.idempotencyKey || null,
           ],
-        ).catch(() => {});
+        ).catch(() => { });
 
         await client.query('COMMIT');
         return { reserved: true, currentRefundedMinor: newRefunded, totalAmountMinor: totalAmount };
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => { });
         throw err;
       } finally {
         client.release();
@@ -767,11 +767,11 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
             params.ledgerParams.referenceId,
             params.ledgerParams.description,
           ],
-        ).catch(() => {});
+        ).catch(() => { });
 
         await client.query('COMMIT');
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => { });
         throw err;
       } finally {
         client.release();
@@ -828,7 +828,7 @@ export class GatewayPersistenceService implements OnModuleInit, OnModuleDestroy 
 
         await client.query('COMMIT');
       } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => { });
         throw err;
       } finally {
         client.release();

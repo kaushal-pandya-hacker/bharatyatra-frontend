@@ -28,8 +28,9 @@ export async function GET(
       submission,
     });
   } catch (err: any) {
+    const errorMsg = err?.message || 'Failed to retrieve contribution.';
     return NextResponse.json(
-      { success: false, message: err?.message || 'Failed to retrieve contribution.' },
+      { success: false, error: errorMsg, message: errorMsg },
       { status: err?.message?.includes('Unauthorized') ? 403 : 500 }
     );
   }
@@ -57,8 +58,9 @@ export async function PUT(
       submission: updated,
     });
   } catch (err: any) {
+    const errorMsg = err?.message || 'Failed to update contribution.';
     return NextResponse.json(
-      { success: false, message: err?.message || 'Failed to update contribution.' },
+      { success: false, error: errorMsg, message: errorMsg },
       { status: 400 }
     );
   }
@@ -83,8 +85,9 @@ export async function DELETE(
       submission: withdrawn,
     });
   } catch (err: any) {
+    const errorMsg = err?.message || 'Failed to withdraw contribution.';
     return NextResponse.json(
-      { success: false, message: err?.message || 'Failed to withdraw contribution.' },
+      { success: false, error: errorMsg, message: errorMsg },
       { status: 400 }
     );
   }

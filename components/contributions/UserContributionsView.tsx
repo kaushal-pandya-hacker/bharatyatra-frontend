@@ -90,8 +90,19 @@ interface UserContributionsViewProps {
 }
 
 export default function UserContributionsView({ originPath = 'dashboard' }: UserContributionsViewProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, token: authToken, loading: authLoading } = useAuth();
   const router = useRouter();
+
+  const getAuthToken = () => {
+    return (
+      authToken ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('auth_token') ||
+          localStorage.getItem('sb_auth_token') ||
+          localStorage.getItem('admin_token')
+        : null)
+    );
+  };
 
   const [submissions, setSubmissions] = useState<PlaceSubmissionSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,7 +115,11 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
   const fetchContributions = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/v1/contributions');
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/api/v1/contributions', { headers });
       if (res.status === 401) {
         router.push(`/login?redirect=${originPath === 'dashboard' ? '/dashboard/my-contributions' : '/profile/contributions'}`);
         return;
@@ -137,7 +152,11 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
     setActionLoading(id);
     setActionMessage(null);
     try {
-      const res = await fetch(`/api/v1/contributions/${id}`, { method: 'DELETE' });
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`/api/v1/contributions/${id}`, { method: 'DELETE', headers });
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Failed to withdraw contribution');
@@ -156,7 +175,11 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
   const handleOpenDossier = async (id: string) => {
     setInspectLoading(true);
     try {
-      const res = await fetch(`/api/v1/contributions/${id}`);
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`/api/v1/contributions/${id}`, { headers });
       const data = await res.json();
       if (data.success && data.submission) {
         setInspectSubmission(data.submission);
@@ -401,7 +424,7 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
                       </div>
 
                       {/* Admin Feedback / Rejection Reason (Critical Requirement) */}
-                      {item.rejection_reason && (
+                      {(item.rejection_reason || item.admin_feedback) && (
                         <div
                           className={`p-3 rounded-2xl text-xs space-y-1 ${
                             item.status === 'CHANGES_REQUESTED'
@@ -415,7 +438,7 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
                               {item.status === 'CHANGES_REQUESTED' ? 'Admin Feedback (Action Required):' : 'Moderation Note:'}
                             </span>
                           </div>
-                          <p className="leading-relaxed font-medium pl-4">{item.rejection_reason}</p>
+                          <p className="leading-relaxed font-medium pl-4">{item.admin_feedback || item.rejection_reason}</p>
                         </div>
                       )}
 

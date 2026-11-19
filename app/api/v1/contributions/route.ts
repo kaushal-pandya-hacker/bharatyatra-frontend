@@ -23,8 +23,9 @@ export async function POST(req: NextRequest) {
       submission,
     }, { status: 201 });
   } catch (err: any) {
+    const errorMsg = err?.message || 'Failed to submit place.';
     return NextResponse.json(
-      { success: false, message: err?.message || 'Failed to submit place.' },
+      { success: false, error: errorMsg, message: errorMsg },
       { status: 400 }
     );
   }
@@ -58,10 +59,11 @@ export async function GET(req: NextRequest) {
       status: s.status,
       primary_photo_url: s.photos?.[0] || '',
       photo_count: s.photos?.length || 0,
-      rejection_reason: s.rejectionReason,
+      rejection_reason: s.rejectionReason || s.adminFeedback,
+      admin_feedback: s.adminFeedback,
       approved_place_id: s.approvedPlaceId,
       reward_coupon_code: s.rewardCouponCode,
-      approved_at: s.updatedAt,
+      approved_at: s.approvedAt || s.updatedAt,
     }));
 
     return NextResponse.json({

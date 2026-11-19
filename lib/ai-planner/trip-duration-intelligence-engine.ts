@@ -25,6 +25,7 @@ import {
   evaluateRouteFeasibility,
 } from './route-intelligence-engine';
 import { evaluateSeasonalSuitability } from './seasonal-intelligence';
+import { calculateTripCost } from './trip-cost-engine';
 
 // ============================================================================
 // 1. Types & Contracts
@@ -322,19 +323,46 @@ export function calculateTripDurationRecommendation(
   const hasSeniors = Boolean(input.hasSeniors);
   const hasChildren = Boolean(input.hasChildren);
 
-  // 1. Calculate Outbound Distance and Road Detour
+  // 1. Origin & Destination Distinction & Attraction Clustering
+  const originNorm = originName.toLowerCase().trim();
+  const isOriginExplicitlySelected = rawDestArray.some((raw) => {
+    const s = raw.toLowerCase().trim();
+    return s === originNorm || s.includes(originNorm) || originNorm.includes(s);
+  });
+
+  // Calculate Outbound & Return Coordinates & Straight-Line Distances
   const outboundStraightKm = haversineDistanceKm(
     originCoords.lat,
     originCoords.lng,
     primaryDest.latitude,
     primaryDest.longitude
   );
-  const outboundDetour =
-    TERRAIN_DETOUR_MULTIPLIERS[primaryDest.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] ||
-    1.25;
-  const outboundRoadKm = Math.round(outboundStraightKm * outboundDetour);
 
-  // 2. Calculate Inter-Destination Transit
+  const returnStraightKm = haversineDistanceKm(
+    lastDest.latitude,
+    lastDest.longitude,
+    originCoords.lat,
+    originCoords.lng
+  );
+
+  const isLocalIntraCity =
+    outboundStraightKm <= 35 &&
+    (primaryDest.canonicalName.toLowerCase().includes(originNorm) ||
+      originNorm.includes(primaryDest.canonicalName.toLowerCase()) ||
+      (primaryDest.district && primaryDest.district.toLowerCase().includes(originNorm)) ||
+      (primaryDest.city && primaryDest.city.toLowerCase().includes(originNorm)));
+
+  const outboundDetour = isLocalIntraCity
+    ? 1.0
+    : TERRAIN_DETOUR_MULTIPLIERS[primaryDest.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] || 1.25;
+  const outboundRoadKm = isLocalIntraCity ? Math.max(10, Math.round(outboundStraightKm * 1.1)) : Math.round(outboundStraightKm * outboundDetour);
+
+  const returnDetour = isLocalIntraCity
+    ? 1.0
+    : TERRAIN_DETOUR_MULTIPLIERS[lastDest.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] || 1.25;
+  const returnRoadKm = isLocalIntraCity ? Math.max(10, Math.round(returnStraightKm * 1.1)) : Math.round(returnStraightKm * returnDetour);
+
+  // 2. Inter-Destination Transit & Intra-City Attraction Transitions
   let internalRoadKm = 0;
   let internalDriveHours = 0;
   if (orderedDestinations.length > 1) {
@@ -342,87 +370,100 @@ export function calculateTripDurationRecommendation(
       const d1 = orderedDestinations[i];
       const d2 = orderedDestinations[i + 1];
       const straight = haversineDistanceKm(d1.latitude, d1.longitude, d2.latitude, d2.longitude);
-      const detour = Math.max(
-        TERRAIN_DETOUR_MULTIPLIERS[d1.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] || 1.25,
-        TERRAIN_DETOUR_MULTIPLIERS[d2.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] || 1.25
-      );
-      const segmentRoadKm = Math.round(straight * detour);
-      const avgSpeed = Math.min(d1.averageRoadSpeedKmH || 50, d2.averageRoadSpeedKmH || 50);
-      internalRoadKm += segmentRoadKm;
-      internalDriveHours += segmentRoadKm / avgSpeed;
+      const isAdjacentAttraction = straight <= 35;
+
+      if (isAdjacentAttraction) {
+        // Local intra-city / intra-district transfer between attractions
+        const segmentRoadKm = Math.max(5, Math.round(straight * 1.2));
+        internalRoadKm += segmentRoadKm;
+        internalDriveHours += segmentRoadKm / 30; // 30 km/h city traffic
+      } else {
+        const detour = Math.max(
+          TERRAIN_DETOUR_MULTIPLIERS[d1.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] || 1.25,
+          TERRAIN_DETOUR_MULTIPLIERS[d2.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] || 1.25
+        );
+        const segmentRoadKm = Math.round(straight * detour);
+        const avgSpeed = Math.min(d1.averageRoadSpeedKmH || 50, d2.averageRoadSpeedKmH || 50);
+        internalRoadKm += segmentRoadKm;
+        internalDriveHours += segmentRoadKm / avgSpeed;
+      }
     }
   }
 
-  // 3. Calculate Return Distance
-  const returnStraightKm = haversineDistanceKm(
-    lastDest.latitude,
-    lastDest.longitude,
-    originCoords.lat,
-    originCoords.lng
-  );
-  const returnDetour =
-    TERRAIN_DETOUR_MULTIPLIERS[lastDest.terrain as keyof typeof TERRAIN_DETOUR_MULTIPLIERS] ||
-    1.25;
-  const returnRoadKm = Math.round(returnStraightKm * returnDetour);
-
   const totalTripRoadKm = outboundRoadKm + internalRoadKm + returnRoadKm;
 
-  // 4. Transit Hours & Speeds based on Travel Mode
+  // 3. Segmented Corridor Speeds (Plains Highways vs Mountain Passes)
+  const calculateSegmentedRoadHours = (distKm: number, terrain: string, avgRoadSpeed?: number): number => {
+    if (distKm <= 35) {
+      // Intra-city commute
+      return Math.round((distKm / 30) * 10) / 10;
+    }
+    if (terrain === 'high-altitude-pass' || terrain === 'hills') {
+      // Long-distance mountain corridor: Plains expressway at 75 km/h, mountain pass at 32 km/h
+      const mountainKm = Math.min(distKm * 0.35, 450);
+      const plainsKm = Math.max(0, distKm - mountainKm);
+      const plainsSpeed = 75;
+      const mountainSpeed = Math.max(30, avgRoadSpeed || 32);
+      return Math.round(((plainsKm / plainsSpeed) + (mountainKm / mountainSpeed)) * 10) / 10;
+    }
+    // Plains / Regular corridors
+    const speed = Math.max(55, avgRoadSpeed || 65);
+    return Math.round((distKm / speed) * 10) / 10;
+  };
+
   let outboundHours = 0;
   let returnHours = 0;
   let internalHours = 0;
   let overnightTransit = false;
   let motorcycleRestHours = 0;
 
-  const roadSpeed = Math.max(30, primaryDest.averageRoadSpeedKmH || 50);
-
-  if (mode === 'flight') {
-    // Flight: 2h check-in + flight time (straightKm / 650) + 1h arrival/cab
+  if (isLocalIntraCity) {
+    outboundHours = 0.5;
+    returnHours = 0.5;
+    internalHours = Math.round(internalDriveHours * 10) / 10;
+  } else if (mode === 'flight') {
+    // Flight: 2h check-in + flight time (straightKm / 650) + 1.2h baggage/cab
     outboundHours = Math.round((2.0 + outboundStraightKm / 650 + 1.2) * 10) / 10;
     returnHours = Math.round((2.0 + returnStraightKm / 650 + 1.2) * 10) / 10;
     internalHours = Math.round(internalDriveHours * 10) / 10;
   } else if (mode === 'train') {
-    // Train: 45-65 km/h average with station transfer
-    outboundHours = Math.round((outboundRoadKm / 55 + 1.5) * 10) / 10;
-    returnHours = Math.round((returnRoadKm / 55 + 1.5) * 10) / 10;
+    outboundHours = Math.round((outboundRoadKm / 65 + 1.5) * 10) / 10;
+    returnHours = Math.round((returnRoadKm / 65 + 1.5) * 10) / 10;
     internalHours = Math.round(internalDriveHours * 10) / 10;
     if (outboundHours >= 9 || returnHours >= 9) {
       overnightTransit = true;
     }
   } else if (mode === 'bus') {
-    outboundHours = Math.round((outboundRoadKm / 45 + 1.0) * 10) / 10;
-    returnHours = Math.round((returnRoadKm / 45 + 1.0) * 10) / 10;
+    outboundHours = Math.round((outboundRoadKm / 50 + 1.0) * 10) / 10;
+    returnHours = Math.round((returnRoadKm / 50 + 1.0) * 10) / 10;
     internalHours = Math.round((internalRoadKm / 45) * 10) / 10;
     if (outboundHours >= 8 || returnHours >= 8) {
       overnightTransit = true;
     }
   } else if (mode === 'motorcycle') {
-    // Motorcycle: lower average speed, mandatory safety breaks (15 min per 1.5h)
-    const motoSpeed = Math.min(roadSpeed * 0.85, 50);
+    const motoSpeed = Math.min(calculateSegmentedRoadHours(outboundRoadKm, primaryDest.terrain, primaryDest.averageRoadSpeedKmH), 50);
     outboundHours = Math.round((outboundRoadKm / motoSpeed) * 10) / 10;
     returnHours = Math.round((returnRoadKm / motoSpeed) * 10) / 10;
     internalHours = Math.round((internalRoadKm / motoSpeed) * 10) / 10;
-    // Safety & rest breaks: ~1.5 hours per 250km
     motorcycleRestHours = Math.round((totalTripRoadKm / 200) * 1.5 * 10) / 10;
   } else {
-    // Private Car / Self-Drive
-    outboundHours = Math.round((outboundRoadKm / roadSpeed) * 10) / 10;
-    returnHours = Math.round((returnRoadKm / roadSpeed) * 10) / 10;
+    // Private Car / Self-Drive (Segmented realistic speeds)
+    outboundHours = calculateSegmentedRoadHours(outboundRoadKm, primaryDest.terrain, primaryDest.averageRoadSpeedKmH);
+    returnHours = calculateSegmentedRoadHours(returnRoadKm, lastDest.terrain, lastDest.averageRoadSpeedKmH);
     internalHours = Math.round(internalDriveHours * 10) / 10;
   }
 
   const totalTransitHours =
     Math.round((outboundHours + returnHours + internalHours + motorcycleRestHours) * 10) / 10;
 
-  // 5. High-Altitude Medical Constraint Check
+  // 4. High-Altitude Medical Constraint Check
   const hasHighAltitude = orderedDestinations.some(
     (d) => d.isHighAltitude || d.altitudeMeters >= 2800
   );
-  const maxAltitude = Math.max(...orderedDestinations.map((d) => d.altitudeMeters));
   // Mandatory 48-hour acclimatization for altitude >= 2800m (Leh, Spiti)
   const acclimatizationDays = hasHighAltitude ? 2.0 : 0.0;
 
-  // 6. Destination Classifications
+  // 5. Destination Classifications
   const classifiedDestinations: ClassifiedDestination[] = orderedDestinations.map((d) => {
     const straight = haversineDistanceKm(originCoords.lat, originCoords.lng, d.latitude, d.longitude);
     const detour =
@@ -452,36 +493,110 @@ export function calculateTripDurationRecommendation(
     };
   });
 
-  // 7. Base Sightseeing Day Allocation
-  let baseStayDays = 0;
+  // 6. Geographic Attraction Clustering & Sightseeing Allocation
+  interface DestinationCluster {
+    clusterKey: string;
+    clusterLabel: string;
+    district: string;
+    stateOrUt: string;
+    destinations: EnrichedDestination[];
+    isOriginCluster: boolean;
+    centerLat: number;
+    centerLng: number;
+    clusterStayDays: number;
+  }
+
+  const clusters: DestinationCluster[] = [];
   for (const d of orderedDestinations) {
-    const stay = d.recommendedStayDays?.recommended || 2;
-    baseStayDays += stay;
+    const dDistrict = (d.district || d.city || d.stateOrUt || '').toLowerCase().trim();
+    const dDistToOrigin = haversineDistanceKm(originCoords.lat, originCoords.lng, d.latitude, d.longitude);
+    const isOriginDist = dDistToOrigin <= 35 || dDistrict.includes(originNorm) || originNorm.includes(dDistrict);
+
+    let foundCluster: DestinationCluster | undefined;
+    for (const c of clusters) {
+      const distToClusterCenter = haversineDistanceKm(c.centerLat, c.centerLng, d.latitude, d.longitude);
+      const sameDistrict = dDistrict && c.district && (dDistrict === c.district || dDistrict.includes(c.district) || c.district.includes(dDistrict));
+      if (sameDistrict || (distToClusterCenter <= 35 && c.stateOrUt === d.stateOrUt)) {
+        foundCluster = c;
+        break;
+      }
+    }
+
+    if (foundCluster) {
+      foundCluster.destinations.push(d);
+    } else {
+      clusters.push({
+        clusterKey: dDistrict || d.canonicalName,
+        clusterLabel: d.city || d.district || d.canonicalName,
+        district: dDistrict,
+        stateOrUt: d.stateOrUt,
+        destinations: [d],
+        isOriginCluster: isOriginDist,
+        centerLat: d.latitude,
+        centerLng: d.longitude,
+        clusterStayDays: 0,
+      });
+    }
+  }
+
+  // Calculate stay days per cluster
+  let baseStayDays = 0;
+  for (const cluster of clusters) {
+    if (cluster.isOriginCluster) {
+      // If user did NOT explicitly select origin, origin receives zero sightseeing days
+      if (!isOriginExplicitlySelected && cluster.destinations.every(d => d.canonicalName.toLowerCase().trim() === originNorm)) {
+        cluster.clusterStayDays = 0;
+        continue;
+      }
+      // If user explicitly picked attractions inside origin city (e.g. Kankaria Lake + Hutheesing Temple)
+      const count = cluster.destinations.length;
+      if (count === 1) cluster.clusterStayDays = 0.5;
+      else if (count === 2) cluster.clusterStayDays = 1.0;
+      else if (count <= 4) cluster.clusterStayDays = 1.5;
+      else cluster.clusterStayDays = 2.0;
+    } else {
+      // External destination cluster
+      const count = cluster.destinations.length;
+      const primaryInCluster = cluster.destinations[0];
+      const baseRec = primaryInCluster.recommendedStayDays?.recommended || 2;
+      if (count === 1) {
+        cluster.clusterStayDays = baseRec;
+      } else {
+        // Multiple attractions clustered in same city/district: 0.5 day per additional attraction
+        cluster.clusterStayDays = Math.min(baseRec + (count - 1) * 0.5, baseRec + 1.5);
+      }
+    }
+    baseStayDays += cluster.clusterStayDays;
+  }
+
+  if (baseStayDays === 0) {
+    baseStayDays = 1.0;
   }
 
   // Pace factor
   const paceMultiplier = pace === 'relaxed' ? 1.3 : pace === 'active' ? 0.8 : 1.0;
   baseStayDays = baseStayDays * paceMultiplier;
 
-  // If traveler has seniors or children, add comfortable breathing buffer
+  // Comfort buffer for seniors or children
   const comfortBuffer = hasSeniors ? 1.0 : hasChildren ? 0.5 : 0.0;
 
-  // 8. Outbound & Return Transit Days Allocation
-  // If drive is under 4.5 hours and daytime, outbound transit occupies 0.5 day
-  // If drive is 5-9 hours, occupies 1 full day
-  // If motorcycle, max 250km/day in hills or 350km/day in plains
+  // 7. Outbound & Return Transit Days Allocation
   let outboundTravelDays = 0.5;
   let returnTravelDays = 0.5;
 
-  if (mode === 'flight') {
+  const isAllLocalCityTrip = clusters.length === 1 && clusters[0].isOriginCluster;
+
+  if (isAllLocalCityTrip) {
+    // Local city trip: No long-distance travel days needed
+    outboundTravelDays = 0;
+    returnTravelDays = 0;
+  } else if (mode === 'flight') {
     outboundTravelDays = 0.5;
     returnTravelDays = 0.5;
   } else if (mode === 'motorcycle') {
-    // Strict motorcycle day allocation to prevent rider exhaustion
     outboundTravelDays = Math.ceil(outboundRoadKm / (primaryDest.terrain === 'hills' ? 200 : 350));
     returnTravelDays = Math.ceil(returnRoadKm / (lastDest.terrain === 'hills' ? 200 : 350));
   } else if (overnightTransit) {
-    // Overnight transit: journey happens while sleeping, count 0.5 buffer day for morning arrival
     outboundTravelDays = 0.5;
     returnTravelDays = 0.5;
   } else {
@@ -491,12 +606,11 @@ export function calculateTripDurationRecommendation(
 
   // Inter-destination transit days
   let interDestinationDays = 0;
-  if (orderedDestinations.length > 1) {
+  if (!isAllLocalCityTrip && clusters.length > 1) {
     interDestinationDays = Math.max(0.5, Math.ceil(internalDriveHours / 5) * 0.5);
   }
 
-  // Calculate 3 Duration Tiers:
-  // Recommended = Balanced sightseeing + realistic transit + acclimatization + comfort buffer
+  // 8. Calculate 3 Duration Tiers (Fast Track, Recommended, Relaxed)
   let recDays = Math.ceil(
     outboundTravelDays +
     returnTravelDays +
@@ -506,7 +620,6 @@ export function calculateTripDurationRecommendation(
     comfortBuffer
   );
 
-  // Minimum Feasible = Essential highlights only (0.6x sightseeing)
   const minSightseeing = Math.max(1, Math.round(baseStayDays * 0.6));
   let minDays = Math.ceil(
     outboundTravelDays +
@@ -516,7 +629,6 @@ export function calculateTripDurationRecommendation(
     acclimatizationDays
   );
 
-  // Relaxed / Extended = Leisure pacing (1.35x sightseeing) + additional buffer
   const extSightseeing = Math.max(2, Math.round(baseStayDays * 1.35));
   let extDays = Math.ceil(
     outboundTravelDays +
@@ -528,67 +640,69 @@ export function calculateTripDurationRecommendation(
     1.0
   );
 
-  // Hard Constraints & Safety Floors:
-  // 1. Classification-based bounds per BharatYatra travel guidelines
-  const highestClassification = classifiedDestinations.reduce((acc, curr) => {
-    const rank: Record<DestinationClassification, number> = {
-      NEARBY: 1,
-      REGIONAL: 2,
-      INTERSTATE: 3,
-      LONG_DISTANCE: 4,
-      REMOTE: 5,
-    };
-    return rank[curr.classification] > rank[acc] ? curr.classification : acc;
-  }, 'NEARBY' as DestinationClassification);
+  // Constraints & Safety Floors:
+  if (isAllLocalCityTrip) {
+    // Local city trip (< 35km): 1-2 days
+    minDays = 1;
+    recDays = Math.max(1, Math.min(2, Math.round(baseStayDays)));
+    extDays = recDays + 1;
+  } else {
+    const highestClassification = classifiedDestinations.reduce((acc, curr) => {
+      const rank: Record<DestinationClassification, number> = {
+        NEARBY: 1,
+        REGIONAL: 2,
+        INTERSTATE: 3,
+        LONG_DISTANCE: 4,
+        REMOTE: 5,
+      };
+      return rank[curr.classification] > rank[acc] ? curr.classification : acc;
+    }, 'NEARBY' as DestinationClassification);
 
-  if (highestClassification === 'INTERSTATE') {
-    if (minDays < 3) minDays = 3;
-    if (recDays < 4) recDays = 4;
-    if (extDays < 6) extDays = 6;
-  } else if (highestClassification === 'LONG_DISTANCE') {
-    if (minDays < 4) minDays = 4;
-    if (recDays < 6) recDays = 6;
-    if (extDays < 8) extDays = 8;
-  } else if (highestClassification === 'REMOTE' || hasHighAltitude) {
-    if (minDays < 5) minDays = 5;
-    if (recDays < 7) recDays = 7;
-    if (extDays < 9) extDays = 9;
+    if (highestClassification === 'INTERSTATE') {
+      if (minDays < 3) minDays = 3;
+      if (recDays < 4) recDays = 4;
+      if (extDays < 6) extDays = 6;
+    } else if (highestClassification === 'LONG_DISTANCE') {
+      if (minDays < 4) minDays = 4;
+      if (recDays < 6) recDays = 6;
+      if (extDays < 8) extDays = 8;
+    } else if (highestClassification === 'REMOTE' || hasHighAltitude) {
+      if (minDays < 5) minDays = 5;
+      if (recDays < 7) recDays = 7;
+      if (extDays < 9) extDays = 9;
+    }
+
+    if (hasHighAltitude) {
+      if (minDays < 5) minDays = 5;
+      if (recDays < 7) recDays = 7;
+      if (extDays < 9) extDays = 9;
+    }
+
+    if (clusters.length >= 3) {
+      if (minDays < 5) minDays = 5;
+      if (recDays < 7) recDays = 7;
+    }
+
+    const hasIsland = orderedDestinations.some(
+      (d) => d.terrain === 'island' || d.stateOrUt.includes('Andaman') || d.stateOrUt.includes('Lakshadweep')
+    );
+    const uniqueStates = new Set(orderedDestinations.map((d) => d.stateOrUt));
+    const hasCrossRegion = uniqueStates.size > 1 && totalTripRoadKm > 1600;
+
+    if (hasIsland || hasCrossRegion) {
+      if (minDays < 6) minDays = 6;
+      if (recDays < 8) recDays = 8;
+      if (extDays < 10) extDays = 10;
+    }
+
+    if (orderedDestinations.length === 1 && outboundRoadKm <= 200 && !hasHighAltitude) {
+      minDays = Math.min(minDays, 1);
+      recDays = Math.min(recDays, 2);
+      extDays = Math.min(extDays, 3);
+    }
   }
 
-  // 2. High-altitude: minimum 5 days (48h mandatory acclimatization in Leh)
-  if (hasHighAltitude) {
-    if (minDays < 5) minDays = 5;
-    if (recDays < 7) recDays = 7;
-    if (extDays < 9) extDays = 9;
-  }
-
-  // 3. Multi-destination circuit with 3+ destinations: minimum 5 days
-  if (orderedDestinations.length >= 3) {
-    if (minDays < 5) minDays = 5;
-    if (recDays < 7) recDays = 7;
-  }
-
-  // 3b. Island & Cross-Region Multi-Destination Checks (e.g. Baratang in Andaman & Araku in Andhra Pradesh)
-  const hasIsland = orderedDestinations.some(
-    (d) => d.terrain === 'island' || d.stateOrUt.includes('Andaman') || d.stateOrUt.includes('Lakshadweep')
-  );
-  const uniqueStates = new Set(orderedDestinations.map((d) => d.stateOrUt));
-  const hasCrossRegion = uniqueStates.size > 1 && totalTripRoadKm > 1600;
-
-  if (hasIsland || hasCrossRegion) {
-    if (minDays < 6) minDays = 6;
-    if (recDays < 8) recDays = 8;
-    if (extDays < 10) extDays = 10;
-  }
-
-  // 4. Nearby destinations (< 200km single stop): minimum 1-2 days, rec 2-3 days
-  if (orderedDestinations.length === 1 && outboundRoadKm <= 200 && !hasHighAltitude) {
-    minDays = Math.min(minDays, 1);
-    recDays = Math.min(recDays, 2);
-    extDays = Math.min(extDays, 3);
-  }
-
-  // 4. Ensure logical tier progression: Min < Rec < Ext
+  // Strict Tier Progression Guarantee: Min < Rec < Ext
   if (recDays <= minDays) recDays = minDays + 1;
   if (extDays <= recDays) extDays = recDays + 1;
 
@@ -596,162 +710,160 @@ export function calculateTripDurationRecommendation(
   const minimumDuration: DurationTier = { days: minDays, nights: Math.max(1, minDays - 1) };
   const relaxedDuration: DurationTier = { days: extDays, nights: Math.max(1, extDays - 1) };
 
-  // 9. Day-by-Day Itinerary Generation for the Recommended Duration
+  // 9. Day-by-Day Itinerary Generation for Recommended Duration
   const recommendedItinerary: DayItineraryPlan[] = [];
   const totalDays = recommendedDuration.days;
 
-  // Day 1: Departure & Arrival
-  const primaryName = primaryDest.canonicalName;
-  recommendedItinerary.push({
-    day: 1,
-    title: `${originName} to ${primaryName} — Journey & Arrival`,
-    location: primaryName,
-    dayType: 'transit_and_explore',
-    morning: `Depart from ${originName} via ${mode.toUpperCase()} (${outboundRoadKm} km, ~${outboundHours}h transit). Scenic transit through regional highway/corridor.`,
-    afternoon: `Arrival in ${primaryName}, check-in at accommodation, unwind, and refresh.`,
-    evening: `Relaxed orientation walk around ${primaryDest.aliases[0] || 'the local market or central square'}, experiencing local street cuisine and evening atmosphere.`,
-    estimatedSightseeingHours: 2.5,
-    estimatedTransitHours: outboundHours,
-  });
-
-  // Middle Days: Acclimatization (if altitude) and Destination Sightseeing
-  let currentDay = 2;
-
-  if (hasHighAltitude && currentDay <= totalDays - 1) {
+  if (isAllLocalCityTrip) {
+    // Local City Exploration Day-by-Day
+    const clusterDests = orderedDestinations.map(d => d.canonicalName).join(' & ');
     recommendedItinerary.push({
-      day: currentDay++,
-      title: `Mandatory High-Altitude Acclimatization in ${primaryName}`,
-      location: primaryName,
-      dayType: 'acclimatization',
-      morning: `Physiological rest day to adjust to ${primaryDest.altitudeMeters}m altitude. Hydrate with water, soup, and avoid strenuous climbs.`,
-      afternoon: `Gentle local visit to ${primaryDest.aliases[1] || 'nearby monastery or heritage market'} without rapid elevation changes.`,
-      evening: `Quiet sunset view and early rest to prevent Acute Mountain Sickness (AMS).`,
-      estimatedSightseeingHours: 3.0,
-      estimatedTransitHours: 0.5,
+      day: 1,
+      title: `${originName} — City Landmarks & Cultural Discovery`,
+      location: originName,
+      dayType: 'sightseeing',
+      morning: `Morning visit to ${orderedDestinations[0]?.canonicalName || 'Local Landmark'}. Comfortable morning hours for photography.`,
+      afternoon: `Authentic regional lunch followed by visit to ${orderedDestinations[1]?.canonicalName || orderedDestinations[0]?.canonicalName}.`,
+      evening: `Evening lakeside or heritage stroll with traditional street culinary experience.`,
+      estimatedSightseeingHours: 6.0,
+      estimatedTransitHours: 1.0,
     });
-  }
 
-  // Distribute remaining days across ordered destinations
-  const remainingSightseeingDays = Math.max(1, totalDays - currentDay);
-  const daysPerDest = Math.max(1, Math.floor(remainingSightseeingDays / orderedDestinations.length));
+    if (totalDays > 1) {
+      for (let dayNum = 2; dayNum <= totalDays; dayNum++) {
+        recommendedItinerary.push({
+          day: dayNum,
+          title: `${originName} — Artisans, Markets & Leisure`,
+          location: originName,
+          dayType: 'leisure',
+          morning: `Visit to artisan workshops, historic pols/galleries, or botanical gardens.`,
+          afternoon: `Traditional Gujarati thali or regional cuisine lunch followed by craft markets.`,
+          evening: `Relaxed sunset view at promenade or cultural auditorium.`,
+          estimatedSightseeingHours: 5.0,
+          estimatedTransitHours: 0.5,
+        });
+      }
+    }
+  } else {
+    // Inter-city or Remote Route
+    const primaryName = primaryDest.canonicalName;
+    recommendedItinerary.push({
+      day: 1,
+      title: `${originName} to ${primaryName} — Journey & Arrival`,
+      location: primaryName,
+      dayType: 'transit_and_explore',
+      morning: `Depart from ${originName} via ${mode.toUpperCase()} (${outboundRoadKm} km, ~${outboundHours}h transit). Scenic transit through regional corridor.`,
+      afternoon: `Arrival in ${primaryName}, check-in at accommodation, unwind, and refresh.`,
+      evening: `Relaxed orientation walk around ${primaryDest.aliases[0] || 'the local market or central square'}, experiencing local street cuisine.`,
+      estimatedSightseeingHours: 2.5,
+      estimatedTransitHours: outboundHours,
+    });
 
-  for (let dIdx = 0; dIdx < orderedDestinations.length; dIdx++) {
-    const dest = orderedDestinations[dIdx];
-    const attractions = dest.aliases.length > 0 ? dest.aliases : ['City Center', 'Historical Fort', 'Scenic Viewpoint'];
+    let currentDay = 2;
 
-    for (let sDay = 0; sDay < daysPerDest && currentDay < totalDays; sDay++) {
-      const a1 = attractions[sDay * 2 % attractions.length] || 'Iconic Landmark';
-      const a2 = attractions[(sDay * 2 + 1) % attractions.length] || 'Heritage Walk';
-      const a3 = attractions[(sDay * 2 + 2) % attractions.length] || 'Sunset Point';
-
+    if (hasHighAltitude && currentDay <= totalDays - 1) {
       recommendedItinerary.push({
         day: currentDay++,
-        title: `${dest.canonicalName} — Cultural & Heritage Discovery`,
-        location: dest.canonicalName,
-        dayType: 'sightseeing',
-        morning: `Guided exploration of ${a1}. Learn historical architecture and take photographs during comfortable morning lighting.`,
-        afternoon: `Visit ${a2} followed by an authentic regional lunch. Ample time for exploration without rushing.`,
-        evening: `Scenic sunset at ${a3}, followed by traditional craft markets and cultural dinner.`,
-        estimatedSightseeingHours: 6.5,
+        title: `Mandatory High-Altitude Acclimatization in ${primaryName}`,
+        location: primaryName,
+        dayType: 'acclimatization',
+        morning: `Physiological rest day to adjust to ${primaryDest.altitudeMeters}m altitude. Hydrate with water, soup, and avoid strenuous climbs.`,
+        afternoon: `Gentle local visit to ${primaryDest.aliases[1] || 'nearby monastery or heritage market'} without rapid elevation changes.`,
+        evening: `Quiet sunset view and early rest to prevent Acute Mountain Sickness (AMS).`,
+        estimatedSightseeingHours: 3.0,
+        estimatedTransitHours: 0.5,
+      });
+    }
+
+    const remainingSightseeingDays = Math.max(1, totalDays - currentDay);
+    const daysPerDest = Math.max(1, Math.floor(remainingSightseeingDays / orderedDestinations.length));
+
+    for (let dIdx = 0; dIdx < orderedDestinations.length; dIdx++) {
+      const dest = orderedDestinations[dIdx];
+      const attractions = dest.aliases.length > 0 ? dest.aliases : ['City Center', 'Historical Fort', 'Scenic Viewpoint'];
+
+      for (let sDay = 0; sDay < daysPerDest && currentDay < totalDays; sDay++) {
+        const a1 = attractions[sDay * 2 % attractions.length] || 'Iconic Landmark';
+        const a2 = attractions[(sDay * 2 + 1) % attractions.length] || 'Heritage Walk';
+        const a3 = attractions[(sDay * 2 + 2) % attractions.length] || 'Sunset Point';
+
+        recommendedItinerary.push({
+          day: currentDay++,
+          title: `${dest.canonicalName} — Cultural & Heritage Discovery`,
+          location: dest.canonicalName,
+          dayType: 'sightseeing',
+          morning: `Guided exploration of ${a1}. Learn historical architecture and take photographs during comfortable morning lighting.`,
+          afternoon: `Visit ${a2} followed by an authentic regional lunch. Ample time for exploration without rushing.`,
+          evening: `Scenic sunset at ${a3}, followed by traditional craft markets and cultural dinner.`,
+          estimatedSightseeingHours: 6.5,
+          estimatedTransitHours: 1.0,
+        });
+      }
+    }
+
+    while (currentDay < totalDays) {
+      const activeLoc = orderedDestinations[currentDay % orderedDestinations.length].canonicalName;
+      recommendedItinerary.push({
+        day: currentDay++,
+        title: `${activeLoc} — Leisure, Hidden Gems & Regional Flavors`,
+        location: activeLoc,
+        dayType: 'leisure',
+        morning: `Visit regional handicrafts workshop, local temples, or artisan villages.`,
+        afternoon: `Scenic lake/garden picnic, nature trail, or wellness cafe break.`,
+        evening: `Local market souvenir shopping and farewell dinner experiencing signature regional recipes.`,
+        estimatedSightseeingHours: 5.0,
         estimatedTransitHours: 1.0,
       });
     }
-  }
 
-  // Fill any remaining middle days up to totalDays - 1 with deep discovery
-  while (currentDay < totalDays) {
-    const activeLoc = orderedDestinations[currentDay % orderedDestinations.length].canonicalName;
     recommendedItinerary.push({
-      day: currentDay++,
-      title: `${activeLoc} — Leisure, Hidden Gems & Regional Flavors`,
-      location: activeLoc,
-      dayType: 'leisure',
-      morning: `Visit regional handicrafts workshop, local temples, or artisan villages.`,
-      afternoon: `Scenic lake/garden picnic, nature trail, or wellness cafe break.`,
-      evening: `Local market souvenir shopping and farewell dinner experiencing signature regional recipes.`,
-      estimatedSightseeingHours: 5.0,
-      estimatedTransitHours: 1.0,
+      day: totalDays,
+      title: `${lastDest.canonicalName} to ${originName} — Return Journey`,
+      location: `${lastDest.canonicalName} to ${originName}`,
+      dayType: 'return_transit',
+      morning: `Breakfast, final souvenir check, hotel check-out, and commencement of return journey (${returnRoadKm} km, ~${returnHours}h).`,
+      afternoon: `Highway/flight transit with scenic lunch break.`,
+      evening: `Safe arrival in ${originName} with memorable photographs and comfortable rest.`,
+      estimatedSightseeingHours: 1.0,
+      estimatedTransitHours: returnHours,
     });
   }
 
-  // Final Day: Return Transit
-  recommendedItinerary.push({
-    day: totalDays,
-    title: `${lastDest.canonicalName} to ${originName} — Return Journey`,
-    location: `${lastDest.canonicalName} to ${originName}`,
-    dayType: 'return_transit',
-    morning: `Breakfast, final souvenir check, hotel check-out, and commencement of return journey (${returnRoadKm} km, ~${returnHours}h).`,
-    afternoon: `Highway transit with scenic lunch break at popular highway food plaza.`,
-    evening: `Safe arrival in ${originName} with memorable photographs and comfortable rest.`,
-    estimatedSightseeingHours: 1.0,
-    estimatedTransitHours: returnHours,
+  // 10. Budget Estimate via Canonical Trip Cost Engine
+  const costBreakdown = calculateTripCost({
+    originCity: originName,
+    destinations: orderedDestinations.map((d) => d.canonicalName),
+    travelersCount: travellers,
+    durationDays: totalDays,
+    travelMode: mode,
+    userBudgetInr: budget,
   });
 
-  // 10. Budget Estimate & Trade-offs
-  // Deterministic realistic Indian travel cost calculations
-  const hotelNights = recommendedDuration.nights;
-  const roomsCount = Math.ceil(travellers / 2);
-
-  // Transportation Cost based on Mode & Distance
-  let transportCost = 0;
-  if (mode === 'flight') {
-    transportCost = Math.round(travellers * (4500 + outboundStraightKm * 2.5) * 2);
-  } else if (mode === 'train') {
-    transportCost = Math.round(travellers * (1200 + outboundRoadKm * 1.4) * 2);
-  } else if (mode === 'bus') {
-    transportCost = Math.round(travellers * (800 + outboundRoadKm * 1.1) * 2);
-  } else if (mode === 'motorcycle') {
-    transportCost = Math.round((totalTripRoadKm / 30) * 105 * Math.ceil(travellers / 2)); // fuel + bike maint
-  } else {
-    // Car / Cab: ₹14/km + driver allowance
-    transportCost = Math.round(totalTripRoadKm * 14 + totalDays * 400);
-  }
-
-  // Accommodation Cost: ₹2,400 per room-night (standard verified rate)
-  const roomNightRate = budget > 50000 ? 4200 : budget > 28000 ? 2600 : 1800;
-  const accommodationCost = roomsCount * hotelNights * roomNightRate;
-
-  // Sightseeing & Activities: ₹700 per person per sightseeing day
-  const activitiesCost = travellers * (totalDays - 1) * 650;
-
-  // Meals & Contingency: ₹650 per person per day
-  const mealsCost = travellers * totalDays * 650;
-
-  const totalGroupCost = transportCost + accommodationCost + activitiesCost + mealsCost;
-  const perPersonCost = Math.round(totalGroupCost / travellers);
-  const isWithinBudget = totalGroupCost <= budget;
-  const budgetShortfall = Math.max(0, totalGroupCost - budget);
-
-  const suggestedAdjustments: string[] = [];
-  if (!isWithinBudget) {
-    if (mode === 'flight') {
-      suggestedAdjustments.push('Switching to Superfast AC Train or AC Volvo can save up to ₹12,000.');
-    }
-    if (roomNightRate > 2000) {
-      suggestedAdjustments.push('Opting for Verified Heritage Homestays can reduce accommodation costs by 30%.');
-    }
-    suggestedAdjustments.push(`Current estimated cost is ₹${totalGroupCost.toLocaleString('en-IN')} vs allocated budget of ₹${budget.toLocaleString('en-IN')}.`);
-  }
-
   const budgetEstimate: BudgetEstimateResult = {
-    totalGroupCost,
-    perPersonCost,
+    totalGroupCost: costBreakdown.totalEstimatedCostInr,
+    perPersonCost: costBreakdown.perPersonCostInr,
     currency: 'INR',
-    isWithinBudget,
-    budgetShortfall,
-    suggestedAdjustments: suggestedAdjustments.length > 0 ? suggestedAdjustments : undefined,
+    isWithinBudget: costBreakdown.budgetComparison.isWithinBudget,
+    budgetShortfall: costBreakdown.budgetComparison.budgetShortfall,
+    suggestedAdjustments: costBreakdown.budgetComparison.recommendation ? [costBreakdown.budgetComparison.recommendation] : undefined,
     breakdown: {
-      transportation: transportCost,
-      accommodation: accommodationCost,
-      sightseeingAndActivities: activitiesCost,
-      mealsAndContingency: mealsCost,
+      transportation: costBreakdown.categories.transportation + costBreakdown.categories.localTransfers,
+      accommodation: costBreakdown.categories.accommodation,
+      sightseeingAndActivities: costBreakdown.categories.activitiesAndPermits,
+      mealsAndContingency: costBreakdown.categories.food + costBreakdown.categories.taxes + costBreakdown.categories.contingency,
     },
   };
 
   // 11. Reasoning & Transparent Explanations
+  const primaryDestName = primaryDest.canonicalName;
+  const uniqueStates = new Set(orderedDestinations.map((d) => d.stateOrUt || (d as any).state || ''));
+  const hasCrossRegion = totalTripRoadKm > 1600;
+  const hasIsland = orderedDestinations.some((d) => d.region === 'Islands' || d.terrain === 'island');
+  const budgetShortfall = costBreakdown.budgetComparison.budgetShortfall || 0;
+
   const reasoning: string[] = [];
   reasoning.push(
-    `Origin ${originName} to ${primaryName} is ~${outboundRoadKm} km (${outboundHours}h via ${mode.toUpperCase()}).`
+    `Origin ${originName} to ${primaryDestName} is ~${outboundRoadKm} km (${outboundHours}h via ${mode.toUpperCase()}).`
   );
 
   if (orderedDestinations.length > 1) {
@@ -767,7 +879,7 @@ export function calculateTripDurationRecommendation(
 
   if (hasHighAltitude) {
     reasoning.push(
-      `Mandatory 48-hour physiological acclimatization incorporated at ${primaryName} (${primaryDest.altitudeMeters}m) to safeguard against Acute Mountain Sickness (AMS).`
+      `Mandatory 48-hour physiological acclimatization incorporated at ${primaryDestName} (${primaryDest.altitudeMeters}m) to safeguard against Acute Mountain Sickness (AMS).`
     );
   }
 
@@ -966,32 +1078,30 @@ export function customizeTripDuration(input: CustomizeDurationInput): CustomizeD
     });
   }
 
-  // Recalculate Budget for custom days
-  const roomsCount = Math.ceil(travellers / 2);
-  const roomRate = budget > 50000 ? 4200 : budget > 28000 ? 2600 : 1800;
-  const accomCost = roomsCount * customNights * roomRate;
-  const transCost = baseResult.budgetEstimate.breakdown.transportation;
-  const actsCost = travellers * Math.max(1, customDays - 1) * 650;
-  const mealsCost = travellers * customDays * 650;
-  const totalGroupCost = transCost + accomCost + actsCost + mealsCost;
-  const perPersonCost = Math.round(totalGroupCost / travellers);
-  const isWithinBudget = totalGroupCost <= budget;
-  const budgetShortfall = Math.max(0, totalGroupCost - budget);
+  // Recalculate Budget for custom days via canonical Trip Cost Engine
+  const customCostBreakdown = calculateTripCost({
+    originCity: originName,
+    destinations: baseResult.destinations.map((d) => d.name),
+    travelersCount: travellers,
+    durationDays: customDays,
+    travelMode: mode,
+    userBudgetInr: budget,
+  });
 
   const budgetEstimate: BudgetEstimateResult = {
-    totalGroupCost,
-    perPersonCost,
+    totalGroupCost: customCostBreakdown.totalEstimatedCostInr,
+    perPersonCost: customCostBreakdown.perPersonCostInr,
     currency: 'INR',
-    isWithinBudget,
-    budgetShortfall,
-    suggestedAdjustments: budgetShortfall > 0
-      ? [`Customized ${customDays}-day itinerary exceeds allocated budget by ₹${budgetShortfall.toLocaleString('en-IN')}. Consider reducing lodging tier or travel days.`]
+    isWithinBudget: customCostBreakdown.budgetComparison.isWithinBudget,
+    budgetShortfall: customCostBreakdown.budgetComparison.budgetShortfall,
+    suggestedAdjustments: customCostBreakdown.budgetComparison.recommendation
+      ? [customCostBreakdown.budgetComparison.recommendation]
       : undefined,
     breakdown: {
-      transportation: transCost,
-      accommodation: accomCost,
-      sightseeingAndActivities: actsCost,
-      mealsAndContingency: mealsCost,
+      transportation: customCostBreakdown.categories.transportation + customCostBreakdown.categories.localTransfers,
+      accommodation: customCostBreakdown.categories.accommodation,
+      sightseeingAndActivities: customCostBreakdown.categories.activitiesAndPermits,
+      mealsAndContingency: customCostBreakdown.categories.food + customCostBreakdown.categories.taxes + customCostBreakdown.categories.contingency,
     },
   };
 

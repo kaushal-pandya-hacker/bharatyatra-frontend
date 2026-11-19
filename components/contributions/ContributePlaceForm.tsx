@@ -100,7 +100,18 @@ export default function ContributePlaceForm({ originPath = 'dashboard' }: Contri
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams?.get('edit');
-  const { user } = useAuth();
+  const { user, token: authToken } = useAuth();
+
+  const getAuthToken = () => {
+    return (
+      authToken ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('auth_token') ||
+          localStorage.getItem('sb_auth_token') ||
+          localStorage.getItem('admin_token')
+        : null)
+    );
+  };
 
   // Form Fields
   const [placeName, setPlaceName] = useState('');
@@ -145,7 +156,10 @@ export default function ContributePlaceForm({ originPath = 'dashboard' }: Contri
 
     async function fetchSubmissionForEdit() {
       try {
-        const res = await fetch(`/api/v1/contributions/${editId}`);
+        const token = getAuthToken();
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(`/api/v1/contributions/${editId}`, { headers });
         const data = await res.json();
         if (data.success && data.submission) {
           const s = data.submission;
@@ -208,8 +222,12 @@ export default function ContributePlaceForm({ originPath = 'dashboard' }: Contri
 
       try {
         setUploadProgress(50);
+        const token = getAuthToken();
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
         const res = await fetch('/api/v1/contributions/upload', {
           method: 'POST',
+          headers,
           body: formData,
         });
 
@@ -347,15 +365,19 @@ export default function ContributePlaceForm({ originPath = 'dashboard' }: Contri
       const url = editId ? `/api/v1/contributions/${editId}` : '/api/v1/contributions';
       const method = editId ? 'PUT' : 'POST';
 
+      const token = getAuthToken();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to submit destination');
+        throw new Error(data.error || data.message || 'Failed to submit destination');
       }
 
       setSuccessResult({
