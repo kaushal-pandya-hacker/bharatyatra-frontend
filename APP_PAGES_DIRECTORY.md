@@ -1,6 +1,6 @@
 # BharatYatra — Complete Pages & Routes Directory
 
-> **Total Registered Pages:** **168**  
+> **Total Registered Pages:** **171**  
 > **Framework:** Next.js 14 App Router  
 > **Production URL:** https://www.bharatyatra.in  
 > **Last Updated:** October 2026  
@@ -8,7 +8,7 @@
 
 ## Table of Contents
 
-- [Admin Portal (Super-Admin & Operations) (42 pages)](#admin-portal-super-admin-operations)
+- [Admin Portal (Super-Admin & Operations) (43 pages)](#admin-portal-super-admin-operations)
 - [BharatYatra Ops Control Center (11 pages)](#bharatyatra-ops-control-center)
 - [Trip Command Center, Splitter & Telemetry (10 pages)](#trip-command-center-splitter-telemetry)
 - [Bookings, Checkout & Settlement (11 pages)](#bookings-checkout-settlement)
@@ -16,7 +16,7 @@
 - [BharatGateway FinTech Suite (6 pages)](#bharatgateway-fintech-suite)
 - [Travel Partner Ecosystem (11 pages)](#travel-partner-ecosystem)
 - [Supplier & Vendor Portal (12 pages)](#supplier-vendor-portal)
-- [Customer Discovery, Itinerary & Travel Products (57 pages)](#customer-discovery-itinerary-travel-products)
+- [Customer Discovery, Itinerary & Travel Products (59 pages)](#customer-discovery-itinerary-travel-products)
 
 ---
 
@@ -37,6 +37,7 @@
 | **Page: /admin/diwali** | `/admin/diwali` | [`app/admin/diwali/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/diwali/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/enquiries** | `/admin/enquiries` | [`app/admin/enquiries/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/enquiries/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/financial-reports** | `/admin/financial-reports` | [`app/admin/financial-reports/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/financial-reports/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /admin/geo** | `/admin/geo` | [`app/admin/geo/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/geo/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /admin/hotels** | `/admin/hotels` | [`app/admin/hotels/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/hotels/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Fleet, Room & Ticket Inventory Management** | `/admin/inventory` | [`app/admin/inventory/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/inventory/page.tsx) | `Super Admin / Platform Ops` | Real-time allocation and locks on buses, hotels, and tourist vehicles |
 | **Admin Security Portal Authentication** | `/admin/login` | [`app/admin/login/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/admin/login/page.tsx) | `Public (Staff)` | Secure MFA login for platform engineers and system administrators |
@@ -211,6 +212,8 @@
 | **Domestic Flights Discovery & Fare Comparison** | `/flights` | [`app/(customer)/flights/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/flights/page.tsx) | `Public / Traveler` | Direct flights, budget carriers, baggage allowances, and departure times |
 | **Flight Booking & Passenger Manifest** | `/flights/[id]` | [`app/(customer)/flights/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/flights/[id]/page.tsx) | `Public / Traveler` | Seat selection, meal add-ons, passenger details, and airline baggage rules |
 | **Page: /grievance-redressal** | `/grievance-redressal` | [`app/grievance-redressal/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/grievance-redressal/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /guides** | `/guides` | [`app/(customer)/guides/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/guides/page.tsx) | `Traveler` | BharatYatra platform page |
+| **Page: /guides/[slug]** | `/guides/[slug]` | [`app/(customer)/guides/[slug]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/guides/[slug]/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /help** | `/help` | [`app/help/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/help/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /home** | `/home` | [`app/home/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/home/page.tsx) | `Traveler` | BharatYatra platform page |
 | **Page: /hotels/[id]** | `/hotels/[id]` | [`app/(customer)/hotels/[id]/page.tsx`](file:///C:/Users/Pandya Kaushal/Desktop/BhartYatra_6/app/(customer)/hotels/[id]/page.tsx) | `Traveler` | BharatYatra platform page |
