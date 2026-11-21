@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const placesCount = stateFolderItem ? stateFolderItem.placesCount : 0;
 
-  const canonicalUrl = `https://www.bharatyatra.in/states/${params.slug}`;
+  const canonicalUrl = `https://www.bharatyatra.in/states/${params.slug}/`;
 
   return {
     title: `${stateName} Tourism | BharatYatra`,
@@ -105,11 +105,40 @@ export default async function DynamicStateDetailPage({ params }: Props) {
     },
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.bharatyatra.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'States & UTs',
+        item: 'https://www.bharatyatra.in/states',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: stateName,
+        item: `https://www.bharatyatra.in/states/${slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="bg-[#0A1128] text-white min-h-screen font-sans selection:bg-amber-500 selection:text-slate-950 pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* State Hero with OFFICIAL STATE COVER IMAGE */}

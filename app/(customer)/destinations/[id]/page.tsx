@@ -176,7 +176,7 @@ export async function generateMetadata({ params }: DestinationDetailPageProps): 
   }
   const title = `${destination.name} Travel Guide | BharatYatra`;
   const description = destination.description || destination.shortDescription || destination.tagline || `Explore ${destination.name} tourist attractions, tour packages, and travel guides.`;
-  const canonicalUrl = `https://www.bharatyatra.in/destinations/${destination.slug || params.id}`;
+  const canonicalUrl = `https://www.bharatyatra.in/destinations/${destination.slug || params.id}/`;
 
   return {
     title,
@@ -235,11 +235,40 @@ export default async function DestinationDetailPage({ params }: DestinationDetai
     },
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.bharatyatra.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Destinations',
+        item: 'https://www.bharatyatra.in/destinations',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: destination.name,
+        item: `https://www.bharatyatra.in/destinations/${destination.slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="bg-slate-50 text-slate-900 min-h-screen font-sans selection:bg-amber-200 selection:text-slate-900">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* Header Bar - Clean White Theme */}

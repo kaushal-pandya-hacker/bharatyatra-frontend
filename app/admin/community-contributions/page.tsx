@@ -33,6 +33,7 @@ import type {
   ContributionStats
 } from '@/lib/contributions/types';
 import { PLACE_CATEGORIES } from '@/lib/contributions/types';
+import { INDIAN_STATES_AND_UTS } from '@/components/destinations/AddDestinationModal';
 
 const STATUS_PILLS: Record<
   string,
@@ -63,13 +64,15 @@ export default function AdminCommunityContributionsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [stateFilter, setStateFilter] = useState<string>('ALL');
+  const [sortFilter, setSortFilter] = useState<string>('NEWEST');
 
   // Modal / Drawer state
   const [selectedDossier, setSelectedDossier] = useState<PlaceSubmissionDossier | null>(null);
   const [dossierLoading, setDossierLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [feedbackInput, setFeedbackInput] = useState('');
-  const [actionType, setActionType] = useState<'APPROVE' | 'REQUEST_CHANGES' | 'REJECT' | 'EDIT' | null>(null);
+  const [actionType, setActionType] = useState<'APPROVE' | 'REQUEST_CHANGES' | 'REJECT' | 'DUPLICATE' | 'EDIT' | null>(null);
   const [feedbackError, setFeedbackError] = useState('');
   const [actionSuccessMsg, setActionSuccessMsg] = useState('');
 
@@ -82,6 +85,8 @@ export default function AdminCommunityContributionsPage() {
     city: string;
     entry_fee: string;
     timings: string;
+    latitude?: number;
+    longitude?: number;
   } | null>(null);
 
   const fetchList = async () => {
@@ -91,6 +96,8 @@ export default function AdminCommunityContributionsPage() {
       if (searchQuery) params.set('search', searchQuery);
       if (statusFilter !== 'ALL') params.set('status', statusFilter);
       if (categoryFilter !== 'ALL') params.set('category', categoryFilter);
+      if (stateFilter !== 'ALL') params.set('state', stateFilter);
+      if (sortFilter) params.set('sort', sortFilter);
 
       const token = getAdminToken();
       const headers: Record<string, string> = {};
@@ -112,7 +119,39 @@ export default function AdminCommunityContributionsPage() {
 
   useEffect(() => {
     fetchList();
-  }, [statusFilter, categoryFilter]);
+  }, [statusFilter, categoryFilter, stateFilter, sortFilter]);
+
+  const handleQuickAction = async (id: string, action: 'APPROVE' | 'REJECT') => {
+    let notes = '';
+    if (action === 'REJECT') {
+      const reason = window.prompt('Enter rejection reason for contributor:');
+      if (!reason || !reason.trim()) return;
+      notes = reason.trim();
+    } else {
+      if (!window.confirm('Quick Approve this destination and publish globally to BharatYatra?')) return;
+      notes = 'Quick approved by administrator.';
+    }
+
+    try {
+      const token = getAdminToken();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`/api/v1/admin/contributions/${id}/action`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ action, notes, feedback: notes }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert(data.error || 'Quick action failed');
+        return;
+      }
+      fetchList();
+    } catch (err: any) {
+      alert(err.message || 'Error executing quick action');
+    }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,6 +181,8 @@ export default function AdminCommunityContributionsPage() {
           city: data.dossier.submission.city || '',
           entry_fee: data.dossier.submission.entry_fee || '',
           timings: data.dossier.submission.timings || '',
+          latitude: data.dossier.submission.latitude,
+          longitude: data.dossier.submission.longitude,
         });
       }
     } catch (err) {
@@ -151,7 +192,7 @@ export default function AdminCommunityContributionsPage() {
     }
   };
 
-  const executeAction = async (action: 'CLAIM_REVIEW' | 'APPROVE' | 'REQUEST_CHANGES' | 'REJECT' | 'EDIT') => {
+  const executeAction = async (action: 'CLAIM_REVIEW' | 'APPROVE' | 'REQUEST_CHANGES' | 'REJECT' | 'DUPLICATE' | 'EDIT') => {
     if (!selectedDossier) return;
     setFeedbackError('');
 
@@ -277,14 +318,14 @@ export default function AdminCommunityContributionsPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               aria-label="Filter by category"
               className="px-3 py-2 rounded-2xl border border-slate-200 bg-white text-xs font-bold text-slate-700"
             >
-              <option value="ALL">All Categories</option>
+              <option value="ALL">All Categories (14)</option>
               {(Object.entries(PLACE_CATEGORIES) as [string, { label: string; icon: string }][]).map(([key, meta]) => (
                 <option key={key} value={key}>
                   {meta.icon} {meta.label}
@@ -292,9 +333,34 @@ export default function AdminCommunityContributionsPage() {
               ))}
             </select>
 
+            <select
+              value={stateFilter}
+              onChange={(e) => setStateFilter(e.target.value)}
+              aria-label="Filter by state"
+              className="px-3 py-2 rounded-2xl border border-slate-200 bg-white text-xs font-bold text-slate-700 max-w-[170px]"
+            >
+              <option value="ALL">All States/UTs (36)</option>
+              {INDIAN_STATES_AND_UTS.map((st) => (
+                <option key={st} value={st}>
+                  {st}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={sortFilter}
+              onChange={(e) => setSortFilter(e.target.value)}
+              aria-label="Sort submissions"
+              className="px-3 py-2 rounded-2xl border border-slate-200 bg-white text-xs font-bold text-slate-700"
+            >
+              <option value="NEWEST">Newest First</option>
+              <option value="OLDEST">Oldest First</option>
+              <option value="NAME_ASC">Name A-Z</option>
+            </select>
+
             <button
               type="submit"
-              className="px-5 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition-all"
+              className="px-5 py-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition-all cursor-pointer"
             >
               Search
             </button>
@@ -419,14 +485,39 @@ export default function AdminCommunityContributionsPage() {
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => openDossier(sub.id)}
-                          className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
-                        >
-                          <Eye className="w-3 h-3" />
-                          <span>Review Dossier</span>
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openDossier(sub.id)}
+                            className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1 shadow-xs"
+                            title="Open review dossier"
+                          >
+                            <Eye className="w-3 h-3" />
+                            <span>Review</span>
+                          </button>
+                          {sub.status === 'PENDING' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAction(sub.id, 'APPROVE')}
+                                className="px-2 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-0.5 shadow-xs"
+                                title="Quick Approve & Publish"
+                              >
+                                <CheckCircle2 className="w-3 h-3" />
+                                <span>Approve</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAction(sub.id, 'REJECT')}
+                                className="px-2 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-0.5 shadow-xs"
+                                title="Quick Reject"
+                              >
+                                <XCircle className="w-3 h-3" />
+                                <span>Reject</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -829,6 +920,8 @@ export default function AdminCommunityContributionsPage() {
                       ? 'Publication Note (Optional):'
                       : actionType === 'REQUEST_CHANGES'
                       ? 'Action Required Feedback (Sent to Contributor):'
+                      : actionType === 'DUPLICATE'
+                      ? 'Duplicate Note & Linked Destination ID / Reason:'
                       : 'Rejection Reason (Sent to Contributor):'}
                   </label>
                   <textarea
@@ -839,7 +932,9 @@ export default function AdminCommunityContributionsPage() {
                       actionType === 'REQUEST_CHANGES'
                         ? 'e.g. Please clarify exact operating hours and upload at least one landscape orientation photo...'
                         : actionType === 'REJECT'
-                        ? 'e.g. This destination is already registered under Somnath Temple...'
+                        ? 'e.g. This destination is already registered or does not meet criteria...'
+                        : actionType === 'DUPLICATE'
+                        ? 'e.g. Marked as duplicate of verified catalog place: Somnath Temple (ID: somnath-temple)...'
                         : 'Optional notes...'
                     }
                     className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20"
@@ -902,6 +997,16 @@ export default function AdminCommunityContributionsPage() {
                       <XCircle className="w-4 h-4" />
                       <span>{actionLoading ? 'Rejecting...' : 'Confirm Rejection'}</span>
                     </button>
+                  ) : actionType === 'DUPLICATE' ? (
+                    <button
+                      type="button"
+                      onClick={() => executeAction('DUPLICATE')}
+                      disabled={actionLoading}
+                      className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-1.5"
+                    >
+                      <Layers className="w-4 h-4" />
+                      <span>{actionLoading ? 'Marking Duplicate...' : 'Confirm Duplicate'}</span>
+                    </button>
                   ) : (
                     <>
                       <button
@@ -923,6 +1028,16 @@ export default function AdminCommunityContributionsPage() {
                         className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-200 text-xs font-bold transition-all"
                       >
                         Reject
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActionType('DUPLICATE');
+                          setFeedbackInput('');
+                        }}
+                        className="px-4 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold transition-all"
+                      >
+                        Mark Duplicate
                       </button>
                       <button
                         type="button"

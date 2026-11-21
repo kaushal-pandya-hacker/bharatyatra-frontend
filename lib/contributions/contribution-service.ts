@@ -34,6 +34,11 @@ interface StoredData {
   history: ContributionHistoryRecord[];
 }
 
+function sanitizeText(str?: string): string {
+  if (!str) return '';
+  return str.replace(/<[^>]*>/g, '').trim();
+}
+
 function mapDbRowToSubmission(row: any): PlaceSubmission {
   return {
     id: row.id,
@@ -268,11 +273,12 @@ class ContributionService {
 
   public async submitPlace(
     input: PlaceSubmissionInput,
-    user: { id: string; email?: string; fullName?: string; name?: string }
+    user: { id: string; email?: string; fullName?: string; name?: string },
+    options?: { skipRateLimit?: boolean }
   ): Promise<PlaceSubmission> {
     this.ensureLoaded();
 
-    // 1. Mandatory server-side validations
+    // 1. Mandatory server-side validations & input sanitization
     if (!input.placeName || input.placeName.trim().length < 3) {
       throw new Error('Destination name must be at least 3 characters.');
     }
@@ -288,6 +294,9 @@ class ContributionService {
     if (typeof input.latitude !== 'number' || typeof input.longitude !== 'number' || isNaN(input.latitude) || isNaN(input.longitude)) {
       throw new Error('Valid GPS coordinates (latitude and longitude) are required.');
     }
+    if (input.latitude < 6.5 || input.latitude > 37.6 || input.longitude < 68.1 || input.longitude > 97.4) {
+      throw new Error('GPS coordinates must fall within Indian geographical boundaries (Lat: 6.5°N - 37.6°N, Long: 68.1°E - 97.4°E).');
+    }
     if (!input.shortDescription || input.shortDescription.trim().length < 20) {
       throw new Error('Short summary must be at least 20 characters.');
     }
@@ -297,42 +306,58 @@ class ContributionService {
     if (!input.photos || input.photos.length === 0) {
       throw new Error('At least one authentic destination photograph is required.');
     }
+    for (const photo of input.photos) {
+      if (typeof photo !== 'string' || (!photo.startsWith('http') && !photo.startsWith('/') && !photo.startsWith('data:image/'))) {
+        throw new Error('Invalid photo format. Photos must be valid URLs or images.');
+      }
+    }
+
+    // 1.5 Rate limiting: max 5 submissions per user per 24 hours
+    if (!options?.skipRateLimit) {
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const userDailySubmissions = Array.from(this.cache.values()).filter(
+        (s) => s.contributorId === user.id && s.createdAt >= oneDayAgo
+      );
+      if (userDailySubmissions.length >= 5) {
+        throw new Error('Daily destination contribution limit reached (maximum 5 submissions per 24 hours).');
+      }
+    }
 
     // 2. Run AI Verification Pipeline
     const aiVerification = runAiDestinationVerification(input);
 
-    // 3. Build Submission Entity
+    // 3. Build Submission Entity with Sanitized Text
     const submissionId = crypto.randomUUID();
     const nowIso = new Date().toISOString();
 
     const submission: PlaceSubmission = {
       id: submissionId,
       contributorId: user.id,
-      contributorName: user.fullName || user.name || user.email?.split('@')[0] || 'BharatYatra Explorer',
+      contributorName: sanitizeText(user.fullName || user.name || user.email?.split('@')[0]) || 'BharatYatra Explorer',
       contributorEmail: user.email,
-      placeName: input.placeName.trim(),
+      placeName: sanitizeText(input.placeName),
       category: input.category,
       country: input.country || 'India',
-      state: input.state.trim(),
-      district: input.district?.trim(),
-      city: input.city?.trim(),
-      address: input.address.trim(),
+      state: sanitizeText(input.state),
+      district: input.district ? sanitizeText(input.district) : undefined,
+      city: input.city ? sanitizeText(input.city) : undefined,
+      address: sanitizeText(input.address),
       latitude: Number(input.latitude),
       longitude: Number(input.longitude),
-      shortDescription: input.shortDescription.trim(),
-      detailedDescription: input.detailedDescription.trim(),
+      shortDescription: sanitizeText(input.shortDescription),
+      detailedDescription: sanitizeText(input.detailedDescription),
       photos: input.photos,
-      bestTimeToVisit: input.bestTimeToVisit?.trim(),
-      estimatedVisitDuration: input.estimatedVisitDuration?.trim(),
-      entryFee: input.entryFee?.trim(),
-      openingHours: input.openingHours?.trim(),
-      contactInfo: input.contactInfo?.trim(),
-      website: input.website?.trim(),
-      accessibility: input.accessibility?.trim(),
+      bestTimeToVisit: input.bestTimeToVisit ? sanitizeText(input.bestTimeToVisit) : undefined,
+      estimatedVisitDuration: input.estimatedVisitDuration ? sanitizeText(input.estimatedVisitDuration) : undefined,
+      entryFee: input.entryFee ? sanitizeText(input.entryFee) : undefined,
+      openingHours: input.openingHours ? sanitizeText(input.openingHours) : undefined,
+      contactInfo: input.contactInfo ? sanitizeText(input.contactInfo) : undefined,
+      website: input.website ? sanitizeText(input.website) : undefined,
+      accessibility: input.accessibility ? sanitizeText(input.accessibility) : undefined,
       parkingAvailable: Boolean(input.parkingAvailable),
-      facilities: input.facilities || [],
-      travelTips: input.travelTips || [],
-      nearbyAttractions: input.nearbyAttractions || [],
+      facilities: (input.facilities || []).map((f) => sanitizeText(f)),
+      travelTips: (input.travelTips || []).map((t) => sanitizeText(t)),
+      nearbyAttractions: (input.nearbyAttractions || []).map((a) => sanitizeText(a)),
       suitableFor: input.suitableFor || [],
       status: 'PENDING',
       aiVerification,
@@ -591,6 +616,7 @@ class ContributionService {
     category?: string;
     state?: string;
     status?: string;
+    sort?: 'NEWEST' | 'OLDEST' | 'NAME_ASC';
     page?: number;
     limit?: number;
   }): Promise<{
@@ -653,7 +679,13 @@ class ContributionService {
       list = list.filter((s) => s.status === filters.status);
     }
 
-    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    if (filters?.sort === 'OLDEST') {
+      list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    } else if (filters?.sort === 'NAME_ASC') {
+      list.sort((a, b) => a.placeName.localeCompare(b.placeName));
+    } else {
+      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
 
     const page = Math.max(1, filters?.page || 1);
     const limit = Math.max(1, Math.min(100, filters?.limit || 20));
@@ -862,6 +894,18 @@ class ContributionService {
 
         // Store published community destination in approved registry
         this.publishedDestinations.set(publishedDestination.id, publishedDestination);
+        break;
+
+      case 'DUPLICATE':
+        // Mark as duplicate of an existing approved destination and preserve audit trail
+        newStatus = 'REJECTED';
+        submission.status = 'REJECTED';
+        submission.rejectionReason = notes || 'Marked as duplicate of an existing verified destination.';
+        submission.adminFeedback = notes || 'Marked as duplicate of an existing verified destination.';
+        submission.approvedPlaceId = modifications?.approvedPlaceId || undefined;
+        submission.reviewedBy = adminUser.email;
+        submission.reviewedAt = nowIso;
+        submission.updatedAt = nowIso;
         break;
 
       default:

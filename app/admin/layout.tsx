@@ -39,6 +39,7 @@ import {
   BarChart3,
   Gift,
   Send,
+  Globe,
 } from 'lucide-react';
 import { AdminNotificationDropdown } from '@/components/admin/AdminNotificationDropdown';
 
@@ -192,6 +193,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       title: 'Analytics & Intelligence',
       items: [
         { label: 'Advanced Analytics', href: '/admin/analytics', icon: BarChart3 },
+        { label: 'GEO Authority & Visibility', href: '/admin/geo', icon: Globe },
       ],
     },
     {

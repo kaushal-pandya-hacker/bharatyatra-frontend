@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    let data = adminDataStore.getInventory({ type, status, search });
+    let data = await adminDataStore.getInventoryFromDb({ type, status, search });
 
     if (data.length === 0) {
       try {

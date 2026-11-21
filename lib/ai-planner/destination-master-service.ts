@@ -1023,8 +1023,49 @@ export function getIndexedDestinations(): EnrichedDestination[] {
 /**
  * Resolves a destination query using direct lookup, alias translation, or prefix search
  */
-export function findDestinationMaster(query?: string): EnrichedDestination | undefined {
+export function findDestinationMaster(query?: string, customDestinations?: any[]): EnrichedDestination | undefined {
   if (!query) return undefined;
+
+  // 0. Support user-contributed pending or approved custom destinations
+  if (customDestinations && Array.isArray(customDestinations) && customDestinations.length > 0) {
+    const qClean = normalizeQuery(query);
+    const customMatch = customDestinations.find((c: any) => {
+      const cId = c.id ? String(c.id).trim() : '';
+      const cName = c.name || c.placeName || '';
+      return cId === query.trim() || normalizeQuery(cName) === qClean || normalizeQuery(cName).includes(qClean) || qClean.includes(normalizeQuery(cName));
+    });
+    if (customMatch) {
+      const stateNorm = (customMatch.state || 'Gujarat').toLowerCase();
+      const stateMeta = ALL_36_STATES_AND_UTS[stateNorm];
+      return {
+        id: customMatch.id || `custom-${query}`,
+        originalName: customMatch.name || customMatch.placeName || query,
+        canonicalName: customMatch.name || customMatch.placeName || query,
+        stateOrUt: customMatch.state || 'India',
+        district: customMatch.district || customMatch.city,
+        city: customMatch.city,
+        tourismType: customMatch.category || 'Sightseeing',
+        category: customMatch.category || 'Sightseeing',
+        region: stateMeta ? stateMeta.region : 'West',
+        latitude: Number(customMatch.latitude) || 22.2587,
+        longitude: Number(customMatch.longitude) || 71.1924,
+        altitudeMeters: 150,
+        isHighAltitude: false,
+        terrain: stateMeta ? stateMeta.terrainDefault : 'plains',
+        averageRoadSpeedKmH: stateMeta ? stateMeta.speedKmHDefault : 45,
+        nearestAirport: stateMeta ? { code: stateMeta.primaryAirport.code, name: stateMeta.primaryAirport.name, distanceKm: 45 } : { code: 'AMD', name: 'Sardar Vallabhbhai Patel International', distanceKm: 50 },
+        nearestRailhead: stateMeta ? { code: stateMeta.primaryRailhead.code, name: stateMeta.primaryRailhead.name, distanceKm: 20 } : { code: 'ADI', name: 'Ahmedabad Junction', distanceKm: 25 },
+        aliases: [(customMatch.name || customMatch.placeName || '').toLowerCase()],
+        verificationStatus: customMatch.status === 'APPROVED' ? 'VERIFIED' : 'PENDING_USER_CONTRIBUTION',
+        verificationSource: `User Contribution (${customMatch.contributorName || 'Author'})`,
+        verificationNotes: 'User-Contributed Destination',
+        recommendedStayDays: { quick: 1, recommended: 2, extended: 3 },
+        bestMonths: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+        permitsRequired: [],
+      };
+    }
+  }
+
   const list = getIndexedDestinations();
   const clean = normalizeQuery(query);
 

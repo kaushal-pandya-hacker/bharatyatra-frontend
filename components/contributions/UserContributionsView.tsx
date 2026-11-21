@@ -423,6 +423,16 @@ export default function UserContributionsView({ originPath = 'dashboard' }: User
                         <strong>Status: </strong>{statusCfg.description}
                       </div>
 
+                      {/* Active in Personal Trips Reassurance */}
+                      {(item.status === 'PENDING' || item.status === 'UNDER_REVIEW' || (item.status as string) === 'IN_REVIEW') && (
+                        <div className="p-2.5 rounded-xl bg-blue-50/80 border border-blue-200/90 text-blue-950 text-[11px] font-medium flex items-start gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span>
+                            Your submission is being reviewed by our team. In the meantime, you can already use it in your personal trip plans!
+                          </span>
+                        </div>
+                      )}
+
                       {/* Admin Feedback / Rejection Reason (Critical Requirement) */}
                       {(item.rejection_reason || item.admin_feedback) && (
                         <div

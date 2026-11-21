@@ -21,7 +21,7 @@ export async function PATCH(
       );
     }
 
-    const updated = adminDataStore.updateInventoryStatus(
+    const updated = await adminDataStore.updateInventoryStatusInDb(
       params.id,
       status,
       reason,

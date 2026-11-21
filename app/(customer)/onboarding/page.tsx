@@ -19,6 +19,10 @@ import {
   AlertTriangle,
   Utensils,
   Clock,
+  Building,
+  Info,
+  Plus,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useDestinationSelection } from '@/lib/tourism/destination-selection-context';
@@ -39,6 +43,47 @@ import { generateItineraryBlueprint, PlanningResult } from '@/lib/trips/itinerar
 import { saveTripToApi, saveTrip, TripItem } from '@/lib/trips/trip-storage';
 import { playNotificationSound, initAudioUnlocker } from '@/lib/utils/sound';
 import { AshokaChakraIcon } from '@/components/qr/AshokaChakraIcon';
+import { computeHybridTripPricing, HybridPricingEvaluation } from '@/lib/ai-planner/hybrid-pricing-engine';
+import AddDestinationModal from '@/components/destinations/AddDestinationModal';
+
+const INDIAN_STATES_AND_UTS = [
+  'Andaman and Nicobar Islands',
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chandigarh',
+  'Chhattisgarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jammu and Kashmir',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Ladakh',
+  'Lakshadweep',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Puducherry',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+];
 
 // Popular Indian Destination Presets for Quick Pick
 const QUICK_DESTINATIONS = [
@@ -89,6 +134,33 @@ function OnboardingContent() {
   const [showDestDropdown, setShowDestDropdown] = useState<boolean>(false);
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(true);
   const [isMultiDestination, setIsMultiDestination] = useState<boolean>(false);
+
+  // Recent and Custom User Destinations
+  const [recentDestinations, setRecentDestinations] = useState<string[]>([
+    'Statue of Unity & Narmada',
+    'White Rann of Kutch',
+    'Somnath Temple & Coast',
+    'Varanasi Ancient Ghats',
+    'Jaipur Royal Heritage',
+    'Goa Coastal Trail',
+  ]);
+  const [userCustomDestinations, setUserCustomDestinations] = useState<any[]>([]);
+
+  // Missing Destination Contribution Modal State
+  const [showAddDestModal, setShowAddDestModal] = useState<boolean>(false);
+  const [missingName, setMissingName] = useState<string>('');
+  const [missingCity, setMissingCity] = useState<string>('');
+  const [missingState, setMissingState] = useState<string>('Gujarat');
+  const [missingCategory, setMissingCategory] = useState<string>('Historical Places');
+  const [missingDesc, setMissingDesc] = useState<string>('');
+  const [missingLat, setMissingLat] = useState<string>('');
+  const [missingLng, setMissingLng] = useState<string>('');
+  const [isSubmittingPlace, setIsSubmittingPlace] = useState<boolean>(false);
+  const [placeSubmitSuccess, setPlaceSubmitSuccess] = useState<string | null>(null);
+  const [placeSubmitError, setPlaceSubmitError] = useState<string | null>(null);
+
+  // Hybrid AI Pricing Evaluation
+  const [hybridPricing, setHybridPricing] = useState<HybridPricingEvaluation | null>(null);
 
   // --- STEP 3: TRAVEL DATES ---
   const [dateMode, setDateMode] = useState<'flexible' | 'fixed'>('flexible');
@@ -146,6 +218,32 @@ function OnboardingContent() {
     async function initData() {
       try {
         if (typeof window !== 'undefined') {
+          // Hydrate recent destinations
+          const savedRecents = localStorage.getItem('by_recent_destinations');
+          if (savedRecents) {
+            try {
+              const parsed = JSON.parse(savedRecents);
+              if (Array.isArray(parsed) && parsed.length > 0) setRecentDestinations(parsed);
+            } catch {}
+          }
+
+          // Hydrate locally stored custom places
+          const savedCustom = localStorage.getItem('by_user_custom_destinations');
+          if (savedCustom) {
+            try {
+              const parsedCustom = JSON.parse(savedCustom);
+              if (Array.isArray(parsedCustom)) setUserCustomDestinations(parsedCustom);
+            } catch {}
+          }
+
+          // Check URL query parameters (q, destination, to)
+          const qParam = searchParams ? (searchParams.get('q') || searchParams.get('destination') || searchParams.get('to')) : null;
+          if (qParam && qParam.trim()) {
+            const cleanQ = qParam.trim();
+            setDestinations((prev) => (prev.includes(cleanQ) ? prev : [cleanQ, ...prev]));
+            addDestination(cleanQ);
+          }
+
           const savedDraft = localStorage.getItem('by_onboarding_draft');
           if (savedDraft) {
             const draft = JSON.parse(savedDraft);
@@ -181,6 +279,25 @@ function OnboardingContent() {
               setAccommodationTypes(prof.accommodationTypes);
             }
           }
+
+          // Fetch user's contributed places
+          try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') || localStorage.getItem('sb_auth_token') : null;
+            const res = await fetch('/api/v1/contributions', {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            if (res.ok) {
+              const cData = await res.json();
+              if (cData.submissions && Array.isArray(cData.submissions)) {
+                setUserCustomDestinations((prev) => {
+                  const map = new Map<string, any>();
+                  prev.forEach((item) => map.set(item.name || item.placeName || item.title, item));
+                  cData.submissions.forEach((item: any) => map.set(item.name || item.placeName || item.title, item));
+                  return Array.from(map.values());
+                });
+              }
+            }
+          } catch {}
         }
       } catch {
         // Fallback gracefully
@@ -244,8 +361,23 @@ function OnboardingContent() {
   // Destination search matches
   const destinationSuggestions: CityItem[] = useMemo(() => {
     if (!destInput.trim()) return [];
-    return searchCities(destInput).slice(0, 6);
-  }, [destInput]);
+    const query = destInput.toLowerCase().trim();
+    const cityMatches = searchCities(destInput).slice(0, 5);
+
+    // Also search custom user-added places
+    const customMatches: CityItem[] = userCustomDestinations
+      .filter((p) => (p.name || p.placeName || '').toLowerCase().includes(query))
+      .slice(0, 3)
+      .map((p) => ({
+        city: p.name || p.placeName,
+        state: p.state || 'Custom Added',
+        country: 'India (Custom Place)',
+        latitude: p.latitude || 22.2587,
+        longitude: p.longitude || 71.1924,
+      }));
+
+    return [...customMatches, ...cityMatches].slice(0, 6);
+  }, [destInput, userCustomDestinations]);
 
   const originSuggestions: CityItem[] = useMemo(() => {
     if (!originSearch.trim()) return [];
@@ -259,6 +391,13 @@ function OnboardingContent() {
       setDestinations(updated);
       if (updated.length > 1) setIsMultiDestination(true);
       addDestination(clean);
+
+      // Persist in recent destinations
+      const updatedRecents = [clean, ...recentDestinations.filter((r) => r !== clean)].slice(0, 8);
+      setRecentDestinations(updatedRecents);
+      try {
+        localStorage.setItem('by_recent_destinations', JSON.stringify(updatedRecents));
+      } catch {}
     }
     setDestInput('');
     setShowDestDropdown(false);
@@ -271,6 +410,104 @@ function OnboardingContent() {
     if (updated.length <= 1) setIsMultiDestination(false);
     if (destToRemove) {
       removeDestination(destToRemove);
+    }
+  };
+
+  const handleMissingDestinationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!missingName.trim()) {
+      setPlaceSubmitError('Please enter a destination name.');
+      return;
+    }
+    setIsSubmittingPlace(true);
+    setPlaceSubmitError(null);
+    const cleanName = missingName.trim();
+    const cleanState = missingState.trim() || 'Gujarat';
+
+    const newPlace = {
+      id: `contrib-${Date.now()}`,
+      placeName: cleanName,
+      name: cleanName,
+      category: missingCategory,
+      state: cleanState,
+      city: missingCity.trim() || cleanState,
+      district: missingCity.trim() || cleanState,
+      address: `${cleanName}, ${missingCity.trim() ? missingCity.trim() + ', ' : ''}${cleanState}, India`,
+      latitude: parseFloat(missingLat) || 22.2587,
+      longitude: parseFloat(missingLng) || 71.1924,
+      shortDescription: missingDesc.trim() || `${cleanName} is an authentic travel destination in ${cleanState}, India.`,
+      detailedDescription: missingDesc.trim() || `${cleanName} in ${cleanState} added by traveler for AI itinerary planning.`,
+      status: 'pending_admin_approval',
+      createdAt: new Date().toISOString(),
+      photos: [],
+    };
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') || localStorage.getItem('sb_auth_token') : null;
+      await fetch('/api/v1/contributions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(newPlace),
+      });
+
+      // Save locally to immediate custom places
+      const updatedCustom = [newPlace, ...userCustomDestinations.filter((p) => (p.name || p.placeName) !== cleanName)];
+      setUserCustomDestinations(updatedCustom);
+      try {
+        localStorage.setItem('by_user_custom_destinations', JSON.stringify(updatedCustom));
+      } catch {}
+
+      // Add immediately to active trip itinerary
+      handleAddDestination(cleanName);
+      setPlaceSubmitSuccess(`"${cleanName}" added to your trip! (Status: Pending admin verification)`);
+      setTimeout(() => {
+        setShowAddDestModal(false);
+        setPlaceSubmitSuccess(null);
+        setMissingName('');
+        setMissingCity('');
+        setMissingDesc('');
+        setMissingLat('');
+        setMissingLng('');
+      }, 1000);
+    } catch (err: any) {
+      console.error('Error submitting place:', err);
+      // Fallback: still add locally so user is never blocked
+      const updatedCustom = [newPlace, ...userCustomDestinations];
+      setUserCustomDestinations(updatedCustom);
+      try {
+        localStorage.setItem('by_user_custom_destinations', JSON.stringify(updatedCustom));
+      } catch {}
+      handleAddDestination(cleanName);
+      setShowAddDestModal(false);
+    } finally {
+      setIsSubmittingPlace(false);
+    }
+  };
+
+  const calculateTripPricing = (days: number, tier: string) => {
+    try {
+      const targetTier = tier === 'budget' ? 'budget' : tier === 'luxury' ? 'luxury' : 'standard';
+      const targetDests = destinations.length > 0 ? destinations : ['Statue of Unity & Narmada'];
+      const evalPricing = computeHybridTripPricing({
+        originCity: originCity.split(',')[0].trim(),
+        destinationCity: targetDests[0].split(',')[0].trim(),
+        destinations: targetDests,
+        travelers: {
+          adults: Math.max(1, adults),
+          children: children || 0,
+          seniors: hasSeniors ? 1 : 0,
+        },
+        durationDays: days,
+        preferredTier: targetTier,
+        preferredTransport: preferredTransport === 'flight' ? 'flight' : preferredTransport === 'train' ? 'train' : preferredTransport === 'bus' ? 'bus' : 'cab',
+        userBudgetInr: budgetTier === 'custom' ? customBudgetAmount : undefined,
+      });
+      setHybridPricing(evalPricing);
+    } catch (err) {
+      console.error('[Onboarding] Error computing hybrid trip pricing:', err);
     }
   };
 
@@ -304,6 +541,7 @@ function OnboardingContent() {
       setDurationRecommendation(rec);
       setChosenDurationDays(rec.recommendedDuration.days);
       setDurationTierSelection('recommended');
+      calculateTripPricing(rec.recommendedDuration.days, budgetTier);
     } catch (e) {
       console.error('[Onboarding] Error calculating duration:', e);
     } finally {
@@ -317,12 +555,21 @@ function OnboardingContent() {
     }
   }, [currentStep]);
 
+  useEffect(() => {
+    if (currentStep >= 8) {
+      calculateTripPricing(chosenDurationDays, budgetTier);
+    }
+  }, [budgetTier, destinations, adults, children, preferredTransport]);
+
   const handleSelectTier = (tier: 'recommended' | 'minimum' | 'relaxed') => {
     if (!durationRecommendation) return;
     setDurationTierSelection(tier);
-    if (tier === 'recommended') setChosenDurationDays(durationRecommendation.recommendedDuration.days);
-    if (tier === 'minimum') setChosenDurationDays(durationRecommendation.minimumDuration.days);
-    if (tier === 'relaxed') setChosenDurationDays(durationRecommendation.relaxedDuration.days);
+    let targetDays = durationRecommendation.recommendedDuration.days;
+    if (tier === 'recommended') targetDays = durationRecommendation.recommendedDuration.days;
+    if (tier === 'minimum') targetDays = durationRecommendation.minimumDuration.days;
+    if (tier === 'relaxed') targetDays = durationRecommendation.relaxedDuration.days;
+    setChosenDurationDays(targetDays);
+    calculateTripPricing(targetDays, budgetTier);
   };
 
   const handleAdjustDays = (newDays: number) => {
@@ -330,6 +577,7 @@ function OnboardingContent() {
     const clamped = Math.max(2, Math.min(28, newDays));
     setChosenDurationDays(clamped);
     setDurationTierSelection('custom');
+    calculateTripPricing(clamped, budgetTier);
 
     const customized = customizeTripDuration({
       origin: originCity,
@@ -831,13 +1079,23 @@ function OnboardingContent() {
 
             {/* Selected Destinations Tag Deck */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <label className="text-xs font-bold text-slate-700 block">Selected Destinations ({destinations.length})</label>
-                {destinations.length > 1 && (
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    Multi-Destination Circuit
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddDestModal(true)}
+                    className="text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Can&apos;t find your destination? Add it</span>
+                  </button>
+                  {destinations.length > 1 && (
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      Multi-Destination Circuit
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2 min-h-[44px] p-2.5 rounded-xl bg-slate-50 border border-slate-200">
@@ -904,8 +1162,113 @@ function OnboardingContent() {
                     ))}
                   </div>
                 )}
+
+                {showDestDropdown && destInput.trim().length >= 2 && destinationSuggestions.length === 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-30 p-4 text-center space-y-2 animate-in fade-in">
+                    <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
+                      Destination not found
+                    </span>
+                    <p className="text-xs font-bold text-[#102A56]">
+                      &ldquo;We couldn&apos;t find this destination in BharatYatra yet.&rdquo;
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      Know this place? Help us discover more beautiful places in India.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddDestModal(true);
+                        setShowDestDropdown(false);
+                      }}
+                      className="px-4 py-2 bg-[#102A56] hover:bg-blue-950 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto cursor-pointer shadow-xs"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-amber-400" />
+                      <span>+ Add This Destination</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Recently Selected Destinations */}
+            {recentDestinations.length > 0 && (
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                  Recently Selected Destinations
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {recentDestinations.map((rd) => {
+                    const isAdded = destinations.includes(rd);
+                    return (
+                      <button
+                        key={rd}
+                        type="button"
+                        onClick={() => (isAdded ? handleRemoveDest(destinations.indexOf(rd)) : handleAddDestination(rd))}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition cursor-pointer flex items-center gap-1 ${
+                          isAdded
+                            ? 'bg-[#102A56] text-white border-[#102A56] font-bold'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <MapPin className="w-3 h-3 text-amber-500" />
+                        <span>{rd}</span>
+                        {isAdded && <span className="text-[10px] ml-1">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* User-Added Places (Personal / Pending Approval) */}
+            {userCustomDestinations.length > 0 && (
+              <div className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/70 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <Building className="w-3.5 h-3.5 text-amber-600" />
+                    Your Custom Places ({userCustomDestinations.length})
+                  </span>
+                  <span className="text-[10px] text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-full font-bold">
+                    Available to your trip plans
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {userCustomDestinations.map((cust) => {
+                    const cName = cust.name || cust.placeName || cust.title;
+                    const isAdded = destinations.includes(cName);
+                    const isApproved = cust.status === 'APPROVED' || cust.status === 'approved';
+                    return (
+                      <div
+                        key={cust.id || cName}
+                        className={`p-2.5 rounded-xl border flex items-center justify-between transition ${
+                          isAdded ? 'bg-white border-[#102A56] ring-1 ring-[#102A56]' : 'bg-white/80 border-amber-200'
+                        }`}
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="font-bold text-xs text-[#102A56] truncate">{cName}</div>
+                          <div className="text-[10px] text-slate-500 truncate flex items-center gap-1">
+                            <span>{cust.city ? `${cust.city}, ` : ''}{cust.state}</span>
+                            <span>•</span>
+                            <span className={isApproved ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
+                              {isApproved ? 'Approved Global' : 'Pending Verification (Private)'}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => isAdded ? handleRemoveDest(destinations.indexOf(cName)) : handleAddDestination(cName)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition shrink-0 cursor-pointer ${
+                            isAdded ? 'bg-[#102A56] text-white' : 'bg-amber-100 hover:bg-amber-200 text-amber-900'
+                          }`}
+                        >
+                          {isAdded ? 'Remove' : '+ Add'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Quick Destination Suggestions */}
             <div className="space-y-2">
@@ -1650,6 +2013,93 @@ function OnboardingContent() {
                   </div>
                 </div>
 
+                {/* TRANSPARENT JOURNEY COST ESTIMATION CARD */}
+                <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider">
+                        Transparent AI Journey Pricing
+                      </span>
+                      <h4 className="text-base font-black text-[#102A56] mt-1">
+                        Estimated Trip Costs ({budgetTier === 'custom' ? 'Custom' : budgetTier.toUpperCase()} Tier • {chosenDurationDays} Days)
+                      </h4>
+                    </div>
+                    <span className="text-[11px] text-slate-500 font-semibold">
+                      For {Math.max(1, adults + children)} Travellers ({adults} Adults{children > 0 ? `, ${children} Children` : ''})
+                    </span>
+                  </div>
+
+                  {hybridPricing ? (
+                    <div className="space-y-4">
+                      {/* Breakdown Categories */}
+                      {(() => {
+                        const activeTier = (budgetTier === 'budget' ? hybridPricing.tiers.budget : budgetTier === 'luxury' ? hybridPricing.tiers.luxury : hybridPricing.tiers.standard) || hybridPricing.tiers.standard;
+                        const transit = activeTier.categories.transportation?.totalAmount || 0;
+                        const stays = activeTier.categories.accommodation?.totalAmount || 0;
+                        const meals = activeTier.categories.food?.totalAmount || 0;
+                        const local = (activeTier.categories.localTransport?.totalAmount || 0) + (activeTier.categories.activitiesAndPermits?.totalAmount || 0);
+                        const total = activeTier.totalGroupCost || (transit + stays + meals + local);
+                        const perPax = activeTier.perPersonCost || Math.round(total / Math.max(1, adults + children));
+
+                        return (
+                          <>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase block">Transit &amp; Fuel</span>
+                                <span className="text-sm font-black text-[#102A56] block mt-1">₹{transit.toLocaleString('en-IN')}</span>
+                                <span className="text-[10px] text-slate-500 block capitalize">{preferredTransport.replace('_', ' ')}</span>
+                              </div>
+                              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase block">Hotels &amp; Stays</span>
+                                <span className="text-sm font-black text-[#102A56] block mt-1">₹{stays.toLocaleString('en-IN')}</span>
+                                <span className="text-[10px] text-slate-500 block">{Math.max(1, chosenDurationDays - 1)} Nights</span>
+                              </div>
+                              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase block">Food &amp; Dining</span>
+                                <span className="text-sm font-black text-[#102A56] block mt-1">₹{meals.toLocaleString('en-IN')}</span>
+                                <span className="text-[10px] text-slate-500 block">{foodPreference}</span>
+                              </div>
+                              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase block">Activities &amp; Sightseeing</span>
+                                <span className="text-sm font-black text-[#102A56] block mt-1">₹{local.toLocaleString('en-IN')}</span>
+                                <span className="text-[10px] text-slate-500 block">Permits &amp; Entry</span>
+                              </div>
+                            </div>
+
+                            {/* Total and Per-Person Banner */}
+                            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                              <div>
+                                <span className="text-xs font-bold text-emerald-950 block">Total Estimated Journey Cost:</span>
+                                <div className="flex items-baseline gap-2 mt-0.5">
+                                  <span className="text-2xl font-black text-emerald-900">₹{total.toLocaleString('en-IN')}</span>
+                                  <span className="text-xs font-bold text-emerald-700">total for group</span>
+                                </div>
+                              </div>
+                              <div className="sm:text-right">
+                                <span className="text-[11px] text-slate-500 font-semibold block">Per Person Estimate</span>
+                                <span className="text-lg font-black text-[#102A56]">₹{perPax.toLocaleString('en-IN')} / person</span>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+
+                      {/* Pricing Transparency & Provenance Notice */}
+                      <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500 flex items-start gap-2">
+                        <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                        <div>
+                          <strong>Pricing Provenance &amp; Guarantee:</strong> Estimated costs dynamically adjust to duration, party composition, and travel tier using calibrated IRCTC, state road transport tariffs, and verified hotel benchmark indexes. 
+                          <em> Confirmed live booking rates are locked in during partner reservation.</em>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center text-xs text-slate-500">
+                      Computing transparent pricing estimate for chosen destinations...
+                    </div>
+                  )}
+                </div>
+
                 {/* TRIP SUMMARY REVIEW CARD WITH DIRECT EDIT BUTTONS */}
                 <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200/90 space-y-4">
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -1820,6 +2270,33 @@ function OnboardingContent() {
               </div>
             )}
 
+            {/* Generated Trip Cost Estimation Card */}
+            {hybridPricing && (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left max-w-xl mx-auto space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Transparent Estimated Budget</span>
+                  <span className="text-xs font-extrabold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                    {budgetTier === 'custom' ? 'Custom' : budgetTier.toUpperCase()} Tier
+                  </span>
+                </div>
+                {(() => {
+                  const activeTier = (budgetTier === 'budget' ? hybridPricing.tiers.budget : budgetTier === 'luxury' ? hybridPricing.tiers.luxury : hybridPricing.tiers.standard) || hybridPricing.tiers.standard;
+                  return (
+                    <div className="flex items-center justify-between pt-1">
+                      <div>
+                        <span className="text-lg font-black text-[#102A56]">₹{activeTier.totalGroupCost.toLocaleString('en-IN')}</span>
+                        <span className="text-[11px] text-slate-500 ml-1">total for group</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-emerald-800">₹{activeTier.perPersonCost.toLocaleString('en-IN')}</span>
+                        <span className="text-[10px] text-slate-500 block">per person</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
@@ -1850,6 +2327,21 @@ function OnboardingContent() {
             </div>
           </div>
         )}
+
+        {/* ADD MISSING DESTINATION MODAL */}
+        <AddDestinationModal
+          isOpen={showAddDestModal}
+          onClose={() => setShowAddDestModal(false)}
+          initialName={destInput}
+          onSuccess={(created) => {
+            const cleanName = created.name || created.placeName;
+            handleAddDestination(cleanName);
+            setUserCustomDestinations((prev) => [
+              created,
+              ...prev.filter((p) => (p.name || p.placeName) !== cleanName),
+            ]);
+          }}
+        />
 
       </main>
 

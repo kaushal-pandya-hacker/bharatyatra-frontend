@@ -8,7 +8,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (auth.response) return auth.response;
 
     const body = await req.json();
-    const updated = adminDataStore.updateDestination(params.id, body, auth.user.email);
+    const updated = await adminDataStore.updateDestinationInDb(params.id, body, auth.user.email);
 
     if (!updated) {
       return NextResponse.json({ success: false, message: 'Destination not found.' }, { status: 404 });

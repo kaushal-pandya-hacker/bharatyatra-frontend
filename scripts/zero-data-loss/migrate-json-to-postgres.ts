@@ -45,6 +45,28 @@ export class JsonToPostgresMigrator {
     console.log('='.repeat(80));
 
     // 1. Inventory & Extract Source Entities
+    const userStoreRaw = this.readStore('persistent_user_store.json');
+    const profileEntries: any[] = userStoreRaw?.profiles || [];
+    const tripEntries: any[] = userStoreRaw?.trips || [];
+    const bookingEntries: any[] = userStoreRaw?.bookings || [];
+    const preferenceEntries: any[] = userStoreRaw?.preferences || [];
+    const savedDestEntries: any[] = userStoreRaw?.savedDestinations || [];
+    const expenseEntries: any[] = userStoreRaw?.tripExpenses || [];
+
+    const profiles = profileEntries.map(e => Array.isArray(e) ? e[1] : e).filter(Boolean);
+    const trips = tripEntries.map(e => Array.isArray(e) ? e[1] : e).filter(Boolean);
+    const bookings = bookingEntries.map(e => Array.isArray(e) ? e[1] : e).filter(Boolean);
+    const preferences = preferenceEntries.map(e => Array.isArray(e) ? e[1] : e).filter(Boolean);
+    const savedDestinations = savedDestEntries.map(e => Array.isArray(e) ? e[1] : e).filter(Boolean);
+    const expenses = expenseEntries.map(e => Array.isArray(e) ? e[1] : e).filter(Boolean);
+
+    sourceCounts['user_profiles'] = profiles.length;
+    sourceCounts['user_trips'] = trips.length;
+    sourceCounts['user_bookings'] = bookings.length;
+    sourceCounts['user_preferences'] = preferences.length;
+    sourceCounts['user_saved_destinations'] = savedDestinations.length;
+    sourceCounts['trip_expenses'] = expenses.length;
+
     const contribRaw = this.readStore('community_contributions.json');
     const submissions: any[] = contribRaw?.submissions || [];
     sourceCounts['place_submissions'] = submissions.length;
@@ -73,6 +95,116 @@ export class JsonToPostgresMigrator {
 
     // 2. Perform Migration / Upsert with exact camelCase -> snake_case schema transformation
     const tables = [
+      {
+        name: 'user_profiles',
+        raw: profiles,
+        transformed: profiles.map(p => ({
+          id: p.id,
+          email: p.email,
+          full_name: p.fullName || p.full_name || '',
+          phone_number: p.phoneNumber || p.phone_number || null,
+          avatar_url: p.avatarUrl || p.avatar_url || null,
+          role: p.role || 'CUSTOMER',
+          status: p.status || 'ACTIVE',
+          is_phone_verified: Boolean(p.isPhoneVerified || p.is_phone_verified),
+          created_at: p.createdAt || p.created_at || new Date().toISOString(),
+          updated_at: p.updatedAt || p.updated_at || new Date().toISOString(),
+        })),
+      },
+      {
+        name: 'user_trips',
+        raw: trips,
+        transformed: trips.map(t => ({
+          id: t.id,
+          user_id: t.userId || t.user_id,
+          title: t.title || 'Untitled Trip',
+          destination: t.destination || 'India',
+          destination_city: t.destinationCity || t.destination_city || null,
+          origin_city: t.originCity || t.origin_city || null,
+          start_date: t.startDate || t.start_date || null,
+          end_date: t.endDate || t.end_date || null,
+          duration_days: Number(t.durationDays || t.duration_days || 1),
+          travelers: Number(t.travelers || 1),
+          budget_inr: t.budgetInr != null ? Number(t.budgetInr) : (t.budget_inr != null ? Number(t.budget_inr) : null),
+          status: t.status || 'SCHEDULED',
+          route_json: t.routeJson || t.route_json || {},
+          itinerary_json: t.itineraryJson || t.itinerary_json || {},
+          trip_context_json: t.tripContextJson || t.trip_context_json || {},
+          created_at: t.createdAt || t.created_at || new Date().toISOString(),
+          updated_at: t.updatedAt || t.updated_at || new Date().toISOString(),
+        })),
+      },
+      {
+        name: 'user_bookings',
+        raw: bookings,
+        transformed: bookings.map(b => ({
+          id: b.id,
+          booking_reference: b.bookingReference || b.booking_reference || b.id,
+          user_id: b.userId || b.user_id,
+          booking_type: b.bookingType || b.booking_type || 'HOTEL',
+          inventory_type: b.inventoryType || b.inventory_type || null,
+          inventory_id: b.inventoryId || b.inventory_id || null,
+          inventory_title: b.inventoryTitle || b.inventory_title || 'Reservation',
+          status: b.status || 'PENDING',
+          start_date: b.startDate || b.start_date || null,
+          end_date: b.endDate || b.end_date || null,
+          adult_count: Number(b.adultCount || b.adult_count || 1),
+          child_count: Number(b.childCount || b.child_count || 0),
+          guest_count: Number(b.guestCount || b.guest_count || 1),
+          total_amount_inr: Number(b.totalAmountInr || b.total_amount_inr || 0),
+          currency: b.currency || 'INR',
+          hotel_detail: b.hotelDetail || b.hotel_detail || {},
+          cancellation_reason: b.cancellationReason || b.cancellation_reason || null,
+          cancelled_at: b.cancelledAt || b.cancelled_at || null,
+          created_at: b.createdAt || b.created_at || new Date().toISOString(),
+          updated_at: b.updatedAt || b.updated_at || new Date().toISOString(),
+        })),
+      },
+      {
+        name: 'user_preferences',
+        raw: preferences,
+        transformed: preferences.map(pref => ({
+          id: pref.id || `pref-${pref.userId}`,
+          user_id: pref.userId || pref.user_id,
+          travel_pace: pref.travelPace || pref.pace || 'BALANCED',
+          budget_tier: pref.budgetTier || 'BALANCED',
+          preferred_transport: pref.preferredTransport || [],
+          dietary_preferences: pref.dietaryPreferences || [],
+          interests: pref.interests || [],
+          preferred_language: pref.preferredLanguage || 'English',
+          special_requirements: pref.specialRequirements || null,
+          created_at: pref.createdAt || new Date().toISOString(),
+          updated_at: pref.updatedAt || new Date().toISOString(),
+        })),
+      },
+      {
+        name: 'user_saved_destinations',
+        raw: savedDestinations,
+        transformed: savedDestinations.map(d => ({
+          id: d.id || `saved-${d.userId}-${d.destinationId || d.slug}`,
+          user_id: d.userId || d.user_id,
+          destination_id: d.destinationId || d.id || d.slug,
+          destination_name: d.name || d.destinationName || 'Destination',
+          destination_slug: d.slug || d.destinationSlug || null,
+          notes: d.notes || null,
+          saved_at: d.savedAt || d.createdAt || new Date().toISOString(),
+        })),
+      },
+      {
+        name: 'trip_expenses',
+        raw: expenses,
+        transformed: expenses.map(x => ({
+          id: x.id,
+          trip_id: x.tripId || x.trip_id,
+          title: x.title,
+          amount_inr: Number(x.amountInr || x.amount || 0),
+          paid_by_member_id: x.paidByMemberId || x.paid_by || 'traveler',
+          category: x.category || 'Food',
+          split_type: x.splitType || 'EQUAL',
+          participants: x.participants || [],
+          created_at: x.createdAt || new Date().toISOString(),
+        })),
+      },
       {
         name: 'place_submissions',
         raw: submissions,
@@ -317,6 +449,11 @@ export class JsonToPostgresMigrator {
       errors,
     };
   }
+}
+
+export async function runJsonToPostgresMigration(options: { dryRun?: boolean } = {}) {
+  const migrator = new JsonToPostgresMigrator();
+  return migrator.executeMigration(options);
 }
 
 // CLI runner

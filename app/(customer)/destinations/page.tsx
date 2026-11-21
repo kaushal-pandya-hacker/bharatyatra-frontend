@@ -31,6 +31,54 @@ export const metadata: Metadata = {
   },
 };
 
+import { GUJARAT_DESTINATIONS } from '@/lib/data/destinations';
+
 export default function Page() {
-  return <DestinationsClient />;
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'BharatYatra Iconic Destinations Directory',
+    description:
+      'Curated directory of tourist attractions, UNESCO heritage sites, spiritual temples, and wildlife sanctuaries across India.',
+    numberOfItems: GUJARAT_DESTINATIONS.length,
+    itemListElement: GUJARAT_DESTINATIONS.map((d, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: d.name,
+      url: `https://www.bharatyatra.in/destinations/${d.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.bharatyatra.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Destinations',
+        item: 'https://www.bharatyatra.in/destinations',
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <DestinationsClient />
+    </>
+  );
 }

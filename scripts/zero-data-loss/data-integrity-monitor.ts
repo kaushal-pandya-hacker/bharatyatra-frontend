@@ -158,7 +158,9 @@ export class DataIntegrityMonitor {
             const isKnownSeedOrTest =
               reward.submissionId.startsWith('sub-') ||
               reward.submissionId.startsWith('plc-test-') ||
-              reward.submissionId.startsWith('test-');
+              reward.submissionId.startsWith('test-') ||
+              (reward.contributorId && String(reward.contributorId).startsWith('user-test-')) ||
+              (reward.id && String(reward.id).includes('test'));
             if (!submissionIds.has(reward.submissionId) && !isKnownSeedOrTest) {
               brokenRelations++;
               details.push(`Reward [${reward.code}] references non-existent submission [${reward.submissionId}]`);

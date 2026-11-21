@@ -20,6 +20,8 @@ import {
   ArrowLeft,
   Route
 } from 'lucide-react';
+import { useAuth } from '@/lib/auth/auth-context';
+import AddDestinationModal from '@/components/destinations/AddDestinationModal';
 import {
   getAllStateFolderItems,
   StateFolderItem,
@@ -37,14 +39,18 @@ interface MasterDestinationView {
   category: string;
   imageUrl: string;
   rawFileName: string;
+  isPersonalPending?: boolean;
+  status?: string;
 }
 
 export default function DestinationsClient() {
-  const { toggleDestination, isDestinationSelected } = useDestinationSelection();
+  const { user } = useAuth();
+  const { toggleDestination, isDestinationSelected, addDestination } = useDestinationSelection();
 
   const [allStates, setAllStates] = useState<StateFolderItem[]>([]);
   const [allPlaces, setAllPlaces] = useState<MasterDestinationView[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
 
 
 
@@ -83,10 +89,55 @@ export default function DestinationsClient() {
 
       setAllPlaces(combined);
       setLoading(false);
+
+      // Hydrate authenticated user's personal pending contributions
+      if (user?.id) {
+        try {
+          const token =
+            typeof window !== 'undefined'
+              ? localStorage.getItem('auth_token') || localStorage.getItem('sb_auth_token')
+              : null;
+          fetch('/api/v1/contributions', {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          })
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.success && Array.isArray(data.submissions)) {
+                const userPlaces: MasterDestinationView[] = data.submissions
+                  .filter((s: any) => s.status !== 'APPROVED')
+                  .map((s: any) => ({
+                    id: s.id,
+                    name: s.placeName || s.name,
+                    displayName: s.placeName || s.name,
+                    slug: (s.placeName || s.name)
+                      .toLowerCase()
+                      .replace(/[^\w\s-]/g, '')
+                      .replace(/[\s_-]+/g, '-'),
+                    state: s.state,
+                    stateSlug: s.state
+                      .toLowerCase()
+                      .replace(/[^\w\s-]/g, '')
+                      .replace(/[\s_-]+/g, '-'),
+                    location: `${s.city ? s.city + ', ' : ''}${s.state}`,
+                    category: s.category,
+                    imageUrl: (s.photos && s.photos[0]) || '/places/aina-mahal.jpg',
+                    rawFileName: '',
+                    isPersonalPending: true,
+                    status: s.status,
+                  }));
+                setAllPlaces((prev) => [
+                  ...userPlaces,
+                  ...prev.filter((p) => !userPlaces.some((u) => u.id === p.id)),
+                ]);
+              }
+            })
+            .catch(() => {});
+        } catch {}
+      }
     }
 
     loadFolderData();
-  }, []);
+  }, [user]);
 
   function normalizeState(str: string): string {
     return str.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]/g, '');
@@ -324,15 +375,51 @@ export default function DestinationsClient() {
                     <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : filteredPlaces.length === 0 ? (
-                  <div className="text-center py-20 bg-slate-50 rounded-2xl border border-slate-200">
-                    <p className="text-slate-600 text-sm font-medium mb-4">No destinations found matching your selected filters.</p>
-                    <button
-                      onClick={handleResetFilters}
-                      className="text-xs font-extrabold bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow hover:bg-blue-700 transition"
-                    >
-                      Reset Filters
-                    </button>
-                  </div>
+                  searchQuery.trim() ? (
+                    <div className="text-center py-16 px-4 bg-amber-50/50 rounded-3xl border border-amber-200/90 max-w-lg mx-auto space-y-4 animate-in fade-in">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center mx-auto">
+                        <Compass className="w-6 h-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block">
+                          Destination not found
+                        </span>
+                        <h4 className="text-lg font-black text-slate-900 mt-1">
+                          &ldquo;We couldn&apos;t find this destination in BharatYatra yet.&rdquo;
+                        </h4>
+                        <p className="text-xs text-slate-600 mt-1">
+                          Know this place? Help us discover more beautiful places in India.
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowAddModal(true)}
+                          className="px-6 py-3 bg-[#102A56] hover:bg-blue-950 text-white font-black text-xs uppercase tracking-wider rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Plus className="w-4 h-4 text-amber-400" />
+                          <span>+ Add This Destination</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResetFilters}
+                          className="text-xs font-bold text-slate-600 hover:text-slate-900 px-4 py-3 rounded-xl border border-slate-200 bg-white cursor-pointer"
+                        >
+                          Reset Filters
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-20 bg-slate-50 rounded-2xl border border-slate-200">
+                      <p className="text-slate-600 text-sm font-medium mb-4">No destinations found matching your selected filters.</p>
+                      <button
+                        onClick={handleResetFilters}
+                        className="text-xs font-extrabold bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow hover:bg-blue-700 transition"
+                      >
+                        Reset Filters
+                      </button>
+                    </div>
+                  )
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredPlaces.map((dest) => {
@@ -352,9 +439,16 @@ export default function DestinationsClient() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
                             
-                            <div className="absolute top-3 left-3 bg-white/90 text-blue-700 text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-xs border border-slate-200 uppercase tracking-wider backdrop-blur-xs">
-                              {dest.category}
-                            </div>
+                            {dest.isPersonalPending ? (
+                              <div className="absolute top-3 left-3 bg-amber-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-lg shadow-xs uppercase tracking-wider flex items-center gap-1">
+                                <Sparkles className="w-3 h-3" />
+                                <span>Your Submission ({dest.status || 'Pending'})</span>
+                              </div>
+                            ) : (
+                              <div className="absolute top-3 left-3 bg-white/90 text-blue-700 text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-xs border border-slate-200 uppercase tracking-wider backdrop-blur-xs">
+                                {dest.category}
+                              </div>
+                            )}
 
                             <button
                               type="button"
@@ -473,6 +567,34 @@ export default function DestinationsClient() {
             <span>Generate Custom Itinerary</span>
           </Link>
         </div>
+
+        {/* Add Missing Destination Modal */}
+        <AddDestinationModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          initialName={searchQuery}
+          onSuccess={(created) => {
+            const pName = created.name || created.placeName;
+            addDestination(pName);
+            setAllPlaces((prev) => [
+              {
+                id: created.id || `contrib-${Date.now()}`,
+                name: pName,
+                displayName: pName,
+                slug: pName.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'),
+                state: created.state,
+                stateSlug: created.state.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'),
+                location: `${created.city ? created.city + ', ' : ''}${created.state}`,
+                category: created.category,
+                imageUrl: (created.photos && created.photos[0]) || '/places/aina-mahal.jpg',
+                rawFileName: '',
+                isPersonalPending: true,
+                status: 'PENDING',
+              },
+              ...prev,
+            ]);
+          }}
+        />
       </section>
     </div>
   );

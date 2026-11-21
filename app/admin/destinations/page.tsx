@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import CommunityContributionsModerationView from '@/app/admin/community-contributions/page';
 import {
   Compass,
   Search,
@@ -15,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminDestinationsPage() {
+  const [activeTab, setActiveTab] = useState<'cms' | 'submissions'>('cms');
   const [destinations, setDestinations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('ALL');
@@ -126,21 +129,55 @@ export default function AdminDestinationsPage() {
             <span>Pan-India Destinations</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black font-heading text-slate-900 tracking-tight">
-            Destination Management CMS
+            Destination Management &amp; Moderation
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Curate Indian travel circuits, seasonal advisories, sightseeing attractions, and AI planning seeds.
+            Curate Indian travel circuits, manage user-contributed destinations, and moderate community submissions.
           </p>
         </div>
 
+        <div className="flex items-center gap-2">
+          {activeTab === 'cms' && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            >
+              <Plus className="w-4 h-4" /> Add Destination Circuit
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Main Tab Switcher */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
         <button
-          onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+          onClick={() => setActiveTab('cms')}
+          className={`px-4 py-2 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'cms'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
         >
-          <Plus className="w-4 h-4" /> Add Destination Circuit
+          <Compass className="w-4 h-4 text-amber-400" />
+          <span>Curated Circuits (CMS)</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('submissions')}
+          className={`px-4 py-2 font-black text-xs rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'submissions'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <span>User Destination Submissions Moderation</span>
         </button>
       </div>
 
+      {activeTab === 'submissions' ? (
+        <CommunityContributionsModerationView />
+      ) : (
+        <>
       {/* Filter and Search Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-1.5">
@@ -385,13 +422,15 @@ export default function AdminDestinationsPage() {
             <div className="pt-3 border-t border-slate-100 flex justify-end">
               <button
                 onClick={() => setSelectedDestination(null)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer"
               >
                 Close
               </button>
             </div>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Sparkles, MapPin, Compass } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useAccessibility } from '@/lib/accessibility/accessibility-context';
 import dynamic from 'next/dynamic';
@@ -24,7 +25,9 @@ export default function HomePageClient() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/onboarding/?flow=plan&q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/onboarding/?flow=plan');
     }
   };
 
@@ -42,6 +45,48 @@ export default function HomePageClient() {
       {/* Main Content */}
       <main className="w-full bg-surface min-h-screen">
         <div className="flex flex-col w-full">
+          {/* PERSONALIZED SIGNED-IN USER COMMAND BAR */}
+          {user && (
+            <section className="w-full bg-gradient-to-r from-[#102A56] via-[#1C2541] to-[#0B132B] text-white py-3.5 px-4 sm:px-6 lg:px-12 border-b border-amber-500/30 shadow-md">
+              <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-[#F28C28] text-slate-950 font-black text-sm flex items-center justify-center shadow-sm">
+                    {user.fullName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-bold text-white">
+                        Welcome back, <span className="text-amber-400">{user.fullName || user.email?.split('@')[0]}</span>!
+                      </span>
+                      <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                        AI Active
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-300 font-medium block">
+                      Ready to craft your next personalized Indian journey?
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                  <Link
+                    href="/onboarding/?flow=plan"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-[#F28C28] to-[#ffc857] hover:from-[#ffc857] hover:to-[#f59e3b] text-[#102A56] font-extrabold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer hover:shadow-lg"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#102A56]" />
+                    <span>Plan My Trip</span>
+                  </Link>
+                  <Link
+                    href="/my-trips"
+                    className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold rounded-xl transition-colors hidden sm:inline-flex items-center gap-1 border border-white/10"
+                  >
+                    <span>My Trips</span>
+                  </Link>
+                </div>
+              </div>
+            </section>
+          )}
+
           {isDiwaliActive ? (
             <>
               {/* DIWALI FESTIVE HERO DECK */}
@@ -90,10 +135,10 @@ export default function HomePageClient() {
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <Link
-                    href="/plan"
-                    className="px-6 py-3.5 bg-primary-container hover:bg-primary-fixed text-on-secondary-fixed font-headline-sm text-sm font-bold uppercase tracking-wider rounded-xl flex items-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                    href="/onboarding/?flow=plan"
+                    className="px-6 py-3.5 bg-gradient-to-r from-[#F28C28] via-[#ffc857] to-[#F5BD4F] hover:from-[#ffc857] hover:to-[#f59e3b] text-[#102A56] font-headline-sm text-sm font-extrabold uppercase tracking-wider rounded-xl flex items-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 cursor-pointer"
                   >
-                    <span>Plan Your Trip with AI</span>
+                    <span>Plan My Trip</span>
                     <span className="material-symbols-outlined text-base">bolt</span>
                   </Link>
                   <Link
@@ -274,10 +319,10 @@ export default function HomePageClient() {
                   />
                 </div>
                 <Link
-                  href={searchQuery.trim() ? `/plan?q=${encodeURIComponent(searchQuery.trim())}` : '/plan'}
-                  className="w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 flex-shrink-0 transition-all shadow-md"
+                  href={searchQuery.trim() ? `/onboarding/?flow=plan&q=${encodeURIComponent(searchQuery.trim())}` : '/onboarding/?flow=plan'}
+                  className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-[#F28C28] to-[#ffc857] hover:from-[#ffc857] hover:to-[#f59e3b] text-[#102A56] text-xs sm:text-sm font-black uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 flex-shrink-0 transition-all shadow-md cursor-pointer"
                 >
-                  <span>Generate Itinerary</span>
+                  <span>Plan My Trip</span>
                   <span className="material-symbols-outlined text-sm">arrow_forward</span>
                 </Link>
               </div>

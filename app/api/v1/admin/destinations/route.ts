@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const state = searchParams.get('state') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const data = adminDataStore.getDestinations({ category, state, search });
+    const data = await adminDataStore.getDestinationsFromDb({ category, state, search });
 
     return NextResponse.json({
       success: true,
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     if (auth.response) return auth.response;
 
     const body = await req.json();
-    const created = adminDataStore.createDestination(body, auth.user.email);
+    const created = await adminDataStore.createDestinationInDb(body, auth.user.email);
 
     return NextResponse.json({
       success: true,

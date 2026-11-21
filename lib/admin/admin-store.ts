@@ -2234,8 +2234,68 @@ class AdminDataStoreImpl {
     return list;
   }
 
-  public createDestination(item: Omit<AdminDestinationItem, 'id' | 'visitCount'>, adminEmail: string): AdminDestinationItem {
+  public async getDestinationsFromDb(filters?: { category?: string; state?: string; search?: string }): Promise<AdminDestinationItem[]> {
+    try {
+      const supabase = getSupabaseServerClient();
+      let query = supabase.from('admin_destinations').select('*');
+      if (filters?.category && filters.category !== 'ALL') {
+        query = query.eq('category', filters.category);
+      }
+      if (filters?.state && filters.state !== 'ALL') {
+        query = query.eq('state', filters.state);
+      }
+      if (filters?.search) {
+        query = query.ilike('name', `%${filters.search}%`);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const dbItems: AdminDestinationItem[] = data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          category: (d.category as any) || 'Historical',
+          state: d.state,
+          city: d.city,
+          visitCount: d.visit_count || 0,
+          description: d.description || '',
+          attractions: d.attractions || [],
+          bestSeason: d.best_season || 'October to March',
+          suggestedDuration: d.suggested_duration || '2-3 Days',
+          estimatedBudget: d.estimated_budget || '₹10,000 - ₹20,000',
+          travelTips: d.travel_tips || [],
+          seoTitle: d.seo_title || d.name,
+          seoDescription: d.seo_description || d.description || '',
+          isPublished: d.is_published !== false,
+          image: d.image || '/images/destinations/default.jpg',
+        }));
+        // Merge into local cache
+        for (const item of dbItems) {
+          if (!this.destinations.some((existing) => existing.id === item.id)) {
+            this.destinations.push(item);
+          }
+        }
+        return dbItems;
+      }
+    } catch (err: any) {
+      // Non-blocking fallback to memory cache
+    }
+    return this.getDestinations(filters);
+  }
+
+  public createDestination(
+    item: Partial<AdminDestinationItem> & { name: string; category: AdminDestinationItem['category']; state: string; city: string },
+    adminEmail: string
+  ): AdminDestinationItem {
     const newDest: AdminDestinationItem = {
+      attractions: [],
+      bestSeason: 'October to March',
+      suggestedDuration: '2-3 Days',
+      estimatedBudget: '₹10,000 - ₹20,000',
+      travelTips: [],
+      seoTitle: item.name,
+      seoDescription: item.description || '',
+      isPublished: true,
+      image: '/images/destinations/default.jpg',
+      description: '',
       ...item,
       id: `dest-${Date.now()}`,
       visitCount: 0,
@@ -2248,7 +2308,97 @@ class AdminDataStoreImpl {
       adminEmail,
       details: `Created new destination: ${newDest.name} (${newDest.category}, ${newDest.city})`,
     });
+    // Non-blocking write-through
+    this.persistDestinationToDatabase(newDest, adminEmail).catch((err) => {
+      console.warn('[AdminDataStore] Write-through notice:', err.message);
+    });
     return newDest;
+  }
+
+  public async createDestinationInDb(
+    item: Partial<AdminDestinationItem> & { name: string; category: AdminDestinationItem['category']; state: string; city: string },
+    adminEmail: string
+  ): Promise<AdminDestinationItem> {
+    if (!item.name || item.name.trim().length < 2) {
+      throw new Error('Destination name is required and must be at least 2 characters.');
+    }
+    if (!item.category) {
+      throw new Error('Destination category is required.');
+    }
+    if (!item.state) {
+      throw new Error('Destination state is required.');
+    }
+    if (!item.city) {
+      throw new Error('Destination city is required.');
+    }
+
+    const newDest: AdminDestinationItem = {
+      attractions: [],
+      bestSeason: 'October to March',
+      suggestedDuration: '2-3 Days',
+      estimatedBudget: '₹10,000 - ₹20,000',
+      travelTips: [],
+      seoTitle: item.name,
+      seoDescription: item.description || '',
+      isPublished: true,
+      image: '/images/destinations/default.jpg',
+      ...item,
+      description: item.description || '',
+      id: `dest-${Date.now()}`,
+      visitCount: 0,
+    };
+
+    // Attempt persistent PostgreSQL / Supabase write
+    try {
+      const supabase = getSupabaseServerClient();
+      const { error } = await supabase.from('admin_destinations').insert({
+        id: newDest.id,
+        name: newDest.name,
+        category: newDest.category,
+        state: newDest.state,
+        city: newDest.city,
+        rating: 4.8,
+        visit_count: newDest.visitCount || 0,
+        description: newDest.description || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+      if (error && process.env.NODE_ENV === 'production') {
+        throw new Error(`Database error saving destination: ${error.message}`);
+      }
+    } catch (err: any) {
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
+    }
+
+    this.destinations.unshift(newDest);
+    await this.addAuditLogInDb({
+      action: 'CREATE_DESTINATION',
+      entityType: 'DESTINATION',
+      entityId: newDest.id,
+      adminEmail,
+      details: `Created new destination: ${newDest.name} (${newDest.category}, ${newDest.city})`,
+    });
+
+    return newDest;
+  }
+
+  private async persistDestinationToDatabase(dest: AdminDestinationItem, _adminEmail: string): Promise<void> {
+    try {
+      const supabase = getSupabaseServerClient();
+      await supabase.from('admin_destinations').upsert({
+        id: dest.id,
+        name: dest.name,
+        category: dest.category,
+        state: dest.state,
+        city: dest.city,
+        visit_count: dest.visitCount || 0,
+        description: dest.description || '',
+        updated_at: new Date().toISOString(),
+      });
+    } catch {}
   }
 
   public updateDestination(id: string, updates: Partial<AdminDestinationItem>, adminEmail: string): AdminDestinationItem | null {
@@ -2262,6 +2412,46 @@ class AdminDataStoreImpl {
       adminEmail,
       details: `Updated destination properties for: ${dest.name}`,
     });
+    // Non-blocking write-through
+    this.persistDestinationToDatabase(dest, adminEmail).catch(() => {});
+    return dest;
+  }
+
+  public async updateDestinationInDb(
+    id: string,
+    updates: Partial<AdminDestinationItem>,
+    adminEmail: string
+  ): Promise<AdminDestinationItem | null> {
+    const dest = this.destinations.find((d) => d.id === id);
+    if (!dest) return null;
+    Object.assign(dest, updates);
+
+    try {
+      const supabase = getSupabaseServerClient();
+      const payload: any = { updated_at: new Date().toISOString() };
+      if (updates.name !== undefined) payload.name = updates.name;
+      if (updates.category !== undefined) payload.category = updates.category;
+      if (updates.state !== undefined) payload.state = updates.state;
+      if (updates.city !== undefined) payload.city = updates.city;
+      if (updates.visitCount !== undefined) payload.visit_count = updates.visitCount;
+      if (updates.description !== undefined) payload.description = updates.description;
+
+      const { error } = await supabase.from('admin_destinations').update(payload).eq('id', id);
+      if (error && process.env.NODE_ENV === 'production') {
+        throw new Error(`Database error updating destination: ${error.message}`);
+      }
+    } catch (err: any) {
+      if (process.env.NODE_ENV === 'production') throw err;
+    }
+
+    await this.addAuditLogInDb({
+      action: 'UPDATE_DESTINATION',
+      entityType: 'DESTINATION',
+      entityId: id,
+      adminEmail,
+      details: `Updated destination properties for: ${dest.name}`,
+    });
+
     return dest;
   }
 
@@ -2699,6 +2889,34 @@ class AdminDataStoreImpl {
     return result;
   }
 
+  public async getInventoryFromDb(filters?: { type?: string; status?: string; search?: string }): Promise<AdminInventoryItem[]> {
+    try {
+      const supabase = getSupabaseServerClient();
+      let query = supabase.from('admin_inventory').select('*');
+      if (filters?.type && filters.type !== 'ALL') {
+        query = query.eq('type', filters.type);
+      }
+      if (filters?.status && filters.status !== 'ALL') {
+        query = query.eq('status', filters.status);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          type: (d.type as any) || 'HOTEL',
+          supplierId: d.supplier_id || 'SUP-DIRECT',
+          supplierName: d.supplier_name || 'BharatYatra Direct',
+          destination: d.city || d.state || 'India',
+          price: Number(d.price_inr) || 0,
+          status: (d.status as any) || 'ACTIVE',
+          createdAt: d.created_at || new Date().toISOString(),
+        }));
+      }
+    } catch {}
+    return this.getInventory(filters);
+  }
+
   public updateInventoryStatus(
     id: string,
     status: 'ACTIVE' | 'INACTIVE',
@@ -2718,6 +2936,28 @@ class AdminDataStoreImpl {
     });
 
     return item;
+  }
+
+  public async updateInventoryStatusInDb(
+    id: string,
+    status: 'ACTIVE' | 'INACTIVE',
+    reason: string,
+    adminEmail = 'admin@bharatyatra.com'
+  ): Promise<AdminInventoryItem | null> {
+    const updated = this.updateInventoryStatus(id, status, reason, adminEmail);
+    if (!updated) return null;
+    try {
+      const supabase = getSupabaseServerClient();
+      await supabase.from('admin_inventory').update({
+        status,
+        updated_at: new Date().toISOString(),
+      }).eq('id', id);
+    } catch (err: any) {
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[AdminDataStore] Failed to update inventory status in DB:', err?.message);
+      }
+    }
+    return updated;
   }
 
   public getSettlements(status?: string): AdminSettlement[] {
@@ -2753,6 +2993,86 @@ class AdminDataStoreImpl {
   }
 
   // ==========================================================================
+  // PACKAGES PERSISTENCE
+  // ==========================================================================
+
+  public async getPackagesFromDb(filters?: { state?: string; status?: string; search?: string }): Promise<any[]> {
+    try {
+      const supabase = getSupabaseServerClient();
+      let query = supabase.from('admin_packages').select('*');
+      if (filters?.state && filters.state !== 'ALL') {
+        query = query.eq('state', filters.state);
+      }
+      if (filters?.status && filters.status !== 'ALL') {
+        query = query.eq('status', filters.status);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data.map((p: any) => ({
+          id: p.id,
+          packageId: p.package_id || p.id,
+          title: p.title,
+          slug: p.slug,
+          state: p.state,
+          region: p.region,
+          durationDays: p.duration_days,
+          durationNights: p.duration_nights,
+          startingPriceInr: Number(p.starting_price_inr),
+          tourismType: p.tourism_type,
+          status: p.status,
+          featured: p.featured,
+          createdAt: p.created_at,
+          updatedAt: p.updated_at,
+        }));
+      }
+    } catch {}
+    return [];
+  }
+
+  public async createPackageInDb(pkg: any, adminEmail: string): Promise<any> {
+    if (!pkg.title || pkg.title.trim().length < 3) {
+      throw new Error('Package title is required and must be at least 3 characters.');
+    }
+    if (!pkg.state) {
+      throw new Error('Package state is required.');
+    }
+    const id = pkg.id || `pkg-${Date.now()}`;
+    const slug = pkg.slug || pkg.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const newPkg = {
+      id,
+      package_id: id,
+      title: pkg.title,
+      slug,
+      state: pkg.state,
+      region: pkg.region || pkg.state,
+      duration_days: pkg.durationDays || 5,
+      duration_nights: pkg.durationNights || 4,
+      starting_price_inr: pkg.startingPriceInr || pkg.priceInr || 9999,
+      tourism_type: pkg.tourismType || 'Heritage',
+      status: pkg.status || 'PUBLISHED',
+      featured: pkg.featured || false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const supabase = getSupabaseServerClient();
+    const { error } = await supabase.from('admin_packages').insert(newPkg).select().single();
+    if (error && process.env.NODE_ENV === 'production') {
+      throw new Error(`Failed to save package to database: ${error.message}`);
+    }
+
+    await this.addAuditLogInDb({
+      action: 'CREATE_PACKAGE',
+      entityType: 'PACKAGE',
+      entityId: id,
+      adminEmail,
+      details: `Created new package: ${pkg.title} (${pkg.state})`,
+    });
+
+    return newPkg;
+  }
+
+  // ==========================================================================
   // AUDIT LOGS
   // ==========================================================================
 
@@ -2767,6 +3087,32 @@ class AdminDataStoreImpl {
     return result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
+  public async getAuditLogsFromDb(filters?: { action?: string; entityType?: string }): Promise<AdminAuditLog[]> {
+    try {
+      const supabase = getSupabaseServerClient();
+      let query = supabase.from('admin_audit_logs').select('*').order('created_at', { ascending: false });
+      if (filters?.action && filters.action !== 'ALL') {
+        query = query.eq('action', filters.action);
+      }
+      if (filters?.entityType && filters.entityType !== 'ALL') {
+        query = query.eq('entity_type', filters.entityType);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data.map((d: any) => ({
+          id: d.id,
+          action: d.action,
+          entityType: d.entity_type,
+          entityId: d.entity_id,
+          adminEmail: d.admin_email,
+          details: d.details,
+          createdAt: d.created_at,
+        }));
+      }
+    } catch {}
+    return this.getAuditLogs(filters);
+  }
+
   public addAuditLog(entry: Omit<AdminAuditLog, 'id' | 'createdAt'>): AdminAuditLog {
     const newLog: AdminAuditLog = {
       ...entry,
@@ -2774,6 +3120,27 @@ class AdminDataStoreImpl {
       createdAt: new Date().toISOString(),
     };
     this.auditLogs.unshift(newLog);
+    return newLog;
+  }
+
+  public async addAuditLogInDb(entry: Omit<AdminAuditLog, 'id' | 'createdAt'>): Promise<AdminAuditLog> {
+    const newLog = this.addAuditLog(entry);
+    try {
+      const supabase = getSupabaseServerClient();
+      await supabase.from('admin_audit_logs').insert({
+        id: newLog.id,
+        action: newLog.action,
+        entity_type: newLog.entityType,
+        entity_id: newLog.entityId,
+        admin_email: newLog.adminEmail,
+        details: newLog.details,
+        created_at: newLog.createdAt,
+      });
+    } catch (err: any) {
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[AdminDataStore] Failed to write audit log to database:', err?.message);
+      }
+    }
     return newLog;
   }
 }

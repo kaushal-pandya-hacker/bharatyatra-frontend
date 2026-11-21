@@ -9,8 +9,50 @@ import {
 import { getSupabaseClient, getSupabaseServerClient } from '@/lib/supabase/client';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
+import { Pool } from 'pg';
 
-const PERSISTENT_STORE_FILE = path.join(process.cwd(), 'data', 'persistent_user_store.json');
+const PRIMARY_STORE_FILE = path.join(process.cwd(), 'data', 'persistent_user_store.json');
+const SERVERLESS_STORE_FILE = path.join(os.tmpdir(), 'bharatyatra_persistent_user_store.json');
+const PERSISTENT_STORE_FILE = PRIMARY_STORE_FILE;
+
+let pgPoolInstance: Pool | null = null;
+let pgPoolFailed = false;
+
+function getPgPool(): Pool | null {
+  if (typeof window !== 'undefined') return null;
+  if (pgPoolFailed) return null;
+  if (pgPoolInstance) return pgPoolInstance;
+
+  const connString =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.STAGING_DATABASE_URL;
+
+  if (!connString) return null;
+
+  try {
+    const isLocal = connString.includes('localhost') || connString.includes('127.0.0.1');
+    pgPoolInstance = new Pool({
+      connectionString: connString,
+      ssl: isLocal ? false : { rejectUnauthorized: false },
+      max: 5,
+      connectionTimeoutMillis: 4000,
+      idleTimeoutMillis: 15000,
+    });
+
+    pgPoolInstance.on('error', (err) => {
+      console.warn('[PostgresPool] Background client error:', err.message);
+    });
+
+    return pgPoolInstance;
+  } catch (err: any) {
+    console.warn('[PostgresPool] Initialization notice:', err?.message);
+    pgPoolFailed = true;
+    return null;
+  }
+}
 
 export interface UserProfileRecord {
   id: string;
@@ -144,17 +186,42 @@ class InMemoryUserDataStore {
 
   private loadFromDisk() {
     try {
-      if (typeof window === 'undefined' && fs.existsSync(PERSISTENT_STORE_FILE)) {
-        const raw = fs.readFileSync(PERSISTENT_STORE_FILE, 'utf-8');
-        const data = JSON.parse(raw);
-        if (Array.isArray(data.profiles)) this.profiles = new Map(data.profiles);
-        if (Array.isArray(data.trips)) this.trips = new Map(data.trips);
-        if (Array.isArray(data.bookings)) this.bookings = new Map(data.bookings);
-        if (Array.isArray(data.savedDestinations)) this.savedDestinations = new Map(data.savedDestinations);
-        if (Array.isArray(data.preferences)) this.preferences = new Map(data.preferences);
-        if (Array.isArray(data.tripMembers)) this.tripMembers = new Map(data.tripMembers);
-        if (Array.isArray(data.tripExpenses)) this.tripExpenses = new Map(data.tripExpenses);
-        if (Array.isArray(data.tripSettlements)) this.tripSettlements = new Map(data.tripSettlements);
+      if (typeof window === 'undefined') {
+        const filesToLoad = [PRIMARY_STORE_FILE, SERVERLESS_STORE_FILE];
+        for (const filePath of filesToLoad) {
+          if (fs.existsSync(filePath)) {
+            try {
+              const raw = fs.readFileSync(filePath, 'utf-8');
+              const data = JSON.parse(raw);
+              if (Array.isArray(data.profiles)) {
+                for (const [k, v] of data.profiles) this.profiles.set(k, v);
+              }
+              if (Array.isArray(data.trips)) {
+                for (const [k, v] of data.trips) this.trips.set(k, v);
+              }
+              if (Array.isArray(data.bookings)) {
+                for (const [k, v] of data.bookings) this.bookings.set(k, v);
+              }
+              if (Array.isArray(data.savedDestinations)) {
+                for (const [k, v] of data.savedDestinations) this.savedDestinations.set(k, v);
+              }
+              if (Array.isArray(data.preferences)) {
+                for (const [k, v] of data.preferences) this.preferences.set(k, v);
+              }
+              if (Array.isArray(data.tripMembers)) {
+                for (const [k, v] of data.tripMembers) this.tripMembers.set(k, v);
+              }
+              if (Array.isArray(data.tripExpenses)) {
+                for (const [k, v] of data.tripExpenses) this.tripExpenses.set(k, v);
+              }
+              if (Array.isArray(data.tripSettlements)) {
+                for (const [k, v] of data.tripSettlements) this.tripSettlements.set(k, v);
+              }
+            } catch (err: any) {
+              console.warn(`[UserDataStore] Notice loading from ${filePath}:`, err?.message);
+            }
+          }
+        }
       }
     } catch {}
   }
@@ -162,8 +229,6 @@ class InMemoryUserDataStore {
   public persistToDisk() {
     try {
       if (typeof window === 'undefined') {
-        const dir = path.dirname(PERSISTENT_STORE_FILE);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         const snapshot = {
           profiles: Array.from(this.profiles.entries()),
           trips: Array.from(this.trips.entries()),
@@ -175,11 +240,37 @@ class InMemoryUserDataStore {
           tripSettlements: Array.from(this.tripSettlements.entries()),
           updatedAt: new Date().toISOString(),
         };
-        const tmp = `${PERSISTENT_STORE_FILE}.tmp.${Date.now()}`;
-        fs.writeFileSync(tmp, JSON.stringify(snapshot, null, 2), 'utf-8');
-        fs.renameSync(tmp, PERSISTENT_STORE_FILE);
+        const payload = JSON.stringify(snapshot, null, 2);
+
+        // 1. Primary write to persistent disk (local dev, staging, containers)
+        let primaryWritten = false;
+        try {
+          const dir = path.dirname(PRIMARY_STORE_FILE);
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+          const tmp = `${PRIMARY_STORE_FILE}.tmp.${Date.now()}`;
+          fs.writeFileSync(tmp, payload, 'utf-8');
+          fs.renameSync(tmp, PRIMARY_STORE_FILE);
+          primaryWritten = true;
+        } catch {
+          // Read-only filesystem (e.g. AWS Lambda / Vercel /var/task)
+        }
+
+        // 2. Serverless fallback: always maintain in os.tmpdir() for container survival
+        try {
+          const dir = path.dirname(SERVERLESS_STORE_FILE);
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+          const tmp = `${SERVERLESS_STORE_FILE}.tmp.${Date.now()}`;
+          fs.writeFileSync(tmp, payload, 'utf-8');
+          fs.renameSync(tmp, SERVERLESS_STORE_FILE);
+        } catch (tmpErr: any) {
+          if (!primaryWritten) {
+            console.error('[UserDataStore] Critical: failed to write persistent store to both primary and /tmp:', tmpErr?.message);
+          }
+        }
       }
-    } catch {}
+    } catch (err: any) {
+      console.error('[UserDataStore] Unhandled persistence error:', err?.message);
+    }
   }
 
   public clearAll() {
@@ -192,10 +283,13 @@ class InMemoryUserDataStore {
     this.tripMembers.clear();
     this.tripExpenses.clear();
     this.tripSettlements.clear();
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'test' && process.env.ALLOW_TEST_FILE_DELETION === 'true') {
       try {
-        if (fs.existsSync(PERSISTENT_STORE_FILE)) {
-          fs.unlinkSync(PERSISTENT_STORE_FILE);
+        if (fs.existsSync(PRIMARY_STORE_FILE)) {
+          fs.unlinkSync(PRIMARY_STORE_FILE);
+        }
+        if (fs.existsSync(SERVERLESS_STORE_FILE)) {
+          fs.unlinkSync(SERVERLESS_STORE_FILE);
         }
       } catch {}
     }
@@ -255,6 +349,10 @@ class InMemoryUserDataStore {
 
   public async saveTrip(userId: string, trip: Partial<UserTripRecord>): Promise<UserTripRecord> {
     const id = trip.id || `trip-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const existing = this.trips.get(id);
+    if (existing && existing.userId !== userId) {
+      throw new Error(`Unauthorized: Trip ${id} is owned by another user.`);
+    }
     const now = new Date().toISOString();
     const fullTrip: UserTripRecord = {
       id,
@@ -741,6 +839,8 @@ export function isTableMissingError(err: any): boolean {
     code === 'PGRST204' ||
     code === 'PGRST205' ||
     code === '42P01' ||
+    code === '42501' ||
+    msg.includes('permission denied') ||
     msg.includes('in the schema cache') ||
     msg.includes('Could not find the table') ||
     (msg.includes('relation') && msg.includes('does not exist'))
@@ -748,6 +848,7 @@ export function isTableMissingError(err: any): boolean {
 }
 
 function shouldAllowFallback(err?: any): boolean {
+  if (process.env.NODE_ENV === 'production' && process.env.TEST_MODE !== 'true') return false;
   if (simulateDatabaseFailure) return false;
   if (process.env.NODE_ENV === 'test' && process.env.USE_REAL_DB !== 'true') return true;
   const targetErr = err || lastDatabaseError;
@@ -895,14 +996,18 @@ export class UserDataStore {
         };
       }
       if (error) {
-        if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
-        console.warn('Database upsertProfile notice:', error.message);
+        lastDatabaseError = error;
+        if (shouldAllowFallback(error)) return inMemoryStore.updateProfile(userId, data);
+        throw new DatabasePersistenceError(`Failed to upsert profile in database: ${error.message}`, error);
       }
     } catch (err: any) {
-      if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
-      console.warn('Database upsertProfile exception:', err?.message);
+      if (err instanceof DatabasePersistenceError) throw err;
+      lastDatabaseError = err;
+      if (shouldAllowFallback(err)) return inMemoryStore.updateProfile(userId, data);
+      throw new DatabasePersistenceError(`Profile upsert error: ${err?.message || 'Unknown database error'}`, err);
     }
-    return inMemoryStore.updateProfile(userId, data);
+    if (shouldAllowFallback()) return inMemoryStore.updateProfile(userId, data);
+    throw new DatabasePersistenceError('Profile upsert completed without returning data');
   }
 
     // --- TRIPS ---
@@ -910,6 +1015,44 @@ export class UserDataStore {
     if (simulateDatabaseFailure) {
       throw new DatabasePersistenceError('Simulated database read failure.');
     }
+
+    const pool = getPgPool();
+    if (pool) {
+      try {
+        const pgRes = await pool.query(
+          `SELECT id, user_id, title, destination, destination_city, origin_city,
+                  start_date, end_date, duration_days, travelers, budget_inr,
+                  status, route_json, itinerary_json, trip_context_json,
+                  created_at, updated_at
+           FROM public.user_trips
+           WHERE user_id = $1
+           ORDER BY created_at DESC`,
+          [userId]
+        );
+        if (pgRes && Array.isArray(pgRes.rows) && pgRes.rows.length > 0) {
+          return pgRes.rows.map((t: any) => ({
+            id: t.id,
+            userId: t.user_id,
+            title: t.title,
+            destination: t.destination,
+            destinationCity: t.destination_city,
+            originCity: t.origin_city,
+            startDate: t.start_date,
+            endDate: t.end_date,
+            durationDays: t.duration_days,
+            travelers: t.travelers,
+            budgetInr: t.budget_inr != null && Number(t.budget_inr) > 0 ? Number(t.budget_inr) : null,
+            status: t.status,
+            routeJson: t.route_json,
+            itineraryJson: t.itinerary_json,
+            tripContextJson: t.trip_context_json,
+            createdAt: t.created_at,
+            updatedAt: t.updated_at,
+          }));
+        }
+      } catch {}
+    }
+
     try {
       const supabase = getSupabaseServerClient();
       const { data, error } = await supabase
@@ -925,7 +1068,7 @@ export class UserDataStore {
       }
 
       if (Array.isArray(data)) {
-        if (data.length === 0) {
+        if (data.length === 0 && process.env.NODE_ENV !== 'production') {
           const fallbackTrips = await inMemoryStore.getTrips(userId);
           if (fallbackTrips && fallbackTrips.length > 0) {
             return fallbackTrips;
@@ -1020,6 +1163,79 @@ export class UserDataStore {
     if (simulateDatabaseFailure) {
       throw new DatabasePersistenceError('Simulated database persistence failure.');
     }
+
+    const pool = getPgPool();
+    if (pool) {
+      try {
+        const query = `
+          INSERT INTO public.user_trips (
+            id, user_id, title, destination, destination_city, origin_city,
+            start_date, end_date, duration_days, travelers, budget_inr,
+            status, route_json, itinerary_json, trip_context_json, updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW()
+          )
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            destination = EXCLUDED.destination,
+            destination_city = EXCLUDED.destination_city,
+            origin_city = EXCLUDED.origin_city,
+            start_date = EXCLUDED.start_date,
+            end_date = EXCLUDED.end_date,
+            duration_days = EXCLUDED.duration_days,
+            travelers = EXCLUDED.travelers,
+            budget_inr = EXCLUDED.budget_inr,
+            status = EXCLUDED.status,
+            route_json = EXCLUDED.route_json,
+            itinerary_json = EXCLUDED.itinerary_json,
+            trip_context_json = EXCLUDED.trip_context_json,
+            updated_at = NOW()
+          RETURNING *;
+        `;
+        const pgRes = await pool.query(query, [
+          id,
+          userId,
+          trip.title || 'New BharatYatra Trip',
+          trip.destination || 'India',
+          trip.destinationCity || trip.destination || 'India',
+          trip.originCity || 'Ahmedabad',
+          trip.startDate || null,
+          trip.endDate || null,
+          trip.durationDays || 4,
+          trip.travelers || 2,
+          trip.budgetInr != null && trip.budgetInr > 0 ? trip.budgetInr : null,
+          trip.status || 'SAVED',
+          JSON.stringify(trip.routeJson || {}),
+          JSON.stringify(trip.itineraryJson || {}),
+          JSON.stringify(trip.tripContextJson || {}),
+        ]);
+        if (pgRes && pgRes.rows && pgRes.rows[0]) {
+          const row = pgRes.rows[0];
+          const record: UserTripRecord = {
+            id: row.id,
+            userId: row.user_id,
+            title: row.title,
+            destination: row.destination,
+            destinationCity: row.destination_city,
+            originCity: row.origin_city,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            durationDays: row.duration_days,
+            travelers: row.travelers,
+            budgetInr: row.budget_inr != null && Number(row.budget_inr) > 0 ? Number(row.budget_inr) : null,
+            status: row.status,
+            routeJson: row.route_json,
+            itineraryJson: row.itinerary_json,
+            tripContextJson: row.trip_context_json,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          };
+          inMemoryStore.saveTrip(userId, record);
+          return record;
+        }
+      } catch {}
+    }
+
     try {
       const supabase = getSupabaseServerClient();
       const payload = {
@@ -1126,7 +1342,7 @@ export class UserDataStore {
       }
 
       if (Array.isArray(data)) {
-        if (data.length === 0) {
+        if (data.length === 0 && process.env.NODE_ENV !== 'production') {
           const fallbackBookings = await inMemoryStore.getBookings(userId);
           if (fallbackBookings && fallbackBookings.length > 0) {
             return fallbackBookings;

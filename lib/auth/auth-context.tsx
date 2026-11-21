@@ -443,11 +443,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Fallback
     }
 
+    let stableId = user?.id;
+    if (!stableId && typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('auth_user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.id) stableId = parsed.id;
+        }
+      } catch {}
+    }
+    if (!stableId) {
+      stableId = `usr_${Date.now()}`;
+    }
+
     const fallbackUser: UserProfile = user
-      ? { ...user, fullName: cleanName, email: cleanEmail || user.email }
+      ? { ...user, id: stableId, fullName: cleanName, email: cleanEmail || user.email }
       : {
-          id: `usr_${Date.now()}`,
-          email: cleanEmail || `user_${Date.now()}@bharatyatra.com`,
+          id: stableId,
+          email: cleanEmail || `${stableId}@bharatyatra.com`,
           fullName: cleanName,
           role: 'CUSTOMER',
         };

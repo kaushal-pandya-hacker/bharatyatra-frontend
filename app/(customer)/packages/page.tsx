@@ -31,6 +31,54 @@ export const metadata: Metadata = {
   },
 };
 
+import { ALL_INDIA_PACKAGES } from '@/data/india-packages.data';
+
 export default function Page() {
-  return <PackagesClient />;
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'BharatYatra Curated Tour Packages Directory',
+    description:
+      'Curated holiday packages and cultural odysseys across Gujarat and all 36 States and Union Territories of India.',
+    numberOfItems: ALL_INDIA_PACKAGES.length,
+    itemListElement: ALL_INDIA_PACKAGES.slice(0, 30).map((pkg, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: pkg.title || pkg.packageName,
+      url: `https://www.bharatyatra.in/packages/${pkg.slug}`,
+    })),
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.bharatyatra.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Tour Packages',
+        item: 'https://www.bharatyatra.in/packages',
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <PackagesClient />
+    </>
+  );
 }

@@ -359,8 +359,17 @@ export async function fetchUserTripsFromApi(token?: string, userId?: string): Pr
         savedAt: t.savedAt || t.updatedAt,
       }));
 
+      // Multi-tier recovery: if local is empty on a new device or fresh tab, check guest vault
+      let baseLocal = localTrips;
+      if (baseLocal.length === 0 && effectiveUserId && effectiveUserId !== 'guest') {
+        const guestTrips = getSavedTrips('guest');
+        if (guestTrips.length > 0) {
+          baseLocal = guestTrips;
+        }
+      }
+
       // Non-destructive reconciliation: NEVER overwrite local trips with an empty array
-      const { merged, needsSyncToRemote } = reconcileTrips(localTrips, tripsFromApi);
+      const { merged, needsSyncToRemote } = reconcileTrips(baseLocal, tripsFromApi);
 
       if (typeof window !== 'undefined') {
         localStorage.setItem(getUserTripStorageKey(effectiveUserId), JSON.stringify(merged));

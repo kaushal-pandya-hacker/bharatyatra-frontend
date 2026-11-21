@@ -23,8 +23,72 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  const aboutPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: 'About BharatYatra',
+    description:
+      'Learn about BharatYatra — our mission, technology innovation, cultural heritage focus, and pan-India travel ecosystem.',
+    url: 'https://www.bharatyatra.in/about/',
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'BharatYatra',
+      url: 'https://www.bharatyatra.in',
+      logo: 'https://www.bharatyatra.in/icon.png',
+      telephone: '+91 79 4000 1234',
+      email: 'namaste@bharatyatra.in',
+      sameAs: [
+        'https://twitter.com/bharatyatra_in',
+        'https://www.instagram.com/bharatyatra.in',
+      ],
+      founder: {
+        '@type': 'Person',
+        name: 'BharatYatra Founding Team',
+      },
+      foundingLocation: {
+        '@type': 'Place',
+        name: 'Gujarat, India',
+      },
+      knowsAbout: [
+        'India Tourism',
+        'Gujarat Travel Circuits',
+        'AI Travel Planning',
+        'Heritage Monuments & UNESCO Sites',
+        'GSRTC Bus Connectivity',
+        'IRCTC Railway Routes',
+      ],
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.bharatyatra.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'About Us',
+        item: 'https://www.bharatyatra.in/about',
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-[#102B4E] selection:bg-[#FF9933]/20 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="max-w-5xl mx-auto space-y-12">
         
         {/* Header */}

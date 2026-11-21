@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get('category') || undefined;
     const state = searchParams.get('state') || undefined;
     const status = searchParams.get('status') || undefined;
+    const sort = (searchParams.get('sort') as any) || undefined;
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '20', 10);
 
@@ -21,6 +22,7 @@ export async function GET(req: NextRequest) {
         category,
         state,
         status,
+        sort,
         page,
         limit,
       }),

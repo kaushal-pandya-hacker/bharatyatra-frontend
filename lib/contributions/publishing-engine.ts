@@ -180,8 +180,8 @@ export class DestinationPublishingEngine {
       throw new Error('Cannot publish destination: Missing mandatory location or place name details.');
     }
 
-    // 3. Create Published Destination Record
-    const destinationId = crypto.randomUUID();
+    // 3. Create Published Destination Record (Preserves stable destination ID to protect existing trips)
+    const destinationId = submission.id || crypto.randomUUID();
     const slug = generateDestinationSlug(submission.placeName, submission.state, submission.city);
     const nowIso = new Date().toISOString();
 

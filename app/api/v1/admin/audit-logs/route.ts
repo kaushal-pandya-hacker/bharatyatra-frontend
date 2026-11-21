@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const action = searchParams.get('action') || undefined;
     const entityType = searchParams.get('entityType') || undefined;
 
-    const data = adminDataStore.getAuditLogs({ action, entityType });
+    const data = await adminDataStore.getAuditLogsFromDb({ action, entityType });
 
     return NextResponse.json({
       success: true,

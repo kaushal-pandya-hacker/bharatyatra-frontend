@@ -12,10 +12,24 @@ export type ContributionStatus =
   | 'WITHDRAWN';
 
 export const CONTRIBUTION_CATEGORIES = [
+  'Hill Station',
+  'Waterfall',
+  'Temple',
+  'Historical Place',
+  'Beach',
+  'Adventure',
+  'Wildlife Sanctuary',
+  'National Park',
+  'Religious Place',
+  'Lake',
+  'Village Tourism',
+  'Trekking',
+  'Cultural Destination',
+  'Other',
+  // Legacy & Alias categories for backward compatibility
   'Nature and Landscapes',
   'Historical Places',
   'Religious Places',
-  'Adventure',
   'Beaches',
   'Mountains',
   'Waterfalls',
@@ -26,6 +40,23 @@ export const CONTRIBUTION_CATEGORIES = [
   'Food and Restaurants',
   'Hidden Gems',
   'Other Attractions',
+] as const;
+
+export const ALL_14_CATEGORIES = [
+  'Hill Station',
+  'Waterfall',
+  'Temple',
+  'Historical Place',
+  'Beach',
+  'Adventure',
+  'Wildlife Sanctuary',
+  'National Park',
+  'Religious Place',
+  'Lake',
+  'Village Tourism',
+  'Trekking',
+  'Cultural Destination',
+  'Other',
 ] as const;
 
 export type ContributionCategory = (typeof CONTRIBUTION_CATEGORIES)[number];
@@ -140,7 +171,8 @@ export type AdminReviewAction =
   | 'REQUEST_CHANGES'
   | 'REJECT'
   | 'APPROVE'
-  | 'EDIT';
+  | 'EDIT'
+  | 'DUPLICATE';
 
 export interface PlaceReviewRecord {
   id: string;
@@ -179,10 +211,26 @@ export type SubmissionStatus = ContributionStatus;
 export type PlaceCategory = ContributionCategory;
 
 export const PLACE_CATEGORIES: Record<ContributionCategory, { label: string; icon: string }> = {
+  // Official 14 Contribution Categories
+  'Hill Station': { label: 'Hill Stations & Peaks', icon: '⛰️' },
+  'Waterfall': { label: 'Waterfalls', icon: '🌊' },
+  'Temple': { label: 'Temples & Shrines', icon: '🛕' },
+  'Historical Place': { label: 'Historical Places & Forts', icon: '🏰' },
+  'Beach': { label: 'Beaches & Coastal', icon: '🏖️' },
+  'Adventure': { label: 'Adventure & Sports', icon: '🧗' },
+  'Wildlife Sanctuary': { label: 'Wildlife Sanctuaries', icon: '🐅' },
+  'National Park': { label: 'National Parks', icon: '🌲' },
+  'Religious Place': { label: 'Religious & Spiritual Places', icon: '🕉️' },
+  'Lake': { label: 'Lakes & Water Bodies', icon: '⛵' },
+  'Village Tourism': { label: 'Village & Rural Tourism', icon: '🌾' },
+  'Trekking': { label: 'Trekking Trails', icon: '🥾' },
+  'Cultural Destination': { label: 'Cultural & Heritage', icon: '🎭' },
+  'Other': { label: 'Other Attractions', icon: '📍' },
+
+  // Legacy & Alias categories for backward compatibility
   'Nature and Landscapes': { label: 'Nature & Landscapes', icon: '🌿' },
   'Historical Places': { label: 'Historical Places & Forts', icon: '🏰' },
   'Religious Places': { label: 'Temples & Spiritual Shrines', icon: '🛕' },
-  'Adventure': { label: 'Adventure & Trekking', icon: '🧗' },
   'Beaches': { label: 'Beaches & Coastal', icon: '🏖️' },
   'Mountains': { label: 'Mountains & Hill Stations', icon: '⛰️' },
   'Waterfalls': { label: 'Waterfalls', icon: '🌊' },
