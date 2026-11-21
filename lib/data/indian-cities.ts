@@ -48,8 +48,8 @@ export const INDIAN_CITIES: CityItem[] = [
 
   // Andhra Pradesh & Telangana
   { city: 'Visakhapatnam', state: 'Andhra Pradesh', country: 'India', latitude: 17.6868, longitude: 83.2185, popular: true },
-  { city: 'Araku Valley', state: 'Andhra Pradesh', country: 'India', latitude: 18.3273, longitude: 82.8778, popular: true },
-  { city: 'Borra Caves', state: 'Andhra Pradesh', country: 'India', latitude: 18.2778, longitude: 83.0378, popular: true },
+  { city: 'Araku Valley', state: 'Andhra Pradesh', country: 'India', latitude: 18.3273, longitude: 82.8778 },
+  { city: 'Borra Caves', state: 'Andhra Pradesh', country: 'India', latitude: 18.2778, longitude: 83.0378 },
   { city: 'Alluri Sitharama Raju', state: 'Andhra Pradesh', country: 'India', latitude: 18.2778, longitude: 82.8778 },
   { city: 'Tirupati', state: 'Andhra Pradesh', country: 'India', latitude: 13.6288, longitude: 79.4192, popular: true },
 

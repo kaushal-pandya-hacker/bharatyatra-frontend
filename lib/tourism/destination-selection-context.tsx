@@ -94,10 +94,17 @@ export function DestinationSelectionProvider({ children }: { children: React.Rea
 
       const loadedTrip = loadTripPlanningState();
       if (loadedTrip && loadedTrip.destinations && loadedTrip.destinations.length > 0) {
-        setCanonicalTripState(loadedTrip);
-        const mapped = loadedTrip.destinations.map(mapCanonicalToSelected);
-        setSelectedDestinations(mapped);
-        return;
+        // Sanitize out any stale legacy default/sample destinations
+        const sanitizedDests = loadedTrip.destinations.filter(
+          (d) => d && d.name && !['Borra Caves', 'Araku Valley'].includes(d.name.trim())
+        );
+        if (sanitizedDests.length > 0) {
+          const sanitizedTrip = { ...loadedTrip, destinations: sanitizedDests };
+          setCanonicalTripState(sanitizedTrip);
+          const mapped = sanitizedDests.map(mapCanonicalToSelected);
+          setSelectedDestinations(mapped);
+          return;
+        }
       }
 
       // Fallback: check legacy storage key
@@ -105,14 +112,22 @@ export function DestinationSelectionProvider({ children }: { children: React.Rea
       if (legacyRaw) {
         const parsed = JSON.parse(legacyRaw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setSelectedDestinations(parsed);
-          const initial = createInitialTripState();
-          initial.destinations = parsed.map((item, idx) =>
-            resolveCanonicalDestination(item, idx + 1, 'destination_page')
+          const sanitizedLegacy = parsed.filter(
+            (item: any) =>
+              item &&
+              (item.name || item.displayName || item.city) &&
+              !['Borra Caves', 'Araku Valley'].includes((item.name || item.displayName || item.city || '').trim())
           );
-          setCanonicalTripState(initial);
-          saveTripPlanningState(initial);
-          return;
+          if (sanitizedLegacy.length > 0) {
+            setSelectedDestinations(sanitizedLegacy);
+            const initial = createInitialTripState();
+            initial.destinations = sanitizedLegacy.map((item, idx) =>
+              resolveCanonicalDestination(item, idx + 1, 'destination_page')
+            );
+            setCanonicalTripState(initial);
+            saveTripPlanningState(initial);
+            return;
+          }
         }
       }
 

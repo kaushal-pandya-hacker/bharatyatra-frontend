@@ -31,10 +31,20 @@ export async function POST(req: NextRequest) {
     }
 
     const destinations: string[] = Array.isArray(rawDest)
-      ? rawDest
+      ? rawDest.map((d: any) => (typeof d === 'string' ? d.trim() : d?.name || d?.displayName || '')).filter(Boolean)
       : typeof rawDest === 'string'
       ? rawDest.split(',').map((s: string) => s.trim()).filter(Boolean)
-      : ['Jaipur'];
+      : [];
+
+    if (destinations.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Please select at least one destination to continue.',
+        },
+        { status: 400 }
+      );
+    }
 
     const durationDays = parseInt(body.durationDays || body.duration || body.days || '0', 10);
 

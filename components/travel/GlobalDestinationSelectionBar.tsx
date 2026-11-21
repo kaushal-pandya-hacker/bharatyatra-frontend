@@ -69,7 +69,7 @@ export default function GlobalDestinationSelectionBar() {
             </button>
 
             <button
-              onClick={() => router.push('/onboarding?flow=plan')}
+              onClick={() => router.push('/onboarding?flow=plan&from=destinations')}
               className="font-black bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 px-4 py-2.5 rounded-xl transition shadow-lg flex items-center space-x-2 text-xs uppercase tracking-wider group cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-slate-950 animate-pulse" />
@@ -201,7 +201,7 @@ export default function GlobalDestinationSelectionBar() {
               <button
                 onClick={() => {
                   setIsDrawerOpen(false);
-                  router.push('/onboarding?flow=plan');
+                  router.push('/onboarding?flow=plan&from=destinations');
                 }}
                 className="w-full font-black bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 py-3 rounded-xl transition shadow-lg flex items-center justify-center space-x-2 text-xs uppercase tracking-wider cursor-pointer"
               >

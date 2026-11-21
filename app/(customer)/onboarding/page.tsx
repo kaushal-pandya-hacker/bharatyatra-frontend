@@ -23,6 +23,7 @@ import {
   Info,
   Plus,
   X,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useDestinationSelection } from '@/lib/tourism/destination-selection-context';
@@ -40,7 +41,7 @@ import {
 } from '@/lib/ai-planner/trip-duration-intelligence-engine';
 import { searchCities, CityItem } from '@/lib/data/indian-cities';
 import { generateItineraryBlueprint, PlanningResult } from '@/lib/trips/itinerary-generator';
-import { saveTripToApi, saveTrip, TripItem } from '@/lib/trips/trip-storage';
+import { saveTripToApi, saveTrip, getSavedTrips, TripItem } from '@/lib/trips/trip-storage';
 import { playNotificationSound, initAudioUnlocker } from '@/lib/utils/sound';
 import { AshokaChakraIcon } from '@/components/qr/AshokaChakraIcon';
 import { computeHybridTripPricing, HybridPricingEvaluation } from '@/lib/ai-planner/hybrid-pricing-engine';
@@ -134,6 +135,7 @@ function OnboardingContent() {
   const [showDestDropdown, setShowDestDropdown] = useState<boolean>(false);
   const [isRoundTrip, setIsRoundTrip] = useState<boolean>(true);
   const [isMultiDestination, setIsMultiDestination] = useState<boolean>(false);
+  const [destValidationError, setDestValidationError] = useState<string | null>(null);
 
   // Recent and Custom User Destinations
   const [recentDestinations, setRecentDestinations] = useState<string[]>([
@@ -204,26 +206,36 @@ function OnboardingContent() {
     initAudioUnlocker();
   }, []);
 
-  // Hydrate destinations from context as authoritative single source of truth
+  // Hydrate destinations from context ONLY when arriving with conscious selections from destinations catalog
   useEffect(() => {
-    if (selectedDestinations && selectedDestinations.length > 0) {
-      const names = selectedDestinations.map((d) => d.name);
-      setDestinations(names);
-      setIsMultiDestination(names.length > 1);
+    const fromDestinations = searchParams?.get('from') === 'destinations';
+    if (fromDestinations && selectedDestinations && selectedDestinations.length > 0) {
+      const sanitized = selectedDestinations
+        .filter((d) => d && d.name && !['Borra Caves', 'Araku Valley'].includes(d.name.trim()))
+        .map((d) => d.name);
+      if (sanitized.length > 0) {
+        setDestinations(sanitized);
+        setIsMultiDestination(sanitized.length > 1);
+      }
     }
-  }, [selectedDestinations]);
+  }, [selectedDestinations, searchParams]);
 
   // Load saved draft or profile on mount
   useEffect(() => {
     async function initData() {
       try {
         if (typeof window !== 'undefined') {
-          // Hydrate recent destinations
+          // Hydrate recent destinations (filter out any legacy sample data)
           const savedRecents = localStorage.getItem('by_recent_destinations');
           if (savedRecents) {
             try {
               const parsed = JSON.parse(savedRecents);
-              if (Array.isArray(parsed) && parsed.length > 0) setRecentDestinations(parsed);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                const cleaned = parsed.filter(
+                  (d: string) => typeof d === 'string' && !['Borra Caves', 'Araku Valley'].includes(d.trim())
+                );
+                setRecentDestinations(cleaned);
+              }
             } catch {}
           }
 
@@ -236,12 +248,51 @@ function OnboardingContent() {
             } catch {}
           }
 
-          // Check URL query parameters (q, destination, to)
+          // Check URL query parameters (q, destination, to, tripId, from)
           const qParam = searchParams ? (searchParams.get('q') || searchParams.get('destination') || searchParams.get('to')) : null;
+          const tripIdParam = searchParams ? (searchParams.get('tripId') || searchParams.get('id')) : null;
+          const fromDestinations = searchParams ? searchParams.get('from') === 'destinations' : false;
+
           if (qParam && qParam.trim()) {
+            // Case 1: Explicit destination passed in URL (load ONLY requested destination)
             const cleanQ = qParam.trim();
-            setDestinations((prev) => (prev.includes(cleanQ) ? prev : [cleanQ, ...prev]));
+            setDestinations([cleanQ]);
+            setIsMultiDestination(false);
+            clearSelection();
             addDestination(cleanQ);
+          } else if (tripIdParam) {
+            // Case 2: Resuming a SAVED trip -> Load only the destinations belonging to that saved trip
+            const savedTrips = getSavedTrips(user?.id);
+            const matchedTrip = savedTrips.find((t) => t.tripId === tripIdParam || t.id === tripIdParam);
+            if (matchedTrip) {
+              let savedDests: string[] = [];
+              if (matchedTrip.destination) {
+                savedDests = matchedTrip.destination.split(',').map((s) => s.trim()).filter(Boolean);
+              } else if (matchedTrip.destinationCity) {
+                savedDests = [matchedTrip.destinationCity.trim()];
+              }
+              if (savedDests.length > 0) {
+                setDestinations(savedDests);
+                setIsMultiDestination(savedDests.length > 1);
+                clearSelection();
+                savedDests.forEach((d) => addDestination(d));
+              }
+              if (matchedTrip.originCity) setOriginCity(matchedTrip.originCity);
+              if (matchedTrip.durationDays) setChosenDurationDays(matchedTrip.durationDays);
+              if (matchedTrip.startDate) setStartDate(matchedTrip.startDate);
+            }
+          } else if (fromDestinations && selectedDestinations && selectedDestinations.length > 0) {
+            // Case 3: Navigated from Destinations page selection drawer
+            const sanitized = selectedDestinations
+              .filter((d) => d && d.name && !['Borra Caves', 'Araku Valley'].includes(d.name.trim()))
+              .map((d) => d.name);
+            setDestinations(sanitized);
+            setIsMultiDestination(sanitized.length > 1);
+          } else {
+            // Case 4: Genuinely NEW trip -> Initialize destination selection as an empty array
+            setDestinations([]);
+            setIsMultiDestination(false);
+            clearSelection();
           }
 
           const savedDraft = localStorage.getItem('by_onboarding_draft');
@@ -252,9 +303,15 @@ function OnboardingContent() {
             if (draft.children) setChildren(draft.children);
             if (draft.childAgeGroups) setChildAgeGroups(draft.childAgeGroups);
             if (draft.originCity) setOriginCity(draft.originCity);
-            // Only restore draft destinations if NOT in plan flow and no active context picks
-            if (!flowParam && (!selectedDestinations || selectedDestinations.length === 0)) {
-              if (draft.destinations && draft.destinations.length > 0) setDestinations(draft.destinations);
+            // Only restore draft destinations if user explicitly came in edit mode
+            if (isEditMode && draft.destinations && draft.destinations.length > 0) {
+              const cleanDests = draft.destinations.filter(
+                (d: string) => typeof d === 'string' && !['Borra Caves', 'Araku Valley'].includes(d.trim())
+              );
+              if (cleanDests.length > 0) {
+                setDestinations(cleanDests);
+                setIsMultiDestination(cleanDests.length > 1);
+              }
             }
             if (draft.dateMode) setDateMode(draft.dateMode);
             if (draft.preferredTransport) setPreferredTransport(draft.preferredTransport);
@@ -389,6 +446,7 @@ function OnboardingContent() {
     if (clean && !destinations.includes(clean)) {
       const updated = [...destinations, clean];
       setDestinations(updated);
+      setDestValidationError(null);
       if (updated.length > 1) setIsMultiDestination(true);
       addDestination(clean);
 
@@ -489,8 +547,9 @@ function OnboardingContent() {
 
   const calculateTripPricing = (days: number, tier: string) => {
     try {
+      if (destinations.length === 0) return;
       const targetTier = tier === 'budget' ? 'budget' : tier === 'luxury' ? 'luxury' : 'standard';
-      const targetDests = destinations.length > 0 ? destinations : ['Statue of Unity & Narmada'];
+      const targetDests = destinations;
       const evalPricing = computeHybridTripPricing({
         originCity: originCity.split(',')[0].trim(),
         destinationCity: targetDests[0].split(',')[0].trim(),
@@ -521,9 +580,14 @@ function OnboardingContent() {
 
   // Trigger Intelligent AI Duration Calculation when entering Step 8
   const runDurationRecommendation = async () => {
+    if (destinations.length === 0) {
+      setDestValidationError('Please select at least one destination to continue.');
+      setCurrentStep(2);
+      return;
+    }
     setIsCalculating(true);
     try {
-      const targetDests = destinations.length > 0 ? destinations : ['Leh & Ladakh', 'Jaipur & Udaipur'];
+      const targetDests = destinations;
       const paceMapped = travelPace === 'packed' ? 'active' : travelPace;
       const modeMapped = preferredTransport === 'ai_decide' ? 'flight' : preferredTransport === 'road_trip' ? 'car' : preferredTransport;
 
@@ -579,24 +643,32 @@ function OnboardingContent() {
     setDurationTierSelection('custom');
     calculateTripPricing(clamped, budgetTier);
 
-    const customized = customizeTripDuration({
-      origin: originCity,
-      destinations: destinations.length > 0 ? destinations : ['Rajasthan'],
-      travelMode: preferredTransport === 'road_trip' ? 'car' : 'flight',
-      travelPace: travelPace === 'packed' ? 'active' : travelPace,
-      customDays: clamped,
-      travellers: adults + children,
-    });
-    setCustomizationResult(customized);
+    if (destinations.length > 0) {
+      const customized = customizeTripDuration({
+        origin: originCity,
+        destinations: destinations,
+        travelMode: preferredTransport === 'road_trip' ? 'car' : 'flight',
+        travelPace: travelPace === 'packed' ? 'active' : travelPace,
+        customDays: clamped,
+        travellers: adults + children,
+      });
+      setCustomizationResult(customized);
+    }
   };
 
   const handleGenerateAIItinerary = async () => {
+    if (destinations.length === 0) {
+      setDestValidationError('Please select at least one destination to continue.');
+      setCurrentStep(2);
+      return;
+    }
+
     setIsSaving(true);
     playNotificationSound('notification');
 
     try {
       const totalTravellers = adults + children;
-      const targetPlaces = destinations.length > 0 ? destinations : ['Ahmedabad Heritage', 'White Rann of Kutch'];
+      const targetPlaces = destinations;
 
       // 1. Generate Itinerary Blueprint
       const blueprint = generateItineraryBlueprint({
@@ -1335,6 +1407,14 @@ function OnboardingContent() {
               </div>
             </div>
 
+            {/* Validation Message */}
+            {destValidationError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-bold flex items-center gap-2 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                <span>{destValidationError}</span>
+              </div>
+            )}
+
             {/* Nav */}
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
@@ -1348,8 +1428,10 @@ function OnboardingContent() {
                 type="button"
                 onClick={() => {
                   if (destinations.length === 0) {
-                    handleAddDestination('Leh & Ladakh');
+                    setDestValidationError('Please select at least one destination to continue.');
+                    return;
                   }
+                  setDestValidationError(null);
                   setCurrentStep(3);
                 }}
                 className="px-6 py-2.5 rounded-xl bg-[#102A56] hover:bg-blue-950 text-white text-xs font-black uppercase tracking-wider transition shadow-xs flex items-center gap-1.5 cursor-pointer"
