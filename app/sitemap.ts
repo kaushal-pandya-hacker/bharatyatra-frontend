@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { GUJARAT_DESTINATIONS } from '@/lib/data/destinations';
 import { getAllStateFolderItems } from '@/lib/tourism/state-folder-loader';
 import { ALL_INDIA_PACKAGES } from '@/data/india-packages.data';
+import { GEO_GUIDES_DATA } from '@/lib/guides/guides-data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.bharatyatra.in';
@@ -122,24 +123,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly' as const,
       priority: 0.85,
     },
-    {
-      url: `${baseUrl}/guides/somnath-dwarka-pilgrimage-logistics-guide/`,
+    ...Object.values(GEO_GUIDES_DATA).map((g) => ({
+      url: g.canonicalUrl,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/guides/gir-national-park-lion-safari-permits-guide/`,
-      lastModified: now,
-      changeFrequency: 'monthly' as const,
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/guides/rann-of-kutch-bhirandiyara-permit-procedure/`,
-      lastModified: now,
-      changeFrequency: 'monthly' as const,
-      priority: 0.85,
-    },
+    })),
   ];
 
   return [
